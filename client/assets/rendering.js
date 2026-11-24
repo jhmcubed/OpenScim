@@ -49775,17 +49775,23 @@ function GF() {
   }
   return e;
 }
-var UF = packHsl(0, 0, 18);
-var jF = packHsl(0, 0, 24);
-var OF = packHsl(0, 0, 12);
-var $F = packHsl(0, 160, 32);
-var VF = packHsl(0, 128, 24);
-var KF = packHsl(0, 0, 18);
-var qF = packHsl(0, 0, 14);
-var ZF = packHsl(0, 0, 8);
-var YF = packHsl(0, 0, 4);
-var XF = packHsl(0, 224, 100);
-var JF = packHsl(0, 192, 80);
+// The hue of the lobby and its effects, in 256ths of a turn: blue. A colour is
+// given by how far its hue leans from it, towards cyan where positive.
+const lobbyHue = 156;
+function lobbyHsl(lean, saturation, lightness) {
+  return packHsl((lobbyHue - lean) & 255, saturation, lightness);
+}
+var UF = lobbyHsl(0, 0, 18);
+var jF = lobbyHsl(0, 0, 24);
+var OF = lobbyHsl(0, 0, 12);
+var $F = lobbyHsl(0, 160, 32);
+var VF = lobbyHsl(0, 128, 24);
+var KF = lobbyHsl(0, 0, 18);
+var qF = lobbyHsl(0, 0, 14);
+var ZF = lobbyHsl(0, 0, 8);
+var YF = lobbyHsl(0, 0, 4);
+var XF = lobbyHsl(0, 224, 100);
+var JF = lobbyHsl(0, 192, 80);
 function QF(e) {
   return {
     h: ((e >> 10) & 63) * 4,
@@ -50829,17 +50835,17 @@ var HE = class {
               let m;
               let h;
               if (d < 0.2) {
-                g = 0;
+                g = lobbyHue;
                 c = 16;
                 m = 6;
                 h = 0.17 + o() * 0.03;
               } else if (d < 0.7) {
-                g = 0;
+                g = lobbyHue;
                 c = 120 + o() * 40;
                 m = 15 + o() * 10;
                 h = 0.19 + o() * 0.02;
               } else {
-                g = 0;
+                g = lobbyHue;
                 c = 180;
                 m = 25 + o() * 15;
                 h = 0.18 + o() * 0.04;
@@ -50857,7 +50863,7 @@ var HE = class {
             [0.015, 0.035],
             [7, 0.1, 0.3, 1],
             (e, a, t, n, s, r, i, l, o) => {
-              const d = packHsl(0, 0, 100 + Math.floor(o() * 60));
+              const d = lobbyHsl(0, 0, 100 + Math.floor(o() * 60));
               LE(e, a, t, n, s, r, i, l, d, d, 1, 4, o);
             },
             t,
@@ -50871,11 +50877,11 @@ var HE = class {
             [7, 0.1, 0.6, 2.5],
             (e, a, t, n, s, r, i, l, o) => {
               const d = o();
-              let g = 0;
+              let g = lobbyHue;
               let c = 0;
               let m = 130 + o() * 50;
               if (d < 0.15) {
-                g = 0;
+                g = lobbyHue;
                 c = 96 + o() * 64;
                 m = 100 + o() * 40;
               } else if (d < 0.2) {
@@ -50897,11 +50903,11 @@ var HE = class {
             [7, 0.3, 0.8, 5],
             (e, a, t, n, s, r, i, l, o) => {
               const d = o();
-              let g = 0;
+              let g = lobbyHue;
               let c = 0;
               let m = 180 + o() * 45;
               if (d < 0.25) {
-                g = 0;
+                g = lobbyHue;
                 c = 160;
                 m = 150 + o() * 40;
               } else if (d < 0.35) {
@@ -50973,11 +50979,11 @@ var HE = class {
               const R = h * I - f * T;
               const P = s * 0.012 + o() * 0.008;
               const _ = o();
-              let F = 0;
+              let F = lobbyHue;
               let E = 0;
               let N = 200 + o() * 55;
               if (_ < 0.4) {
-                F = 0;
+                F = lobbyHue;
                 E = 192;
                 N = 160 + o() * 40;
               }
@@ -51034,7 +51040,7 @@ var HE = class {
               c += 4;
             };
             const f = e + 0.06;
-            const u = packHsl(0, 200, 30);
+            const u = lobbyHsl(0, 200, 30);
             for (let e = 0; e < 8; e++) {
               const a = (e / 8) * Math.PI * 2 + Math.PI / 4;
               for (let e = 0; e < 16; e++) {
@@ -51191,7 +51197,7 @@ var HE = class {
             const t = 5;
             const n = 1.375;
             const i = e + 0.06;
-            const d = packHsl(0, 192, 60);
+            const d = lobbyHsl(0, 192, 60);
             const g = [];
             const c = [];
             const m = [];
@@ -51277,7 +51283,7 @@ var HE = class {
         const a = 24;
         const t = 2.5;
         const n = e + 0.06;
-        const s = packHsl(0, 192, 60);
+        const s = lobbyHsl(0, 192, 60);
         const r = fE();
         const i = 0.5;
         const l = 0.08;
@@ -51437,18 +51443,18 @@ var HE = class {
           }
           const i = rE(t);
           const l = [
-            packHsl(0, 224, 100),
-            packHsl(0, 192, 75),
-            packHsl(4, 200, 115),
-            packHsl(0, 160, 55),
-            packHsl(0, 224, 135),
+            lobbyHsl(0, 224, 100),
+            lobbyHsl(0, 192, 75),
+            lobbyHsl(4, 200, 115),
+            lobbyHsl(0, 160, 55),
+            lobbyHsl(0, 224, 135),
           ];
           const o = [
-            packHsl(0, 0, 50),
-            packHsl(0, 0, 40),
-            packHsl(0, 0, 58),
-            packHsl(0, 0, 34),
-            packHsl(0, 0, 62),
+            lobbyHsl(0, 0, 50),
+            lobbyHsl(0, 0, 40),
+            lobbyHsl(0, 0, 58),
+            lobbyHsl(0, 0, 34),
+            lobbyHsl(0, 0, 62),
           ];
           const d = iE(r) ? l : o;
           const g = () => d[Math.floor(n() * d.length)];
@@ -51518,8 +51524,8 @@ var HE = class {
               v: 0,
             };
             const h = iE(r)
-              ? [packHsl(0, 160, 50), packHsl(0, 128, 40), packHsl(0, 192, 60), packHsl(0, 140, 35)]
-              : [packHsl(0, 0, 30), packHsl(0, 0, 25), packHsl(0, 0, 35), packHsl(0, 0, 22)];
+              ? [lobbyHsl(0, 160, 50), lobbyHsl(0, 128, 40), lobbyHsl(0, 192, 60), lobbyHsl(0, 140, 35)]
+              : [lobbyHsl(0, 0, 30), lobbyHsl(0, 0, 25), lobbyHsl(0, 0, 35), lobbyHsl(0, 0, 22)];
             for (let a = 0; a < 45; a++) {
               const a = n() * Math.PI * 2;
               const t = 1.8 + Math.sqrt(n()) * 1.8;
@@ -51620,8 +51626,8 @@ var HE = class {
               v: 0,
             };
             const h = iE(r)
-              ? [packHsl(0, 224, 150), packHsl(4, 224, 140), packHsl(0, 200, 160)]
-              : [packHsl(0, 0, 75), packHsl(0, 0, 65), packHsl(0, 0, 80)];
+              ? [lobbyHsl(0, 224, 150), lobbyHsl(4, 224, 140), lobbyHsl(0, 200, 160)]
+              : [lobbyHsl(0, 0, 75), lobbyHsl(0, 0, 65), lobbyHsl(0, 0, 80)];
             for (let a = 0; a < 35; a++) {
               const a = n() * Math.PI * 2;
               const t = 1.6 + n() * 2;
@@ -51728,10 +51734,10 @@ var HE = class {
         }
         const t = [
           XF,
-          packHsl(0, 224, 90),
-          packHsl(0, 192, 70),
-          packHsl(4, 200, 100),
-          packHsl(0, 160, 55),
+          lobbyHsl(0, 224, 90),
+          lobbyHsl(0, 192, 70),
+          lobbyHsl(4, 200, 100),
+          lobbyHsl(0, 160, 55),
         ];
         const n = new Map();
         for (const e of a) {
@@ -51941,14 +51947,14 @@ var HE = class {
               );
             }
           };
-          const u = packHsl(5, 180, 165);
-          const v = packHsl(8, 160, 130);
-          const p = packHsl(2, 224, 120);
-          const k = packHsl(0, 224, 95);
-          const S = packHsl(0, 205, 68);
-          const b = packHsl(0, 158, 40);
-          const y = packHsl(4, 200, 110);
-          const z = packHsl(0, 160, 55);
+          const u = lobbyHsl(5, 180, 165);
+          const v = lobbyHsl(8, 160, 130);
+          const p = lobbyHsl(2, 224, 120);
+          const k = lobbyHsl(0, 224, 95);
+          const S = lobbyHsl(0, 205, 68);
+          const b = lobbyHsl(0, 158, 40);
+          const y = lobbyHsl(4, 200, 110);
+          const z = lobbyHsl(0, 160, 55);
           const w = e + 0.12;
           const A = e + 0.015;
           const L = e + 1.15;
@@ -52508,7 +52514,7 @@ var HE = class {
       this.vortexSwirlCommand = (function (e) {
         const a = fE();
         const t = e + 0.06;
-        const n = packHsl(0, 200, 30);
+        const n = lobbyHsl(0, 200, 30);
         for (let e = 0; e < 8; e++) {
           const s = (e / 8) * Math.PI * 2 + Math.PI / 4;
           for (let e = 0; e < 16; e++) {
@@ -52658,7 +52664,7 @@ var HE = class {
       })(this.baseZ);
       this.ambientHazeCommand = (function (e) {
         const a = fE();
-        const t = packHsl(0, 160, 36);
+        const t = lobbyHsl(0, 160, 36);
         const n = a.addVertex(nE, sE, e + 1, 0, 0, 1, t, 0.35);
         let s = null;
         for (let r = 0; r <= 32; r++) {
@@ -52778,7 +52784,7 @@ var HE = class {
               g += 4;
             };
             const h = e + 0.025;
-            const f = n ? XF : packHsl(0, 0, 50);
+            const f = n ? XF : lobbyHsl(0, 0, 50);
             const u = n ? 0.12 : 0.06;
             for (let e = 0; e < 32; e++) {
               const a = (e / 32) * Math.PI * 2;
@@ -53108,7 +53114,7 @@ var HE = class {
             },
           ];
           const n = YF;
-          const s = packHsl(0, 50, 6);
+          const s = lobbyHsl(0, 50, 6);
           for (let n = 0; n < t.length - 1; n++) {
             const s = t[n].r;
             const r = e + t[n].z;
@@ -53211,31 +53217,31 @@ var HE = class {
         };
         const k = [
           {
-            h: 250,
+            h: 162,
             s: 170,
             l: 140,
             a: 1,
           },
           {
-            h: 254,
+            h: 158,
             s: 255,
             l: 82,
             a: 0.96,
           },
           {
-            h: 1,
+            h: 155,
             s: 220,
             l: 24,
             a: 0.84,
           },
           {
-            h: 252,
+            h: 160,
             s: 60,
             l: 10,
             a: 0.52,
           },
           {
-            h: 252,
+            h: 160,
             s: 18,
             l: 6,
             a: 0.18,
@@ -53245,8 +53251,8 @@ var HE = class {
           const t = e + 0.71;
           const n = Math.floor((v() - 0.5) * 20);
           const s = Math.floor((v() - 0.5) * 64);
-          const r = packHsl(
-            252,
+          const r = lobbyHsl(
+            -4,
             Math.max(0, Math.min(255, 235 + s)),
             Math.max(0, Math.min(255, 104 + n + Math.floor((v() - 0.5) * 15))),
           );
@@ -53258,8 +53264,8 @@ var HE = class {
             const o = a.x + Math.cos(r) * i;
             const d = a.y + Math.sin(r) * i;
             const g = t + 0.005 + v() * 0.02;
-            const c = packHsl(
-              254,
+            const c = lobbyHsl(
+              -2,
               Math.max(0, Math.min(255, 70 + s)),
               Math.max(0, Math.min(255, 14 + n + Math.floor((v() - 0.5) * 8))),
             );
@@ -53280,11 +53286,11 @@ var HE = class {
             const g = Math.sin(n + 0.5);
             const m = v() > 0.65;
             const h = m
-              ? packHsl(254, 150, 24 + Math.floor(v() * 8))
-              : packHsl(1, 255, 78 + Math.floor(v() * 10));
+              ? lobbyHsl(-2, 150, 24 + Math.floor(v() * 8))
+              : lobbyHsl(1, 255, 78 + Math.floor(v() * 10));
             const f = m
-              ? packHsl(254, 150, 18 + Math.floor(v() * 8))
-              : packHsl(1, 255, 70 + Math.floor(v() * 10));
+              ? lobbyHsl(-2, 150, 18 + Math.floor(v() * 8))
+              : lobbyHsl(1, 255, 70 + Math.floor(v() * 10));
             const u = (m ? 0.85 : 0.9) + v() * 0.05;
             const k = p(a.x + l * s, a.y + o * s, i, 0, 0, 1, h, u);
             const S = p(a.x + d * r, a.y + g * r, i, 0, 0, 1, f, u - 0.1);
@@ -53389,18 +53395,18 @@ var HE = class {
             let w;
             const A = v();
             if (A < 0.5) {
-              b = packHsl(252, 120, 20);
-              y = packHsl(252, 70, 10);
+              b = lobbyHsl(-4, 120, 20);
+              y = lobbyHsl(-4, 70, 10);
               z = 0.45;
               w = 0.15;
             } else if (A < 0.8) {
-              b = packHsl(252, 70, 10);
-              y = packHsl(252, 30, 6);
+              b = lobbyHsl(-4, 70, 10);
+              y = lobbyHsl(-4, 30, 6);
               z = 0.35;
               w = 0.1;
             } else {
-              b = packHsl(254, 150, 34);
-              y = packHsl(252, 80, 14);
+              b = lobbyHsl(-2, 150, 34);
+              y = lobbyHsl(-4, 80, 14);
               z = 0.5;
               w = 0.12;
             }
@@ -53439,16 +53445,16 @@ var HE = class {
             let u;
             const k = v();
             if (k < 0.55) {
-              h = packHsl(253, 255, 102);
-              f = packHsl(253, 200, 60);
+              h = lobbyHsl(-3, 255, 102);
+              f = lobbyHsl(-3, 200, 60);
               u = 0.92;
             } else if (k < 0.85) {
-              h = packHsl(1, 255, 88);
-              f = packHsl(1, 220, 50);
+              h = lobbyHsl(1, 255, 88);
+              f = lobbyHsl(1, 220, 50);
               u = 0.88;
             } else {
-              h = packHsl(252, 45, 18);
-              f = packHsl(252, 30, 10);
+              h = lobbyHsl(-4, 45, 18);
+              f = lobbyHsl(-4, 30, 10);
               u = 0.52;
             }
             const S = p(o, d, g + m * 1.5, 0, 0, 1, h, u + v() * 0.06);
@@ -53951,7 +53957,7 @@ var IE = class extends SceneCompositor {
                     o = 48;
                     d = 0.62;
                   }
-                  n[e] = packHsl(0, l, o);
+                  n[e] = lobbyHsl(0, l, o);
                   const g = perVertexAlphas5 ? perVertexAlphas5[e] : 1;
                   r[e] = g < 0.01 ? 0 : Math.min(1, d * g);
                 }
