@@ -47,5 +47,13 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.deepEqual(path, ["49,27", "49,29", "49,31", "49,33", "49,34", "49,34"]);
   assert.deepEqual([0, 1, 2, 3, 4].map((n) => ticks[thrown + n].bossTarget), [null, null, null, null, "player"]);
 }
+{
+  // Off his corner, 2 tiles away: one pool. After the cleave he stands for 2 ticks, then comes.
+  const ticks = await ticksOf("cleave-off-corner");
+  const cleave = first(ticks, "araxxor cleave");
+  assert.deepEqual([ticks[cleave - 1].boss, ticks[cleave - 1].player], [[47, 22], [45, 30]]);
+  assert.deepEqual(newPools(ticks, cleave + 2), ["45,30"]);
+  assert.deepEqual([0, 1, 2, 3].map((n) => ticks[cleave + n].boss.join()), ["47,22", "47,22", "47,22", "46,23"]);
+}
 console.log("Araxxor's rules are as recorded");
 process.exit(0);

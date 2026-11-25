@@ -154,8 +154,11 @@ const enrageThreshold = 0.25; // WIKI
 const enrageFirstAttackTicks = 5; // OBS: the first cleave 5 ticks after 11488
 const enrageBodyTicks = 2; // OBS: 11489 2 ticks after 11488
 const cleaveReach = 2; // WIKI: "a cleave with range 2"
-const cleaveHitTicks = 1; // OBS: its hit and its acid 2 ticks after the swing
+const cleaveHitTicks = 1; // OBS: its hit (k2 161 and 163) and its acid 2 ticks after the swing
 const cleavePoolTicks = 2;
+// OBS: the cut he gives himself 2 ticks after the swing (k2 173, 177, 181), or
+// 3 (k2 161, 165; what makes it 3 does not show).
+const cleaveCutTicks = 2;
 // OBS: he drops his target with a cleave and has it back 3 ticks later (15 of
 // 17; k2 173 and 177 after 2), with the acid ball's throw 4 (k2 35, 77, 119).
 // Until then he neither turns nor steps (k1 333 and 334, k2 155, 158, 159).
@@ -750,7 +753,11 @@ class AraxxorEncounter {
   }
   cleave(boss, player, context) {
     const tile = [...player.position];
-    const under = gapTo(tile, boss.position, bossSize) === 0;
+    const gap = gapTo(tile, boss.position, bossSize);
+    const under = gap === 0;
+    const [x, y] = boss.position;
+    // Off his corner, and not beside it (OBS k1 332: the player at 45,32, he at 47,25 to 53,31).
+    const offCorner = gap > 1 && (tile[0] < x || tile[0] > x + bossSize - 1) && (tile[1] < y || tile[1] > y + bossSize - 1);
     const line = this.cleaveLine(boss, tile);
     this.dropTarget(boss, context, cleaveTargetTicks);
     emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "cleave", kind: "araxxor_cleave", impactDelayTicks: cleaveHitTicks });
@@ -767,13 +774,18 @@ class AraxxorEncounter {
       // OBS: the 1 x 3 still hurts when he cleaves a player under him.
       if (ctx.world.getPlayer()?.alive && line.some((t) => key(t) === key(ctx.playerPos)))
         hits.push({ source: "Araxxor's cleave", attackType: "melee", baseDamage: damage, playerPosition: [...ctx.playerPos], prayerReduction: { type: "reduce", value: prayerLeaves.cleave } });
-      // WIKI, OBS: a player under him makes him cut himself.
-      if (under) this.hitNpc(ctx, bossActorId, bossActorId, selfCut[0] + Math.floor(this.random() * (selfCut[1] - selfCut[0] + 1)));
     });
-    // OBS: the acid 2 ticks after the swing; one pool only, on the player's tile, from under him.
+    // WIKI, OBS: a player under him makes him cut himself.
+    if (under) this.later(cleaveCutTicks, (ctx) => {
+      if (this.outcome.phase === "active") this.hitNpc(ctx, bossActorId, bossActorId, selfCut[0] + Math.floor(this.random() * (selfCut[1] - selfCut[0] + 1)));
+    });
+    // OBS: the acid 2 ticks after the swing; one pool only, on the player's
+    // tile, from under him (k2 161, 165, 173, 177, 181) and off his corner (k1
+    // 332). WIKI has two more beside a corner, "north and east of the player"
+    // to the south-west: no log has that.
     this.later(cleavePoolTicks, () => {
       if (this.outcome.phase !== "active") return;
-      for (const t of under ? [tile] : line) this.placePool(t);
+      for (const t of under || offCorner ? [tile] : line) this.placePool(t);
     });
     return { environmentalDamages: [] };
   }

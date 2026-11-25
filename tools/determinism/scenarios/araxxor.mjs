@@ -101,4 +101,20 @@ export const scenarios = [
     start: [51, 29],
     ...meleeGear,
   },
+  {
+    // Enraged; off his corner, 2 tiles away, as he cleaves: one pool (red
+    // eggs, t 332), then away from him: he stands for 2 ticks and comes.
+    name: "araxxor/cleave-off-corner",
+    kind: KIND,
+    seed: 3,
+    ticks: 24,
+    mechanics: { araxxorEggs: "red", infiniteHealth: true },
+    start: [46, 29],
+    ...meleeGear,
+    script(tick, api) {
+      if (tick === 3) setBossHp(api, 250);
+      if (tick === 7) api.moveTo(45, 30);
+      if (tick === 9) api.moveTo(45, 33);
+    },
+  },
 ];
