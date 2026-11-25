@@ -235,7 +235,7 @@ class DoomEncounter {
     if (!arena.collisionMap) return arena;
     const map = createCollisionMap(arena.collisionMap.sizeX, arena.collisionMap.sizeY);
     map.flags.set(arena.collisionMap.flags);
-    this.rocks.collision = map;
+    this.rocks.adoptCollision(map);
     return { ...arena, collisionMap: map };
   }
   // The NPCs may exist before the delve is known: the boss takes its numbers again.

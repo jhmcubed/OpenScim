@@ -110,7 +110,7 @@ export function holyWater(doom, context, boss) {
 export class Rocks {
   standing = new Set();
   orbsLandAt = 0;
-  collision = null; // set by the encounter's refineArenaConfig
+  collision = null; // set by adoptCollision
   constructor(doom) {
     this.doom = doom;
   }
@@ -118,6 +118,13 @@ export class Rocks {
     for (const tile of this.standing) this.collision?.unflag(...unkey(tile), CollisionFlag.OBJECT);
     this.standing.clear();
     this.orbsLandAt = 0;
+  }
+  // The arena's collision, from the encounter's refineArenaConfig. The arena is
+  // applied anew during a fight too (a Take Over), each time a fresh copy: the
+  // rocks that stand block there as well.
+  adoptCollision(map) {
+    this.collision = map;
+    for (const tile of this.standing) map.flag(...unkey(tile), CollisionFlag.OBJECT);
   }
   has(tile) {
     return this.standing.has(key(tile));
