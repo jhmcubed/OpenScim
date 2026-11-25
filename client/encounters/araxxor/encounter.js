@@ -206,13 +206,10 @@ const distantReach = 10;
 const distantHitTicks = 3; // OBS (k1 218 and 222), OBS (tsps): 4 ticks after the cast, whatever the distance
 const ballLandTicks = 2; // OBS: k2 35 and 37, 77 and 79, 119 and 121
 // OBS: its middle is on the edge of his body in one of eight directions, the
-// nearest to the player's: k2 37 and 79, north-east, 53,28 for a player at
-// 53,29; k2 121, north, 50,28 for one at 51,29. tsps: on the player's tile.
+// nearest to the player's (35 of 35: north-east, k2 37, for a player at 53,29
+// to 54,27; north, k2 121, for one at 51,29; east, n0 80 and n7 80, for one at
+// 54,26). tsps: on the player's tile.
 const ballLandDistance = 3;
-// OBS: each of three balls rolled 7 tiles (2, 2, 2, then 1) and burst, each
-// at the lair's wall too (k2 37 to 42, 79 to 84, 121 to 126). tsps: it rolls
-// until its next step is blocked.
-const ballRollTiles = 7;
 const dripLandTicks = 4; // OBS: k1 206 and 210, 248 and 252, 290 and 294
 const dripTicks = 7; // OBS (k1 210 to 216, 252 to 258, 294 to 300), OBS (tsps): 1626 on the player for 7 ticks
 const dripPools = 6; // OBS: a pool on each of the next 6 ticks (k1 211 to 216, 253 to 258, 295 to 300)
@@ -256,8 +253,10 @@ const araneaBoots = 29806;
 const araneaTicks = { range: 8, cleave: 20 };
 const araneaMessage = "Your Aranea boots let you avoid the spider-based attack.";
 const drainShare = 0.09; // WIKI, OBS (tsps), OBS (k1 222: 3 of 37 Prayer): 9% of the level as it is, rounded down
-const poolDamage = [4, 5]; // OBS (tsps): flat, however long the player stands in it; OBS: 4 and 4 (k1 217, k2 182)
-const ballDamage = [14, 18]; // OBS (tsps)
+// OBS (tsps): flat, however long the player stands in it; OBS: 4 (k1 217, k2
+// 182, n11 169, n14 174, n17 138) and 5 (n4 195, n10 95, n11 43).
+const poolDamage = [4, 5];
+const ballDamage = [14, 18]; // OBS (tsps); OBS: 17 (n7 39)
 const venom = 1_000_000; // WIKI: the acid envenoms (the engine's poisonVarp for venom)
 // WIKI: the Ruptura's blast by distance from it (under it, beside it, 1 and 2
 // tiles between), in proportion to its hitpoints left. On the player (not yet
@@ -289,17 +288,24 @@ const projectiles = {
   ranged: { spotAnimId: spots.ranged, start: 30, end: 120, startHeight: 296, endHeight: 50, slope: 35, startOffset: 0 },
   magic: { spotAnimId: spots.magic, start: 30, end: 120, startHeight: 69, endHeight: 50, slope: 35, startOffset: 62 },
   drip: { spotAnimId: spots.blob, start: 30, end: 120, startHeight: 170, endHeight: 30, slope: 35, startOffset: 200 },
-  // These end 100 (the spray) or 90 (the others) cycles plus 10 a tile from
-  // where they are thrown, and the acid is there on the tick they land.
-  spray: { spotAnimId: spots.blob, start: 30, base: 100, startHeight: 170, endHeight: 0, slope: 35, startOffset: 200 },
+  // These end 90 cycles plus 10 a tile from where they are thrown (the spray
+  // too: OBS n9 35 and 77, n8 36 and 78, n2 44, 86 and 128), and the acid is
+  // there on the tick after they land (the spray's blobs of 130 and 140 cycles
+  // 5 ticks after the throw, of 150 and 160 6).
+  spray: { spotAnimId: spots.blob, start: 30, base: 90, startHeight: 170, endHeight: 0, slope: 35, startOffset: 200 },
   burst: { spotAnimId: spots.blob, start: 30, base: 90, startHeight: 254, endHeight: 0, slope: 35, startOffset: 0 },
   acidicDeath: { spotAnimId: spots.blob, start: 30, base: 90, startHeight: 140, endHeight: 0, slope: 35, startOffset: 20 },
   acidic: { spotAnimId: spots.acidic, start: 39, base: 39, startHeight: 32, endHeight: 64, slope: 16, startOffset: 40 },
 };
 const magicImpactHeight = 50; // OBS k1 218
-const sprayBlobs = 9; // OBS (tsps)
-const burstBlobs = 6; // OBS (tsps): within 2 tiles of the ball
+const sprayBlobs = 9; // OBS (7 of 7), OBS (tsps)
+const spraySpread = 2; // OBS: the 5 x 5 about the tile one step on from the player (7 of 7)
+const burstBlobs = 6; // OBS, OBS (tsps): up to 6 within 2 tiles of the ball
 const burstSpread = 2;
+// How many tiles it tries for them (inferred, from how many it throws: OBS all
+// 6 where 9 tiles or more are open, 4 to 6 of the 7 open at the north-east
+// wall, about half of what is left there the next time).
+const burstTries = 25;
 const acidicDeathBlobs = 13; // OBS (tsps): within 4 tiles
 const acidicDeathSpread = 4;
 
@@ -314,7 +320,7 @@ const gapTo = ([px, py], [x, y], size) => Math.max(x - px, 0, px - (x + size - 1
 const middleOf = (actor) => [actor.position[0] + Math.floor(actor.size / 2), actor.position[1] + Math.floor(actor.size / 2)];
 const chebyshev = ([ax, ay], [bx, by]) => Math.max(Math.abs(ax - bx), Math.abs(ay - by));
 const tileTarget = (position) => ({ kind: "tile", position: [...position] });
-const landingTicks = (endCycles) => Math.ceil(endCycles / cyclesPerTick);
+const landingTicks = (endCycles) => Math.floor(endCycles / cyclesPerTick) + 1;
 
 // The egg's stats: CACHE (Defence 75, 65 hitpoints); its defence bonuses are
 // not known (inferred: none).
@@ -333,6 +339,7 @@ const tableStats = (npcTypeId, version) => {
 // The egg blocks its tiles until it hatches (OBS (tsps): an invisible
 // blocking object under it, swapped for one that does not block).
 const eggFlags = CollisionFlag.OBJECT;
+const closedFlags = CollisionFlag.OBJECT | CollisionFlag.FLOOR_BLOCKED;
 function collisionWithEggs(map, blocked) {
   const getFlag = (x, y) => (blocked.has(key([x, y])) && map.getFlag(x, y) !== -1 ? map.getFlag(x, y) | eggFlags : map.getFlag(x, y));
   return {
@@ -357,10 +364,9 @@ const patternChoices = [
 class AraxxorEncounter {
   constructor() {
     this.kind = araxxorKind;
-    // Not state: the arena as the engine handed it, its open tiles, the
-    // tick's context (for the rules that are handed none).
-    for (const name of ["arenaBase", "floor", "context"]) Object.defineProperty(this, name, { value: null, writable: true });
-    this.floor = new Set();
+    // Not state: the arena as the engine handed it, the tick's context (for
+    // the rules that are handed none).
+    for (const name of ["arenaBase", "context"]) Object.defineProperty(this, name, { value: null, writable: true });
     this.patternChoice = "random";
     // The eggs' order stays as the run started with it (registry.js).
     this.runStartMechanicsKeys = [patternKey];
@@ -388,7 +394,8 @@ class AraxxorEncounter {
     this.araneaReady = { range: 0, cleave: 0 }; // when the Aranea boots can negate the next of each
     this.acidHitTick = null; // the last tick a landing blob's acid hurt the player
     this.playerTrail = []; // the player's tiles at the end of the last two ticks
-    this.drip = null; // { from, until }
+    this.drip = null; // { from, until, gfxUntil, stood }
+    this.dripOwed = null; // the tile the next drip starts with
     this.ball = null; // { id, middle, direction, hit, burstTick }
     this.balls = 0;
     this.pendingPlayerHits = []; // the Mirrorback's recoil, until the NPCs have had their turns
@@ -431,7 +438,6 @@ class AraxxorEncounter {
   }
   refineArenaConfig(arena) {
     this.arenaBase = arena;
-    this.floor = new Set(arena?.walkableTiles ?? []);
     this.blocked = this.eggTilesBlocked();
     return this.arenaWithEggs();
   }
@@ -451,16 +457,17 @@ class AraxxorEncounter {
     this.blocked = this.eggTilesBlocked();
     if (this.arenaBase) setArenaConfig(this.arenaWithEggs(), getArenaDefaultWalkable());
   }
-  isFloor(tile) {
-    return this.floor.size === 0 || this.floor.has(key(tile));
-  }
-  // The floor and the tiles at its edge, where the acid can land too (OBS: a
-  // blob's pool on a tile the player cannot step onto); not an egg's.
-  isAcidTile(tile) {
+  // Whether nothing stands there: no object or wall of the map's, no egg.
+  isOpen(tile) {
     if (this.blocked.has(key(tile))) return false;
-    if (this.isFloor(tile)) return true;
-    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if (this.isFloor([tile[0] + dx, tile[1] + dy])) return true;
-    return false;
+    const flag = this.arenaBase?.collisionMap?.getFlag(tile[0], tile[1]) ?? 0;
+    return flag !== -1 && (flag & closedFlags) === 0;
+  }
+  // Where the acid can lie. OBS: 192 blobs, every one on an open tile, some of
+  // them beyond the walls (58,36 ten times, 63,27 twice); none past the edge of
+  // the lair's own map square (n0 86, n7 86: the ball's middle at 64,25).
+  isAcidTile(tile) {
+    return tile[0] < 64 && this.isOpen(tile);
   }
 
   createNpcs() {
@@ -556,7 +563,7 @@ class AraxxorEncounter {
     if (this.outcome.phase !== "active") return hits;
     this.cleaves = this.cleaves.filter((cleave) => cleave.lands >= context.tick);
     this.stepDrip(context);
-    this.stepBall(context, hits);
+    this.stepBall(context);
     return hits;
   }
   // --- each tick, after the NPCs ----------------------------------------
@@ -571,9 +578,11 @@ class AraxxorEncounter {
     const hits = [];
     const player = context.world.getPlayer();
     this.landCleave(context, player, hits);
+    if (this.ball) this.ballHit(context, hits);
     // OBS: the acid hurts the player who ends a tick in it (k1 216, recorded on
     // 217; k2 181, n4 194, n10 94, n11 42 and 168, n14 173, n17 137).
     if (this.pools.has(key(context.playerPos)) && this.acidHitTick !== context.tick && player?.alive) hits.push(this.poolHit(context.playerPos));
+    this.endDrip(context);
     this.playerTrail = [this.playerTrail[1] ?? [...context.playerPos], [...context.playerPos]];
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
     return hits;
@@ -697,7 +706,9 @@ class AraxxorEncounter {
   }
   // The drip: a blob on the player, 4 ticks later he drips for 7 ticks, and
   // the tile he stood on (and ran through) the tick before gets a pool on each
-  // of the 6 ticks after it lands (OBS).
+  // of the 6 ticks after it lands (OBS, 18 of 18). A tick that gave no pool,
+  // the player having stood still, is made up for as the next drip starts, on
+  // the tile he ended the last of those ticks on (n11 37 and 84, n10 89 and 136).
   dripAt(boss, player, context) {
     emitInfernoVisual(context.tickEvents, { animations: [], graphics: [],
       projectiles: [this.projectile(projectiles.drip, this.turn.middle, buildActorVisualTarget(player), projectiles.drip.end)] });
@@ -707,7 +718,7 @@ class AraxxorEncounter {
       // OBS: "Araxxor covers you in venom. It slowly drips off you and covers the floor."
       ctx.tickEvents.emit({ type: "game_message", kind: "game",
         segments: [{ text: "Araxxor covers you in venom. It slowly drips off you and covers the floor.", color: "#ff3045" }] });
-      this.drip = { from: ctx.tick + 1, until: ctx.tick + dripPools, gfxUntil: ctx.tick + dripTicks - 1 };
+      this.drip = { from: ctx.tick + 1, until: ctx.tick + dripPools, gfxUntil: ctx.tick + dripTicks - 1, stood: false };
       this.dripGraphic(ctx, { dripStarts: true });
     });
   }
@@ -720,31 +731,40 @@ class AraxxorEncounter {
     if (!drip) return;
     if (context.tick <= drip.gfxUntil && context.tick > drip.from - 1) this.dripGraphic(context);
     if (context.tick >= drip.from && context.tick <= drip.until) {
+      if (context.tick === drip.from && this.dripOwed) {
+        this.placePool(this.dripOwed);
+        this.dripOwed = null;
+      }
       const [before, last] = this.playerTrail;
       const tiles = [last ?? context.playerPos];
       // A run of two tiles: the one between too.
       if (before && last && chebyshev(before, last) === 2) tiles.unshift([before[0] + Math.sign(last[0] - before[0]), before[1] + Math.sign(last[1] - before[1])]);
-      for (const tile of tiles) this.placePool(tile);
+      if (tiles.filter((tile) => this.placePool(tile)).length === 0) drip.stood = true;
     }
-    if (context.tick >= Math.max(drip.until, drip.gfxUntil)) this.drip = null;
   }
-  // The spray: nine blobs on tiles about the player, away from Araxxor (WIKI:
-  // "in the player's general direction"; where exactly is RSPSApp's choice,
-  // inferred: up to 3 tiles on past him and 1 back, 3 to either side).
+  endDrip(context) {
+    const drip = this.drip;
+    if (!drip || context.tick < Math.max(drip.until, drip.gfxUntil)) return;
+    if (drip.stood) this.dripOwed = [...context.playerPos];
+    this.drip = null;
+  }
+  // The spray. OBS (7 of 7, the player off a corner of his middle each time):
+  // nine blobs on as many different tiles of the 5 x 5 about the tile one step
+  // on from the player, away from him, none of them under him (n2 44 and 128,
+  // n8 36 and 78, n9 35 and 77 north-east of him, n2 86 north-west); those that
+  // have acid already get none (n2 128: five thrown, 9 of the 23 tiles had). A
+  // player straight beside his middle has the 5 x 5 one step on that way (inferred).
   spray(boss, player, context) {
     const { middle } = this.turn;
     const [px, py] = player.position;
-    const dx = Math.sign(px - middle[0]), dy = Math.sign(py - middle[1]);
-    const tiles = new Map();
-    for (let n = 0; n < sprayBlobs; n++) {
-      const along = Math.floor(this.random() * 5) - 1;
-      const across = Math.floor(this.random() * 7) - 3;
-      const tile = dx === 0 && dy === 0
-        ? [px + Math.floor(this.random() * 7) - 3, py + Math.floor(this.random() * 7) - 3]
-        : [px + dx * along - dy * across, py + dy * along + dx * across];
-      if (this.isAcidTile(tile)) tiles.set(key(tile), tile);
-    }
-    this.throwBlobs(context, middle, [...tiles.values()], projectiles.spray);
+    const [cx, cy] = [px + Math.sign(px - middle[0]), py + Math.sign(py - middle[1])];
+    const open = [];
+    for (let x = cx - spraySpread; x <= cx + spraySpread; x++)
+      for (let y = cy - spraySpread; y <= cy + spraySpread; y++)
+        if (chebyshev(middle, [x, y]) > Math.floor(bossSize / 2) && this.isAcidTile([x, y])) open.push([x, y]);
+    const tiles = [];
+    while (tiles.length < sprayBlobs && open.length > 0) tiles.push(...open.splice(Math.floor(this.random() * open.length), 1));
+    this.throwBlobs(context, middle, tiles.filter((tile) => !this.pools.has(key(tile))), projectiles.spray);
   }
   // Blobs from a tile, each landing by its own distance: its splash (OBS: on
   // the cycle it lands, 100 to 110 after the throw in k2 41, 83 and 125), then
@@ -764,13 +784,17 @@ class AraxxorEncounter {
         this.placePool(tile);
       });
     }
-    if (flights.length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: flights, graphics: splats, ...cue });
+    if (flights.length || Object.keys(cue).length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: flights, graphics: splats, ...cue });
   }
   // The acid ball: he turns to the nearest of eight directions (OBS: facing
   // 1280 at k2 36 and 78, 1024 at 120), and 2 ticks after the throw it is at
-  // his edge there and hurts a player under it. Then it rolls on 2 tiles a
-  // tick, leaving acid on its middle and the tile behind, until it reaches a
-  // wall; it throws six blobs, bursts and goes.
+  // his edge there and hurts a player who ends that tick under it (OBS n7 38,
+  // recorded on 39; not one who is under it as the tick begins and has left by
+  // its end, 10 of 10: k2 121, n0 38, n3 79 and 121, n7 164, n12 49 and 91, n13
+  // 81, n14 123, n16 91). Then it rolls on 2 tiles a tick, leaving acid on its
+  // middle and the tile behind, until the tile two on is not open; it goes one
+  // tile on, throws its blobs, bursts and goes (OBS: 7 tiles to the north-east
+  // and the north walls, 11 to the east one, n0 80 to 87 and n7 80 to 87).
   throwBall(boss, player, context) {
     const bossMiddle = this.turn.middle;
     const ox = player.position[0] - bossMiddle[0], oy = player.position[1] - bossMiddle[1];
@@ -780,7 +804,7 @@ class AraxxorEncounter {
     const landing = [bossMiddle[0] + direction[0] * ballLandDistance, bossMiddle[1] + direction[1] * ballLandDistance];
     faceActorToward(boss, { position: [boss.position[0] + direction[0], boss.position[1] + direction[1]], size: bossSize });
     this.dropTarget(boss, context, ballTargetTicks);
-    this.later(ballLandTicks, (ctx, hits) => {
+    this.later(ballLandTicks, (ctx) => {
       if (this.ball) return; // one at a time (inferred)
       const id = ballActorId(++this.balls);
       const position = [landing[0] - 1, landing[1] - 1];
@@ -792,18 +816,19 @@ class AraxxorEncounter {
         combat: { attackSpeed: 1, attackRange: 0, attackStyle: "typeless", nextActionTick: Infinity, targetId: null, lastAttackTick: null,
           animations: { idle: seqs.ballRoll, walk: seqs.ballRoll, run: seqs.ballRoll, attack: null, death: null } },
       });
-      this.ball = { id, middle: [...landing], direction, rolled: 0, hit: false, step: null, burstTick: null, landedTick: ctx.tick };
+      this.ball = { id, middle: [...landing], direction, hit: false, step: null, burstTick: null, landedTick: ctx.tick };
       this.animate(ctx, "roll", id);
-      this.ballHit(ctx, hits);
     });
   }
+  // WIKI: the ball's 3 x 3 hurts as it rolls too (inferred: once a ball).
   ballHit(context, hits) {
     const ball = this.ball;
-    if (ball.hit || !context.world.getPlayer()?.alive || chebyshev(ball.middle, context.playerPos) > 1) return;
+    if (ball.hit || (ball.burstTick !== null && context.tick >= ball.burstTick)) return;
+    if (this.outcome.phase !== "active" || !context.world.getPlayer()?.alive || chebyshev(ball.middle, context.playerPos) > 1) return;
     ball.hit = true;
     hits.push({ source: "Araxxor's acid ball", attackType: "typeless", baseDamage: [...ballDamage], playerPosition: [...context.playerPos], hitsplatType: "venom", applyPoison: venom });
   }
-  stepBall(context, hits) {
+  stepBall(context) {
     const ball = this.ball;
     if (!ball) return;
     ball.step = null;
@@ -820,27 +845,20 @@ class AraxxorEncounter {
     const [dx, dy] = ball.direction;
     this.placePool([mx, my]);
     this.placePool([mx - dx, my - dy]);
-    // 2 tiles, or what is left of its roll; it stops short of the wall (inferred: before a middle off the edge of the floor).
-    let steps = 0;
-    while (steps < Math.min(2, ballRollTiles - ball.rolled) && this.isAcidTile([mx + dx * (steps + 1), my + dy * (steps + 1)])) steps++;
-    if (steps > 0) {
-      ball.step = Array.from({ length: steps }, (_, n) => [mx + dx * (n + 1) - 1, my + dy * (n + 1) - 1]);
-      ball.middle = [mx + dx * steps, my + dy * steps];
-      ball.rolled += steps;
-      this.animate(context, "roll", ball.id);
-    }
+    const steps = this.isOpen([mx + 2 * dx, my + 2 * dy]) ? 2 : 1;
+    ball.step = Array.from({ length: steps }, (_, n) => [mx + dx * (n + 1) - 1, my + dy * (n + 1) - 1]);
+    ball.middle = [mx + dx * steps, my + dy * steps];
+    this.animate(context, "roll", ball.id);
     if (steps < 2) {
       // OBS: blobs from where it set off this tick, onto tiles without acid.
       const tiles = new Map();
-      for (let n = 0; n < burstBlobs; n++) {
+      for (let n = 0; n < burstTries && tiles.size < burstBlobs; n++) {
         const tile = [mx + Math.floor(this.random() * (2 * burstSpread + 1)) - burstSpread, my + Math.floor(this.random() * (2 * burstSpread + 1)) - burstSpread];
         if (this.isAcidTile(tile) && !this.pools.has(key(tile))) tiles.set(key(tile), tile);
       }
       this.throwBlobs(context, [mx, my], [...tiles.values()], projectiles.burst, { ballBurst: true });
       ball.burstTick = context.tick + 1;
     }
-    // WIKI: the ball's 3 x 3 hurts as it rolls too (inferred: once a ball).
-    this.ballHit(context, hits);
   }
 
   // --- the enrage and the cleave ---------------------------------------
@@ -1060,8 +1078,9 @@ class AraxxorEncounter {
 
   // --- the acid --------------------------------------------------------
   placePool(tile) {
-    if (!this.isAcidTile(tile) || this.pools.has(key(tile))) return;
+    if (!this.isAcidTile(tile) || this.pools.has(key(tile))) return false;
     this.pools.set(key(tile), [...tile]);
+    return true;
   }
   poolHit(tile) {
     return { source: "Acid pool", attackType: "typeless", baseDamage: [...poolDamage], playerPosition: [...tile], hitsplatType: "venom", applyPoison: venom };
