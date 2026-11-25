@@ -55,8 +55,9 @@ try {
   assert.deepEqual(eggs, { count: 9, onEgg: false });
 
   // The first special (the seventh attack), its acid drawn as the game's object where it lies.
+  // The player stays beside him: under him he does not attack until his random steps have taken him off.
   const acid = await page.evaluate(() => {
-    for (let tick = 0; tick < 80 && engine.getEncounterSnapshot().state.pools.length === 0; tick++) engine.advanceTick([53, 29]);
+    for (let tick = 0; tick < 80 && engine.getEncounterSnapshot().state.pools.length === 0; tick++) engine.advanceTick(engine.player().position);
     const encounter = engine.getEncounterSnapshot();
     const drawn = scene.sceneObjectController.update({ state: { encounter }, interpolatedTick: engine.worldState.tick });
     const { pools } = encounter.state;
