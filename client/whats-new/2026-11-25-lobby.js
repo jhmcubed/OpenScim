@@ -5,5 +5,5 @@ export default {
   category: "Interface",
   title: "A new lobby",
   impact:
-    "A moonlit hall where every fight is in view as you arrive: bosses on the left, wave fights on the right, and the pyramid of Necropolis, the Ancient Vault and a combat ring at its head. Lanes on the floor lead to each, and every one is named.",
+    "A platform of dark glass under Zanaris and the aurora. The raids stand together ahead: the Chambers of Xeric, the pyramid of Necropolis and the Theatre of Blood, with the Ancient Vault and the sandbox's ring beside them. Bosses stand on pedestals to either side. Click a building to see its bosses.",
 };
