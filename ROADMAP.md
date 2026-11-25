@@ -513,7 +513,7 @@ timing open, record it from the game itself.
       RSPSApp's reading of rsprox recordings. Open, as its `encounter.js`
       says: what the Ruptura's blast does to the player, the cleave through
       Protect from Melee, how often each egg order comes up, where the spray
-      lands, his enraged body, Aranea boots, sounds.
+      lands, his enraged body, Aranea boots.
 - [ ] Nex (https://oldschool.runescape.wiki/w/Nex/Strategies).
 - [ ] Tumeken's Warden, Tombs of Amascut
       (https://oldschool.runescape.wiki/w/Tumeken%27s_Warden), next to Zebak

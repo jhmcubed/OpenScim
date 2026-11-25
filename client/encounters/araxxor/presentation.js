@@ -3,6 +3,7 @@
 // the game cache's (encounter.js names each). The acid on the floor is the
 // object it is in the game, drawn from the fight's snapshot.
 import { buildScene } from "../shared/buildScene.js";
+import { araxxorAudio } from "./audio.js";
 import { araxxorKind, araxxorMapSquare, araxxorMapSquareOffsets, bossStart, ids, seqs, spots } from "./encounter.js";
 
 const identity = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
@@ -56,6 +57,7 @@ export const araxxorPresentation = (BaseScene) => ({
   kind: araxxorKind,
   renderConfig,
   sceneBuilder: (context) => buildScene(BaseScene, renderConfig, context),
+  audio: araxxorAudio,
   // The player comes in at the tunnel, east of him, and looks west (inferred: to be set in the browser).
   defaultCamera: { yaw: 90, pitch: -70, zoom: 330 },
   presentation: {

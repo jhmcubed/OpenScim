@@ -519,6 +519,7 @@ class AraxxorEncounter {
   completeNpcBand(context) {
     const hits = this.pendingPlayerHits;
     this.pendingPlayerHits = [];
+    if (hits.length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [], mirrorbackRecoil: true });
     return hits;
   }
   // --- each tick, after the player -------------------------------------
@@ -639,12 +640,12 @@ class AraxxorEncounter {
       ctx.tickEvents.emit({ type: "game_message", kind: "game",
         segments: [{ text: "Araxxor covers you in venom. It slowly drips off you and covers the floor.", color: "#ff3045" }] });
       this.drip = { from: ctx.tick + 1, until: ctx.tick + dripPools, gfxUntil: ctx.tick + dripTicks - 1 };
-      this.dripGraphic(ctx);
+      this.dripGraphic(ctx, { dripStarts: true });
     });
   }
-  dripGraphic(context) {
+  dripGraphic(context, cue = {}) {
     const player = context.world.getPlayer();
-    if (player) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.drip, target: buildActorVisualTarget(player), height: 0, delayCycles: 0 }] });
+    if (player) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.drip, target: buildActorVisualTarget(player), height: 0, delayCycles: 0 }], ...cue });
   }
   stepDrip(context) {
     const drip = this.drip;
@@ -681,7 +682,7 @@ class AraxxorEncounter {
   // the cycle it lands, 100 to 110 after the throw in k2 41, 83 and 125), then
   // the pool, which hurts a player on that tile as it lands (WIKI: "the
   // splatters will damage before the pool forms").
-  throwBlobs(context, from, tiles, shape) {
+  throwBlobs(context, from, tiles, shape, cue = {}) {
     const flights = [], splats = [];
     for (const tile of tiles) {
       const end = shape.base + 10 * chebyshev(from, tile);
@@ -695,7 +696,7 @@ class AraxxorEncounter {
         this.placePool(tile);
       });
     }
-    if (flights.length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: flights, graphics: splats });
+    if (flights.length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: flights, graphics: splats, ...cue });
   }
   // The acid ball: he turns to the nearest of eight directions (OBS: facing
   // 1280 at k2 36 and 78, 1024 at 120), and 2 ticks after the throw it is at
@@ -767,7 +768,7 @@ class AraxxorEncounter {
         const tile = [mx + Math.floor(this.random() * (2 * burstSpread + 1)) - burstSpread, my + Math.floor(this.random() * (2 * burstSpread + 1)) - burstSpread];
         if (this.isAcidTile(tile) && !this.pools.has(key(tile))) tiles.set(key(tile), tile);
       }
-      this.throwBlobs(context, [mx, my], [...tiles.values()], projectiles.burst);
+      this.throwBlobs(context, [mx, my], [...tiles.values()], projectiles.burst, { ballBurst: true });
       ball.burstTick = context.tick + 1;
     }
     // WIKI: the ball's 3 x 3 hurts as it rolls too (inferred: once a ball).
