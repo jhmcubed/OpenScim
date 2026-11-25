@@ -4,6 +4,7 @@ import { attackRangesDefaults, readAttackRangesSettings, isAttackDragProtected }
 import { projectileOverrideDefaults, readProjectileOverrideSettings } from "/plugins/projectileOverride.js";
 import { getDefenceTrackerInfoboxes } from "/plugins/defenceTracker.js";
 import { pickLobbyObject } from "/lobby/gateways.js";
+import { replayMarkerStore, findUndoFrameIndex, addMarker, isOnTimeline, pickMarker, pickAutoMarker, nameNewAutoMarkers, describeMarker, isRollbackHeld, holdAfterRollback, releaseRollback, showReplayMessage } from "/replay/markers.js";
 import {
   pako,
   requireJsxRuntime,
@@ -11704,7 +11705,8 @@ function g$e(ez) {
     case "camera":
       return "Camera";
     case "plugins":
-      return "Plugins";
+      // The replay's keys are kept with the plugins' (they may have modifiers) and are none.
+      return ez.group === "Replay" ? "Panel" : "Plugins";
     case "ui":
       return null;
   }
@@ -16503,6 +16505,36 @@ var ReplayRecorder = class {
     this.p$();
     this.captureBudget.r$(this.h$(), eC);
   }
+  // For a marker: the recording as it stands, which a later run or an undo does
+  // not touch (its entries are replaced, never written to), and back to it.
+  // Its frames are those up to `frameIndex`; d$ leaves out the rest.
+  copyRun(frameIndex) {
+    return {
+      frames: this.frames.slice(0, frameIndex + 1),
+      graphicsThrough: this.graphicsThrough.slice(0, frameIndex + 1),
+      cursorSamples: [...this.cursorSamples],
+      cursorClicks: [...this.cursorClicks],
+      presentationSamples: [...this.presentationSamples],
+      viewportSamples: [...this.viewportSamples],
+      modifierSamples: [...this.modifierSamples],
+      menuEvents: [...this.menuEvents],
+      cumulativeDamageHistory: this.cumulativeDamageHistory.slice(
+        0,
+        this.frames[frameIndex].damageHistoryLength,
+      ),
+      engineRunConfig: this.engineRunConfig,
+      clip: this.clip,
+      overlays: this.overlays,
+      capture: this.getCapture(),
+    };
+  }
+  restoreRun({ capture: capture, ...run }) {
+    for (const [key, value] of Object.entries(run)) {
+      this[key] = Array.isArray(value) ? [...value] : value;
+    }
+    this.s$();
+    this.captureBudget.reset(this.h$(), capture);
+  }
   recordAction(ez) {
     this.pendingActions.push(ez);
   }
@@ -18051,6 +18083,20 @@ var TAKE_OVER_UNAVAILABLE_TEXT = {
 var bIe = Object.freeze([]);
 var _Ie = (ez) =>
   ez.isAlive && ez.encounterOutcome.phase !== "victory" && !ez.introActive;
+// For a marker: what the encounter would mark, and the tick of a frame with the
+// recording it belongs to.
+const readAutoMarkers = (engine) =>
+  engine.encounter?.getAutoMarkers?.({ world: engine.worldState }) ?? [];
+function markFrame(recorder, frameIndex, label) {
+  const run = recorder.copyRun(frameIndex);
+  return {
+    run: run,
+    selectedFrameIndex: frameIndex,
+    restoreFrameIndex: frameIndex,
+    startTick: run.frames[frameIndex].state.currentTick,
+    label: label,
+  };
+}
 function yIe(ez, eA) {
   const eC = ez[eA];
   if (eA <= 0 || !eC) {
@@ -18360,6 +18406,17 @@ function useReplay({
   const [fg, fh] = (0, pn.useState)(null);
   const fi = (0, pn.useRef)(eA);
   fi.current = eA;
+  // The markers (markFrame), the one added or gone to last, and
+  // the ids of the encounter's own as of the tick before.
+  const [markers, setMarkers] = (0, pn.useState)([]);
+  const markersRef = (0, pn.useRef)(markers);
+  const currentMarkerRef = (0, pn.useRef)(null);
+  const autoMarkerIdsRef = (0, pn.useRef)(new Set());
+  const changeMarkers = (0, pn.useCallback)((changed) => {
+    markersRef.current = changed;
+    setMarkers(changed);
+  }, []);
+  const pendingUndosRef = (0, pn.useRef)(0);
   const fj = (0, pn.useCallback)(() => {
     f4.current += 1;
     f7.current = null;
@@ -18518,6 +18575,8 @@ function useReplay({
       const hx = g0.current?.();
       const hy = performance.now();
       f2.current.startRun(hr, g2.current?.() ?? undefined);
+      autoMarkerIdsRef.current = new Set();
+      releaseRollback();
       cW();
       gb.current.W$(undefined);
       f3.current = false;
@@ -18597,7 +18656,25 @@ function useReplay({
             liveTick: hy.liveTick,
           }),
     });
-  }, []);
+    const autoMarkers = readAutoMarkers(engineRef.current);
+    const autoMarkerName = nameNewAutoMarkers(
+      autoMarkerIdsRef.current,
+      autoMarkers,
+    );
+    if (autoMarkerName !== null && _Ie(hu)) {
+      changeMarkers(
+        addMarker(
+          markersRef.current,
+          markFrame(
+            f2.current,
+            f2.current.getFrameCount() - 1,
+            autoMarkerName,
+          ),
+        ),
+      );
+    }
+    autoMarkerIdsRef.current = new Set(autoMarkers.map(({ id }) => id));
+  }, [engineRef, changeMarkers]);
   const gr = (0, pn.useCallback)((hr, hs) => {
     f2.current.anchorLiveClock(hr, hs);
   }, []);
@@ -18963,6 +19040,7 @@ function useReplay({
     }
     fz(false);
     f0.YfOoC(onEnterReplay);
+    releaseRollback();
     g3.current = true;
     fr(true);
     const hr = f2.current.getFrameCount() - 1;
@@ -19187,27 +19265,46 @@ function useReplay({
     fM(null);
   }, [gM, fM]);
   const gR = (0, pn.useCallback)(
+    // Undo and the markers restore without the start-of-fight countdown: hr.quick, and
+    // for a tick of another recording than the present one hr.run (copyRun).
     (hr, hs) => {
       if (gb.current.getRenderFailure()) {
         return false;
       }
       const current26 = f2.current;
-      const hv = current26.ME();
+      const hv = hr.run ? hr.run.engineRunConfig : current26.ME();
       if (!hv) {
         return false;
       }
-      if ((current26.D$()?.sourceStartFrame ?? 0) > 0) {
+      if (((hr.run ? hr.run.clip : current26.D$())?.sourceStartFrame ?? 0) > 0) {
         return false;
       }
       const restoreFrameIndex2 = hr.restoreFrameIndex;
       const { selectedFrameIndex: selectedFrameIndex } = hr;
-      const hy = current26.I$(restoreFrameIndex2);
+      const savedFrame = hr.run?.frames[restoreFrameIndex2];
+      const hy = hr.run
+        ? savedFrame && {
+            ...savedFrame,
+            state: {
+              ...savedFrame.state,
+              damageHistory: hr.run.cumulativeDamageHistory.slice(
+                0,
+                savedFrame.damageHistoryLength,
+              ),
+            },
+          }
+        : current26.I$(restoreFrameIndex2);
       if (!hy || !_Ie(hy.state)) {
         return false;
       }
       let hz;
       try {
-        hz = rebuildEngineAtReplayFrame(hv, current26.L$(), restoreFrameIndex2, objTypeLoader);
+        hz = rebuildEngineAtReplayFrame(
+          hv,
+          hr.run ? hr.run.frames : current26.L$(),
+          restoreFrameIndex2,
+          objTypeLoader,
+        );
       } catch (hE) {
         const hF =
           hE instanceof Error
@@ -19271,7 +19368,28 @@ function useReplay({
       hz.reapplyArenaConfig();
       hz.setMechanicsConfig(g6.current);
       const hD = performance.now();
+      if (hr.run) {
+        // The practice start belongs to the recording that is left.
+        const practiceFrame = f7.current?.restoreFrameIndex;
+        if (
+          practiceFrame !== undefined &&
+          current26.L$()[practiceFrame]?.state !==
+            hr.run.frames[practiceFrame]?.state
+        ) {
+          f7.current = null;
+          f6(null);
+        }
+        current26.restoreRun(hr.run);
+      }
       current26.d$(restoreFrameIndex2, hD);
+      autoMarkerIdsRef.current = new Set(
+        readAutoMarkers(hz).map(({ id }) => id),
+      );
+      if (hr.quick) {
+        holdAfterRollback(hz, !hr.run);
+      } else {
+        releaseRollback();
+      }
       f3.current = false;
       engineRef.current = hz;
       f9({
@@ -19301,7 +19419,7 @@ function useReplay({
       fO(null);
       gb.current.W$(undefined);
       fz(false);
-      onTakeOver(hz, state7, hy.uiState, hy.input);
+      onTakeOver(hz, state7, hy.uiState, hy.input, hr.quick === true);
       gl(hD);
       return true;
     },
@@ -19359,7 +19477,7 @@ function useReplay({
         return Promise.resolve();
       }
       const restoreFrameIndex3 = hr.restoreFrameIndex;
-      const hx = f2.current.O$()[restoreFrameIndex3];
+      const hx = (hr.run ? hr.run.frames : f2.current.O$())[restoreFrameIndex3];
       if (!hx || !_Ie(hx.state)) {
         return Promise.resolve();
       }
@@ -19375,7 +19493,7 @@ function useReplay({
       if (g3.current) {
         g8.current?.();
       }
-      if (g3.current) {
+      if (g3.current && !hr.run) {
         const hA = f2.current.I$(restoreFrameIndex3);
         if (hA) {
           hz = {
@@ -19418,6 +19536,7 @@ function useReplay({
         };
         let hE;
         let hF = false;
+        let restored = false;
         const hG = () => {
           if (!hF) {
             hF = true;
@@ -19435,7 +19554,8 @@ function useReplay({
                 ff(hK);
                 return;
               }
-              if (!hD.hXckm(gR, hr, hs)) {
+              restored = hD.hXckm(gR, hr, hs);
+              if (!restored) {
                 ff(null);
                 fh(
                   "This tick could not be restored exactly. The recording was left unchanged.",
@@ -19451,7 +19571,7 @@ function useReplay({
               }
               fc.current = false;
               hD.Xpvoi(fb, false);
-              hB();
+              hB(restored);
             }
           }
         };
@@ -19542,6 +19662,157 @@ function useReplay({
         return Promise.resolve();
       } else {
         return gU(yIe(f2.current.O$(), g5.current), true);
+      }
+    },
+  };
+  // Undo and the markers (client/replay/markers.js): the actions of their keys.
+  const restoreLive = (target, restoredText) => {
+    if (fc.current) {
+      return;
+    }
+    pendingUndosRef.current = 0;
+    const unavailable = gT();
+    if (unavailable) {
+      showReplayMessage(unavailable);
+      return;
+    }
+    const start = f4.current;
+    gU({ ...target, quick: true }).then((restored) => {
+      if (restored) {
+        showReplayMessage(restoredText);
+        // Undo pressed again meanwhile: further back.
+        const presses = pendingUndosRef.current;
+        if (presses > 0) {
+          undoTicks(presses);
+        }
+      } else if (start === f4.current) {
+        showReplayMessage("That tick could not be restored exactly");
+      }
+    });
+  };
+  // The markers of this fight; those of another are kept for when it is entered again.
+  const fightMarkers = () =>
+    markersRef.current.filter(
+      (marker) =>
+        marker.run.engineRunConfig.encounter.kind ===
+        engineRef.current.getEncounterKind(),
+    );
+  const goToMarker = (marker, missingText) => {
+    if (!marker) {
+      showReplayMessage(missingText);
+    } else if (!fc.current) {
+      restoreLive(marker, "Back to " + describeMarker(marker));
+    }
+  };
+  const stepMarker = (direction) => {
+    const missingText =
+      direction > 0 ? "No marker after this tick" : "No marker before this tick";
+    const frames = f2.current.O$();
+    const candidates = g3.current
+      ? fightMarkers().filter((marker) => isOnTimeline(marker, frames))
+      : fightMarkers();
+    const frame = frames[g3.current ? g5.current : frames.length - 1];
+    if (!frame) {
+      return;
+    }
+    const marker = pickMarker(
+      candidates,
+      direction,
+      frame.state.currentTick,
+      g3.current ? null : currentMarkerRef.current,
+    );
+    if (marker && g3.current) {
+      gC(marker.restoreFrameIndex);
+      showReplayMessage("At " + describeMarker(marker));
+      return;
+    }
+    if (marker && !fc.current) {
+      currentMarkerRef.current = marker;
+    }
+    goToMarker(marker, missingText);
+  };
+  const addMarkerHere = () => {
+    const unavailable = fc.current ? "Restoring tick…" : gT();
+    const frames = f2.current.O$();
+    const index = g3.current ? g5.current : frames.length - 1;
+    const frame = frames[index];
+    if (unavailable) {
+      showReplayMessage(unavailable);
+      return;
+    }
+    if (index < 1 || !frame || !_Ie(frame.state)) {
+      showReplayMessage("This tick cannot be marked");
+      return;
+    }
+    const here = g3.current
+      ? markersRef.current.find(
+          (marker) =>
+            marker.label === null &&
+            marker.restoreFrameIndex === index &&
+            isOnTimeline(marker, frames),
+        )
+      : undefined;
+    if (here) {
+      changeMarkers(markersRef.current.filter((marker) => marker !== here));
+      if (currentMarkerRef.current === here) {
+        currentMarkerRef.current =
+          fightMarkers()
+            .filter((marker) => marker.label === null)
+            .at(-1) ?? null;
+      }
+      showReplayMessage("Marker taken away from tick " + here.startTick);
+      return;
+    }
+    const marker = markFrame(f2.current, index, null);
+    changeMarkers(addMarker(markersRef.current, marker));
+    currentMarkerRef.current = marker;
+    showReplayMessage("Marked tick " + marker.startTick);
+  };
+  const undoTicks = (presses) => {
+    const frames = f2.current.O$();
+    const index = findUndoFrameIndex(
+      frames,
+      presses * replayMarkerStore.getState().settings.undoTicks,
+      _Ie,
+    );
+    if (index === null) {
+      showReplayMessage("Nothing to undo yet");
+      return;
+    }
+    const startTick = frames[index].state.currentTick;
+    restoreLive(
+      {
+        selectedFrameIndex: index,
+        restoreFrameIndex: index,
+        startTick: startTick,
+      },
+      "Undone to tick " + startTick,
+    );
+  };
+  const markerActions = {
+    isReplaying: fq,
+    add: addMarkerHere,
+    load: () => {
+      const marker = currentMarkerRef.current;
+      goToMarker(
+        fightMarkers().includes(marker) ? marker : null,
+        "No marker yet",
+      );
+    },
+    previous: () => stepMarker(-1),
+    next: () => stepMarker(1),
+    loadAuto: () =>
+      goToMarker(
+        pickAutoMarker(fightMarkers(), f2.current.O$()),
+        "No auto marker yet",
+      ),
+    undo: () => {
+      if (fc.current) {
+        pendingUndosRef.current += 1;
+      } else if (g3.current) {
+        showReplayMessage("Undo works in the fight, not in its replay");
+      } else {
+        undoTicks(1);
       }
     },
   };
@@ -19665,8 +19936,23 @@ function useReplay({
         : null,
     [fq, hn, hl, frameCount],
   );
+  // The markers of the recording that is open, for the timeline.
+  const hpMarkers = (0, pn.useMemo)(
+    () =>
+      fq
+        ? markers
+            .filter((marker) => isOnTimeline(marker, h2))
+            .map((marker) => ({
+              frameIndex: marker.restoreFrameIndex,
+              text: describeMarker(marker),
+              own: marker.label === null,
+            }))
+        : bIe,
+    [fq, markers, h2, frameCount],
+  );
   const hp = (0, pn.useMemo)(
     () => ({
+      markers: hpMarkers,
       capture: fl,
       isReplaying: fq,
       replayFrameIndex: fs,
@@ -19706,6 +19992,7 @@ function useReplay({
     }),
     [
       fq,
+      hpMarkers,
       fl,
       fs,
       frameCount,
@@ -19744,6 +20031,7 @@ function useReplay({
   return {
     restoredPresentation: f8,
     replayPractice: gX,
+    markerActions: markerActions,
     replayMode: fq,
     capture: fl,
     getShareEligibility: h0,
@@ -19823,7 +20111,8 @@ var NIe = {};
 var PIe = () => {};
 function $Ie(ez) {
   // isPaused: an encounter may hold the clock (the sandbox, before its start and while paused).
-  return ez.canAdvanceTick() && !ez.isTutorialPaused() && ez.encounter?.isPaused?.() !== true;
+  // Nor does it run where a rollback waits for the player's next action (client/replay/markers.js).
+  return ez.canAdvanceTick() && !ez.isTutorialPaused() && ez.encounter?.isPaused?.() !== true && !isRollbackHeld(ez);
 }
 function RIe(ez, eA) {
   return ez !== null && eA[ez] !== false;
@@ -20387,6 +20676,7 @@ function useSimulationWiring({
       } else {
         gd.current.push(hG, aZ() ? () => e6(hE) : hE);
       }
+      releaseRollback();
     },
     [gr],
   );
@@ -20654,7 +20944,7 @@ function useSimulationWiring({
     speedMultiplier: speedMultiplier,
     mechanicsConfig: activeMechanicsConfig,
     objTypeLoader: objTypeLoader,
-    onTakeOver: (hE, hF, hG, hH) => {
+    onTakeOver: (hE, hF, hG, hH, withoutCountdown) => {
       gb.current = true;
       gd.current.clear();
       gi.current = null;
@@ -20672,7 +20962,11 @@ function useSimulationWiring({
       h4();
       if (gk.current) {
         gZ("restart");
-        gW("restored");
+        if (withoutCountdown) {
+          gX();
+        } else {
+          gW("restored");
+        }
       }
       setPlayerConfig((hK) => {
         const playerEquipment2 = hF.playerEquipment;
@@ -45933,6 +46227,50 @@ var ReplayWaveMarks = (0, pn.memo)(function ({
     });
   }
 });
+// The markers over the timeline (client/replay/markers.js):
+// a click moves the playhead to one. The player's are yellow, the encounter's blue.
+var ReplayMarkers = (0, pn.memo)(function ({
+  markers: markers,
+  totalFrames: totalFrames,
+  disabled: disabled,
+  onPick: onPick,
+}) {
+  if (totalFrames < 2) {
+    return null;
+  }
+  return markers.map(({ frameIndex, text, own }) =>
+    (0, wn.jsx)(
+      "button",
+      {
+        type: "button",
+        className: "replay-marker",
+        title: "Marker: " + text,
+        "aria-label": "Go to marker: " + text,
+        disabled: disabled,
+        tabIndex: -1,
+        onClick: () => onPick(frameIndex),
+        style: {
+          position: "absolute",
+          zIndex: 2,
+          left:
+            "calc(var(--seek-thumb) / 2 + (100% - var(--seek-thumb)) * " +
+            frameIndex / (totalFrames - 1) +
+            ")",
+          top: "calc(50% - var(--seek-rail) / 2 - 11px)",
+          width: 10,
+          height: 10,
+          marginLeft: -5,
+          padding: 0,
+          border: "none",
+          cursor: "pointer",
+          background: own ? "#ffcf4a" : "#5fb8ff",
+          clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+        },
+      },
+      (own ? "own" : "auto") + frameIndex,
+    ),
+  );
+});
 var WaveGrid = (0, pn.memo)(function ({
   chapters: chapters,
   currentIndex: currentIndex,
@@ -46293,6 +46631,7 @@ var ReplayControls = ({
   frameTimeline: frameTimeline,
   lateTicks: eH = eze,
   chapters: eI = null,
+  markers: markers = eze,
   onExitReplay: onExitReplay,
   onStepBack: onStepBack,
   onStepForward: onStepForward,
@@ -47407,6 +47746,12 @@ var ReplayControls = ({
               landmarks: fP,
               totalFrames: totalFrames,
             }),
+          (0, wn.jsx)(ReplayMarkers, {
+            markers: markers,
+            totalFrames: totalFrames,
+            disabled: fz,
+            onPick: onSeek,
+          }),
           null !== gF &&
             totalFrames > 0 &&
             (0, wn.jsx)("span", {

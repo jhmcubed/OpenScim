@@ -10,6 +10,8 @@ import { projectileOverrideOptions, projectileOverrideDefaults, updateProjectile
 import { blindfoldStore, listenForBlindfold } from "/plugins/blindfold.js";
 import { skyboxStore } from "/plugins/skybox.js";
 import { defenceTrackerStore, setDefenceTrackerEngine } from "/plugins/defenceTracker.js";
+// The replay's undo and markers: their options (Settings, Simulation) and keys.
+import { replayMarkerStore, listenForReplayKeys } from "/replay/markers.js";
 if (typeof window !== "undefined") listenForBlindfold(window);
 import { showPluginsPausedHint } from "/plugins/pluginsPausedHint.js";
 import { thrallSpells, THRALL_END_SOUND_ID } from "/engine/thralls.js";
@@ -18652,7 +18654,9 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
     return null;
   }
   const h6 = (function () {
-    const { gamePanel: gamePanel, camera: camera, ui: h9 } = bw();
+    const keybinds = bw();
+    const { gamePanel: gamePanel, camera: camera, ui: h9 } = keybinds;
+    const replayKeys = bn(keybinds);
     const ha = Epe(h9.closeOverlay);
     return [
       {
@@ -18744,6 +18748,35 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
           {
             keys: ha,
             description: "Exit replay",
+          },
+        ],
+      },
+      {
+        title: "Undo and Markers",
+        shortcuts: [
+          {
+            keys: Epe(replayKeys.replayUndo),
+            description: "Undo a few ticks",
+          },
+          {
+            keys: Epe(replayKeys.replayAddMarker),
+            description: "Mark this tick",
+          },
+          {
+            keys: Epe(replayKeys.replayLoadMarker),
+            description: "Load the last marker used",
+          },
+          {
+            keys: Epe(replayKeys.replayPreviousMarker),
+            description: "Go to the previous marker",
+          },
+          {
+            keys: Epe(replayKeys.replayNextMarker),
+            description: "Go to the next marker",
+          },
+          {
+            keys: Epe(replayKeys.replayLoadAutoMarker),
+            description: "Load the last auto marker",
           },
         ],
       },
@@ -20553,6 +20586,8 @@ function Dme(h2) {
 function Ome(h2) {
   return Rme(h2) || isZoomKey(h2) || Lme(h2) || Eme(h2) || Dme(h2);
 }
+// The heading of the options of client/replay/markers.js in Settings, Simulation.
+const replayMarkersTitle = "Undo and Markers";
 function Fme(h2, h3, h4) {
   return {
     id: eR(...h3),
@@ -20958,6 +20993,13 @@ var Yme = [
         "timer length",
       ],
     }),
+    Fme("section", ["Simulation", replayMarkersTitle], {
+      description: "Keys that undo a few ticks, and mark ticks of the fight and go back to them.",
+      keywords: ["quick save", "quicksave", "quick load", "quickload", "snapshot", "marker", "replay", "timeline", "bookmark", "undo", "rewind", "checkpoint", "save state", "auto marker"],
+    }),
+    ...replayMarkerStore.options.map((option) =>
+      Fme("setting", ["Simulation", replayMarkersTitle, option.label], { description: option.info, keywords: [] }),
+    ),
     Fme("setting", ["Simulation", "Auto-Advance"], {
       description: "Runs game ticks on their own instead of one per click.",
       keywords: [
@@ -24498,10 +24540,36 @@ function PluginStoreEntry({ label: label, store: store, expanded: expanded, onTo
     }),
   });
 }
+// The options of the replay's undo and markers, in Settings, Simulation.
+function ReplayMarkerSettings() {
+  const { settings } = (0, React.useSyncExternalStore)(replayMarkerStore.subscribe, replayMarkerStore.getState);
+  return (0, jsxRuntime.jsxs)("div", {
+    className: "control-group",
+    "data-search-id": eR("Simulation", replayMarkersTitle),
+    children: [
+      (0, jsxRuntime.jsx)("div", {
+        className: "group-title",
+        children: replayMarkersTitle,
+      }),
+      (0, jsxRuntime.jsx)(AttackRangesSettings, {
+        searchIdOf: (label) => eR("Simulation", replayMarkersTitle, label),
+        options: settings,
+        onChange: (changed) => replayMarkerStore.setSettings(changed),
+        defaults: replayMarkerStore.defaults,
+        optionList: replayMarkerStore.options,
+        sections: [null],
+      }),
+      (0, jsxRuntime.jsx)("div", {
+        className: "settings-hint",
+        children: "The keys are in the game panel's wrench tab, under Keybindings.",
+      }),
+    ],
+  });
+}
 // The options of a plugin that lists them as data: Attack Ranges by default,
 // Projectile Override with its own list (its options have no section), and
 // the plugins of client/plugins/pluginStore.js with theirs.
-function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange: onChange, optionList = attackRangesOptions, defaults = attackRangesDefaults, sections = ["Options", "Styles"] }) {
+function AttackRangesSettings({ pluginKey: pluginKey, searchIdOf = (label) => gs(pluginKey, label), options: options, onChange: onChange, optionList = attackRangesOptions, defaults = attackRangesDefaults, sections = ["Options", "Styles"] }) {
   const set = (key, value) => onChange({ ...options, [key]: value });
   const row = (option, label, control) =>
     (0, jsxRuntime.jsx)(
@@ -24509,7 +24577,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
       {
         isModified: options[option.key] !== defaults[option.key],
         onReset: () => set(option.key, defaults[option.key]),
-        searchId: gs(pluginKey, option.label),
+        searchId: searchIdOf(option.label),
         children: (0, jsxRuntime.jsxs)("div", {
           className: "plugin-setting-row",
           title: option.info,
@@ -24532,7 +24600,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
         {
           isModified: value !== defaults[option.key],
           onReset: () => set(option.key, defaults[option.key]),
-          searchId: gs(pluginKey, option.label),
+          searchId: searchIdOf(option.label),
           children: (0, jsxRuntime.jsx)("div", {
             title: option.info,
             children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
@@ -30246,6 +30314,7 @@ var SimulationControls = ({
           }),
         ],
       }),
+      (0, jsxRuntime.jsx)(ReplayMarkerSettings, {}),
       (0, jsxRuntime.jsxs)("div", {
         className: "control-group control-group--no-border",
         children: [
@@ -50936,6 +51005,18 @@ function AppShell({ devHarness: devHarness } = {}) {
     showShortcutHints: showShortcutHints,
     updateDisabledShortcutHints: (sP) => hS("disabledShortcutHints", sP),
   });
+  const markerActionsRef = (0, React.useRef)(replay.markerActions);
+  markerActionsRef.current = replay.markerActions;
+  (0, React.useEffect)(
+    () =>
+      listenForReplayKeys(document, {
+        getKeybinds: () => bn(bw()),
+        matches: cv,
+        isBlocked: (event) => handleOverlayClose(event) || aO(),
+        getActions: () => markerActionsRef.current,
+      }),
+    [],
+  );
   const [rj, rk] = (0, React.useState)(null);
   const {
     handleTileClick: handleTileClick,

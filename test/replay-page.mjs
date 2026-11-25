@@ -1,8 +1,8 @@
 // Not a test: the application with a fight of the Fortis Colosseum running,
 // for the tests of the replay (test-replay.mjs, test-replay-after-rewind.mjs).
 // The page is given what those ask about: `engine`, the newest engine of the
-// fight; `recorder`, the replay's recorder (Grid.js, HAe) of the run on screen;
-// `replayHook`, what the hook of the replay returns (kIe); and `replayCode`,
+// fight; `recorder`, the replay's recorder (Grid.js, ReplayRecorder) of the run on screen;
+// `replayHook`, what the hook of the replay returns (useReplay); and `replayCode`,
 // the functions that compare a rebuilt state (dIe), and pack, unpack and read
 // a shared replay (application.js).
 import assert from "node:assert/strict";
@@ -19,7 +19,7 @@ const probes = [
 ];
 // What the chunks do not export, put on the window at their end.
 const exposed = {
-  "**/assets/Grid.js*": "\nObject.assign((window.replayCode ??= {}), { Recorder: HAe, compare: dIe });",
+  "**/assets/Grid.js*": "\nObject.assign((window.replayCode ??= {}), { Recorder: ReplayRecorder, compare: dIe });",
   "**/assets/application.js*": "\nObject.assign((window.replayCode ??= {}), { pack: Bye, unpack: g4, toData: fB });",
 };
 

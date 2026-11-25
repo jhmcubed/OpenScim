@@ -25,6 +25,7 @@ Names in `code font` are the names in the code today, short ones included.
 | `client/assets/rendering.js` | 63,990 | Misnamed: cache decoding and the renderer, the tables of the scenes (weapon animations, projectiles), the encounters' scenes and their presentations. See "rendering.js" below. |
 | `client/assets/Grid.js` | 55,965 | React components (`Grid`, `GamePanel`, `ReplayControls`, `TopChrome`…), the hook that wires the engine and the tick loop to the interface (`useSimulationWiring`), the replay hook and recorder (`useReplay`, `ReplayRecorder`) and the persisted settings (`usePersistedSettings`). |
 | `client/assets/application.js` | 54,723 | The React application (`AppShell`): routes (`useRouting`), settings, the Plugins panel (`PluginsPanelContent`), the encounter manager hook (`useEncounterManager`). |
+| `client/replay/` | 220 | What the replay adds to a running fight, `markers.js`: undo, the markers and the keys of both, without the DOM but for a line of text. The recorder and the player are in `assets/Grid.js` (`ReplayRecorder`, `useReplay`), which call it; the rebuild is `engine/replay.js`. A change to how a recording is kept, cut or restored has to keep the markers right: each holds its own copy of a recording (`copyRun`, `restoreRun`) and is restored as Take Over restores a tick. |
 | `client/encounters/shared/` | 1,169 | What the encounters share and the engine itself does not need: the NPC definition framework, NPC attack rolls, the default pursuit, the route search, the default scene builder. Six modules. See "Shared rules" below. |
 | `client/encounters/registry.js` | 212 | The encounter definitions (for each encounter its kind, the factory of its encounter object, its descriptor and its controls), found in the `encounter.js` of every directory beside it; the lookups over them, and `encounterRegistry`, which the engine asks for the encounter of a kind. Moved out of `rendering.js` and cleaned. See "The encounters" below. |
 | `client/encounters/presentations.js` | 57 | What draws an encounter, for the encounters written in modules: `presentationBuilders`, the functions found in the `presentation.js` of every encounter's directory, which `rendering.js` calls with its base scene class. See "Engine and encounter" below and `docs/ADDING-AN-ENCOUNTER.md`. |
@@ -305,6 +306,15 @@ If present:
 | `moveDisplacedPlayer(player, targetTile, place, step, applyHit)` | the encounter moves the player (Zebak's waves) |
 | `syncBossHp(hp, { world })`, `enterBossHpPhase(hp, context)` | the boss hitpoint controls |
 | `planPracticeRestart(command, mechanics, { playerPos })`, `planRestartStart(mechanics, { playerPos })` | restarts |
+
+The application asks one more, if present, after every tick:
+`getAutoMarkers({ world })` returns the moments of the fight worth going back
+to that it is in, as a list of `{ id, label }` ("wave 4 reinforcements"). The
+first tick an id is listed on becomes a marker of the replay
+(`client/replay/markers.js`) with its label; an id that can come again (a
+second shield) carries the tick it began on. It only reads: what it needs is
+already in the encounter's state or the world. The Colosseum, the Inferno, the
+Doom of Mokhaiotl, Sol Heredit, the Leviathan, Araxxor and Zebak have it.
 
 `getEngineRules()` returns an object the engine reads during combat. All
 members are optional: `onTickStart`, `playerInputLocked`,
