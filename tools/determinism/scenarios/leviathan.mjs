@@ -48,22 +48,35 @@ const poolside = [
 ];
 const distance = ([ax, ay], [bx, by]) => Math.max(Math.abs(ax - bx), Math.abs(ay - by));
 function runRoundPool(api) {
-  const at = api.player().position;
-  const nearest = poolside.reduce((best, tile, n) => (distance(tile, at) < distance(poolside[best], at) ? n : best), 0);
-  if (api.player().attackTarget !== null) attack(api, null);
-  api.moveTo(...poolside[(nearest + (distance(poolside[nearest], at) > 0 ? 0 : 2)) % poolside.length]);
-}
-// Two ticks on each of five tiles of the east side as the rocks come, then
-// behind what they leave, where the blast does not reach. By the ticks of the
-// special gone: a rock falls on where the player stood the tick before.
-function sitOutSmoke(api, gone) {
-  if (api.player().attackTarget !== null) attack(api, null);
+  const here = api.player().position;
   const { rubble } = state(api);
-  const isRock = (tile) => rubble.some((rock) => at(rock, tile));
-  if (gone < 12) return api.moveTo(41, 28 + Math.max(0, Math.floor((gone - 2) / 2)));
-  const [px, py] = api.player().position;
-  const hides = [[42, 29], [42, 30], [42, 31], [42, 32], [42, 33], [43, 33], [43, 34]].filter((tile) => !isRock(tile) && (gone < 15 ? true : isSheltered(tile, isRock)));
-  const hide = hides.filter((tile) => isSheltered(tile, isRock)).sort((a, b) => distance(a, [px, py]) - distance(b, [px, py]))[0] ?? hides[0];
+  // The nearest, of several the furthest on; then two on, or past the rocks there.
+  const nearest = poolside.reduce((best, tile, n) => (distance(tile, here) <= distance(poolside[best], here) ? n : best), 0);
+  let next = nearest + 2;
+  while (rubble.some((rock) => at(rock, poolside[next % poolside.length]))) next++;
+  if (api.player().attackTarget !== null) attack(api, null);
+  api.moveTo(...poolside[next % poolside.length]);
+}
+// Where a smoke is sat out, on each side: five tiles for its rocks, and those
+// behind them, at the arena's edge.
+const row = (n, tile) => Array.from({ length: n }, (_, k) => tile(k));
+const sides = [
+  { rocks: row(5, (k) => [41, 28 + k]), hides: [[42, 29], [42, 30], [42, 31], [42, 32], [42, 33], [43, 33], [43, 34]] },
+  { rocks: row(5, (k) => [25, 44 - k]), hides: [[24, 43], [24, 42], [24, 41], [24, 40], [24, 39], [23, 39], [23, 38]] },
+  { rocks: row(5, (k) => [36 + k, 45]), hides: [...row(6, (k) => [35 + k, 46]), ...row(3, (k) => [36 + k, 47])] },
+  { rocks: row(5, (k) => [28 + k, 27]), hides: row(5, (k) => [28 + k, 26]) },
+];
+// Two ticks on each of the five tiles of the side nearest as it starts (a rock
+// falls on where the player stood the tick before), then behind what they
+// leave, where the blast does not reach.
+function sitOutSmoke(api, smoke, gone) {
+  if (api.player().attackTarget !== null) attack(api, null);
+  const isRock = (tile) => state(api).rubble.some((rock) => at(rock, tile));
+  const here = api.player().position;
+  const reach = ({ rocks }) => distance(rocks[0], here);
+  smoke.side ??= sides.reduce((best, side) => (reach(side) < reach(best) ? side : best));
+  if (gone < 12) return api.moveTo(...smoke.side.rocks[Math.max(0, Math.floor((gone - 2) / 2))]);
+  const hide = smoke.side.hides.filter((tile) => !isRock(tile) && isSheltered(tile, isRock)).sort((a, b) => distance(a, here) - distance(b, here))[0];
   if (hide) api.moveTo(...hide);
 }
 // Stunned whenever it can be, hit from behind whenever it is stunned, its
@@ -72,7 +85,10 @@ function stunLoop(tick, api, stunnedFrom) {
   const { stunnedUntil, special, enraged, orbs } = state(api);
   const [x, y] = api.player().position;
   if (special?.kind === "lightning") return runRoundPool(api);
-  if (special?.kind === "smoke") return sitOutSmoke(api, tick - special.start);
+  if (special?.kind === "smoke") {
+    if (stunnedFrom.smoke?.start !== special.start) stunnedFrom.smoke = { start: special.start };
+    return sitOutSmoke(api, stunnedFrom.smoke, tick - special.start);
+  }
   if (enraged) return;
   if (stunnedUntil === null) {
     stunnedFrom.at = [x, y];
@@ -202,7 +218,7 @@ export const scenarios = [
   },
   {
     // Awakened, stunned and hit from behind again and again: lightning run from
-    // round the pool, smoke sat out behind its rocks and those of the one before.
+    // round the pool, smoke sat out behind the rocks it throws.
     name: "leviathan/awakened-specials",
     kind: AWAKENED,
     seed: 5,
@@ -238,7 +254,8 @@ export const scenarios = [
   {
     // Awakened, into the enrage by a hit from behind: the special it sets off
     // stops, the rocks and the roar, the pathfinder, an orb a tick; the player
-    // keeps to the pathfinder's middle and shoots until it dies.
+    // keeps to the pathfinder's middle and shoots. At tick 110, before the rocks
+    // shut them in, it is brought near its death, and dies.
     name: "leviathan/awakened-enrage-and-kill",
     kind: AWAKENED,
     seed: 7,
@@ -256,6 +273,7 @@ export const scenarios = [
         }
         if (!state(api).enraged) return stunLoop(tick, api, from);
         prayAgainstOrbs(api, tick);
+        if (tick === 110) setBossHp(api, 30);
         const pathfinder = api.npcs().find((npc) => npc.id === "abyssal-pathfinder");
         if (pathfinder) {
           const middle = [pathfinder.position[0] + 1, pathfinder.position[1] + 1];
