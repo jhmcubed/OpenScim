@@ -22,6 +22,7 @@ async function ticksOf(name) {
       ticks[tick] = {
         boss: [...boss.position], type: boss.npcTypeId, target: engine.player().attackTarget, hp: boss.vitals.hp,
         player: [...engine.player().position],
+        playerLands: engine.worldState.pendingHits.some((hit) => hit.sourceId === "player" && hit.launchTick === tick && hit.accuracySucceeded),
         playerAttacked: events.some((event) => event.type === "attack_started" && event.sourceId === "player"),
         clips: visuals.flatMap((event) => event.animations.filter((a) => a.actorId === BOSS).map((a) => a.clipId)),
         projectiles: visuals.flatMap((event) => event.projectiles),
@@ -72,6 +73,12 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   assert.equal(gap(ticks[130].player, ticks[130].boss), 4);
   assert.ok(ticks.slice(1).every((tick) => tick.state.shielded && tick.shieldShare === 0.25));
   assert.deepEqual([...messageTicks(ticks, "neutralise"), ...messageTicks(ticks, "empowering")], []);
+
+  // "partially absorb your attack" on the tick of each of the player's attacks that lands, not of one that misses.
+  const landing = ticks.flatMap((tick, n) => (tick?.playerAttacked && tick.playerLands ? [n] : []));
+  const missing = ticks.flatMap((tick, n) => (tick?.playerAttacked && !tick.playerLands ? [n] : []));
+  assert.ok(landing.length >= 5 && missing.length >= 1, landing.length + " land, " + missing.length + " miss");
+  assert.deepEqual(messageTicks(ticks, "partially absorb"), landing);
 
   // The poison: five blobs, the first on the player's tile, landing 3 ticks later; the 3 x 3 splash hurts (up to 7),
   // and the aimed blob's pool under the player hurts 2 to 7 on each of the 13 ticks from the one after the landing.

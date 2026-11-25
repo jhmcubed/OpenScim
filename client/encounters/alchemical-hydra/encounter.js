@@ -159,6 +159,7 @@ class AlchemicalHydraEncounter {
     this.attacks = 0; // attacks this phase, specials included
     this.nextAttackAt = firstAttackTick;
     this.boundUntil = 0;
+    this.attackedShieldAt = null; // the tick of the player's last attack on its shield
     this.ventOffset = Math.floor(this.random() * ventEvery);
     this.lastEruption = null;
     this.dead = false;
@@ -279,6 +280,7 @@ class AlchemicalHydraEncounter {
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
     const player = context.world.getPlayer();
     if (!this.dead) {
+      this.absorbs(context);
       for (const hit of [...this.poison.step(player, context.tick), ...this.lightning.step(player, context), ...this.fire.step(player, context)]) this.hurt(hit);
     }
     return this.drainPending(context);
@@ -547,8 +549,16 @@ class AlchemicalHydraEncounter {
     };
   }
   onPlayerAttackStarted(attack, context) {
-    // OBS (tsps): the message on the attack's tick while it is shielded.
-    if (attack.targetId === bossActorId && this.shielded && !this.dead) this.message(context, messages.absorbed);
+    // Whether it lands is known once its hits are queued (absorbs).
+    if (attack.targetId === bossActorId && this.shielded && !this.dead) this.attackedShieldAt = attack.tick;
+  }
+  // OBS (tsps): the message on the attack's tick, for a hit that lands: not for a miss. A thrall's hit has no weapon.
+  absorbs(context) {
+    if (this.attackedShieldAt !== context.tick) return;
+    const landed = context.world.pendingHits.some(
+      (hit) => hit.sourceId === "player" && hit.targetId === bossActorId && hit.launchTick === context.tick && hit.accuracySucceeded && Object.hasOwn(hit, "weaponId"),
+    );
+    if (landed) this.message(context, messages.absorbed);
   }
   // Pushed out from under it as it turns solid, or held where he stands while bound.
   moveDisplacedPlayer(player, targetTile, place) {
