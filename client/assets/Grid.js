@@ -12656,7 +12656,7 @@ var Uie = ({
     {
       key: fe,
       label: label,
-      choices: choices,
+      choices: allChoices,
       wrap: wrap,
       dependsOn: dependsOn,
       info: info,
@@ -12665,6 +12665,8 @@ var Uie = ({
     },
     fm = headNote,
   ) => {
+    // A choice with "isOffered" is listed only while that says so of the set-up.
+    const choices = allChoices?.filter((fw) => fw.isOffered?.(eZ) !== false);
     const fo = appliesLater?.(eZ) ?? undefined;
     const fp = undefined !== fo && fo === fm ? undefined : fo;
     const fq = config[fe] ?? false;
