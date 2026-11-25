@@ -8,7 +8,11 @@ var lobbyNpcs = bossStations.map((station) => ({
   actorId: station.actorId,
   npcTypeId: station.npcTypeId,
   position: station.position,
+  // Where it stands, between tiles if need be (lobby/hall.js).
+  centre: station.centre,
   facingAngle: station.facingAngle,
+  // How high it stands: the top of its pedestal (lobby/hall.js).
+  standHeight: station.standHeight,
   ...(station.displaySize ? { displaySize: station.displaySize } : {}),
   available: true,
 }));

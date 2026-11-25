@@ -4,6 +4,10 @@ import { awakenedKind, bosses } from "../client/dt2/bosses.js";
 import * as dt2 from "../client/dt2/gateway.js";
 import * as toa from "../client/toa/gateway.js";
 import * as sandbox from "../client/encounters/sandbox/gateway.js";
+import * as cox from "../client/cox/gateway.js";
+import * as tob from "../client/tob/gateway.js";
+import { platform } from "../client/lobby/gateway.js";
+import { spawn } from "../client/lobby/hall.js";
 import { gatewayFloor, gatewayPortals } from "../client/lobby/gateways.js";
 
 // The four bosses, one ancient element each.
@@ -30,7 +34,9 @@ for (const { position: [x, y], open, encounterKind } of dt2.gatewayPortals) {
   assert.ok(x >= 0 && x < 64 && y >= 0 && y < 64, "portal tile " + x + "," + y + " lies on the lobby map");
   assert.ok(!toaTiles.has(x + "," + y), "portal tile " + x + "," + y + " belongs to one gateway");
 }
-assert.equal(gatewayPortals.length, toa.gatewayPortals.length + dt2.gatewayPortals.length + sandbox.gatewayPortals.length);
+assert.equal(gatewayPortals.length, [toa, dt2, sandbox, cox, tob].reduce((sum, gateway) => sum + gateway.gatewayPortals.length, 0));
+// No two gateways share a portal tile.
+assert.equal(new Set(gatewayPortals.map(({ position }) => position.join(","))).size, gatewayPortals.length);
 // The sandbox's dais shares no tile with the other two gateways.
 const dt2Tiles = new Set(dt2.gatewayPortals.map(({ position }) => position.join(",")));
 for (const { position, open } of sandbox.gatewayPortals) {
@@ -43,13 +49,13 @@ for (const { position, open } of sandbox.gatewayPortals) {
 const walkable = new Set();
 for (let x = 0; x < 64; x++)
   for (let y = 0; y < 64; y++)
-    if (Math.hypot(x + 0.5 - 31.5, y + 0.5 - 25.5) <= 16) walkable.add(x + "," + y);
+    if (Math.hypot(x + 0.5 - platform.x, y + 0.5 - platform.y) <= platform.radius - 0.5) walkable.add(x + "," + y);
 const onPlatform = new Set(walkable);
 dt2.extendLobbyArena(walkable, (x, y) => walkable.delete(Math.floor(x) + "," + Math.floor(y)));
 assert.ok(walkable.size > onPlatform.size, "the walkway adds tiles beyond the platform");
 const portals = new Set(dt2.gatewayPortals.map(({ position }) => position.join(",")));
-const seen = new Set(["31,25"]);
-const queue = [[31, 25]];
+const seen = new Set([spawn.tile.join(",")]);
+const queue = [[...spawn.tile]];
 let reached = false;
 while (queue.length && !reached) {
   const [x, y] = queue.shift();

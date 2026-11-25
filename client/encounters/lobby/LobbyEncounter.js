@@ -1,6 +1,6 @@
 import { extendLobbyArena } from "/lobby/gateways.js";
 import { lobbyNpcs } from "./lobbyNpcs.js";
-import { plinthRadius, spawn } from "../../lobby/hall.js";
+import { platform, plinthRadius, spawn } from "../../lobby/hall.js";
 import { CollisionFlag } from "../../engine/collision.js";
 import { activeOutcome } from "../shared/npcHelpers.js";
 var LobbyEncounter = class {
@@ -85,7 +85,7 @@ var LobbyEncounter = class {
     };
     // Each boss stands on a plinth (lobby/hall.js): the player walks around it.
     for (const lobbyNpc of lobbyNpcs) {
-      blockDisc(lobbyNpc.position[0] + 1.5, lobbyNpc.position[1] + 1.5, plinthRadius);
+      blockDisc(lobbyNpc.centre[0], lobbyNpc.centre[1], plinthRadius);
     }
     extendLobbyArena(walkableTiles, blockTile);
     const collisionMap = {
@@ -142,9 +142,10 @@ var LobbyEncounter = class {
     });
   }
 };
-var lobbyCenterX = 31.5;
-var lobbyCenterY = 25.5;
-var lobbyRadius = 16;
+// The platform (lobby/gateway.js): the player walks to half a tile from its rim.
+var lobbyCenterX = platform.x;
+var lobbyCenterY = platform.y;
+var lobbyRadius = platform.radius - 0.5;
 var lobbyGridSize = 64;
 var lobbyArenaCache = null;
 export { LobbyEncounter };

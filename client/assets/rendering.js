@@ -50015,6 +50015,7 @@ var IE = class extends SceneCompositor {
     ce(this, "arenaRenderer", new HE());
     ce(this, "celShadedCache", new Map());
     ce(this, "footprintCache", new Map());
+    ce(this, "lobbyModelHeights", new Map());
     this.lobbyMapX = e;
     this.lobbyMapY = a;
     this.lobbyLevel = t;
@@ -50103,7 +50104,7 @@ var IE = class extends SceneCompositor {
       const meshId2 = e.meshId;
       return !meshId2.startsWith("terrain-") && !meshId2.startsWith("npc-");
     });
-    (function (e, a, t) {
+    (function (e, a, t, heights) {
       for (const n of lobbyNpcs) {
         const s = n.npcTypeId === 14176 ? M_ : n.actorId;
         const r = e.getNpcTypeSize(n.npcTypeId) || 1;
@@ -50119,14 +50120,25 @@ var IE = class extends SceneCompositor {
             t.set(s, c);
           }
         }
+        // How tall the boss stands as drawn, for its label (lobby/labels.js).
+        if (!heights.has(n.actorId) && instanceMeshCommands2?.length) {
+          let top = Infinity, bottom = -Infinity;
+          for (const command of instanceMeshCommands2)
+            for (let v = 1; v < (command.positions?.length ?? 0); v += 3) {
+              top = Math.min(top, command.positions[v]);
+              bottom = Math.max(bottom, command.positions[v]);
+            }
+          if (bottom > top) heights.set(n.actorId, (bottom - top) * i);
+        }
         const m = (c?.bottomY ?? 0) * i;
         const h = i * (o * (c?.centerX ?? 0) + d * (c?.centerZ ?? 0));
         const f = i * (-d * (c?.centerX ?? 0) + o * (c?.centerZ ?? 0));
-        const u = n.position[0] + 1.5 - h;
-        const v = n.position[1] + 1.5 - f;
+        // Where the boss stands: its station's centre (lobby/hall.js).
+        const u = (n.centre?.[0] ?? n.position[0] + 1.5) - h;
+        const v = (n.centre?.[1] ?? n.position[1] + 1.5) - f;
         // Each boss stands on the top of its plinth (lobby/hall.js).
         const p =
-          Gb(e.getTerrainHeights(), n.position[0], n.position[1], 3, 3) + m + plinthHeight;
+          Gb(e.getTerrainHeights(), n.position[0], n.position[1], 3, 3) + m + (n.standHeight ?? plinthHeight);
         e.setInstanceModelMatrix(
           s,
           new Float32Array([
@@ -50228,7 +50240,7 @@ var IE = class extends SceneCompositor {
           }
         }
       }
-    })(this.npcInstanceManager, this.celShadedCache, this.footprintCache);
+    })(this.npcInstanceManager, this.celShadedCache, this.footprintCache, this.lobbyModelHeights);
     this.wH(n);
     if (e.options.showNpcClickbox) {
       this.FH(n);
@@ -50236,11 +50248,11 @@ var IE = class extends SceneCompositor {
     // The name of every station over it, and of each group over the group
     // (lobby/labels.js), written like overhead text.
     const ui = overlayCamera(a, n, e.options?.overlayGameScale);
-    for (const label of hallLabels(this.arenaRenderer.baseZ)) {
+    for (const label of hallLabels(this.arenaRenderer.baseZ, (actorId) => this.lobbyModelHeights.get(actorId))) {
       const at = ui.tileToScreen({ x: label.x, y: label.y, level: label.z });
       if (at) {
         n.overheadTexts ||= [];
-        n.overheadTexts.push({ screenX: at.x, screenY: at.y, text: label.text, textColor: label.color, fontSize: label.fontSize, key: label.key });
+        n.overheadTexts.push({ screenX: at.x, screenY: at.y + (label.below ?? 0), text: label.text, textColor: label.color, fontSize: label.fontSize, key: label.key });
       }
     }
     return n;

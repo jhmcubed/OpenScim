@@ -1,14 +1,15 @@
 // What the lobby's hall draws of its own, around its bosses and gateways: a
-// moonlit observatory platform floating above a sea of cloud. The renderer
-// asks for these meshes once (buildHallMeshes) and draws them every frame;
-// hallShader.js draws them and moves what moves.
+// platform of moonlit stone floating above a sea of cloud, under Zanaris and
+// the aurora. The renderer asks for these meshes once (buildHallMeshes) and
+// draws them every frame; hallShader.js draws them and moves what moves.
 //
-// The floor is lit where the stations are: each throws a pool of its group's
-// colour, and a lane of the same colour runs to it from the tile the player
-// arrives on. In the middle of the floor an astrolabe turns slowly.
+// The floor is lit by Zanaris, teal and cold, and each station throws a pool
+// of its group's warmer colour. A seal is let into the middle of the floor.
+// Every boss stands on a pedestal, and lanterns stand along the rail.
 import { packHsl } from "../util/packHsl.js";
+import { beamMesh } from "./beams.js";
 import { hallShaderModes as modes } from "./hallShader.js";
-import { gatewayStations, groups, plinthHeight, plinthRadius, platform, spawnPoint, stations } from "./hall.js";
+import { gatewayStations, groups, plinthRadius, platform, spawnPoint, stations } from "./hall.js";
 
 const identity = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 const { x: cx, y: cy, radius: rimRadius } = platform;
@@ -41,9 +42,6 @@ function hallMesh() {
     vertex,
     quad: (a, b, c, d) => indices.push(a, b, c, a, c, d),
     tri: (a, b, c) => indices.push(a, b, c),
-    get size() {
-      return alphas.length;
-    },
     // `depth` "readwrite" draws it solid; "read" blends it over what is behind.
     command(meshId, zIndex, mode, params = [0, 0, 0], depth = "readwrite") {
       const command = {
@@ -72,50 +70,49 @@ function hallMesh() {
 
 const rgbOfCss = (css) => [1, 3, 5].map((index) => parseInt(css.slice(index, index + 2), 16) / 255);
 
-// Where each station's light falls: a boss's plinth, or the mouth of a
+// Where each station's light falls: a boss's pedestal, or the mouth of a
 // gateway's causeway at the rim.
-const thresholdRadius = rimRadius - 0.9;
+const thresholdRadius = rimRadius - 1.2;
 const stationPoint = (station) =>
   station.kind === "boss"
     ? station.centre
     : [cx + Math.cos(rad(station.angle)) * thresholdRadius, cy + Math.sin(rad(station.angle)) * thresholdRadius];
 
+// The moon's light, a little brighter in the north where Zanaris hangs, and
+// each station's own.
+const zanarisLight = [0.42, 0.57, 0.63];
 const lights = [
-  ...stations.map((station) => ({ at: stationPoint(station), rgb: rgbOfCss(station.css), strength: 0.75, reach: 5.5 })),
-  { at: spawnPoint, rgb: [1, 0.93, 0.8], strength: 0.35, reach: 4 },
-  { at: [cx, cy], rgb: [1, 0.88, 0.6], strength: 0.3, reach: 6 },
+  ...stations.map((station) => ({ at: stationPoint(station), rgb: rgbOfCss(station.css), strength: station.kind === "boss" ? 0.55 : 0.4, reach: 5 })),
+  { at: spawnPoint, rgb: [0.7, 0.95, 1], strength: 0.25, reach: 5 },
+  { at: [cx, cy], rgb: [0.45, 1, 0.92], strength: 0.4, reach: 8 },
 ];
-const moonlight = [0.6, 0.66, 0.84];
 
 // The light on the floor at a point, as RGB multipliers.
 function lightAt(x, y) {
-  const rgb = [...moonlight];
+  const north = 0.92 + 0.12 * Math.max(-1, Math.min(1, (y - cy) / rimRadius));
+  const rgb = zanarisLight.map((value) => value * north);
   for (const { at, rgb: colour, strength, reach } of lights) {
     const falloff = Math.max(0, 1 - Math.hypot(x - at[0], y - at[1]) / reach);
     for (let channel = 0; channel < 3; channel++) rgb[channel] += colour[channel] * strength * falloff * falloff;
   }
-  // The rim falls a little darker than the middle.
-  const edge = 1 - 0.18 * Math.max(0, (Math.hypot(x - cx, y - cy) - 11) / 6);
-  return rgb.map((value) => Math.min(1.7, value * edge));
+  return rgb.map((value) => Math.min(1.6, value));
 }
 
 // --- Colours -----------------------------------------------------------
 
-const moonstone = packHsl(152, 32, 84);
-const darkStone = packHsl(160, 32, 62);
-const rimStone = packHsl(160, 32, 46);
-const underside = packHsl(165, 64, 30);
-const railStone = packHsl(150, 32, 150);
-const gold = packHsl(34, 160, 170);
-const paleGold = packHsl(36, 96, 200);
-const silver = packHsl(150, 64, 205);
+const slate = packHsl(140, 32, 72);
+const rimStone = packHsl(140, 32, 40);
+const underside = packHsl(140, 64, 26);
+const railStone = packHsl(140, 32, 104);
+const lanternGlass = packHsl(118, 192, 150);
+const silver = packHsl(130, 64, 205);
 const groupColour = (group) => packHsl(...groups[group].colour);
 
 // --- The platform ------------------------------------------------------
 
 function buildFloor(baseZ, gatewayFloor) {
   const floor = hallMesh();
-  const rings = Math.round(rimRadius / 0.5), segments = 192;
+  const rings = Math.round(rimRadius / 0.5), segments = 224;
   const grid = [];
   for (let ring = 0; ring <= rings; ring++) {
     const radius = (ring / rings) * rimRadius;
@@ -123,7 +120,7 @@ function buildFloor(baseZ, gatewayFloor) {
     for (let segment = 0; segment <= segments; segment++) {
       const angle = (segment / segments) * TAU;
       const x = cx + Math.cos(angle) * radius, y = cy + Math.sin(angle) * radius;
-      row.push(floor.vertex(x, y, baseZ, moonstone, 1, ...lightAt(x, y)));
+      row.push(floor.vertex(x, y, baseZ, slate, 1, ...lightAt(x, y)));
     }
     grid.push(row);
   }
@@ -131,15 +128,17 @@ function buildFloor(baseZ, gatewayFloor) {
     for (let segment = 0; segment < segments; segment++)
       floor.quad(grid[ring][segment], grid[ring][segment + 1], grid[ring + 1][segment + 1], grid[ring + 1][segment]);
 
-  // The gateways' causeways, beyond the rim, on a grid of quarter tiles.
+  // The gateways' causeways and daises, beyond the rim, on a grid of quarter
+  // tiles: the same glass as the platform, on walls of stone.
   const step = 0.25;
   const onCauseway = (x, y) => Math.hypot(x - cx, y - cy) > rimRadius - 0.3 && gatewayFloor(x, y);
+  const causeway = hallMesh();
   const sides = hallMesh();
-  for (let x = 0; x < 64; x += step)
-    for (let y = 0; y < 64; y += step) {
+  for (let x = -16; x < 80; x += step)
+    for (let y = -16; y < 80; y += step) {
       if (!onCauseway(x + step / 2, y + step / 2)) continue;
-      const corner = (u, v) => floor.vertex(u, v, baseZ, moonstone, 1, ...lightAt(u, v));
-      floor.quad(corner(x, y), corner(x + step, y), corner(x + step, y + step), corner(x, y + step));
+      const corner = (u, v) => causeway.vertex(u, v, baseZ, slate, 1, ...lightAt(u, v));
+      causeway.quad(corner(x, y), corner(x + step, y), corner(x + step, y + step), corner(x, y + step));
       // A wall down from every edge that has no floor beside it.
       for (const [dx, dy, x1, y1, x2, y2] of [
         [0, -1, x, y, x + step, y], [1, 0, x + step, y, x + step, y + step],
@@ -157,12 +156,12 @@ function buildFloor(baseZ, gatewayFloor) {
       }
     }
 
-  // The rim: a band of stone, then the underside narrowing into the dark.
+  // The rim: a band of stone, and a ledge under its inside edge that holds
+  // the glass. Nothing else is under the floor, so the cloud shows through.
   const profile = [
-    [rimRadius, 0, rimStone, 0.75], [rimRadius, -1.4, rimStone, 0.45], [rimRadius - 2.5, -3.2, underside, 0.4],
-    [rimRadius - 7, -6.5, underside, 0.3], [4, -10, underside, 0.2], [0.5, -12.5, underside, 0.12],
+    [rimRadius, 0, rimStone, 0.75], [rimRadius, -1.4, rimStone, 0.45], [rimRadius - 1.1, -1.4, underside, 0.4], [rimRadius - 1.1, -0.9, underside, 0.3],
   ];
-  const segmentsRim = 128;
+  const segmentsRim = 160;
   const rows = profile.map(([radius, dz, colour, light]) => {
     const row = [];
     for (let segment = 0; segment <= segmentsRim; segment++) {
@@ -177,21 +176,25 @@ function buildFloor(baseZ, gatewayFloor) {
     for (let segment = 0; segment < segmentsRim; segment++)
       sides.quad(rows[row][segment], rows[row][segment + 1], rows[row + 1][segment + 1], rows[row + 1][segment]);
 
-  return [floor.command("floor", 0, modes.floor), sides.command("sides", 0, modes.surface)];
+  return [
+    floor.command("floor", 0, modes.floor, [0, 0, 0], "read"),
+    causeway.command("causeways", 0, modes.floor, [0, 0, 0], "read"),
+    sides.command("sides", 0, modes.surface),
+  ];
 }
 
-// A cylinder's wall and its top, on the surface mesh.
-function cylinder(mesh, x, y, radius, bottom, top, sideColour, topColour, light, segments = 40) {
+// A ring of `segments` facets from `bottom` to `top`, and its top, on a surface mesh.
+function drum(mesh, x, y, radius, bottom, top, sideColour, topColour, light, { segments = 48, topRadius = radius } = {}) {
   const centre = mesh.vertex(x, y, top, topColour, 1, ...light);
   let previous = null;
   for (let segment = 0; segment <= segments; segment++) {
     const angle = (segment / segments) * TAU;
-    const px = x + Math.cos(angle) * radius, py = y + Math.sin(angle) * radius;
-    // Faces turned towards the moon (north) catch more of its light.
-    const facing = 0.7 + 0.25 * Math.sin(angle);
-    const lower = mesh.vertex(px, py, bottom, sideColour, 1, ...light.map((value) => value * facing * 0.7));
-    const upper = mesh.vertex(px, py, top, sideColour, 1, ...light.map((value) => value * facing));
-    const rim = mesh.vertex(px, py, top, topColour, 1, ...light);
+    const cos = Math.cos(angle), sin = Math.sin(angle);
+    // Faces turned towards Zanaris (north) catch more of its light.
+    const facing = 0.68 + 0.27 * sin;
+    const lower = mesh.vertex(x + cos * radius, y + sin * radius, bottom, sideColour, 1, ...light.map((value) => value * facing * 0.7));
+    const upper = mesh.vertex(x + cos * topRadius, y + sin * topRadius, top, sideColour, 1, ...light.map((value) => value * facing));
+    const rim = mesh.vertex(x + cos * topRadius, y + sin * topRadius, top, topColour, 1, ...light);
     if (previous) {
       mesh.quad(previous.lower, lower, upper, previous.upper);
       mesh.tri(centre, previous.rim, rim);
@@ -200,206 +203,161 @@ function cylinder(mesh, x, y, radius, bottom, top, sideColour, topColour, light,
   }
 }
 
-// A flat ring on the floor, from `inner` to `outer`, between two angles.
-function ring(mesh, x, y, z, inner, outer, colour, alpha, normalAt, from = 0, to = TAU, segments = 64) {
+// A flat ring from `inner` to `outer`.
+function ring(mesh, x, y, z, inner, outer, colour, alpha, normal, segments = 64) {
   let previous = null;
   for (let segment = 0; segment <= segments; segment++) {
-    const angle = from + ((to - from) * segment) / segments;
+    const angle = (segment / segments) * TAU;
     const cos = Math.cos(angle), sin = Math.sin(angle);
-    const normal = normalAt(angle);
-    const pair = [
-      mesh.vertex(x + cos * inner, y + sin * inner, z, colour, alpha, ...normal),
-      mesh.vertex(x + cos * outer, y + sin * outer, z, colour, alpha, ...normal),
-    ];
+    const pair = [mesh.vertex(x + cos * inner, y + sin * inner, z, colour, alpha, ...normal), mesh.vertex(x + cos * outer, y + sin * outer, z, colour, alpha, ...normal)];
     if (previous) mesh.quad(previous[0], pair[0], pair[1], previous[1]);
     previous = pair;
   }
 }
+// A soft disc of light.
+function pool(mesh, x, y, z, radius, colour, alpha, phase) {
+  const corner = (u, v) => mesh.vertex(x + u * radius, y + v * radius, z, colour, alpha, u, v, phase);
+  mesh.quad(corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, 1));
+}
 
-function buildStations(baseZ) {
+// The pedestals, made of what the floor is: a drum of dark glass-black stone
+// on a low step, one fine line of the floor's gold round its top, and a soft
+// pool of its group's light under the boss. Each throws a faint pool of that
+// light on the glass about it.
+const pedestalStone = packHsl(132, 96, 20);
+const pedestalTop = packHsl(132, 96, 15);
+const trimGold = packHsl(30, 128, 118);
+function buildPedestals(baseZ) {
   const stone = hallMesh();
-  const inlays = hallMesh();
-  const auras = hallMesh();
+  const trim = hallMesh();
   const pools = hallMesh();
-  const top = baseZ + plinthHeight;
+  const floorPools = hallMesh();
+  // Gold is lit by the moon alone, so every trim reads the same.
+  const goldLight = [0.9, 0.9, 0.9];
   stations.forEach((station, index) => {
     const colour = groupColour(station.group);
-    const breathe = () => [0, index * 1.7, 0];
-    if (station.kind === "boss") {
-      const [x, y] = station.centre;
-      const light = lightAt(x, y);
-      cylinder(stone, x, y, plinthRadius + 0.25, baseZ, baseZ + 0.1, rimStone, darkStone, light);
-      cylinder(stone, x, y, plinthRadius, baseZ + 0.1, top, rimStone, darkStone, light.map((value) => value * 0.85));
-      ring(inlays, x, y, top + 0.008, plinthRadius - 0.32, plinthRadius - 0.16, colour, 1, breathe);
-      ring(inlays, x, y, baseZ + 0.108, plinthRadius + 0.06, plinthRadius + 0.16, colour, 1, breathe);
-      // A pool of the group's colour on the plinth, under the boss.
-      const poolRadius = plinthRadius - 0.2;
-      const poolCorner = (u, v) => pools.vertex(x + u * poolRadius, y + v * poolRadius, top + 0.004, colour, 0.55, u, v, index * 1.7);
-      pools.quad(poolCorner(-1, -1), poolCorner(1, -1), poolCorner(1, 1), poolCorner(-1, 1));
-      // A faint veil of the same colour rising round the boss, fading upward.
-      const segments = 36, radius = plinthRadius - 0.1, height = 2.6;
-      for (let segment = 0; segment < segments; segment++) {
-        const a1 = (segment / segments) * TAU, a2 = ((segment + 1) / segments) * TAU;
-        const around1 = (segment / segments) * 6, around2 = ((segment + 1) / segments) * 6;
-        const p1 = [x + Math.cos(a1) * radius, y + Math.sin(a1) * radius];
-        const p2 = [x + Math.cos(a2) * radius, y + Math.sin(a2) * radius];
-        auras.quad(
-          auras.vertex(...p1, top, colour, 0.13, around1, 0, index),
-          auras.vertex(...p2, top, colour, 0.13, around2, 0, index),
-          auras.vertex(...p2, top + height, colour, 0.13, around2, 1, index),
-          auras.vertex(...p1, top + height, colour, 0.13, around1, 1, index),
-        );
-      }
-    } else {
-      // A gateway's threshold: an arc across the mouth of its causeway.
-      const angle = rad(station.angle), half = 2.6 / thresholdRadius;
-      ring(inlays, cx, cy, baseZ + 0.012, thresholdRadius - 0.12, thresholdRadius + 0.12, colour, 1, breathe, angle - half, angle + half, 16);
-      ring(inlays, cx, cy, baseZ + 0.012, thresholdRadius + 0.5, thresholdRadius + 0.62, colour, 1, breathe, angle - half * 0.8, angle + half * 0.8, 16);
-    }
+    const phase = index * 1.7;
+    if (station.kind !== "boss") return;
+    const [x, y] = station.centre;
+    const top = baseZ + station.standHeight;
+    // The moon's light and a little of the boss's own, not the full pool.
+    const light = lightAt(x, y).map((value, channel) => Math.min(value, zanarisLight[channel] * 1.5));
+    drum(stone, x, y, plinthRadius + 0.24, baseZ, baseZ + 0.12, pedestalStone, pedestalTop, light, { topRadius: plinthRadius + 0.18 });
+    drum(stone, x, y, plinthRadius, baseZ + 0.12, top - 0.06, pedestalStone, pedestalTop, light.map((value) => value * 0.9));
+    drum(stone, x, y, plinthRadius, top - 0.06, top, pedestalStone, pedestalTop, light, { topRadius: plinthRadius - 0.05 });
+    // One line of gold round the top, as fine as the floor's inlays.
+    ring(trim, x, y, top + 0.004, plinthRadius - 0.16, plinthRadius - 0.08, trimGold, 1, goldLight);
+    pool(pools, x, y, top + 0.006, plinthRadius - 0.3, colour, 0.22, phase);
+    pool(floorPools, x, y, baseZ + 0.008, plinthRadius + 2.2, colour, 0.12, phase);
   });
+  // A halo of each boss's light, rising faintly behind it.
+  const halos = stations
+    .filter((station) => station.kind === "boss")
+    .map((station) => ({ x: station.centre[0], y: station.centre[1], z: baseZ + station.standHeight, height: 6, width: 3.6, colour: packHsl(station.colour[0], station.colour[1], 170), alpha: 0.16 }));
   return [
-    stone.command("plinths", 1, modes.surface),
-    inlays.command("station-inlays", 2, modes.inlay),
-    pools.command("pools", 7, modes.pool, [0, 0, 0], "read"),
-    auras.command("auras", 8, modes.aura, [0, 0, 0], "read"),
+    stone.command("pedestals", 1, modes.surface),
+    trim.command("pedestal-trim", 1, modes.surface),
+    floorPools.command("floor-pools", 1, modes.pool, [0, 0, 0], "read"),
+    pools.command("pedestal-pools", 7, modes.pool, [0, 0, 0], "read"),
+    beamMesh("boss-halos", halos),
   ];
 }
 
-// The lanes: from the tile the player arrives on to every station, light
-// let into the floor, with pulses running outward along them.
-const medallionRadius = 4.6;
-function buildLanes(baseZ) {
-  const lanes = hallMesh();
-  const z = baseZ + 0.012;
-  stations.forEach((station, index) => {
-    const target = stationPoint(station);
-    const dx = target[0] - spawnPoint[0], dy = target[1] - spawnPoint[1];
-    const length = Math.hypot(dx, dy);
-    const ux = dx / length, uy = dy / length;
-    const start = 2.1, end = length - (station.kind === "boss" ? plinthRadius + 0.45 : 0.3);
-    const half = 0.07, colour = groupColour(station.group);
-    let previous = null;
-    for (let along = start; along <= end + 1e-6; along += 0.25) {
-      const x = spawnPoint[0] + ux * along, y = spawnPoint[1] + uy * along;
-      // The lanes pass under the astrolabe rather than across it.
-      if (Math.hypot(x - cx, y - cy) < medallionRadius) {
-        previous = null;
-        continue;
-      }
-      const pair = [
-        lanes.vertex(x - uy * half, y + ux * half, z, colour, 1, along, index * 0.9, 1),
-        lanes.vertex(x + uy * half, y - ux * half, z, colour, 1, along, index * 0.9, 1),
-      ];
-      if (previous) lanes.quad(previous[0], previous[1], pair[1], pair[0]);
-      previous = pair;
-    }
-  });
-  // Where the player arrives: a ring, and a mark in each group's colour
-  // pointing the way to each station.
-  const [sx, sy] = spawnPoint;
-  ring(lanes, sx, sy, z, 1.38, 1.45, railStone, 1, () => [0, 0, 0]);
-  stations.forEach((station) => {
-    const [tx, ty] = stationPoint(station);
-    const angle = Math.atan2(ty - sy, tx - sx);
-    const tip = [sx + Math.cos(angle) * 1.95, sy + Math.sin(angle) * 1.95];
-    const left = [sx + Math.cos(angle + 0.12) * 1.58, sy + Math.sin(angle + 0.12) * 1.58];
-    const right = [sx + Math.cos(angle - 0.12) * 1.58, sy + Math.sin(angle - 0.12) * 1.58];
+// The thresholds: an arc of each gateway's colour across the mouth of its causeway.
+function buildThresholds(baseZ) {
+  const inlays = hallMesh();
+  gatewayStations.forEach((station, index) => {
+    const angle = rad(station.angle), half = 2.9 / thresholdRadius;
     const colour = groupColour(station.group);
-    lanes.tri(lanes.vertex(...left, z, colour, 1, 0, 0, 0), lanes.vertex(...tip, z, colour, 1, 0, 0, 0), lanes.vertex(...right, z, colour, 1, 0, 0, 0));
-  });
-  return [lanes.command("lanes", 2, modes.inlay)];
-}
-
-// The astrolabe let into the middle of the floor: a still star, and two
-// rings of marks that turn slowly in opposite directions.
-function buildMedallion(baseZ) {
-  const still = hallMesh();
-  const z = baseZ + 0.014;
-  ring(still, cx, cy, z, medallionRadius - 0.3, medallionRadius - 0.15, gold, 1, () => [0, 0, 0], 0, TAU, 128);
-  ring(still, cx, cy, z, 3.02, 3.1, paleGold, 1, () => [0, 2, 0], 0, TAU, 96);
-  const points = 8;
-  const centre = still.vertex(cx, cy, z + 0.002, paleGold, 1, 0, 1, 0);
-  for (let point = 0; point < points; point++) {
-    const angle = (point / points) * TAU + Math.PI / 2;
-    const long = point % 2 === 0 ? 2.6 : 1.7;
-    const colour = point % 2 === 0 ? paleGold : silver;
-    const tip = still.vertex(cx + Math.cos(angle) * long, cy + Math.sin(angle) * long, z + 0.002, colour, 1, 0, 1, 0);
-    const left = still.vertex(cx + Math.cos(angle + 0.32) * 0.55, cy + Math.sin(angle + 0.32) * 0.55, z + 0.002, colour, 1, 0, 1, 0);
-    const right = still.vertex(cx + Math.cos(angle - 0.32) * 0.55, cy + Math.sin(angle - 0.32) * 0.55, z + 0.002, colour, 1, 0, 1, 0);
-    still.tri(centre, left, tip);
-    still.tri(centre, tip, right);
-  }
-
-  // The turning rings: each mark is a quad, turned about the centre by the shader.
-  const turning = (name, inner, outer, marks, speed, colour) => {
-    const mesh = hallMesh();
-    const axis = [0, 0, speed];
-    ring(mesh, cx, cy, z, inner - 0.08, inner, colour, 1, () => axis, 0, TAU, 96);
-    for (let mark = 0; mark < marks; mark++) {
-      const angle = (mark / marks) * TAU;
-      const long = mark % 4 === 0;
-      const width = long ? 0.06 : 0.035, reach = long ? outer : inner + (outer - inner) * 0.5;
-      const cos = Math.cos(angle), sin = Math.sin(angle);
-      mesh.quad(
-        mesh.vertex(cx + cos * inner - sin * width, cy + sin * inner + cos * width, z, colour, 1, ...axis),
-        mesh.vertex(cx + cos * reach - sin * width, cy + sin * reach + cos * width, z, colour, 1, ...axis),
-        mesh.vertex(cx + cos * reach + sin * width, cy + sin * reach - cos * width, z, colour, 1, ...axis),
-        mesh.vertex(cx + cos * inner + sin * width, cy + sin * inner - cos * width, z, colour, 1, ...axis),
-      );
+    for (const [inner, outer, width] of [[thresholdRadius - 0.1, thresholdRadius + 0.1, 1], [thresholdRadius + 0.45, thresholdRadius + 0.53, 0.8]]) {
+      let previous = null;
+      for (let segment = 0; segment <= 16; segment++) {
+        const a = angle - half * width + (2 * half * width * segment) / 16;
+        const pair = [
+          inlays.vertex(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner, baseZ + 0.012, colour, 1, 0, index * 1.3, 0),
+          inlays.vertex(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer, baseZ + 0.012, colour, 1, 0, index * 1.3, 0),
+        ];
+        if (previous) inlays.quad(previous[0], pair[0], pair[1], previous[1]);
+        previous = pair;
+      }
     }
-    return mesh.command(name, 3, modes.spin, [cx, cy, z]);
-  };
-  return [
-    still.command("medallion", 2, modes.inlay),
-    turning("astrolabe-outer", 3.35, 4.05, 48, 0.035, gold),
-    turning("astrolabe-inner", 1.0, 1.35, 24, -0.06, silver),
-  ];
+  });
+  return [inlays.command("thresholds", 2, modes.inlay)];
 }
 
-// A low rail round the rim, open where the causeways leave it.
+// The seal in the middle of the floor (hallShader.js draws all of it).
+const sealRadius = 6;
+function buildSeal(baseZ) {
+  const seal = hallMesh();
+  const corner = (u, v) => seal.vertex(cx + u * sealRadius, cy + v * sealRadius, baseZ + 0.01, silver, 1, u * sealRadius, v * sealRadius, 1);
+  seal.quad(corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, 1));
+  return [seal.command("seal", 2, modes.seal, [sealRadius, 0, 0], "read")];
+}
+
+// A low rail round the rim, open where the causeways leave it, with a lantern
+// of Zanaris's light on every fourth post.
 function buildRail(baseZ) {
   const rail = hallMesh();
+  const lanterns = hallMesh();
+  const glows = hallMesh();
   const openings = gatewayStations.map((station) => rad(station.angle));
   const radius = rimRadius - 0.2;
-  const isOpen = (angle) => openings.some((opening) => Math.abs(Math.atan2(Math.sin(angle - opening), Math.cos(angle - opening))) < 0.19);
-  const posts = 56;
-  const box = (x, y, angle, halfAlong, halfAcross, bottom, top, colour) => {
+  const isOpen = (angle) => openings.some((opening) => Math.abs(Math.atan2(Math.sin(angle - opening), Math.cos(angle - opening))) < 0.16);
+  const posts = 72;
+  const box = (mesh, x, y, angle, halfAlong, halfAcross, bottom, top, colour, normalScale = 1) => {
     const cos = Math.cos(angle), sin = Math.sin(angle);
     const corner = (a, b) => [x + cos * a - sin * b, y + sin * a + cos * b];
-    const light = lightAt(x, y);
+    const light = lightAt(x, y).map((value) => value * normalScale);
     const corners = [corner(-halfAlong, -halfAcross), corner(halfAlong, -halfAcross), corner(halfAlong, halfAcross), corner(-halfAlong, halfAcross)];
     for (let side = 0; side < 4; side++) {
       const [a, b] = [corners[side], corners[(side + 1) % 4]];
       const facing = 0.6 + 0.3 * Math.sin(Math.atan2(b[1] - a[1], b[0] - a[0]) - Math.PI / 2);
-      rail.quad(
-        rail.vertex(...a, bottom, colour, 1, ...light.map((value) => value * facing * 0.75)),
-        rail.vertex(...b, bottom, colour, 1, ...light.map((value) => value * facing * 0.75)),
-        rail.vertex(...b, top, colour, 1, ...light.map((value) => value * facing)),
-        rail.vertex(...a, top, colour, 1, ...light.map((value) => value * facing)),
+      mesh.quad(
+        mesh.vertex(...a, bottom, colour, 1, ...light.map((value) => value * facing * 0.75)),
+        mesh.vertex(...b, bottom, colour, 1, ...light.map((value) => value * facing * 0.75)),
+        mesh.vertex(...b, top, colour, 1, ...light.map((value) => value * facing)),
+        mesh.vertex(...a, top, colour, 1, ...light.map((value) => value * facing)),
       );
     }
-    rail.quad(...corners.map((point) => rail.vertex(...point, top, colour, 1, ...light)));
+    mesh.quad(...corners.map((point) => mesh.vertex(...point, top, colour, 1, ...light)));
   };
   for (let post = 0; post < posts; post++) {
     const angle = (post / posts) * TAU;
     if (isOpen(angle)) continue;
     const x = cx + Math.cos(angle) * radius, y = cy + Math.sin(angle) * radius;
-    box(x, y, angle + Math.PI / 2, 0.13, 0.13, baseZ, baseZ + 0.95, railStone);
-    box(x, y, angle + Math.PI / 2, 0.17, 0.17, baseZ + 0.95, baseZ + 1.05, railStone);
+    const lantern = post % 4 === 0;
+    box(rail, x, y, angle + Math.PI / 2, 0.12, 0.12, baseZ, baseZ + (lantern ? 1.25 : 0.95), railStone);
+    box(rail, x, y, angle + Math.PI / 2, 0.16, 0.16, baseZ + (lantern ? 1.25 : 0.95), baseZ + (lantern ? 1.33 : 1.03), railStone);
+    if (lantern) {
+      box(lanterns, x, y, angle + Math.PI / 2, 0.07, 0.07, baseZ + 1.33, baseZ + 1.5, lanternGlass, 1.2);
+      pool(glows, x, y, baseZ + 0.01, 2.4, lanternGlass, 0.22, post * 0.37);
+    }
     const next = ((post + 1) / posts) * TAU;
     if (isOpen(next)) continue;
     const middle = (angle + next) / 2, span = radius * Math.sin((next - angle) / 2);
-    box(cx + Math.cos(middle) * radius * Math.cos((next - angle) / 2), cy + Math.sin(middle) * radius * Math.cos((next - angle) / 2),
-      middle + Math.PI / 2, span, 0.07, baseZ + 0.78, baseZ + 0.88, railStone);
+    box(rail, cx + Math.cos(middle) * radius * Math.cos((next - angle) / 2), cy + Math.sin(middle) * radius * Math.cos((next - angle) / 2),
+      middle + Math.PI / 2, span, 0.06, baseZ + 0.8, baseZ + 0.89, railStone);
   }
-  return [rail.command("rail", 1, modes.surface)];
+  // A soft glow about each lantern, turned to the camera.
+  const lanternHalos = [];
+  for (let post = 0; post < posts; post += 4) {
+    const angle = (post / posts) * TAU;
+    if (isOpen(angle)) continue;
+    lanternHalos.push({ x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius, z: baseZ + 1.1, height: 0.8, width: 0.75, colour: lanternGlass, alpha: 0.32 });
+  }
+  return [
+    rail.command("rail", 1, modes.surface),
+    lanterns.command("lanterns", 2, modes.inlay),
+    glows.command("lantern-glows", 1, modes.pool, [0, 0, 0], "read"),
+    beamMesh("lantern-halos", lanternHalos),
+  ];
 }
 
 // --- The sky -----------------------------------------------------------
 
 function buildSky(baseZ) {
   const dome = hallMesh();
-  const radius = 95, rings = 24, segments = 48;
+  const radius = 95, rings = 28, segments = 56;
   const rows = [];
   for (let ring = 0; ring <= rings; ring++) {
     const polar = (ring / rings) * Math.PI;
@@ -414,9 +372,9 @@ function buildSky(baseZ) {
     for (let segment = 0; segment < segments; segment++)
       dome.quad(rows[ring][segment], rows[ring][segment + 1], rows[ring + 1][segment + 1], rows[ring + 1][segment]);
 
-  // The moon, low in the north beyond the raids' door.
+  // Zanaris, in the north-east above the raids.
   const moon = hallMesh();
-  const azimuth = rad(64), elevation = rad(11), distance = 80, half = 10;
+  const azimuth = rad(72), elevation = rad(11), distance = 80, half = 17;
   const mx = cx + Math.cos(elevation) * Math.cos(azimuth) * distance;
   const my = cy + Math.cos(elevation) * Math.sin(azimuth) * distance;
   const mz = baseZ + Math.sin(elevation) * distance;
@@ -456,29 +414,29 @@ function mote(mesh, x, y, z, colour, alpha, seed) {
   mesh.quad(corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, 1));
 }
 
+// Specks of Zanaris's light drifting over the hall, and sparks of each
+// group's colour rising from its pedestals.
 function buildMotes(baseZ) {
   const random = seeded(0x5eed1);
   const drifting = hallMesh();
-  const pale = packHsl(150, 64, 210);
-  for (let index = 0; index < 220; index++) {
-    const angle = random() * TAU, radius = Math.sqrt(random()) * 19;
-    mote(drifting, cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius, baseZ + 0.3 + random() * 4, pale, 0.5, random());
+  const pale = packHsl(118, 128, 200);
+  for (let index = 0; index < 260; index++) {
+    const angle = random() * TAU, radius = Math.sqrt(random()) * 23;
+    mote(drifting, cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius, baseZ + 0.3 + random() * 4.5, pale, 0.55, random());
   }
-  // Sparks of each group's colour, rising from its plinths and thresholds.
   const sparks = hallMesh();
   for (const station of stations) {
-    const [x, y] = stationPoint(station);
+    if (station.kind !== "boss") continue;
+    const [x, y] = station.centre;
     const colour = packHsl(station.colour[0], station.colour[1], 190);
-    const spread = station.kind === "boss" ? plinthRadius - 0.1 : 1.6;
-    const z = baseZ + (station.kind === "boss" ? plinthHeight : 0);
-    for (let index = 0; index < 14; index++) {
+    for (let index = 0; index < 10; index++) {
       const angle = random() * TAU;
-      mote(sparks, x + Math.cos(angle) * spread, y + Math.sin(angle) * spread, z, colour, 0.8, random());
+      mote(sparks, x + Math.cos(angle) * (plinthRadius - 0.2), y + Math.sin(angle) * (plinthRadius - 0.2), baseZ + station.standHeight, colour, 0.7, random());
     }
   }
   return [
-    drifting.command("motes", 9, modes.motes, [2.2, 0.07, 1], "read"),
-    sparks.command("sparks", 9, modes.motes, [3.2, 0.055, 1.3], "read"),
+    drifting.command("motes", 9, modes.motes, [2, 0.06, 0.8], "read"),
+    sparks.command("sparks", 9, modes.motes, [2.6, 0.05, 1.1], "read"),
   ];
 }
 
@@ -491,9 +449,9 @@ export function buildHallMeshes({ baseZ, gatewayFloor }) {
     sky: buildSky(baseZ),
     floor: buildFloor(baseZ, gatewayFloor),
     rail: buildRail(baseZ),
-    medallion: buildMedallion(baseZ),
-    lanes: buildLanes(baseZ),
-    stations: buildStations(baseZ),
+    seal: buildSeal(baseZ),
+    thresholds: buildThresholds(baseZ),
+    pedestals: buildPedestals(baseZ),
     motes: buildMotes(baseZ),
   };
 }

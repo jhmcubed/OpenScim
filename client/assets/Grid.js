@@ -2,6 +2,7 @@ import { toEsModule } from "./rolldown-runtime.js";
 import { parseDisplayMode } from "./deployment.js";
 import { attackRangesDefaults, readAttackRangesSettings, isAttackDragProtected } from "/plugins/attackRanges.js";
 import { projectileOverrideDefaults, readProjectileOverrideSettings } from "/plugins/projectileOverride.js";
+import { gatewayMenuEntries, gatewayPortalAtRay } from "/lobby/gateways.js";
 import {
   pako,
   requireJsxRuntime,
@@ -30017,6 +30018,9 @@ function rLe(ez) {
       eN,
       eO,
     );
+    if (entityContext.lobbyGateways) {
+      sLe(gatewayMenuEntries(eE, onTileClick), eN, eO);
+    }
   }
   if (groundItemContext && groundItemContext.items.length > 0) {
     sLe(
@@ -54627,8 +54631,11 @@ var mn = (ez) => {
       pickGroundItems: lX,
       objTypeLoader: objTypeLoader,
       npcMenuColor: m1,
+      // The lobby's buildings take clicks anywhere on them (lobby/gateways.js).
+      lobbyGateways: encounterKind === "lobby",
     }),
     [
+      encounterKind,
       lS,
       simulationState.primaryNpcPosition,
       simulationState.primaryNpcSize,
@@ -54742,6 +54749,14 @@ var mn = (ez) => {
         } else {
           m6.current = null;
           return false;
+        }
+      }
+      // A click on one of the lobby's buildings opens it (lobby/gateways.js).
+      if (encounterKind === "lobby") {
+        const portal = gatewayPortalAtRay(n4);
+        if (portal) {
+          m8(portal, n3, null);
+          return true;
         }
       }
       if (onTakeGroundItem) {

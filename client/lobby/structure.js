@@ -62,7 +62,14 @@ export function lobbyStructure({ mapSquare, area, keep = () => true, ground, fro
     return new Float32Array([cos, sin, 0, 0, -sin, cos, 0, 0, 0, 0, scale, 0, tx, ty, tz, 1]);
   }
 
-  return { locs, matrix, scale };
+  // Where a point of the square lies in the layout (the matrix, without heights).
+  function point([x, y]) {
+    const turn = (degrees * Math.PI) / 180;
+    const dx = (x - from[0]) * scale, dy = (y - from[1]) * scale;
+    return [to[0] + dx * Math.cos(turn) - dy * Math.sin(turn), to[1] + dx * Math.sin(turn) + dy * Math.cos(turn)];
+  }
+
+  return { locs, matrix, point, scale, degrees };
 }
 
 // The product of two column-major 4 x 4 matrices, a times b.

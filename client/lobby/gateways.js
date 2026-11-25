@@ -2,8 +2,11 @@
 import * as toa from "../toa/gateway.js";
 import * as dt2 from "../dt2/gateway.js";
 import * as sandbox from "../encounters/sandbox/gateway.js";
+import * as cox from "../cox/gateway.js";
+import * as tob from "../tob/gateway.js";
+import { groups, stations } from "./hall.js";
 
-const gateways = { toa, dt2, sandbox };
+const gateways = { toa, dt2, sandbox, cox, tob };
 const all = Object.values(gateways);
 
 // Tiles that open something when clicked: { position, displayName } with
@@ -18,6 +21,40 @@ export const gatewayMeshes = (context) => all.flatMap((gateway) => gateway.gatew
 // Where the lobby writes each gateway's name, by the gateway's name in the
 // hall (lobby/hall.js): { position: [x, y], height } in tiles above the floor.
 export const gatewayAnchors = Object.fromEntries(Object.entries(gateways).map(([name, gateway]) => [name, gateway.gatewayAnchor]));
+
+// A click on a building: the gateway the pointer's ray (`{ origin, direction }`
+// in the lobby, as the client picks with it) meets first, or null.
+export function gatewayAtRay(ray) {
+  let nearest = null;
+  for (const [name, gateway] of Object.entries(gateways)) {
+    const distance = gateway.gatewayHit?.(ray);
+    if (distance != null && (nearest === null || distance < nearest.distance)) nearest = { name, gateway, distance };
+  }
+  return nearest;
+}
+
+/** The tile whose click opens the gateway that `ray` meets, or null: the middle one of its portals. */
+export function gatewayPortalAtRay(ray) {
+  const hit = gatewayAtRay(ray);
+  if (!hit) return null;
+  const portals = hit.gateway.gatewayPortals;
+  return portals[Math.floor(portals.length / 2)].position;
+}
+
+/**
+ * The menu entries for the building under the pointer (the client's
+ * right-click menu and the action shown as the pointer moves): "Enter" it.
+ * `onTileClick(tile)` clicks the gateway's portal.
+ */
+export function gatewayMenuEntries(ray, onTileClick) {
+  const hit = ray && gatewayAtRay(ray);
+  if (!hit) return [];
+  const station = stations.find((candidate) => candidate.gateway === hit.name);
+  const tile = gatewayPortalAtRay(ray);
+  return [
+    { action: "Enter", target: hit.gateway.gatewayName, targetColor: groups[station?.group]?.css ?? "#f8c070", onClick: () => onTileClick?.(tile), clickType: "red" },
+  ];
+}
 
 // Loads each gateway's objects into an object renderer of its own. A renderer
 // merges its still objects into one mesh, and a mesh has one turn, so

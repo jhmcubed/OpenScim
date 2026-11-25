@@ -7,7 +7,10 @@
 import { multiply } from "./structure.js";
 
 // The lobby floor is a disc of this radius around this point.
-export const platform = { x: 31.5, y: 25.5, radius: 16.5 };
+// It is as large as the lobby's map square allows with room to spare: the
+// engine keeps the player on tiles 0 to 63, and the centre is 25.5 tiles from
+// the square's south edge.
+export const platform = { x: 31.5, y: 25.5, radius: 20 };
 // In a layout the spoke runs up the line x = centerX and leaves the platform at y = rimY.
 export const centerX = platform.x;
 export const rimY = platform.y + platform.radius;

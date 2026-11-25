@@ -3,16 +3,15 @@
 // its look with uniforms.u_animParams = [mode, a, b, c]:
 //
 //   15 stream  an element running along the floor. a = length, b = half width (tiles)
-//   17 shaft   a beam of light
 //
-// Stream and shaft are sheets: normal.x runs from -1 to 1 across,
-// normal.y from 0 to 1 along (toaMesh). Mode 16 was the rune ring round the
-// vault's old door.
+// A stream is a sheet: normal.x runs from -1 to 1 across, normal.y from 0 to
+// 1 along (toaMesh). Modes 16 and 17 were the rune ring round the vault's old
+// door and its beam; the lobby draws the beam now (lobby/beams.js).
 //
 // Modes start at 15: the vertex shader animates 1 to 10, "scene-toa" has 11 to 14.
 import { fragmentShaderHead, toaMesh } from "../toa/shader.js";
 
-export const dt2ShaderModes = { stream: 15, shaft: 17 };
+export const dt2ShaderModes = { stream: 15 };
 
 export const dt2FragmentShader = fragmentShaderHead + `
 void main() {
@@ -32,11 +31,6 @@ void main() {
     float pulse = 0.6 + 0.4 * sin(sheet.y * 2.4 - seconds * 2.6);
     alpha = v_color.a * body * (0.45 + 0.55 * flow) * pulse;
     colour = mix(colour, vec3(1.0), 0.45 * body * flow * pulse);
-  } else {
-    float core = 1.0 - clamp(abs(v_normal.x), 0.0, 1.0);
-    float drift = fbm(vec2(cell.x * 1.3 + cell.y * 1.7, cell.z * 0.45 - seconds * 0.3));
-    alpha = v_color.a * core * (0.5 + 0.5 * drift);
-    colour = mix(colour, vec3(1.0), 0.35 * core);
   }
 
   colour *= u_brightness / 0.6;
