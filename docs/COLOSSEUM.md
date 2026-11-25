@@ -180,6 +180,23 @@ The shockwave colossus (OBS, 14 claps): sound 5774
 sound as the projectile arrives, with no place; the other sounds are those
 of its animations' frames, and a hit on it has none.
 
+## Practice
+
+Not the game's: tools to practise a wave.
+
+- **Retry Wave** and **Random Spawns** (debug actions, `controls.js`)
+  restart the run on the wave being fought, with the modifiers it had as
+  the wave began (with Minimus, those before his offer), the player on the
+  tile he stood on one tick before its monsters were placed. Retry Wave
+  keeps the seed, so a player who stands still until the monsters are
+  placed gets the same spawns; Random Spawns draws a new seed
+  (`ColosseumEncounter.planPracticeRestart`).
+- **Force double south** (a set-up switch) puts two of every wave's
+  monsters on the two south spawn points, 29,31 and 32,27 (`waves.js`).
+  The wiki's strategy page speaks of south spawns without naming them;
+  the RuneLite ground markers of the preset "Colosseum Tiles" mark them
+  with their south A (30,32) and B (33,28).
+
 ## Where the sources differ
 
 | What | One says | The other says | The code |
@@ -263,7 +280,8 @@ What a recording would settle, in the order it matters:
   recorded. The orbs' starting corners and direction, Quartet's place, the second colossus of
   Dynamic Duo, a totem, molten sand and its damage, Mantimayhem's second
   projectile and Bees! in the waves are to be observed.
-- A panel with the wave and a "retry wave" button, as the Inferno has.
+- A panel with the wave, as the Inferno has. ("Retry Wave" and "Random
+  Spawns" are debug actions; see "Practice".)
 - What a dead monster leaves when the modifier Volatility is on (the NPCs
   the cache calls `colosseum_human_gib`, `..._manticore_gib` and
   `..._colossi_gib`).

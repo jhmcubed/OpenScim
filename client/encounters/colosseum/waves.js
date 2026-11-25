@@ -16,6 +16,7 @@ import {
   warbandArcherSpawnSquare,
   warbandSpawnOffsets,
   quartetSpawnOffset,
+  southSpawnPoints,
   colosseumMonsters,
 } from "./constants.js";
 
@@ -113,13 +114,23 @@ function isNearSpawnPoint(spawnPoint, tile) {
 // placed one tile south-east of the archer's tile, which closes the diamond
 // the other three leave open, and its role is drawn last, so that the rest
 // of the wave is the same with and without it.
-export function buildWaveSpawns(encounterSeed, wave, playerTile, modifiers = {}) {
+//
+// `practice.doubleSouth` (a set-up switch, not the game's) puts two of the
+// wave's monsters on the two south spawn points (constants.js), as many as
+// are away from the player, and the others on the rest of the points in
+// their shuffled order. A wave of one monster puts it on the south point
+// drawn first. The draws are the same as without it.
+export function buildWaveSpawns(encounterSeed, wave, playerTile, modifiers = {}, practice = {}) {
   const random = createWaveRandom(encounterSeed, wave, layoutSalt);
   const monsterKinds = shuffle(getWaveMonsterKinds(wave), random);
-  const spawnPoints = shuffle(
+  const shuffledPoints = shuffle(
     waveSpawnPoints.filter((spawnPoint) => !isNearSpawnPoint(spawnPoint, playerTile)),
     random,
   );
+  const isSouth = (spawnPoint) => southSpawnPoints.some(([x, y]) => spawnPoint[0] === x && spawnPoint[1] === y);
+  const spawnPoints = practice.doubleSouth
+    ? [...shuffledPoints.filter(isSouth).slice(0, 2), ...shuffledPoints.filter((spawnPoint) => !isSouth(spawnPoint))]
+    : shuffledPoints;
   if (spawnPoints.length < monsterKinds.length) {
     throw new RangeError(`Wave ${wave} has more monsters than spawn points away from the player`);
   }

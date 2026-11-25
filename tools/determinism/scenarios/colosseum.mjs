@@ -13,7 +13,7 @@
 // wave 11 the run is won 3 ticks after the wave is completed.
 import { attack, command, magicGear, protect, rangedGear } from "./common.mjs";
 import { buildReinforcementSpawns, buildWaveSpawns } from "../../../client/encounters/colosseum/waves.js";
-import { colosseumMonsters, spawnPointExclusionDistance, waveSpawnPoints } from "../../../client/encounters/colosseum/constants.js";
+import { colosseumMonsters, southSpawnPoints, spawnPointExclusionDistance, waveSpawnPoints } from "../../../client/encounters/colosseum/constants.js";
 
 const KIND = "colosseum";
 /** Mechanics without Minimus and his offers: a run starts with its first wave, and a wave follows a wave. */
@@ -79,6 +79,66 @@ function spawnAllocation() {
   return rows;
 }
 
+// The practice switch "Force double south" (waves.js), for four seeds, every wave and three player tiles. Three things
+// must hold of each, or the scenario throws: the warband stands where it stands without the switch; as many of the
+// wave's monsters as it has, up to two, are on the south spawn points, fewer only when fewer of them are away from
+// the player; the wave has as many monsters as without the switch.
+function doubleSouth() {
+  const isSouth = ([x, y]) => southSpawnPoints.some((point) => point[0] === x && point[1] === y);
+  const rows = [];
+  for (const seed of [1, 2, 77, 4000000000]) {
+    for (let wave = 1; wave <= 11; wave++) {
+      for (const playerTile of [START, [29, 34], [32, 30]]) {
+        const plain = buildWaveSpawns(seed, wave, playerTile);
+        const practised = buildWaveSpawns(seed, wave, playerTile, {}, { doubleSouth: true });
+        const monsters = practised.slice(3);
+        const southAway = southSpawnPoints.filter((point) => steps(point, playerTile) > spawnPointExclusionDistance).length;
+        const south = monsters.filter((spawn) => isSouth(spawn.position)).length;
+        rows.push({ seed, wave, playerTile, spawns: monsters.map((spawn) => [spawn.kind, ...spawn.position]), south });
+        const checks = [
+          JSON.stringify(plain.slice(0, 3)) === JSON.stringify(practised.slice(0, 3)),
+          south === Math.min(2, monsters.length, southAway),
+          monsters.length === plain.length - 3,
+        ];
+        if (checks.includes(false)) throw new Error(`colosseum/double-south: a check failed for ${JSON.stringify({ seed, wave, playerTile, checks, plain, practised })}`);
+      }
+    }
+  }
+  return rows;
+}
+
+// The practice commands "Retry Wave" and "Random Spawns", asked of an encounter the engine made. Wave 5 has begun
+// with Quartet, the player stood at 30,35 before its monsters were placed, and Volatility was chosen since. Both
+// plans restart on wave 5 from 30,35 with Quartet alone; "Retry Wave" keeps the seed, "Random Spawns" draws another
+// (which is not digested: Math.random). A run reset with the plan's seeds has that seed and those modifiers, and
+// gives them back as its seeds. Any other command has no plan.
+function practiceRestart(engine, objTypeLoader) {
+  const { encounter } = engine.createSimulationEngine({
+    encounterConfig: { kind: KIND, mechanics: {} }, objTypeLoader, combatSeed: 1,
+    inventory: engine.createEmptyInventory(), equipment: {}, combatSupplies: engine.createEmptyCombatSupplies(), attackStylePerCategory: {},
+  });
+  encounter.encounterSeed = 1234;
+  encounter.wave = 5;
+  encounter.modifiersAtWaveStart = { quartet: 1 };
+  encounter.playerTileBeforePlacing = [30, 35];
+  encounter.setModifiers({ quartet: 1, volatility: 1 });
+  const retry = encounter.planPracticeRestart({ encounter: KIND, type: "retry-wave" });
+  const reroll = encounter.planPracticeRestart({ encounter: KIND, type: "reroll-wave" });
+  const other = encounter.planPracticeRestart({ encounter: KIND, type: "talk-to-minimus" });
+  encounter.reset(retry.encounterSeeds);
+  const afterReset = { seeds: encounter.getSeeds(), modifiers: { ...encounter.modifiers } };
+  const { encounterSeed: unusedSeed, ...rerollSeeds } = reroll.encounterSeeds;
+  const rows = { retry, reroll: { ...reroll, encounterSeeds: rerollSeeds }, other, afterReset };
+  const checks = {
+    retry: JSON.stringify(retry) === JSON.stringify({ encounterSeeds: { encounterSeed: 1234, modifiers: { quartet: 1 } }, runMechanics: { colosseumStartWave: "5" }, startPosition: [30, 35] }),
+    reroll: Number.isInteger(reroll.encounterSeeds.encounterSeed) && reroll.encounterSeeds.encounterSeed >= 0 && reroll.encounterSeeds.encounterSeed < 2 ** 32 && JSON.stringify(rerollSeeds) === JSON.stringify({ modifiers: { quartet: 1 } }) && reroll.runMechanics.colosseumStartWave === "5",
+    other: other === null,
+    afterReset: afterReset.seeds.encounterSeed === 1234 && JSON.stringify(afterReset.modifiers) === JSON.stringify({ quartet: 1 }) && JSON.stringify(afterReset.seeds.modifiers) === JSON.stringify({ quartet: 1 }),
+  };
+  if (Object.values(checks).includes(false)) throw new Error(`colosseum/practice-restart: a check failed: ${JSON.stringify({ checks, rows })}`);
+  return rows;
+}
+
 /** The player's choice of what Minimus offers: 0, 1 or 2. */
 const choose = (api, choice) => command(api, { encounter: KIND, type: "choose-modifier", choice });
 /** A click on Minimus. */
@@ -124,6 +184,8 @@ function modifierOffers(engine, objTypeLoader) {
 export const scenarios = [
   { name: "colosseum/spawn-allocation", pure: spawnAllocation },
   { name: "colosseum/modifier-offers", pure: modifierOffers },
+  { name: "colosseum/double-south", pure: doubleSouth },
+  { name: "colosseum/practice-restart", pure: practiceRestart },
   {
     // Minimus and his offers, through wave 1 into wave 2. He stands at 32,34 from tick 1. A click on him on tick 3
     // opens his offer (Blasphemy, Relentless, Frailty) and the first is chosen on tick 6: he is gone on that tick and
@@ -342,8 +404,8 @@ export const scenarios = [
     // south-west pillar's starts at 23,25 and steps north every second tick. The player waits on 23,27, where it steps
     // onto him on tick 8, and steps away to 21,27 before it moves on: the contact is a hit of 10 to 20 on tick 9. The
     // orb rests for 7 ticks at the corner 23,29 from tick 12; he walks onto it there on tick 13 and off it again to
-    // 21,29 on tick 16, before it moves on: one hit, on tick 15. Sol's rule, a hit when the orb steps off the player's tile, gives neither. Every tick the
-    // snapshot's orbTiles, which the overlay Solarflare True Tile marks, are the orbs' tiles, or the scenario throws.
+    // 21,29 on tick 16, before it moves on: one hit, on tick 15. Sol's rule, a hit when the orb steps off the player's
+    // tile, gives neither. Every tick the snapshot's orbTiles, which the overlay Solarflare True Tile marks, are the orbs' tiles, or the scenario throws.
     name: "colosseum/solarflare-contact",
     kind: KIND,
     seed: 81,
@@ -377,6 +439,22 @@ export const scenarios = [
         api.moveTo(23, 28);
         pray(api, "ProtectMagic");
       }
+    },
+  },
+  {
+    // Wave 8 with the practice switch "Force double south": of its four monsters placed on tick 5, two stand on the
+    // south spawn points 29,31 and 32,27, or the scenario throws. The player stands on the start tile.
+    name: "colosseum/double-south-wave-8",
+    kind: KIND,
+    seed: 83,
+    ticks: 12,
+    mechanics: { ...noMinimus, infiniteHealth: true, colosseumStartWave: "8", colosseumDoubleSouth: true },
+    ...rangedGear,
+    script(tick, api) {
+      if (tick !== 6) return;
+      const placed = monsters(api, "javelin", "manticore", "shockwave");
+      const south = placed.filter((npc) => southSpawnPoints.some(([x, y]) => npc.position[0] === x && npc.position[1] === y));
+      if (placed.length !== 4 || south.length !== 2) throw new Error(`colosseum/double-south-wave-8: ${placed.length} placed, ${south.length} south`);
     },
   },
 ];

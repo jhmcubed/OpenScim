@@ -6,6 +6,11 @@ import { canSpawnWave } from "./waves.js";
 
 export const colosseumStartWaveKey = "colosseumStartWave";
 export const colosseumModifierChoiceKey = "colosseumModifierChoice";
+export const colosseumDoubleSouthKey = "colosseumDoubleSouth";
+// The practice of a wave (ColosseumEncounter.planPracticeRestart): the same
+// wave again with the same spawns, or with new ones.
+export const retryWaveCommandType = "retry-wave";
+export const rerollWaveCommandType = "reroll-wave";
 // The waves a run can start on: those whose monsters are all in
 // colosseumMonsters.
 const startWaves = Array.from({ length: lastWave - firstWave + 1 }, (unusedElement, index) => firstWave + index).filter((wave) =>
@@ -71,6 +76,7 @@ export function buildColosseumControls() {
       // A choice's value is a string, as the Inferno's start wave is.
       [colosseumStartWaveKey]: String(startWaves[0]),
       [colosseumModifierChoiceKey]: true,
+      [colosseumDoubleSouthKey]: false,
       ...Object.fromEntries(overlayToggles.map((toggle) => [toggle.key, toggle.default])),
     },
     mechanicsToggles: [
@@ -87,8 +93,19 @@ export function buildColosseumControls() {
         setup: true,
         info: "As in the game: click Minimus to start, and choose one of three modifiers before every wave. Switched off, the waves follow each other by themselves with the modifiers of the set-up. Applies from your next attempt.",
       },
+      {
+        key: colosseumDoubleSouthKey,
+        label: "Force double south",
+        setup: true,
+        info: "Practice: two of every wave's monsters spawn on the two south spawns, the ones the south A and B tiles of Colosseum Tiles stand in. Applies from your next attempt.",
+      },
       ...overlayToggles.map(({ default: unusedDefault, ...toggle }) => toggle),
     ],
-    debugActions: [],
+    // As the Inferno's: the wave being fought, again from where the player
+    // stood as its monsters were placed, with its spawns or with new ones.
+    debugActions: [
+      { command: { encounter: "colosseum", type: retryWaveCommandType }, label: "Retry Wave" },
+      { command: { encounter: "colosseum", type: rerollWaveCommandType }, label: "Random Spawns" },
+    ],
   };
 }

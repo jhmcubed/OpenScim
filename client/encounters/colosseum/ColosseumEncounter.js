@@ -52,7 +52,15 @@ import {
   minimus,
   venomFromPoisonVarp,
 } from "./constants.js";
-import { colosseumStartWaveKey, colosseumModifierChoiceKey, getColosseumStartWave, buildColosseumControls } from "./controls.js";
+import {
+  colosseumStartWaveKey,
+  colosseumModifierChoiceKey,
+  colosseumDoubleSouthKey,
+  retryWaveCommandType,
+  rerollWaveCommandType,
+  getColosseumStartWave,
+  buildColosseumControls,
+} from "./controls.js";
 import { colosseumModifiers, readModifierSelection, getInterfaceModifier, buildModifierOffer } from "./modifiers.js";
 import { WaveModifierEffects } from "./modifierEffects.js";
 import { buildWaveSpawns, buildReinforcementSpawns, getWaveReinforcementKinds, createWaveCombatRandom, createWaveOfferShuffle, warbandTurnOrder } from "./waves.js";
@@ -145,7 +153,7 @@ function createWaveActor(kind, { id, position, spawnTick, slot, relentless }) {
 export class ColosseumEncounter {
   kind = colosseumKind;
   // The mechanics that stay as they were once a run has started.
-  runStartMechanicsKeys = [colosseumStartWaveKey, colosseumModifierChoiceKey];
+  runStartMechanicsKeys = [colosseumStartWaveKey, colosseumModifierChoiceKey, colosseumDoubleSouthKey];
 
   // `setupModifiers` is { id: level } of the modifiers chosen in the set-up.
   constructor(setupModifiers = {}) {
@@ -191,10 +199,13 @@ export class ColosseumEncounter {
   }
 
   // --- what the engine always calls ---------------------------------------
-  // A new run. `seeds` is what getSeeds returned, when a run is repeated.
+  // A new run. `seeds` is what getSeeds returned, when a run is repeated;
+  // a practice restart (planPracticeRestart) adds the modifiers the run had
+  // by then.
   reset(seeds) {
     // A seed is 32 bits: one of 4294967296.
     this.encounterSeed = seeds?.encounterSeed ?? Math.floor(Math.random() * 4294967296);
+    this.startModifiers = seeds?.modifiers ? readModifierSelection(seeds.modifiers) : null;
     this.outcome = { phase: "active" };
     this.nextActorId = 0;
     // The monsters in the world, alive or dying: actor id to its kind.
@@ -205,7 +216,7 @@ export class ColosseumEncounter {
     this.lastDefeat = null;
     // A new run has no stacks of Doom: setModifiers would carry them over.
     this.modifierState = null;
-    this.setModifiers({ ...this.setupModifiers });
+    this.setModifiers({ ...(this.startModifiers ?? this.setupModifiers) });
     this.effects.reset();
     // What Minimus offers, while he does: { requestId, wave, options }; and
     // how often an offer was opened or asked for again in this run.
@@ -222,7 +233,7 @@ export class ColosseumEncounter {
     this.configureRunStart({});
   }
   getSeeds() {
-    return { encounterSeed: this.encounterSeed };
+    return { encounterSeed: this.encounterSeed, ...(this.startModifiers ? { modifiers: { ...this.startModifiers } } : {}) };
   }
   getDefaultMechanicsConfig() {
     return buildColosseumControls().defaultMechanicsConfig;
@@ -346,6 +357,8 @@ export class ColosseumEncounter {
     const startWave = getColosseumStartWave(mechanics);
     // Whether Minimus offers a modifier before each wave.
     this.choosing = mechanics[colosseumModifierChoiceKey] !== false;
+    // The practice switch of waves.js: two monsters on south spawn points.
+    this.doubleSouth = mechanics[colosseumDoubleSouthKey] === true;
     if (!this.choosing) {
       this.beginWave(startWave, 0);
     } else {
@@ -380,6 +393,25 @@ export class ColosseumEncounter {
     player.isMoving = false;
     player.isRunning = false;
     return false;
+  }
+  // The practice commands of controls.js restart the run on the wave being
+  // fought, with the modifiers it had as the wave began, the player on the tile he
+  // stood on one tick before its monsters were placed (where he stands, if
+  // they are not placed yet). "Retry Wave" keeps the seed, and so the spawns
+  // of a player who stands still until they are placed; "Random Spawns"
+  // draws a new one. The engine restarts with what is returned here.
+  planPracticeRestart(command) {
+    if (command.type !== retryWaveCommandType && command.type !== rerollWaveCommandType) {
+      return null;
+    }
+    return {
+      encounterSeeds: {
+        encounterSeed: command.type === retryWaveCommandType ? this.encounterSeed : Math.floor(Math.random() * 4294967296),
+        modifiers: { ...this.modifiersAtWaveStart },
+      },
+      runMechanics: { [colosseumStartWaveKey]: String(this.wave) },
+      ...(this.playerTileBeforePlacing ? { startPosition: [...this.playerTileBeforePlacing] } : {}),
+    };
   }
   // Whether a wave is being fought: its monsters are placed and it is not completed yet.
   isWaveOn() {
@@ -468,6 +500,8 @@ export class ColosseumEncounter {
   awaitChoice(wave, phase, minimusTick) {
     this.wave = wave;
     this.phase = phase;
+    this.modifiersAtWaveStart = { ...this.modifiers };
+    this.playerTileBeforePlacing = null;
     this.minimusTick = minimusTick;
     this.placeTick = null;
     this.reinforcementTick = null;
@@ -527,6 +561,11 @@ export class ColosseumEncounter {
   beginWave(wave, startTick) {
     this.wave = wave;
     this.phase = "countdown";
+    // What a practice restart of this wave starts with: with Minimus, what
+    // the run had before his offer (awaitChoice), so that he offers it again.
+    if (!this.choosing) {
+      this.modifiersAtWaveStart = { ...this.modifiers };
+    }
     this.placeTick = startTick + waveStartDelayTicks;
     // The tick the wave is completed on, once none of its monsters is left.
     this.completeTick = null;
@@ -557,7 +596,7 @@ export class ColosseumEncounter {
   placeWave(context) {
     // OBS: the line, and that it is red.
     context.tickEvents.emit({ type: "game_message", kind: "game", segments: [{ text: `Wave: ${this.wave}`, color: solMessageColors.red }] });
-    const spawns = buildWaveSpawns(this.encounterSeed, this.wave, this.playerTileBeforePlacing ?? context.playerPos, this.modifiers);
+    const spawns = buildWaveSpawns(this.encounterSeed, this.wave, this.playerTileBeforePlacing ?? context.playerPos, this.modifiers, { doubleSouth: this.doubleSouth });
     for (const spawn of spawns) {
       this.placeMonster(spawn, context);
       if (spawn.kind === "shockwave" && this.modifiers.dynamicduo) {
