@@ -220,7 +220,7 @@ const rupturaFuseTicks = 2;
 const rupturaNpcBlastTicks = 2;
 const rupturaPlayerBlastTicks = 1;
 const rupturaGoneTicks = 4;
-// OBS: it walks until it is 8 tiles away and spits from no farther (52 spits;
+// OBS: it walks until it is 8 tiles away and spits from no farther (471 spits;
 // the first of each on the tick it gets there: k1 242, k2 25 and 150).
 const acidicHoldRange = 8;
 const mirrorbackGoneTicks = 3; // OBS: gone 3 ticks after the killing hit (k1 290 and 293, k2 83 and 86)
@@ -235,7 +235,10 @@ const eggsGoneTicks = 3;
 const cyclesPerTick = 30;
 
 // Max hits (WIKI) and what a protection prayer leaves of them.
-export const maxHits = { melee: 38, range: 34, magic: 21, acidic: 15 };
+// The Acidic's: OBS, 1 to 7 and each as often (28, 24, 29, 24, 31, 28 and 29 of
+// 317 spits at a player without Protect from Missiles, the other 124 were 0);
+// WIKI and TABLE have 15.
+export const maxHits = { melee: 38, range: 34, magic: 21, acidic: 7 };
 export const prayerLeaves = {
   // OBS: through Protect from Melee his legs hit 0 to 3 (388 swings that landed
   // alone: 153 were 0, 89 were 1, 76 were 2 and 70 were 3): a tenth of a hit,
@@ -260,9 +263,9 @@ const ballDamage = [14, 18]; // OBS (tsps); OBS: 17 (n7 39)
 const venom = 1_000_000; // WIKI: the acid envenoms (the engine's poisonVarp for venom)
 // WIKI: the Ruptura's blast by distance from it (under it, beside it, 1 and 2
 // tiles between), in proportion to its hitpoints left. On the player (not yet
-// recorded: inferred); on Araxxor, an egg or another araxyte (OBS: 80 three
-// times, each with him over it, k1 207 and 335, k2 122; nothing on an Acidic 4
-// tiles away, k1 335, or 6, k2 122).
+// recorded: inferred); on Araxxor, an egg or another araxyte (OBS: 80 on him
+// with him over it, 25 of 25; 48 on an Acidic 2 tiles away, n10 171; nothing on
+// one 4 away, k1 335, or on an egg 4 away, n8 85).
 const rupturaOnPlayer = [70, 49, 28, 7];
 const rupturaOnNpc = [80, 64, 48, 33];
 const selfCut = [8, 12]; // WIKI; OBS: 8 to 12, each as often (17, 20, 19, 16 and 15 of 87)
@@ -969,7 +972,7 @@ class AraxxorEncounter {
       ...(type === "mirrorback" ? { deathPolicy: "queued" } : {}), // OBS: its death animation the tick after the killing hit (k1 291, k2 84)
       vitals: { hp: left, maxHp: araxyteHitpoints }, formulaStats: tableStats(ids.araxytes[type]),
       combat: { attackSpeed: attackTicks, attackRange: type === "acidic" ? acidicHoldRange : 1, attackStyle: type === "acidic" ? "range" : "melee",
-        nextActionTick: context.tick + araxyteWakeTicks, targetId: null, lastAttackTick: null,
+        nextActionTick: context.tick + (type === "acidic" ? acidicFirstTicks : araxyteWakeTicks), targetId: null, lastAttackTick: null,
         animations: { idle: seqs.araxyteIdle, walk: seqs.araxyteWalk, run: seqs.araxyteWalk, attack: null, death: type === "mirrorback" ? seqs.mirrorbackDeath : seqs.explode } },
     });
     this.araxytes.set(id, { type, hatchTick: context.tick, wakeTick: context.tick + araxyteWakeTicks, fuse: null });
@@ -988,12 +991,12 @@ class AraxxorEncounter {
     }
     if (tick < npc.combat.nextActionTick) return idle;
     if (araxyte.type === "acidic") {
-      if (!isNpcInAttackRange(npc, player, acidicHoldRange)) return idle;
+      // OBS: not on the tick it steps out from under the player (n14 190: off him, 191: it spits).
+      if (npc.combat.startedTurnOverlappingTarget || !isNpcInAttackRange(npc, player, acidicHoldRange)) return idle;
       const gap = gapTo(player.position, npc.position, araxyteSize);
       const end = projectiles.acidic.base + 10 * gap;
       // OBS: recorded on the tick its spit arrives, so many whole ticks after
-      // it: 1 beside it (k2 174, 180), 2 from 3 tiles (k1 350, k2 168), 3 from
-      // 6 to 8 (45 spits). From 2, 4 and 5 tiles inferred from its flight.
+      // it: 1 from 1 and 2 tiles (10 spits), 2 from 3 to 5 (51), 3 from 6 to 8 (410).
       const impactDelayTicks = Math.floor(end / cyclesPerTick) - 1;
       const attack = rollNpcAttack({
         attacker: npc, target: player, random: this.random,
