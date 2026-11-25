@@ -102,6 +102,21 @@ export const scenarios = [
     ...meleeGear,
   },
   {
+    // A Mirrorback shares his damage, then is killed beside the player.
+    name: "araxxor/mirrorback",
+    kind: KIND,
+    seed: 9,
+    ticks: 60,
+    mechanics: { araxxorEggs: "white", infiniteHealth: true },
+    start: besideHim,
+    ...meleeGear,
+    script(tick, api) {
+      const mirrorback = api.npcs().find((npc) => npc.id === "araxyte-0");
+      const target = mirrorback && tick > 45 ? mirrorback.id : BOSS;
+      if (api.player().attackTarget !== target) attack(api, target);
+    },
+  },
+  {
     // Enraged; off his corner, 2 tiles away, as he cleaves: one pool (red
     // eggs, t 332), then away from him: he stands for 2 ticks and comes.
     name: "araxxor/cleave-off-corner",

@@ -48,6 +48,28 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.deepEqual([0, 1, 2, 3, 4].map((n) => ticks[thrown + n].bossTarget), [null, null, null, null, "player"]);
 }
 {
+  // The Mirrorback: no share for its first two ticks, then a fifth on the tick of the hit and half of that
+  // back, rounded down; killed, it goes 3 ticks later, its death animation the tick after the hit.
+  const ticks = await ticksOf("mirrorback");
+  const hatched = ticks.findIndex((tick) => tick?.ids.includes("araxyte-0"));
+  let shares = 0;
+  for (let n = hatched; n < ticks.length; n++) {
+    const taken = ticks[n].hits.find((hit) => hit.targetId === "araxxor" && hit.attackKind !== "typeless")?.damage ?? 0;
+    const share = ticks[n].hits.find((hit) => hit.targetId === "araxyte-0" && hit.attackKind === "typeless")?.damage ?? 0;
+    const recoil = ticks[n].damage.find((hit) => /reflection/.test(hit.source))?.effectiveDamage;
+    if (n < hatched + 3) assert.equal(share, 0);
+    else if (share > 0) {
+      shares++;
+      assert.equal(share, Math.floor((taken + share) / 5));
+      assert.equal(recoil, Math.floor(share / 2));
+    }
+  }
+  assert.ok(shares > 1);
+  const killed = ticks.findIndex((tick, n) => n > hatched && tick.npcs.get("araxyte-0")?.alive === false);
+  assert.equal(ticks[killed].npcs.get("araxyte-0").deathAnimationTick, killed + 1);
+  assert.deepEqual([2, 3].map((n) => ticks[killed + n].ids.includes("araxyte-0")), [true, false]);
+}
+{
   // Off his corner, 2 tiles away: one pool. After the cleave he stands for 2 ticks, then comes.
   const ticks = await ticksOf("cleave-off-corner");
   const cleave = first(ticks, "araxxor cleave");

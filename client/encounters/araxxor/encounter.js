@@ -149,7 +149,11 @@ const firstAttackTicks = 6; // OBS: 6 ticks after he comes up
 // attack and after every sixth, which is the same until the enrage.
 const firstHatchTicks = 21;
 const hatchTicks = 42;
-const araxyteWakeTicks = 5; // OBS (tsps): it walks from 5 ticks after it hatched
+// OBS: it turns to the player 3 ticks after it hatched (k1 188, 230, 272, 314,
+// 356; k2 17, 59, 101, 143) and walks from 5 (k1 190, 232, 274, 316; k2 19,
+// 61, 103, 145; OBS (tsps)).
+const araxyteTurnTicks = 3;
+const araxyteWakeTicks = 5;
 const enrageThreshold = 0.25; // WIKI
 const enrageFirstAttackTicks = 5; // OBS: the first cleave 5 ticks after 11488
 const enrageBodyTicks = 2; // OBS: 11489 2 ticks after 11488
@@ -179,12 +183,16 @@ const dripLandTicks = 4; // OBS
 const dripTicks = 7; // OBS (tsps): 1626 on the player for 7 ticks
 const dripPools = 6; // OBS: a pool on each of the next 6 ticks
 // OBS: the Ruptura blows up 2 ticks after it reaches the player, its blast
-// hits 2 ticks later (as recorded), and it goes 2 after that.
+// lands on Araxxor 2 ticks later (k1 205 and 207, 333 and 335; k2 120 and 122)
+// and, inferred, is recorded then on the player too; it goes 2 after that.
 const rupturaFuseTicks = 2;
-const rupturaBlastTicks = 1;
+const rupturaNpcBlastTicks = 2;
+const rupturaPlayerBlastTicks = 1;
 const rupturaGoneTicks = 4;
-const acidicHoldRange = 8; // OBS: it walks until it is 8 tiles away,
-const acidicReach = 10; // OBS: and spits from 10.
+// OBS: it walks until it is 8 tiles away and spits from no farther (52 spits;
+// the first of each on the tick it gets there: k1 242, k2 25 and 150).
+const acidicHoldRange = 8;
+const mirrorbackGoneTicks = 3; // OBS: gone 3 ticks after the killing hit (k1 290 and 293, k2 83 and 86)
 const deathTicks = 5; // OBS (tsps): his corpse 5 ticks into his death
 const eggCrumbleTicks = 1; // OBS: the eggs crumble the tick after he dies
 const leftoverGoneTicks = 2; // OBS: the eggs and araxytes go 2 ticks after that
@@ -207,14 +215,23 @@ const ballDamage = [14, 18]; // OBS (tsps)
 const venom = 1_000_000; // WIKI: the acid envenoms (the engine's poisonVarp for venom)
 // WIKI: the Ruptura's blast by distance from it (under it, beside it, 1 and 2
 // tiles between), in proportion to its hitpoints left. On the player (not yet
-// recorded); on Araxxor, an egg or another araxyte (OBS: 80 three times, each
-// with him over it).
+// recorded: inferred); on Araxxor, an egg or another araxyte (OBS: 80 three
+// times, each with him over it, k1 207 and 335, k2 122; nothing on an Acidic 4
+// tiles away, k1 335, or 6, k2 122).
 const rupturaOnPlayer = [70, 49, 28, 7];
 const rupturaOnNpc = [80, 64, 48, 33];
 const selfCut = [8, 12]; // WIKI; OBS: 8, 12, 10 and 8
 const mirrorShare = 5; // OBS: it takes a fifth, rounded down (8 of 42, 1 of 5, 5 of 27, 6 of 34, 10 of 50 ...)
-const mirrorRecoil = 2; // OBS: half of that, rounded down, back at the player (4, 2, 3, 0, 5 ...)
+const mirrorRecoil = 2; // OBS: half of that, rounded down, back at the player (4, 2, 3, 5 ...; a 0 is shown, k2 64 and 76)
+// OBS: one hatched 3 ticks before takes its share (k2 59), one hatched the
+// tick before does not (k2 183). Between the two, inferred: from when it turns
+// to the player.
+const mirrorShareTicks = araxyteTurnTicks;
 const mirrorMeleeRecoil = 2; // OBS: half of a melee hit on it (18 of 37)
+const bossSpawnFacing = 1280; // OBS k1 164: he comes up facing north-east
+// OBS: the eggs face this tile (their recorded facings point at its middle,
+// both kills), and what hatches from one faces as it did until it turns.
+const eggsFace = { position: fromWorld([3634, 9815]), size: 1 };
 const eggHitpoints = 65; // CACHE
 const araxyteHitpoints = 58; // TABLE
 
@@ -292,8 +309,8 @@ class AraxxorEncounter {
   constructor() {
     this.kind = araxxorKind;
     // Not state: the arena as the engine handed it, its open tiles, the
-    // world (for the rule that is handed none).
-    for (const name of ["arenaBase", "floor", "world"]) Object.defineProperty(this, name, { value: null, writable: true });
+    // tick's context (for the rules that are handed none).
+    for (const name of ["arenaBase", "floor", "context"]) Object.defineProperty(this, name, { value: null, writable: true });
     this.floor = new Set();
     this.patternChoice = "random";
     // The eggs' order stays as the run started with it (registry.js).
@@ -313,7 +330,7 @@ class AraxxorEncounter {
     this.nextHatchTick = firstHatchTicks;
     // The eggs, in the order they hatch: "egg", "hatched", "destroyed" or "spoiled".
     this.eggs = this.pattern.map((type, index) => ({ index, type, state: "egg" }));
-    this.araxytes = new Map(); // actor id -> { type, wakeTick, fuse, lastAttackTick }
+    this.araxytes = new Map(); // actor id -> { type, hatchTick, wakeTick, fuse }
     this.pools = new Map(); // tile key -> [x, y]
     this.queue = []; // { tick, run(context, hits) }
     this.turn = { attack: null, middle: null }; // what he does this tick, and where his middle was as it began
@@ -322,8 +339,7 @@ class AraxxorEncounter {
     this.drip = null; // { from, until }
     this.ball = null; // { id, middle, direction, hit, burstTick }
     this.balls = 0;
-    this.pendingPlayerHits = [];
-    this.pendingNpcHits = [];
+    this.pendingPlayerHits = []; // the Mirrorback's recoil, until the NPCs have had their turns
     this.cleaves = []; // { tiles, lands }: for the scene
     this.updateArena();
   }
@@ -396,7 +412,7 @@ class AraxxorEncounter {
     const maxHp = 1020; // TABLE, WIKI
     const boss = {
       id: bossActorId, kind: "npc", role: "boss", npcTypeId: ids.boss, archetypeId: "araxxor", size: bossSize, alive: true,
-      position: [...bossStart], previousPosition: [...bossStart], facing: 0, history: new Map(),
+      position: [...bossStart], previousPosition: [...bossStart], facing: bossSpawnFacing, history: new Map(),
       vitals: { hp: maxHp, maxHp }, formulaStats,
       combat: { attackSpeed: attackTicks, attackRange: 1, meleeReach: "diagonal", attackStyle: "melee", nextActionTick: firstAttackTicks, targetId: "player", lastAttackTick: null,
         animations: { idle: seqs.idle, walk: seqs.walk, run: seqs.walk, attack: seqs.melee, death: seqs.death } },
@@ -408,6 +424,7 @@ class AraxxorEncounter {
       combat: { attackSpeed: attackTicks, attackRange: 0, attackStyle: "typeless", nextActionTick: Infinity, targetId: null, lastAttackTick: null,
         animations: { idle: seqs.eggIdle, walk: seqs.eggIdle, run: seqs.eggIdle, attack: null, death: seqs.eggCrumble } },
     }));
+    for (const egg of eggs) faceActorToward(egg, eggsFace);
     return [boss, ...eggs];
   }
   moveNpc(npc, context) {
@@ -415,7 +432,9 @@ class AraxxorEncounter {
     if (npc.id === bossActorId) return this.moveBoss(npc, context);
     if (npc.id === this.ball?.id) return this.ball.step ? [{ npcId: npc.id, path: this.ball.step }] : [];
     const araxyte = this.araxytes.get(npc.id);
-    if (!araxyte || context.tick < araxyte.wakeTick || araxyte.fuse !== null) return [];
+    if (!araxyte) return [];
+    if (npc.combat.targetId === null && context.tick >= araxyte.hatchTick + araxyteTurnTicks) npc.combat.targetId = "player";
+    if (context.tick < araxyte.wakeTick || araxyte.fuse !== null) return [];
     return this.pursuit(npc, context);
   }
   // The default pursuit, with the fight's own random draws (it steps out from under the player at random).
@@ -466,11 +485,8 @@ class AraxxorEncounter {
   // --- each tick, before the NPCs ---------------------------------------
   resolveHazards(context) {
     this.tick = context.tick;
-    this.world = context.world;
+    this.context = context;
     const hits = [];
-    this.flushNpcHits(context);
-    hits.push(...this.pendingPlayerHits);
-    this.pendingPlayerHits = [];
     if (this.outcome.phase !== "active") return hits;
     // The acid under the player, as it was at the end of the last tick.
     if (this.pools.has(key(context.playerPos)) && context.world.getPlayer()?.alive) hits.push(this.poolHit(context.playerPos));
@@ -486,18 +502,28 @@ class AraxxorEncounter {
     }
     return hits;
   }
+  // --- each tick, after the NPCs ----------------------------------------
+  completeNpcBand(context) {
+    const hits = this.pendingPlayerHits;
+    this.pendingPlayerHits = [];
+    return hits;
+  }
   // --- each tick, after the player -------------------------------------
   processPostTick(context) {
-    this.flushNpcHits(context);
     this.playerTrail = [this.playerTrail[1] ?? [...context.playerPos], [...context.playerPos]];
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
     return [];
   }
   processNpcTick(npc, context) {
     const idle = { environmentalDamages: [] };
-    if (!npc.alive || this.outcome.phase !== "active") return idle;
-    if (npc.id === bossActorId) return this.bossTurn(npc, context);
+    if (this.outcome.phase !== "active") return idle;
     const araxyte = this.araxytes.get(npc.id);
+    if (!npc.alive) {
+      // OBS: a Mirrorback still bites on the tick of the hit that kills it, and the bite does nothing (k1 290, k2 83).
+      if (araxyte?.type === "mirrorback") this.mirrorbackBite(npc, context);
+      return idle;
+    }
+    if (npc.id === bossActorId) return this.bossTurn(npc, context);
     if (araxyte) return this.araxyteTurn(npc, araxyte, context);
     return idle;
   }
@@ -815,13 +841,14 @@ class AraxxorEncounter {
     const position = [...eggTiles[next.index]];
     context.spawnNpc({
       id, kind: "npc", role: "minion", npcTypeId: ids.araxytes[type], archetypeId: "araxyte-" + type, size: araxyteSize, alive: true,
-      position, previousPosition: [...position], facing: 0, history: new Map(), passThruNpcs: true,
+      position, previousPosition: [...position], facing: egg.facing, history: new Map(), passThruNpcs: true,
+      ...(type === "mirrorback" ? { deathPolicy: "queued" } : {}), // OBS: its death animation the tick after the killing hit (k1 291, k2 84)
       vitals: { hp: left, maxHp: araxyteHitpoints }, formulaStats: tableStats(ids.araxytes[type]),
       combat: { attackSpeed: attackTicks, attackRange: type === "acidic" ? acidicHoldRange : 1, attackStyle: type === "acidic" ? "range" : "melee",
-        nextActionTick: context.tick + araxyteWakeTicks, targetId: "player", lastAttackTick: null,
+        nextActionTick: context.tick + araxyteWakeTicks, targetId: null, lastAttackTick: null,
         animations: { idle: seqs.araxyteIdle, walk: seqs.araxyteWalk, run: seqs.araxyteWalk, attack: null, death: type === "mirrorback" ? seqs.mirrorbackDeath : seqs.explode } },
     });
-    this.araxytes.set(id, { type, wakeTick: context.tick + araxyteWakeTicks, fuse: null });
+    this.araxytes.set(id, { type, hatchTick: context.tick, wakeTick: context.tick + araxyteWakeTicks, fuse: null });
     emitInfernoVisual(context.tickEvents, { animations: [{ actorId: id, clipId: "hatch", delayCycles: 0 }], projectiles: [],
       graphics: [{ spotAnimId: spots.hatch[type], target: { kind: "actor", actorId: id, size: araxyteSize, position }, height: 0, delayCycles: 0 }] });
   }
@@ -837,11 +864,13 @@ class AraxxorEncounter {
     }
     if (tick < npc.combat.nextActionTick) return idle;
     if (araxyte.type === "acidic") {
-      if (!isNpcInAttackRange(npc, player, acidicReach)) return idle;
+      if (!isNpcInAttackRange(npc, player, acidicHoldRange)) return idle;
       const gap = gapTo(player.position, npc.position, araxyteSize);
-      // inferred: an NPC's usual ranged delay, which the recorded hits fit (2 at 8 tiles, 1 beside it).
-      const impactDelayTicks = 1 + Math.floor((3 + gap) / 6);
       const end = projectiles.acidic.base + 10 * gap;
+      // OBS: recorded on the tick its spit arrives, so many whole ticks after
+      // it: 1 beside it (k2 174, 180), 2 from 3 tiles (k1 350, k2 168), 3 from
+      // 6 to 8 (45 spits). From 2, 4 and 5 tiles inferred from its flight.
+      const impactDelayTicks = Math.floor(end / cyclesPerTick) - 1;
       const attack = rollNpcAttack({
         attacker: npc, target: player, random: this.random,
         plan: { formulaStyle: "ranged", damageType: "range", attackKind: "range_arrow", maxHit: maxHits.acidic, impactDelayTicks, sourceDeathPolicy: "cancel-before-impact" },
@@ -852,16 +881,22 @@ class AraxxorEncounter {
       npc.combat.nextActionTick = tick + attackTicks;
       return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
     }
-    // The Mirrorback: its bite (OBS (tsps): every 6 ticks; a stab, inferred; TABLE max).
-    if (!isNpcInAttackRange(npc, player, 1)) return idle;
+    // The Mirrorback: its bite (a stab, inferred; TABLE max).
+    if (!this.mirrorbackBite(npc, context)) return idle;
     const attack = rollNpcAttack({
       attacker: npc, target: player, random: this.random,
       plan: { formulaStyle: "melee_stab", damageType: "melee", attackKind: "melee_stab", impactDelayTicks: 0, sourceDeathPolicy: "cancel-before-impact" },
     });
-    emitInfernoNpcAttack(context, { actor: npc, target: player, clipId: "attack", kind: "araxyte_mirrorback", impactDelayTicks: 0 });
-    npc.combat.lastAttackTick = tick;
-    npc.combat.nextActionTick = tick + attackTicks;
     return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
+  }
+  // Whether the Mirrorback bites, every 6 ticks (OBS k2 77 and 83; OBS (tsps)).
+  mirrorbackBite(npc, context) {
+    const player = context.world.getPlayer();
+    if (context.tick < npc.combat.nextActionTick || !player?.alive || !isNpcInAttackRange(npc, player, 1)) return false;
+    emitInfernoNpcAttack(context, { actor: npc, target: player, clipId: "attack", kind: "araxyte_mirrorback", impactDelayTicks: 0 });
+    npc.combat.lastAttackTick = context.tick;
+    npc.combat.nextActionTick = context.tick + attackTicks;
+    return true;
   }
   lightFuse(npc, araxyte, context) {
     araxyte.fuse = context.tick;
@@ -872,18 +907,20 @@ class AraxxorEncounter {
       const share = ruptura.vitals.hp / ruptura.vitals.maxHp; // WIKI: "proportional to its health"
       emitInfernoVisual(ctx.tickEvents, { animations: [{ actorId: npc.id, clipId: "explode", delayCycles: 0 }], projectiles: [],
         graphics: [{ spotAnimId: spots.rupturaExplosion, target: buildActorVisualTarget(ruptura), height: 0, delayCycles: 0 }] });
-      this.later(rupturaBlastTicks, (later, hits) => {
+      this.later(rupturaPlayerBlastTicks, (later, hits) => {
         if (this.outcome.phase !== "active") return;
-        const at = later.world.getNpc(npc.id) ?? ruptura;
-        const playerGap = gapTo(later.playerPos, at.position, araxyteSize);
+        const playerGap = gapTo(later.playerPos, ruptura.position, araxyteSize);
         if (later.world.getPlayer()?.alive && playerGap < rupturaOnPlayer.length)
           hits.push({ source: "Ruptura Araxyte's explosion", attackType: "typeless", baseDamage: Math.floor(rupturaOnPlayer[playerGap] * share), playerPosition: [...later.playerPos] });
+      });
+      this.later(rupturaNpcBlastTicks, (later) => {
+        if (this.outcome.phase !== "active") return;
         for (const other of later.world.getNpcs()) {
           if (other.id === npc.id || !other.alive || other.id === this.ball?.id) continue;
           // Between footprints: 0 when they overlap.
           const gap = Math.max(
-            at.position[0] - (other.position[0] + other.size - 1), other.position[0] - (at.position[0] + araxyteSize - 1),
-            at.position[1] - (other.position[1] + other.size - 1), other.position[1] - (at.position[1] + araxyteSize - 1), 0);
+            ruptura.position[0] - (other.position[0] + other.size - 1), other.position[0] - (ruptura.position[0] + araxyteSize - 1),
+            ruptura.position[1] - (other.position[1] + other.size - 1), other.position[1] - (ruptura.position[1] + araxyteSize - 1), 0);
           if (gap < rupturaOnNpc.length) this.hitNpc(later, npc.id, other.id, Math.floor(rupturaOnNpc[gap] * share));
         }
       });
@@ -906,10 +943,10 @@ class AraxxorEncounter {
     }
     this.throwBlobs(context, middle, [...tiles.values()], projectiles.acidicDeath);
   }
-  livingMirrorback(world) {
+  sharingMirrorback(world) {
     for (const [id, araxyte] of this.araxytes) {
-      if (araxyte.type !== "mirrorback") continue;
-      const npc = world?.getNpc(id);
+      if (araxyte.type !== "mirrorback" || world.tick < araxyte.hatchTick + mirrorShareTicks) continue;
+      const npc = world.getNpc(id);
       if (npc?.alive) return npc;
     }
     return null;
@@ -935,36 +972,30 @@ class AraxxorEncounter {
     if (!context.world.getNpc(attackerId) || !context.world.getNpc(targetId)?.alive) return;
     context.queueNpcHit({ attackerId, targetId, style: "typeless", attackKind: "typeless", rolledDamage: damage, accuracySucceeded: true, impactDelayTicks: 0, sourceDeathPolicy: "persist" });
   }
-  flushNpcHits(context) {
-    for (const { attackerId, targetId, damage } of this.pendingNpcHits) this.hitNpc(context, attackerId, targetId, damage);
-    this.pendingNpcHits = [];
-  }
-  // A hit of the player's as it lands on one of the fight's NPCs.
+  // A hit of the player's as it lands on one of the fight's NPCs. What the
+  // Mirrorback takes of it lands with it (OBS: 8 of 8, k1 276 to k2 75), on its
+  // turn after his; what it throws back is on the player that tick (OBS:
+  // recorded on the next, k1 277 to k2 84).
   playerHit(damage, attack, target, player, world) {
     if (!target?.alive || damage <= 0) return damage;
+    const recoils = (dealt) => this.pendingPlayerHits.push({ source: "Mirrorback Araxyte's reflection", attackType: "typeless", baseDamage: dealt, playerPosition: [...player.position] });
     if (target.id === bossActorId) {
-      const mirrorback = this.livingMirrorback(world);
-      // Not of the blow that kills him (inferred: OBS, a Mirrorback a tick old took none of it).
-      if (!mirrorback || damage >= target.vitals.hp) return damage;
+      const mirrorback = this.sharingMirrorback(world);
       const share = Math.floor(damage / mirrorShare);
-      if (share <= 0) return damage;
-      // The Mirrorback's share lands on it a tick later here (OBS: with his).
-      this.pendingNpcHits.push({ attackerId: mirrorback.id, targetId: mirrorback.id, damage: share });
-      const recoil = Math.floor(share / mirrorRecoil);
-      if (recoil > 0) this.pendingPlayerHits.push({ source: "Mirrorback Araxyte's reflection", attackType: "typeless", baseDamage: recoil, playerPosition: [...player.position] });
+      if (!mirrorback || share <= 0) return damage;
+      this.hitNpc(this.context, mirrorback.id, mirrorback.id, share);
+      recoils(Math.floor(share / mirrorRecoil));
       return damage - share;
     }
     // WIKI, OBS: a melee hit on a Mirrorback from beside it throws half back
     // (a halberd from a tile away does not).
-    if (this.araxytes.get(target.id)?.type === "mirrorback" && attack?.style === "melee" && gapTo(player.position, target.position, araxyteSize) <= 1) {
-      const recoil = Math.floor(Math.min(damage, target.vitals.hp) / mirrorMeleeRecoil);
-      if (recoil > 0) this.pendingPlayerHits.push({ source: "Mirrorback Araxyte's reflection", attackType: "typeless", baseDamage: recoil, playerPosition: [...player.position] });
-    }
+    if (this.araxytes.get(target.id)?.type === "mirrorback" && attack?.style === "melee" && gapTo(player.position, target.position, araxyteSize) <= 1)
+      recoils(Math.floor(Math.min(damage, target.vitals.hp) / mirrorMeleeRecoil));
     return damage;
   }
   getEngineRules() {
     return {
-      playerDamageOnNpc: (damage, { attacker, target, attack }) => this.playerHit(damage, attack, target, attacker, this.world),
+      playerDamageOnNpc: (damage, { attacker, target, attack }) => this.playerHit(damage, attack, target, attacker, this.context.world),
       // His ranged drains Defence and his magic Prayer, 9% of what is left,
       // rounded down, when the hit does damage (WIKI, OBS (tsps)).
       onPlayerDamageTaken: (hit, rules) => {
@@ -979,7 +1010,14 @@ class AraxxorEncounter {
   onNpcDefeated(defeat, context, completionOwnership) {
     const araxyte = this.araxytes.get(defeat.npcId);
     if (araxyte) {
-      if (araxyte.type === "acidic" && this.outcome.phase === "active") this.acidicBurst(context.world.getNpc(defeat.npcId), context);
+      const npc = context.world.getNpc(defeat.npcId);
+      if (araxyte.type === "acidic" && this.outcome.phase === "active") this.acidicBurst(npc, context);
+      if (araxyte.type === "mirrorback") {
+        this.deathAnimationTick(npc, defeat);
+        this.later(mirrorbackGoneTicks, (ctx) => {
+          if (ctx.world.getNpc(defeat.npcId)) ctx.despawnNpc(defeat.npcId);
+        });
+      }
       this.araxytes.delete(defeat.npcId);
       return;
     }
@@ -993,7 +1031,6 @@ class AraxxorEncounter {
     this.queue = [];
     this.drip = null;
     this.cleaves = [];
-    this.pendingNpcHits = [];
     this.pendingPlayerHits = [];
     // OBS: the acid goes with him.
     this.pools.clear();
@@ -1020,6 +1057,15 @@ class AraxxorEncounter {
     this.araxytes.clear();
     if (completionOwnership !== "encounter-owned") return;
     this.outcome = { phase: "resolving", decisiveTick: defeat.tick, completionTick: defeat.tick + deathTicks, primaryActorId: bossActorId, completionActorIds: [bossActorId] };
+  }
+  // OBS: the tick after the killing hit, for one that stepped the tick before
+  // it too (the Mirrorback of k1, 289 to 291); the engine waits 3 ticks from a
+  // step.
+  deathAnimationTick(npc, defeat) {
+    if (!npc?.death) return defeat.tick;
+    delete npc.lastStepTick;
+    npc.deathAnimationTick = npc.death.processTick;
+    return npc.deathAnimationTick;
   }
   getOutcome() {
     return this.outcome;
