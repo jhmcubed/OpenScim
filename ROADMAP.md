@@ -494,12 +494,13 @@ timing open, record it from the game itself.
       the normal fight; his awakened version has not been recorded, and its
       orb and bile are not in.
       The Leviathan is in (`client/encounters/leviathan/`), from the wiki,
-      RSPSApp's reading of rsprox recordings and videos, and four recordings
-      of the awakened fight, none of them a kill. A normal kill has not been
-      recorded: its lightning and side orb damage, the smoke's 59 or 60, how
-      often it bites and the stun's 25% wait for one, and for both the end of
-      a stun, the rounding of the specials' reduction and the awakened
-      volleys past the third. The Whisperer
+      RSPSApp's reading of rsprox recordings and videos, four recordings of
+      the awakened fight, none of them a kill, and 23 recorded normal kills
+      (its bites, roars, loose rocks, lightning damage and the stun cast).
+      Not recorded yet: the side orbs', rocks' and smoke's damage on a normal
+      player, a stun that runs out or is broken by 25%, the rounding of the
+      specials' reduction, which way a thrown rock puts the player, and the
+      awakened volleys past the third. The Whisperer
       does not exist yet: its kind and its lobby entry are `client/dt2/`
       (`bosses.js`; the engine's table of kinds has it with
       `registered: false`).

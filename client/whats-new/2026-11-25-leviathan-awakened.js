@@ -5,5 +5,5 @@ export default {
   category: "Encounters",
   title: "The Awakened Leviathan",
   impact:
-    "The Awakened Leviathan is in: the tornado, five rocks to a roar and an orb a tick once enraged. From four recordings, both versions get the real lightning, smoke that any rock shelters from, sounds, tails and messages.",
+    "The Awakened Leviathan is in: the tornado, five rocks to a roar and an orb a tick once enraged. From four recordings, both versions get the real lightning, smoke that any rock shelters from, sounds, tails and messages; from 23 recorded kills, the post-quest bites, roars, loose rocks and a stun cast that costs no attack.",
 };
