@@ -140,13 +140,15 @@ export const patterns = {
 // WIKI, OBS: the first egg's colour chooses the special.
 const specialOf = { acidic: "ball", mirrorback: "spray", ruptura: "drip" };
 
-const attackTicks = 6; // WIKI, OBS
-const enragedAttackTicks = 4; // WIKI, OBS
-const specialEvery = 7; // OBS: every seventh attack (WIKI: "every six standard attacks")
-const firstAttackTicks = 6; // OBS: 6 ticks after he comes up
+const attackTicks = 6; // WIKI, OBS (k1 170 to 314, k2 5 to 143)
+const enragedAttackTicks = 4; // WIKI, OBS (k1 320 to 352, k2 149 to 181)
+// OBS: every seventh attack (k1 206, 248, 290; k2 35, 77, 119; WIKI: "every six standard attacks")
+const specialEvery = 7;
+const firstAttackTicks = 6; // OBS: 6 ticks after he comes up (k1 164 and 170)
 // OBS: the first egg hatches 21 ticks after he comes up and the next every 42
-// ticks, enraged too (both kills). WIKI: 3 ticks after the third standard
-// attack and after every sixth, which is the same until the enrage.
+// ticks, enraged too (k1 185, 227, 269, 311, 353; k2 14, 56, 98, 140, 182).
+// WIKI: 3 ticks after the third standard attack and after every sixth, which
+// is the same until the enrage.
 const firstHatchTicks = 21;
 const hatchTicks = 42;
 // OBS: it turns to the player 3 ticks after it hatched (k1 188, 230, 272, 314,
@@ -155,8 +157,10 @@ const hatchTicks = 42;
 const araxyteTurnTicks = 3;
 const araxyteWakeTicks = 5;
 const enrageThreshold = 0.25; // WIKI
-const enrageFirstAttackTicks = 5; // OBS: the first cleave 5 ticks after 11488
-const enrageBodyTicks = 2; // OBS: 11489 2 ticks after 11488
+// OBS: the first cleave 5 ticks after 11488 (k1 315 and 320, k2 144 and 149).
+// It is also 6 after his last bite in both, so his usual 6 fits them as well.
+const enrageFirstAttackTicks = 5;
+const enrageBodyTicks = 2; // OBS: 11489 2 ticks after 11488 (k1 315 and 317, k2 144 and 146)
 const cleaveReach = 2; // WIKI: "a cleave with range 2"
 const cleaveHitTicks = 1; // OBS: its hit (k2 161 and 163) and its acid 2 ticks after the swing
 const cleavePoolTicks = 2;
@@ -170,18 +174,19 @@ const cleaveTargetTicks = 3;
 const ballTargetTicks = 4;
 // inferred (RSPSApp's): his ranged and magic reach 10 tiles; no source says.
 const distantReach = 10;
-const distantHitTicks = 3; // OBS, OBS (tsps): 4 ticks after the cast, whatever the distance
-const ballLandTicks = 2; // OBS
+const distantHitTicks = 3; // OBS (k1 218 and 222), OBS (tsps): 4 ticks after the cast, whatever the distance
+const ballLandTicks = 2; // OBS: k2 35 and 37, 77 and 79, 119 and 121
 // OBS: its middle is on the edge of his body in one of eight directions, the
 // nearest to the player's: k2 37 and 79, north-east, 53,28 for a player at
 // 53,29; k2 121, north, 50,28 for one at 51,29. tsps: on the player's tile.
 const ballLandDistance = 3;
 // OBS: each of three balls rolled 7 tiles (2, 2, 2, then 1) and burst, each
-// at the lair's wall too. tsps: it rolls until its next step is blocked.
+// at the lair's wall too (k2 37 to 42, 79 to 84, 121 to 126). tsps: it rolls
+// until its next step is blocked.
 const ballRollTiles = 7;
-const dripLandTicks = 4; // OBS
-const dripTicks = 7; // OBS (tsps): 1626 on the player for 7 ticks
-const dripPools = 6; // OBS: a pool on each of the next 6 ticks
+const dripLandTicks = 4; // OBS: k1 206 and 210, 248 and 252, 290 and 294
+const dripTicks = 7; // OBS (k1 210 to 216, 252 to 258, 294 to 300), OBS (tsps): 1626 on the player for 7 ticks
+const dripPools = 6; // OBS: a pool on each of the next 6 ticks (k1 211 to 216, 253 to 258, 295 to 300)
 // OBS: the Ruptura blows up 2 ticks after it reaches the player, its blast
 // lands on Araxxor 2 ticks later (k1 205 and 207, 333 and 335; k2 120 and 122)
 // and, inferred, is recorded then on the player too; it goes 2 after that.
@@ -214,8 +219,8 @@ export const prayerLeaves = {
   magic: 0.5, // WIKI: "reduces it by about 50%"
   cleave: 0.34, // WIKI: "reducing the damage by ~66%"
 };
-const drainShare = 0.09; // WIKI, OBS (tsps), OBS: 9% of the level as it is, rounded down
-const poolDamage = [4, 5]; // OBS (tsps): flat, however long the player stands in it; OBS: 4 and 4
+const drainShare = 0.09; // WIKI, OBS (tsps), OBS (k1 222: 3 of 37 Prayer): 9% of the level as it is, rounded down
+const poolDamage = [4, 5]; // OBS (tsps): flat, however long the player stands in it; OBS: 4 and 4 (k1 217, k2 182)
 const ballDamage = [14, 18]; // OBS (tsps)
 const venom = 1_000_000; // WIKI: the acid envenoms (the engine's poisonVarp for venom)
 // WIKI: the Ruptura's blast by distance from it (under it, beside it, 1 and 2
@@ -225,7 +230,7 @@ const venom = 1_000_000; // WIKI: the acid envenoms (the engine's poisonVarp for
 // tiles away, k1 335, or 6, k2 122).
 const rupturaOnPlayer = [70, 49, 28, 7];
 const rupturaOnNpc = [80, 64, 48, 33];
-const selfCut = [8, 12]; // WIKI; OBS: 8, 12, 10 and 8
+const selfCut = [8, 12]; // WIKI; OBS: 8, 12, 10 and 8 (k2 164, 168, 175, 179)
 const mirrorShare = 5; // OBS: it takes a fifth, rounded down (8 of 42, 1 of 5, 5 of 27, 6 of 34, 10 of 50 ...)
 const mirrorRecoil = 2; // OBS: half of that, rounded down, back at the player (4, 2, 3, 5 ...; a 0 is shown, k2 64 and 76)
 // OBS: one hatched 3 ticks before takes its share (k2 59), one hatched the
@@ -241,7 +246,9 @@ const eggHitpoints = 65; // CACHE
 const araxyteHitpoints = 58; // TABLE
 
 // Projectiles, OBS (tsps): [start, end] cycles from the attack; heights,
-// slope and how far from the source they start.
+// slope and how far from the source they start. The magic (k1 218), the drip
+// (k1 206, 248, 290), the ball's burst (k2 41, 83, 125) and the Acidic's spit
+// (52 times) are so in plain OBS too.
 const projectiles = {
   ranged: { spotAnimId: spots.ranged, start: 30, end: 120, startHeight: 296, endHeight: 50, slope: 35, startOffset: 0 },
   magic: { spotAnimId: spots.magic, start: 30, end: 120, startHeight: 69, endHeight: 50, slope: 35, startOffset: 62 },
@@ -781,8 +788,9 @@ class AraxxorEncounter {
     this.later(enrageBodyTicks, (ctx) => this.outcome.phase === "active" && this.animate(ctx, "enraged"));
   }
   // A line of three tiles through the player's, across the blow (OBS: a
-  // player north or south of his middle gets an east-west line, east or west a
-  // north-south one; equal, east-west).
+  // player north or south of his middle gets an east-west line, k1 320 to 328,
+  // 348, 352, k2 149 to 157, east or west a north-south one, k1 336 to 344, k2
+  // 169; equal, east-west, k2 161).
   cleaveLine(boss, tile) {
     const middle = middleOf(boss);
     const dx = tile[0] - middle[0], dy = tile[1] - middle[1];
