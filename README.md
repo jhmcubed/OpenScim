@@ -43,8 +43,11 @@ empty picture; `tools/assets/standins.mjs`), so that the client shows no
 broken image. An original put back from a backup is never replaced.
 
 After pulling a change to `tools/assets/cache-groups.json` or to a file of
-`tools/assets/cache-groups/` (one per encounter), run
-`npm run assets -- --force` to rebuild the trimmed cache.
+`tools/assets/cache-groups/` (one per encounter), run `npm run assets`: it
+rebuilds a trimmed cache that lacks a listed group (`--force` is needed only
+to replace a `disk.zip` it did not build). `npm run build` fails on a trimmed
+cache that lacks a listed group, since the scenes that need the group would
+load to a black screen.
 
 ## Test
 
