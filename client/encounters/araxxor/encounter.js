@@ -155,31 +155,48 @@ const enragedAttackTicks = 4; // WIKI, OBS (k1 320 to 352, k2 149 to 181)
 // OBS: every seventh attack (k1 206, 248, 290; k2 35, 77, 119; WIKI: "every six standard attacks")
 const specialEvery = 7;
 const firstAttackTicks = 6; // OBS: 6 ticks after he comes up (k1 164 and 170)
-// OBS: the first egg hatches 21 ticks after he comes up and the next every 42
-// ticks, enraged too (k1 185, 227, 269, 311, 353; k2 14, 56, 98, 140, 182).
-// WIKI: 3 ticks after the third standard attack and after every sixth, which
-// is the same until the enrage.
+// OBS (20 of 20): the first egg hatches 21 ticks after he comes up and the next
+// every 42, the first after the enrage too (k1 353, k2 182). WIKI: 3 ticks after
+// the third standard attack and after every sixth, which is the same until the
+// enrage. The egg after one that hatched while he was enraged came 38 ticks
+// later (OBS n14 142 and 180, the one log with two of them).
 const firstHatchTicks = 21;
 const hatchTicks = 42;
+const enragedHatchTicks = 38;
+// OBS: he does not step on the two ticks after he comes up, at a player 2 tiles
+// away or more (n10 6, n12 6, n16 6 and 7).
+const stillTicks = 3;
 // OBS: it turns to the player 3 ticks after it hatched (k1 188, 230, 272, 314,
 // 356; k2 17, 59, 101, 143) and walks from 5 (k1 190, 232, 274, 316; k2 19,
 // 61, 103, 145; OBS (tsps)).
 const araxyteTurnTicks = 3;
 const araxyteWakeTicks = 5;
-const enrageThreshold = 0.25; // WIKI
-// OBS: the first cleave 5 ticks after 11488 (k1 315 and 320, k2 144 and 149).
-// It is also 6 after his last bite in both, so his usual 6 fits them as well.
+// OBS: its first spit no sooner than 6 ticks after it hatched (n1 154 and 160, within its reach from 159).
+const acidicFirstTicks = 6;
+// WIKI: "falls below 255 health"; OBS: not at 255 (n0 141, the next hit at 145 enrages him).
+const enrageThreshold = 0.25;
+// OBS: the first cleave 5 ticks after 11488, 6 to 11 after his last attack (20 of 20).
 const enrageFirstAttackTicks = 5;
-const enrageBodyTicks = 2; // OBS: 11489 2 ticks after 11488 (k1 315 and 317, k2 144 and 146)
+const enrageBodyTicks = 2; // OBS: 11489 2 ticks after 11488 (20 of 20)
 const cleaveReach = 2; // WIKI: "a cleave with range 2"
-const cleaveHitTicks = 1; // OBS: its hit (k2 161 and 163) and its acid 2 ticks after the swing
+// OBS: its hit (k2 161 and 163, n4 195 and 197, n14 180 and 182, n17 135 and
+// 137) and its acid 2 ticks after the swing.
+const cleaveHitTicks = 1;
 const cleavePoolTicks = 2;
-// OBS: the cut he gives himself 2 ticks after the swing (k2 173, 177, 181), or
-// 3 (k2 161, 165; what makes it 3 does not show).
+// OBS: what it deals: 36, 25, 27 and 38 on the player behind Protect from
+// Missiles (k2 163, n4 197, n14 182, n17 137: each time he ended the tick after
+// the swing in its line), 30 and 37 on an araxyte (n14 190, n2 160). Never a
+// miss. WIKI: up to 38. From 25 on is inferred.
+const cleaveDamage = [25, 38];
+// OBS: the cut he gives himself lands 2 ticks after the swing when a hit of the
+// player's (a miss too) lands on him on that tick (23 of 23: k2 173, 177, 181,
+// n4 183, n5 169, 173, n6 all 7, n9 all 6, n14 172, 188, 196, 200), else 3 ticks
+// after it (70 of 70).
 const cleaveCutTicks = 2;
-// OBS: he drops his target with a cleave and has it back 3 ticks later (15 of
-// 17; k2 173 and 177 after 2), with the acid ball's throw 4 (k2 35, 77, 119).
-// Until then he neither turns nor steps (k1 333 and 334, k2 155, 158, 159).
+// OBS: he drops his target with a cleave and has it back 2 ticks later when a
+// hit of the player's lands on him on that tick, else 3 (32 and 104 of 136
+// cleaves), with the acid ball's throw 4 (35 of 35). Until then he neither
+// turns nor steps (k1 333 and 334, k2 155, 158, 159).
 const cleaveTargetTicks = 3;
 const ballTargetTicks = 4;
 // inferred (RSPSApp's): his ranged and magic reach 10 tiles; no source says.
@@ -247,7 +264,7 @@ const venom = 1_000_000; // WIKI: the acid envenoms (the engine's poisonVarp for
 // tiles away, k1 335, or 6, k2 122).
 const rupturaOnPlayer = [70, 49, 28, 7];
 const rupturaOnNpc = [80, 64, 48, 33];
-const selfCut = [8, 12]; // WIKI; OBS: 8, 12, 10 and 8 (k2 164, 168, 175, 179)
+const selfCut = [8, 12]; // WIKI; OBS: 8 to 12, each as often (17, 20, 19, 16 and 15 of 87)
 const mirrorShare = 5; // OBS: it takes a fifth, rounded down (8 of 42, 1 of 5, 5 of 27, 6 of 34, 10 of 50 ...)
 const mirrorRecoil = 2; // OBS: half of that, rounded down, back at the player (4, 2, 3, 5 ...; a 0 is shown, k2 64 and 76)
 // OBS: one hatched 3 ticks before takes its share (k2 59), one hatched the
@@ -373,6 +390,10 @@ class AraxxorEncounter {
     this.balls = 0;
     this.pendingPlayerHits = []; // the Mirrorback's recoil, until the NPCs have had their turns
     this.cleaves = []; // { tiles, lands }: for the scene
+    this.cleaveTick = null; // his last swing
+    this.cleaveHit = null; // { tick, line, damage }: at the end of that tick, whoever is in its line
+    this.slain = new Set(); // what the player's own hit has killed
+    this.selfHits = new Map(); // actor id -> the tick a hit it deals itself lands (his cut, a Mirrorback's share)
     this.updateArena();
   }
   choosePattern() {
@@ -508,7 +529,11 @@ class AraxxorEncounter {
     return null; // under him or out of his reach: he waits (inferred)
   }
   shouldEnrage(boss) {
-    return boss.vitals.hp <= Math.floor(boss.vitals.maxHp * enrageThreshold);
+    return boss.vitals.hp < boss.vitals.maxHp * enrageThreshold;
+  }
+  // Whether a hit of the player's lands on him this tick (before his turn).
+  isHitNow(context) {
+    return context.world.pendingHits.some((hit) => hit.sourceId === "player" && hit.targetId === bossActorId && hit.impactTick <= context.tick);
   }
   dropTarget(boss, context, ticks) {
     boss.combat.targetId = null;
@@ -527,10 +552,6 @@ class AraxxorEncounter {
     this.cleaves = this.cleaves.filter((cleave) => cleave.lands >= context.tick);
     this.stepDrip(context);
     this.stepBall(context, hits);
-    if (this.spawned && context.tick >= this.nextHatchTick) {
-      this.nextHatchTick += hatchTicks;
-      this.hatch(context);
-    }
     return hits;
   }
   // --- each tick, after the NPCs ----------------------------------------
@@ -543,8 +564,11 @@ class AraxxorEncounter {
   // --- each tick, after the player -------------------------------------
   processPostTick(context) {
     const hits = [];
-    // OBS: the acid hurts the player who ends a tick in it (k1 216, recorded on 217; k2 181, on 182).
-    if (this.pools.has(key(context.playerPos)) && this.acidHitTick !== context.tick && context.world.getPlayer()?.alive) hits.push(this.poolHit(context.playerPos));
+    const player = context.world.getPlayer();
+    this.landCleave(context, player, hits);
+    // OBS: the acid hurts the player who ends a tick in it (k1 216, recorded on
+    // 217; k2 181, n4 194, n10 94, n11 42 and 168, n14 173, n17 137).
+    if (this.pools.has(key(context.playerPos)) && this.acidHitTick !== context.tick && player?.alive) hits.push(this.poolHit(context.playerPos));
     this.playerTrail = [this.playerTrail[1] ?? [...context.playerPos], [...context.playerPos]];
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
     return hits;
@@ -576,6 +600,11 @@ class AraxxorEncounter {
       for (const egg of this.eggs) this.animate(context, "spawn", eggActorId(egg.index));
       boss.combat.nextActionTick = this.nextAttackTick;
       return idle;
+    }
+    // OBS: none on the tick he dies (n2 185, n12 194).
+    if (tick >= this.nextHatchTick) {
+      this.nextHatchTick += this.enraged ? enragedHatchTicks : hatchTicks;
+      this.hatch(context);
     }
     if (!this.enraged && this.shouldEnrage(boss)) this.enrage(boss, context);
     const player = context.world.getPlayer();
@@ -839,38 +868,49 @@ class AraxxorEncounter {
     // Off his corner, and not beside it (OBS k1 332: the player at 45,32, he at 47,25 to 53,31).
     const offCorner = gap > 1 && (tile[0] < x || tile[0] > x + bossSize - 1) && (tile[1] < y || tile[1] > y + bossSize - 1);
     const line = this.cleaveLine(boss, tile);
+    this.cleaveTick = context.tick;
     this.dropTarget(boss, context, cleaveTargetTicks);
     emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "cleave", kind: "araxxor_cleave", impactDelayTicks: cleaveHitTicks });
     context.tickEvents.emit({ type: "overhead_text", anchor: { kind: "actor", actorId: bossActorId }, overheadText: "Skree!", overheadCycle: 3 });
-    // Rolled as his melee (inferred); WIKI: up to his melee max.
-    const attack = rollNpcAttack({
-      attacker: boss, target: player, random: this.random,
-      plan: { formulaStyle: "melee_slash", damageType: "melee", attackKind: "melee_slash", maxHit: maxHits.melee, impactDelayTicks: cleaveHitTicks, sourceDeathPolicy: "cancel-before-impact" },
-    });
-    const damage = attack?.accuracySucceeded ? attack.rolledDamage : 0;
     this.cleaves.push({ tiles: line.map((t) => [...t]), lands: context.tick + cleavePoolTicks });
-    this.later(cleaveHitTicks, (ctx, hits) => {
-      if (this.outcome.phase !== "active") return;
-      // OBS: the 1 x 3 still hurts when he cleaves a player under him.
-      const target = ctx.world.getPlayer();
-      if (!target?.alive || !line.some((t) => key(t) === key(ctx.playerPos))) return;
-      // OBS (tsps): the message 2 ticks after the swing and no hit; the acid lands all the same.
-      if (this.araneaNegates("cleave", damage, target, ctx)) this.later(1, (next) => this.araneaMessage(next));
-      else hits.push({ source: "Araxxor's cleave", attackType: "melee", baseDamage: damage, playerPosition: [...ctx.playerPos], prayerReduction: { type: "reduce", value: prayerLeaves.cleave } });
-    });
+    // OBS: the 1 x 3 hurts too when he cleaves a player under him.
+    this.cleaveHit = { tick: context.tick + cleaveHitTicks, line, damage: this.roll(cleaveDamage) };
     // WIKI, OBS: a player under him makes him cut himself.
-    if (under) this.later(cleaveCutTicks, (ctx) => {
-      if (this.outcome.phase === "active") this.hitNpc(ctx, bossActorId, bossActorId, selfCut[0] + Math.floor(this.random() * (selfCut[1] - selfCut[0] + 1)));
+    const cut = under ? this.roll(selfCut) : null;
+    this.later(cleaveCutTicks, (ctx) => {
+      if (this.outcome.phase !== "active") return;
+      const hitNow = this.isHitNow(ctx);
+      if (hitNow) this.targetTick = ctx.tick;
+      if (cut !== null) this.hitNpc(ctx, bossActorId, bossActorId, cut, hitNow ? 0 : 1);
+      // OBS: an araxyte on the tile he struck at takes the blow (n14 190, an
+      // Acidic, and n2 160, a Mirrorback, both of a cleave at a player under
+      // him; not one that is only in the line, n14 194).
+      for (const id of this.araxytes.keys()) {
+        const araxyte = ctx.world.getNpc(id);
+        if (araxyte?.alive && gapTo(tile, araxyte.position, araxyteSize) === 0) this.hitNpc(ctx, bossActorId, id, this.roll(cleaveDamage));
+      }
     });
     // OBS: the acid 2 ticks after the swing; one pool only, on the player's
-    // tile, from under him (k2 161, 165, 173, 177, 181) and off his corner (k1
-    // 332). WIKI has two more beside a corner, "north and east of the player"
-    // to the south-west: no log has that.
+    // tile, from under him (94 of 94) and off his corner (k1 332). WIKI has two
+    // more beside a corner, "north and east of the player" to the south-west:
+    // no log has a cleave from there.
     this.later(cleavePoolTicks, () => {
       if (this.outcome.phase !== "active") return;
       for (const t of under || offCorner ? [tile] : line) this.placePool(t);
     });
     return { environmentalDamages: [] };
+  }
+  // OBS: the cleave hurts the player who ends the tick after the swing in its
+  // line, wherever he was as it began (n4 196, n14 181, n17 136, k2 162; not one
+  // who has left by then, 28 of 28, or who is back a tick later, n14 178).
+  landCleave(context, player, hits) {
+    const hit = this.cleaveHit;
+    if (hit?.tick !== context.tick) return;
+    this.cleaveHit = null;
+    if (this.outcome.phase !== "active" || !player?.alive || !context.world.getNpc(bossActorId)?.alive || !hit.line.some((t) => key(t) === key(context.playerPos))) return;
+    // OBS (tsps): the message 2 ticks after the swing and no hit; the acid lands all the same.
+    if (this.araneaNegates("cleave", hit.damage, player, context)) this.later(1, (next) => this.araneaMessage(next));
+    else hits.push({ source: "Araxxor's cleave", attackType: "melee", baseDamage: hit.damage, playerPosition: [...context.playerPos], prayerReduction: { type: "reduce", value: prayerLeaves.cleave } });
   }
 
   // --- the eggs and the araxytes ---------------------------------------
@@ -1019,15 +1059,20 @@ class AraxxorEncounter {
   }
 
   // --- the rest --------------------------------------------------------
-  later(ticks, run) {
-    this.queue.push({ tick: this.tick + ticks, run });
+  // `outlives`: whether it is done when he has died before it.
+  later(ticks, run, outlives = false) {
+    this.queue.push({ tick: this.tick + ticks, run, outlives });
+  }
+  roll([least, most]) {
+    return least + Math.floor(this.random() * (most - least + 1));
   }
   animate(context, clipId, actorId = bossActorId) {
     emitInfernoVisual(context.tickEvents, { animations: [{ actorId, clipId, delayCycles: 0 }], projectiles: [], graphics: [] });
   }
-  hitNpc(context, attackerId, targetId, damage) {
+  hitNpc(context, attackerId, targetId, damage, impactDelayTicks = 0) {
     if (!context.world.getNpc(attackerId) || !context.world.getNpc(targetId)?.alive) return;
-    context.queueNpcHit({ attackerId, targetId, style: "typeless", attackKind: "typeless", rolledDamage: damage, accuracySucceeded: true, impactDelayTicks: 0, sourceDeathPolicy: "persist" });
+    if (attackerId === targetId) this.selfHits.set(targetId, context.tick + impactDelayTicks);
+    context.queueNpcHit({ attackerId, targetId, style: "typeless", attackKind: "typeless", rolledDamage: damage, accuracySucceeded: true, impactDelayTicks, sourceDeathPolicy: "persist" });
   }
   // A hit of the player's as it lands on one of the fight's NPCs. What the
   // Mirrorback takes of it lands with it (OBS: 8 of 8, k1 276 to k2 75), on its
@@ -1088,6 +1133,7 @@ class AraxxorEncounter {
     this.queue = [];
     this.drip = null;
     this.cleaves = [];
+    this.cleaveHit = null;
     this.pendingPlayerHits = [];
     // OBS: the acid goes with the killing hit (k1 356, k2 183).
     this.pools.clear();
