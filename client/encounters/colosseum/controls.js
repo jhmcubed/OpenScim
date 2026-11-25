@@ -128,7 +128,7 @@ export function buildColosseumControls() {
         setup: true,
         choices: southChoices,
         wrap: true,
-        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. Shaman is the serpent shaman, Ranger the javelin colossus, Manti the manticore and Shocker the shockwave colossus; Any is any monster of the wave. Only the monsters of the Start Wave are listed. With B set too it is a double south, such as a Shaman or a Shocker (both called mager) in front on A with a Ranger behind on B, or a Manti on A or B with a Ranger or a mager. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
+        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. Shaman is the serpent shaman, Ranger the javelin colossus, Manti the manticore and Shocker the shockwave colossus. Random leaves it to the game, so often nothing spawns there; Any always puts one of the wave's monsters there, chosen by chance. Only the monsters of the Start Wave are listed. With B set too it is a double south, such as a Shaman or a Shocker (both called mager) in front on A with a Ranger behind on B, or a Manti on A or B with a Ranger or a mager. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
       },
       {
         key: colosseumSouthKeys.b,
@@ -136,7 +136,7 @@ export function buildColosseumControls() {
         setup: true,
         choices: southChoices,
         wrap: true,
-        info: "Practice: what spawns on the far south spawn, the one the south B tile of Colosseum Tiles stands in. Only the monsters of the Start Wave are listed. Applies from your next attempt.",
+        info: "Practice: what spawns on the far south spawn, the one the south B tile of Colosseum Tiles stands in. Random leaves it to the game, so often nothing spawns there; Any always puts one of the wave's monsters there, chosen by chance. Only the monsters of the Start Wave are listed. Applies from your next attempt.",
       },
       ...overlayToggles.map(({ default: unusedDefault, ...toggle }) => toggle),
     ],
