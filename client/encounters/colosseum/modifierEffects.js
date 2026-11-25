@@ -159,6 +159,13 @@ export class WaveModifierEffects {
   getLabel(npcId) {
     return { bees: "Bee swarm", totem: "Healing totem", solarflare: "Solarflare" }[npcId.split("_")[1]];
   }
+  /** The tiles the orbs of Solarflare stand on in `world`, for the overlays. */
+  getOrbTiles(world) {
+    return world
+      .getNpcs()
+      .filter((npc) => solarflareNpcDefinition.isActor(npc) && npc.alive)
+      .map((orb) => [...orb.position]);
+  }
   /** The tiles under molten sand, for the scene. */
   getSandTiles() {
     return [...this.sand.keys()].map((key) => key.split(",").map(Number));

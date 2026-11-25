@@ -217,6 +217,8 @@ export class ColosseumEncounter {
     this.splits = [];
     this.deaths = [];
     this.losLinks = { spawns: null, reinforcements: null, current: null };
+    // The tiles the orbs of Solarflare stand on at the end of the last tick.
+    this.orbTiles = [];
     this.configureRunStart({});
   }
   getSeeds() {
@@ -284,6 +286,7 @@ export class ColosseumEncounter {
       }
     }
     this.losLinks.current = this.phase === "active" || this.phase === "cleared" ? this.buildLosLink(context, () => true) : null;
+    this.orbTiles = this.effects.getOrbTiles(context.world);
     return [];
   }
   getOutcome() {
@@ -318,6 +321,7 @@ export class ColosseumEncounter {
         splits: this.splits.map((split) => ({ ...split })),
         deaths: this.deaths.map(({ position, size }) => ({ position: [...position], size })),
         losLinks: { ...this.losLinks },
+        orbTiles: this.orbTiles.map((tile) => [...tile]),
       },
       visuals: {},
     };

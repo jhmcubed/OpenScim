@@ -24,6 +24,7 @@ export const overlayKeys = {
   volatilityReminder: "colosseumVolatilityReminder",
   splits: "colosseumSplitsOverlay",
   losLinks: "colosseumLosLinks",
+  solarflareTrueTile: "colosseumSolarflareTrueTile",
 };
 const overlayToggles = [
   {
@@ -43,6 +44,10 @@ const overlayToggles = [
   { key: overlayKeys.volatilityReminder, label: "Volatility Reminder", default: false, info: "Marks for 5 ticks where a monster died, while Volatility is active. (Fortis Colosseum.)" },
   { key: overlayKeys.splits, label: "Splits Overlay", default: false, info: "The duration of each completed wave and the total. (Fortis Colosseum.)" },
   { key: overlayKeys.losLinks, label: "LoS Links", default: false, info: "Links that open los.colosim.com with the wave's spawns, its reinforcements or the current positions. (Fortis Colosseum.)" },
+  // Not the plugin's: the orb's model glides from tile to tile, so where it
+  // is drawn is not where it hits (RuneLite's True Tile does the same for the
+  // player).
+  { key: overlayKeys.solarflareTrueTile, label: "Solarflare True Tile", default: false, info: "Marks the tile the Solarflare orb is really on. Its model glides between tiles, and it hits from this tile." },
 ].map((toggle) => ({ ...toggle, group: "aid" }));
 
 /**

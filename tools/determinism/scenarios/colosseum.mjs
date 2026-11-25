@@ -342,7 +342,8 @@ export const scenarios = [
     // 23,30, where the orb steps onto him on tick 14, and steps away to 21,30 before it moves on: the contact is a hit
     // of 10 to 20 on tick 15. From tick 37 he walks to the corner 23,44, where the orb rests from tick 42 to 48; he
     // stands on it from tick 43 and steps off to 21,44 on tick 45, before it moves on: one hit, on tick 45. Sol's
-    // rule, a hit when the orb steps off the player's tile, gives neither.
+    // rule, a hit when the orb steps off the player's tile, gives neither. Every tick the snapshot's orbTiles, which
+    // the overlay Solarflare True Tile marks, is the orb's tile, or the scenario throws.
     name: "colosseum/solarflare-contact",
     kind: KIND,
     seed: 81,
@@ -351,6 +352,9 @@ export const scenarios = [
     ...modifiers({ solarflare: 1 }),
     ...rangedGear,
     script(tick, api) {
+      // The overlay's true tile (overlays.js) is the orb's own tile, every tick.
+      const orbTiles = api.npcs().filter((npc) => npc.id.startsWith("colosseum_solarflare_")).map((orb) => orb.position.join(","));
+      if (seen(api).orbTiles.map((tile) => tile.join(",")).join(" ") !== orbTiles.join(" ")) throw new Error(`orbTiles on tick ${tick}`);
       if (tick === 1) api.moveTo(23, 30);
       if (tick === 14) api.moveTo(21, 30);
       if (tick === 37) api.moveTo(23, 44);
