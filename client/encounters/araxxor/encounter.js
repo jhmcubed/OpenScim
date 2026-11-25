@@ -193,9 +193,14 @@ const rupturaGoneTicks = 4;
 // the first of each on the tick it gets there: k1 242, k2 25 and 150).
 const acidicHoldRange = 8;
 const mirrorbackGoneTicks = 3; // OBS: gone 3 ticks after the killing hit (k1 290 and 293, k2 83 and 86)
-const deathTicks = 5; // OBS (tsps): his corpse 5 ticks into his death
-const eggCrumbleTicks = 1; // OBS: the eggs crumble the tick after he dies
-const leftoverGoneTicks = 2; // OBS: the eggs and araxytes go 2 ticks after that
+// OBS, from his death animation 11481: the araxytes die with it, the eggs
+// crumble a tick later, the araxytes go 2 ticks after it and the eggs 3
+// (k1 357, 358, 359, 360; k2 183, 184, 185, 186), and 5 after it he is his
+// corpse (k1 362, k2 188; OBS (tsps)).
+const deathTicks = 5;
+const eggCrumbleTicks = 1;
+const araxytesGoneTicks = 2;
+const eggsGoneTicks = 3;
 const cyclesPerTick = 30;
 
 // Max hits (WIKI) and what a protection prayer leaves of them.
@@ -415,6 +420,7 @@ class AraxxorEncounter {
     const boss = {
       id: bossActorId, kind: "npc", role: "boss", npcTypeId: ids.boss, archetypeId: "araxxor", size: bossSize, alive: true,
       position: [...bossStart], previousPosition: [...bossStart], facing: bossSpawnFacing, history: new Map(),
+      deathPolicy: "queued", // OBS k1 356 and 357: his death animation the tick after the killing hit
       vitals: { hp: maxHp, maxHp }, formulaStats,
       combat: { attackSpeed: attackTicks, attackRange: 1, meleeReach: "diagonal", attackStyle: "melee", nextActionTick: firstAttackTicks, targetId: "player", lastAttackTick: null,
         animations: { idle: seqs.idle, walk: seqs.walk, run: seqs.walk, attack: seqs.melee, death: seqs.death } },
@@ -489,10 +495,10 @@ class AraxxorEncounter {
     this.tick = context.tick;
     this.context = context;
     const hits = [];
-    if (this.outcome.phase !== "active") return hits;
     const due = this.queue.filter((entry) => entry.tick <= context.tick);
     this.queue = this.queue.filter((entry) => entry.tick > context.tick);
     for (const entry of due) entry.run(context, hits);
+    if (this.outcome.phase !== "active") return hits;
     this.cleaves = this.cleaves.filter((cleave) => cleave.lands >= context.tick);
     this.stepDrip(context);
     this.stepBall(context, hits);
@@ -1039,35 +1045,45 @@ class AraxxorEncounter {
     this.drip = null;
     this.cleaves = [];
     this.pendingPlayerHits = [];
-    // OBS: the acid goes with him.
+    // OBS: the acid goes with the killing hit (k1 356, k2 183).
     this.pools.clear();
     if (this.ball) {
       context.despawnNpc(this.ball.id);
       this.ball = null;
     }
-    // OBS: the araxytes die with him, the eggs crumble a tick later, and both go 2 ticks after that.
-    for (const [id, { type }] of this.araxytes) {
+    // Ticks from now to his death animation.
+    const wait = this.deathAnimationTick(context.world.getNpc(bossActorId), defeat) - defeat.tick;
+    const left = [...this.araxytes];
+    const araxytes = context.world.getNpcs().map((npc) => npc.id).filter((id) => id.startsWith("araxyte-"));
+    const eggs = this.eggs.filter((e) => e.state === "egg").map((e) => eggActorId(e.index));
+    for (const [id] of left) {
       const npc = context.world.getNpc(id);
       if (!npc) continue;
       npc.untargetable = true;
       context.world.removePendingHitsFromSource?.(id);
-      this.animate(context, type === "mirrorback" ? "death" : "explode", id);
     }
-    const leftover = [...this.araxytes.keys()];
-    const eggs = this.eggs.filter((e) => e.state === "egg").map((e) => eggActorId(e.index));
-    this.later(eggCrumbleTicks, (ctx) => {
+    // OBS: the oldest Acidic plays none of it and goes with the others (k1
+    // 357, k2 183); why does not show, so all of them do here.
+    const die = (ctx) => {
+      for (const [id, { type }] of left) if (ctx.world.getNpc(id)) this.animate(ctx, type === "mirrorback" ? "death" : "explode", id);
+    };
+    if (wait > 0) this.later(wait, die);
+    else die(context);
+    this.later(wait + eggCrumbleTicks, (ctx) => {
       for (const id of eggs) if (ctx.world.getNpc(id)) this.animate(ctx, "crumble", id);
     });
-    this.later(eggCrumbleTicks + leftoverGoneTicks, (ctx) => {
-      for (const id of [...leftover, ...eggs]) if (ctx.world.getNpc(id)) ctx.despawnNpc(id);
-    });
+    const despawn = (ids) => (ctx) => {
+      for (const id of ids) if (ctx.world.getNpc(id)) ctx.despawnNpc(id);
+    };
+    this.later(wait + araxytesGoneTicks, despawn(araxytes));
+    this.later(wait + eggsGoneTicks, despawn(eggs));
     this.araxytes.clear();
     if (completionOwnership !== "encounter-owned") return;
-    this.outcome = { phase: "resolving", decisiveTick: defeat.tick, completionTick: defeat.tick + deathTicks, primaryActorId: bossActorId, completionActorIds: [bossActorId] };
+    this.outcome = { phase: "resolving", decisiveTick: defeat.tick, completionTick: defeat.tick + wait + deathTicks, primaryActorId: bossActorId, completionActorIds: [bossActorId] };
   }
   // OBS: the tick after the killing hit, for one that stepped the tick before
   // it too (the Mirrorback of k1, 289 to 291); the engine waits 3 ticks from a
-  // step.
+  // step. (Killed by his own cut he plays it on that tick, k2 183: not done.)
   deathAnimationTick(npc, defeat) {
     if (!npc?.death) return defeat.tick;
     delete npc.lastStepTick;

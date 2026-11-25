@@ -77,5 +77,21 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.deepEqual(newPools(ticks, cleave + 2), ["45,30"]);
   assert.deepEqual([0, 1, 2, 3].map((n) => ticks[cleave + n].boss.join()), ["47,22", "47,22", "47,22", "46,23"]);
 }
+{
+  // His death: the acid with the killing hit, his animation the tick after; the araxytes die with it and go 2
+  // ticks later, the eggs crumble a tick after it and go 2 after that; won 5 ticks after it.
+  const ticks = await ticksOf("enrage-and-kill");
+  const killed = ticks.findIndex((tick) => tick?.hp === 0), animation = ticks[killed].npcs.get("araxxor").deathAnimationTick;
+  const eggs = ticks[killed].ids.filter((id) => id.startsWith("araxxor-egg")), araxytes = ticks[killed].ids.filter((id) => id.startsWith("araxyte-"));
+  assert.ok(eggs.length > 0 && araxytes.length > 0);
+  assert.equal(animation, killed + 1);
+  assert.deepEqual(ticks[killed].pools, []);
+  assert.ok(ticks[animation].clips.some((clip) => /^araxyte-\d (explode|death)$/.test(clip)));
+  for (const egg of eggs) assert.ok(ticks[animation + 1].clips.includes(egg + " crumble"));
+  const here = (n, ids) => ticks[n].ids.filter((id) => ids.includes(id)).length;
+  assert.deepEqual([1, 2].map((n) => here(animation + n, araxytes)), [araxytes.length, 0]);
+  assert.deepEqual([2, 3].map((n) => here(animation + n, eggs)), [eggs.length, 0]);
+  assert.deepEqual([4, 5].map((n) => ticks[animation + n].outcome), ["resolving", "victory"]);
+}
 console.log("Araxxor's rules are as recorded");
 process.exit(0);
