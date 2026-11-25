@@ -23,25 +23,29 @@
 // that the player dodges by stepping off it, and that leaves acid there. A
 // player under him when he cleaves makes him cut himself.
 //
-// Sources, beside the usual: plain OBS is two kills BigSneezi recorded with
-// the Outside plugin on 24 November 2026 (https://outside.wiki/bigsneezi):
-// k1, red eggs first (bigsneezi-araxxor-2026-11-24.jsonl.gz; he comes up at
-// t 164), and k2, green eggs first (the same name with "(1)"; he came up at
-// t -7, before its first tick). "OBS k1 218" is tick 218 of the first. They
-// were fought with melee beside him, so his ranged attack, the spray, the
-// Ruptura's blast on the player and the cleave through Protect from Melee are
-// not in them, nor an Acidic that is killed, nor an acid ball that hits. OBS
-// (tsps) is RSPSApp's reading of rsprox recordings 1077-1095, 1442, 1445 and
-// 1508 of ordinary worlds (RSPSApp/tsps docs/araxxor.md and
-// server/plugins/bosses/araxxor). Ids are the cache's, their names its gameval
-// names as RSPSApp exports them.
+// Sources, beside the usual: plain OBS is 20 fights BigSneezi recorded with
+// the Outside plugin (https://outside.wiki/bigsneezi), 19 of them kills. Two
+// are of 24 November 2026: k1, red eggs first
+// (bigsneezi-araxxor-2026-11-24.jsonl.gz; he comes up at t 164), and k2, green
+// eggs first (the same name with "(1)"; he came up at t -7, before its first
+// tick). The others are of 25 November: n0 is
+// bigsneezi-araxxor-2026-11-25.jsonl.gz and n1 to n17 the same name with "(1)"
+// to "(17)". "OBS n14 142" is tick 142 of n14; "20 of 20" counts all of them.
+// They were fought with melee beside him (behind Protect from Melee, in the
+// enrage mostly behind Protect from Missiles), so his ranged attack, the
+// Ruptura's blast on the player, the cleave through Protect from Melee, a
+// cleave from beside his corner, an Acidic that is killed and the corpse's
+// Destroy are in none of them. OBS (tsps) is RSPSApp's reading of rsprox
+// recordings 1077-1095, 1442, 1445 and 1508 of ordinary worlds (RSPSApp/tsps
+// docs/araxxor.md and server/plugins/bosses/araxxor). Ids are the cache's,
+// their names its gameval names as RSPSApp exports them.
 //
 // Timing: the recorder sees a hit on the player a tick after the engine
 // applies it (an NPC's melee is in the engine's tick of the swing and on the
 // recorder's next), so a hit on him recorded n ticks after its attack is n - 1
-// here. A hit on an NPC is recorded on the tick it lands (the player's own 77
-// on Araxxor are, in both kills, on the tick they land here). Animations,
-// effects, spawns, sounds and the acid on the floor are timed as recorded.
+// here. A hit on an NPC is recorded on the tick it lands (the player's own on
+// Araxxor are on the tick they land here). Animations, effects, spawns and the
+// acid on the floor are timed as recorded.
 import { getMonsterFormulaStats } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { CollisionFlag } from "../../engine/collision.js";
@@ -87,8 +91,11 @@ export const ids = {
   pool: 54148, // CACHE araxxor_acidpool, "Acid pool"
 };
 export const seqs = {
-  idle: 11474, // CACHE: his stand
-  walk: 11473, // CACHE: his walk
+  // CACHE: his stand (13668, opcode 13) and his walk (opcode 14); OBS: the
+  // recorder names them so (k1 164, "moves"), and he is in 11473 on 2,361 of the
+  // 2,362 ticks he neither steps nor turns.
+  idle: 11473,
+  walk: 11474,
   spawn: 11482, // CACHE npc_araxxor_01_spawn_01; OBS
   melee: 11480, // OBS
   magic: 11479, // OBS
@@ -131,8 +138,10 @@ const eggActorId = (index) => `araxxor-egg-${index}`;
 const araxyteActorId = (index) => `araxyte-${index}`;
 const ballActorId = (count) => `acid-ball-${count}`;
 
-// WIKI: the three orders; OBS: red, green, white in one kill, green, white,
-// red in the other. Which one a fight gets is inferred: any, evenly.
+// WIKI: the three orders; OBS: the colours in that order in every fight.
+// Which one a fight gets is inferred: any, evenly (OBS: green first in 11 of
+// the 20, red in 6, white in 3, which even odds give as uneven one time in 11;
+// no source has odds).
 export const patterns = {
   green: ["acidic", "mirrorback", "ruptura"],
   white: ["mirrorback", "ruptura", "acidic"],
