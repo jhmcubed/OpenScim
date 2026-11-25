@@ -95,7 +95,7 @@ module's (`../sol-heredit/`), taken over; four exist only in the waves.
 | Relentless | every monster's attack: part of the player's Defence bypassed, a higher max hit, at level III no accuracy roll | WIKI; applied as Sol's module applies it to his warband |
 | Quartet | a fourth warbander of a random role, in the slot south of the player | WIKI. inferred: placed one tile south-east of the archer |
 | Bees! | one to three swarms, Sol's actors and tiles | Sol's module. inferred: they appear with the next wave's monsters and stay |
-| Solarflare | one orb round the four pillars, Sol's actor; it hits on contact, once each time it and the player meet on a tile, a tick later; level III turns the protection prayer off | WIKI says it "circles around the pillars", "damages the player on contact" and that levels II and III deal more. inferred: its route (corners 23,25, 23,44, 42,44, 42,25); what counts as contact; the damage of II and III, 15 to 25 and 20 to 30 (I: Sol's module's 10 to 20) |
+| Solarflare | an orb circles each pillar on the ring of tiles touching it, Sol's actor; it hits on contact, once each time it and the player meet on a tile, a tick later; level III turns the protection prayer off | WIKI: "Pillars are orbited by an orb" that "damages the player on contact", and levels II and III deal more. The rings: reported from the game by players, not recorded. inferred: the orbs go clockwise from their ring's south-west corner; what counts as contact; the damage of II and III, 15 to 25 and 20 to 30 (I: Sol's module's 10 to 20) |
 | Totemic | a totem beside a monster at half its hitpoints or less, healing it by 30 %; it comes again two minutes after it was destroyed | WIKI; the timing of the heal is Sol's module's. inferred: one totem at a time |
 | Volatility | a dead monster explodes on the first tick it is gone, one tile round its footprint (two at level II and III); at level III the centre tile is left under molten sand | OBS (level I, 14 deaths: the tick, the tiles, the graphics); WIKI (levels II and III). inferred: the damage, 16 to 25 (two samples: 16 and 25) |
 | Mantimayhem | each orb is two hits; at level II an orb that is not prayed against inflicts venom, cured when the wave ends; at level III the three orbs come in any order | WIKI. The second projectile is not drawn |
@@ -260,7 +260,7 @@ What a recording would settle, in the order it matters:
   drawn and do nothing. The recording has the rewards interface (864)
   widget by widget.
 - The modifiers in a recording: only Blasphemy and Volatility I were
-  recorded. Solarflare's route, Quartet's place, the second colossus of
+  recorded. The orbs' starting corners and direction, Quartet's place, the second colossus of
   Dynamic Duo, a totem, molten sand and its damage, Mantimayhem's second
   projectile and Bees! in the waves are to be observed.
 - A panel with the wave and a "retry wave" button, as the Inferno has.

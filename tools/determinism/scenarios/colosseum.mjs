@@ -156,16 +156,16 @@ export const scenarios = [
   {
     // The ten modifiers that are also Sol Heredit's, all chosen in the set-up, without Minimus, through wave 1 into
     // wave 2. Placed with the wave on tick 5: a second berserker one tile south-east of the archer (Quartet), two bee
-    // swarms (Bees! II) and the orb at 23,25 (Solarflare I), whose round takes it over the start tile: it steps onto
-    // him on tick 26 and hits on tick 27, and in wave 2 on tick 198, hitting on 199. The player has
-    // infinite health, stands on the start tile, prays against magic and from tick 21 shoots: a totem first, then the
-    // shaman, the warband and the jaguar. Every hit that hurts him adds a stack of Doom, past the 15 that would kill
-    // him without infinite health. The shaman is down to half its hitpoints on tick 34: a totem appears beside it at
-    // 27,31 (Totemic) and is destroyed on tick 39. His prayer has run out on tick 47 (Blasphemy II takes 40 % of the
-    // damage he is dealt from it), and the spells hurt from then. A swarm has poisoned him by tick 61. The jaguar
-    // comes on tick 71 and claws for up to 53 (47 and 6 more, Relentless III). It dies beside him on tick 153, is
-    // gone after tick 156 and explodes on tick 157 for 19 (Volatility II), the tick the wave is completed on, 1:31
-    // after it was placed. Wave 2 is placed on tick 165 with a second seer; its shaman gets a totem on tick 184.
+    // swarms (Bees! II) and an orb on the ring round each pillar (Solarflare I), none of which comes near the start
+    // tile. The player has infinite health, stands on the start tile, prays against magic and from tick 21 shoots: a
+    // totem first, then the shaman, the warband and the jaguar. Every hit that hurts him adds a stack of Doom, past the
+    // 15 that would kill him without infinite health. A swarm has poisoned him by tick 33. The shaman is down to half
+    // its hitpoints by tick 39: a totem appears beside it at 27,31 (Totemic) and is destroyed on tick 44. His prayer
+    // has run out on tick 47 (Blasphemy II takes 40 % of the damage he is dealt from it), and the spells hurt from
+    // then. The jaguar comes on tick 71 and claws for up to 53 (47 and 6 more, Relentless III). It dies beside him on
+    // tick 138, is gone after tick 141 and explodes on tick 142 for 20 (Volatility II), the tick the wave is completed
+    // on, 1:22 after it was placed. Wave 2 is placed on tick 150 with a second seer; its shaman gets a totem on tick
+    // 169.
     name: "colosseum/modifiers-of-the-set-up",
     kind: KIND,
     seed: 71,
@@ -338,33 +338,33 @@ export const scenarios = [
     },
   },
   {
-    // Solarflare I, wave 1. The orb is placed at 23,25 on tick 5 and steps north every second tick. The player walks to
-    // 23,30, where the orb steps onto him on tick 14, and steps away to 21,30 before it moves on: the contact is a hit
-    // of 10 to 20 on tick 15. From tick 37 he walks to the corner 23,44, where the orb rests from tick 42 to 48; he
-    // stands on it from tick 43 and steps off to 21,44 on tick 45, before it moves on: one hit, on tick 45. Sol's
-    // rule, a hit when the orb steps off the player's tile, gives neither. Every tick the snapshot's orbTiles, which
-    // the overlay Solarflare True Tile marks, is the orb's tile, or the scenario throws.
+    // Solarflare I, wave 1. An orb circles each pillar on the tiles touching it, placed with the wave on tick 5; the
+    // south-west pillar's starts at 23,25 and steps north every second tick. The player waits on 23,27, where it steps
+    // onto him on tick 8, and steps away to 21,27 before it moves on: the contact is a hit of 10 to 20 on tick 9. The
+    // orb rests for 7 ticks at the corner 23,29 from tick 12; he walks onto it there on tick 13 and off it again to
+    // 21,29 on tick 16, before it moves on: one hit, on tick 15. Sol's rule, a hit when the orb steps off the player's tile, gives neither. Every tick the
+    // snapshot's orbTiles, which the overlay Solarflare True Tile marks, are the orbs' tiles, or the scenario throws.
     name: "colosseum/solarflare-contact",
     kind: KIND,
     seed: 81,
-    ticks: 60,
+    ticks: 30,
     mechanics: { ...noMinimus, infiniteHealth: true },
     ...modifiers({ solarflare: 1 }),
     ...rangedGear,
     script(tick, api) {
-      // The overlay's true tile (overlays.js) is the orb's own tile, every tick.
+      // The overlay's true tiles (overlays.js) are the orbs' own tiles, every tick.
       const orbTiles = api.npcs().filter((npc) => npc.id.startsWith("colosseum_solarflare_")).map((orb) => orb.position.join(","));
       if (seen(api).orbTiles.map((tile) => tile.join(",")).join(" ") !== orbTiles.join(" ")) throw new Error(`orbTiles on tick ${tick}`);
-      if (tick === 1) api.moveTo(23, 30);
-      if (tick === 14) api.moveTo(21, 30);
-      if (tick === 37) api.moveTo(23, 44);
-      if (tick === 45) api.moveTo(21, 44);
+      if (tick === 1) api.moveTo(23, 27);
+      if (tick === 8) api.moveTo(21, 27);
+      if (tick === 13) api.moveTo(23, 29);
+      if (tick === 16) api.moveTo(21, 29);
     },
   },
   {
-    // Solarflare III, wave 1. The orb steps every tick. The player stands on 23,30 with Protect from Magic up: the
-    // orb steps onto him on tick 10 and off him on tick 11, one contact, which turns his prayer off and hits him on
-    // tick 11 for 20 to 30.
+    // Solarflare III, wave 1. The orbs step every tick. The player stands on 23,28 with Protect from Magic up: the
+    // south-west pillar's orb steps onto him on tick 8 and off him on tick 9, one contact, which turns his prayer off
+    // and hits him on tick 9 for 20 to 30.
     name: "colosseum/solarflare-iii",
     kind: KIND,
     seed: 82,
@@ -374,7 +374,7 @@ export const scenarios = [
     ...rangedGear,
     script(tick, api) {
       if (tick === 1) {
-        api.moveTo(23, 30);
+        api.moveTo(23, 28);
         pray(api, "ProtectMagic");
       }
     },

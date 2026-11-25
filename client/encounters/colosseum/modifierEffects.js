@@ -24,16 +24,27 @@ import {
 import { solarflareNpcDefinition, createSolarflareOrb } from "../sol-heredit/solarflare.js";
 import { registerWithInfernoVisuals, withInfernoVisuals } from "./visuals.js";
 
-// WIKI: the orb "circles around the pillars". No source has its tiles.
-// inferred: one orb goes round all four pillars, clockwise as Sol's orbs go,
-// one tile outside them: its corners are the tiles diagonally beyond each
-// pillar's outer corner, the first of them the south-west one.
-const solarflareCorners = [
-  [23, 25],
-  [23, 44],
-  [42, 44],
-  [42, 25],
+// Solarflare: an orb circles each of the four pillars, on the ring of tiles
+// that touch it (as reported from the game by players, not recorded; WIKI:
+// "Pillars are orbited by an orb", moving every 2 ticks and stopping for 7
+// at a corner).
+// The pillars are 3 by 3; their south-west tiles are the map's (24,26 is the
+// south-west pillar's, losLinks.js). A ring is 5 by 5, its corners one tile
+// diagonally out from the pillar's. inferred: the orbs go clockwise, as Sol's
+// do, and each starts on its ring's south-west corner.
+const pillarSouthWestTiles = [
+  [24, 26],
+  [24, 41],
+  [39, 41],
+  [39, 26],
 ];
+const pillarSize = 3;
+const solarflareRings = pillarSouthWestTiles.map(([x, y]) => [
+  [x - 1, y - 1],
+  [x - 1, y + pillarSize],
+  [x + pillarSize, y + pillarSize],
+  [x + pillarSize, y - 1],
+]);
 // WIKI (Solarflare): the orb "damages the player on contact"; level II
 // "deals more damage", level III "even more damage" and disables prayers.
 // Sol's module hits only when the orb steps off the tile the player stands
@@ -173,9 +184,9 @@ export class WaveModifierEffects {
 
   // Called when the monsters of a wave are placed. Sol's module has the
   // swarms appear 8 ticks into his fight and the orbs 3 ticks into it.
-  // inferred for the waves: a swarm or an orb that a modifier asks for
-  // appears with the monsters of the next wave and stays through the waves
-  // after it; a higher level of Solarflare replaces the orb.
+  // inferred for the waves: a swarm or the orbs that a modifier asks for
+  // appear with the monsters of the next wave and stay through the waves
+  // after it; a higher level of Solarflare replaces the orbs.
   placeForWave(context, random) {
     const { bees = 0, solarflare = 0 } = this.getModifiers();
     if (bees > this.swarms) {
@@ -192,7 +203,9 @@ export class WaveModifierEffects {
       for (const orb of context.world.getNpcs().filter(solarflareNpcDefinition.isActor)) {
         context.despawnNpc(orb.id);
       }
-      context.spawnNpc(createSolarflareOrb({ id: `colosseum_solarflare_${solarflare}`, corners: solarflareCorners, tier: solarflare, spawnTick: context.tick, firstStepTick: context.tick + 1 }));
+      for (const [index, corners] of solarflareRings.entries()) {
+        context.spawnNpc(createSolarflareOrb({ id: `colosseum_solarflare_${solarflare}_${index}`, corners, tier: solarflare, spawnTick: context.tick, firstStepTick: context.tick + 1 }));
+      }
       this.orbLevel = solarflare;
     }
   }
