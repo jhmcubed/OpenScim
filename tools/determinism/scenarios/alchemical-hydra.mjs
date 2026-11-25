@@ -170,6 +170,21 @@ export const scenarios = [
     },
   },
   {
+    // Killed (its hitpoints set to 1, the player shooting) with its first poison in the air: the blobs land all the same,
+    // and the player stands in the pool to the end.
+    name: "alchemical-hydra/poison-after-death",
+    kind: KIND,
+    seed: 20,
+    ticks: 60,
+    mechanics: health,
+    ...rangedGear,
+    script(tick, api) {
+      if (tick === 1) api.act({ type: "applyBossHpPreset", hp: 275 });
+      if (state(api).poisonIncoming.length && hydra(api)?.vitals.hp > 1) setBossHp(api, 1);
+      shoot(api);
+    },
+  },
+  {
     // Two Bandos godsword specials on its shield.
     name: "alchemical-hydra/drain",
     kind: KIND,

@@ -119,6 +119,18 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   assert.ok(red.length >= 1 && red.every((tick) => covers(tick, [27, 23]) && ticks[tick].maxHit === 52), red.join());
 }
 {
+  // Its poison outlives it: blobs in the air as it dies land and splash, and their pools hurt to the end of the fight.
+  const ticks = await ticksOf("poison-after-death");
+  const dead = ticks.findIndex((tick) => tick?.hp === 0);
+  const thrown = ticks.findIndex((tick) => tick?.projectiles.some((p) => p.spotAnimId === spots.poison));
+  assert.ok(thrown > 0 && dead > thrown && dead <= thrown + 3, thrown + " " + dead);
+  assert.deepEqual(damageOf(ticks, "Poison").map((hit) => hit.tick), [thrown + 3]);
+  const won = ticks.findIndex((tick) => tick?.outcome === "victory");
+  assert.equal(won, dead + 10);
+  const pool = damageOf(ticks, "Poison pool").map((hit) => hit.tick);
+  assert.deepEqual(pool, Array.from({ length: Math.min(13, won - thrown - 3) }, (_, n) => thrown + 4 + n));
+}
+{
   // A Bandos godsword's special on its shield drains its Defence by the hit before the shield takes three quarters of it.
   const ticks = await ticksOf("drain");
   const drains = ticks.flatMap((tick, n) => (n > 1 && tick.drain > ticks[n - 1].drain ? [{ drained: tick.drain - ticks[n - 1].drain, dealt: ticks[n - 1].hp - tick.hp }] : []));

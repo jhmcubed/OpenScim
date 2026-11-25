@@ -280,9 +280,10 @@ class AlchemicalHydraEncounter {
     this.now = context.tick;
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
     const player = context.world.getPlayer();
+    for (const hit of this.poison.step(player, context.tick)) this.hurt(hit);
     if (!this.dead) {
       this.absorbs(context);
-      for (const hit of [...this.poison.step(player, context.tick), ...this.lightning.step(player, context), ...this.fire.step(player, context)]) this.hurt(hit);
+      for (const hit of [...this.lightning.step(player, context), ...this.fire.step(player, context)]) this.hurt(hit);
     }
     return this.drainPending(context);
   }
@@ -591,8 +592,8 @@ class AlchemicalHydraEncounter {
     this.tasks = this.tasks.filter((entry) => entry.outlivesIt);
     this.pending = [];
     this.changing = null;
-    // tsps: its death clears every pool, current and fire.
-    this.poison.reset();
+    // WIKI: its poison stays: "Poison blobs will still deal damage and need to be avoided as these will fade as normal".
+    // tsps: its death clears every current and fire.
     this.lightning.reset();
     this.fire.reset();
     this.boundUntil = 0;

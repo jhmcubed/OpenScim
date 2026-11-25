@@ -67,7 +67,7 @@ export class Poison {
       audio.push({ id: sounds.poison, delayCycles: end, range: 5, position: [...tile] });
       const landsAt = context.tick + landTicks;
       this.incoming.push({ tile: [...tile], landsAt, aimed: index === 0 });
-      encounter.later(landTicks, (ctx) => this.land(ctx, tile, index === 0));
+      encounter.later(landTicks, (ctx) => this.land(ctx, tile, index === 0), { outlivesIt: true });
     });
     encounter.visual(context, { projectiles, graphics, sounds: audio });
   }
@@ -91,7 +91,7 @@ export class Poison {
     encounter.later(poolShowsAfter, (ctx) => {
       if (!this.pools.some((pool) => same(pool.tile, tile) && pool.from === from)) return;
       encounter.visual(ctx, { graphics: [{ spotAnimId: spotAnims.poisonLanded[angle], target: { kind: "tile", position: [...tile] }, height: 0, delayCycles: 0, onGround: true }] });
-    });
+    }, { outlivesIt: true });
   }
   // After the player has moved: a pool under him hurts.
   step(player, tick) {
