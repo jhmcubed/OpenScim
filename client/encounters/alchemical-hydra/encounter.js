@@ -35,6 +35,7 @@
 // 17 damage, from nothing anyone has found).
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
+import { setNpcDefenceDrain } from "../../engine/npcState.js";
 import { CollisionFlag } from "../../engine/collision.js";
 import { setArenaConfig, getArenaDefaultWalkable } from "../../engine/arena.js";
 import { defineNpc, NpcDefinitionRegistry } from "../shared/npcDefinitions.js";
@@ -545,8 +546,15 @@ class AlchemicalHydraEncounter {
   getEngineRules() {
     return {
       // WIKI: 75% less damage while shielded.
-      playerDamageOnNpc: (damage, { target }) => (target.id === bossActorId && this.shielded ? Math.floor(damage * shieldedShare) : damage), // inferred: rounded down
+      playerDamageOnNpc: (damage, { target, attack }) => (target.id === bossActorId && this.shielded ? this.shieldHit(damage, target, attack) : damage),
     };
+  }
+  // A hit on its shield: what is left of it. WIKI: the "BGS spec applies before Hydra's 75% damage reduction": the engine
+  // drains what the hit does, and the rest of the hit is drained here.
+  shieldHit(damage, boss, attack) {
+    const left = Math.floor(damage * shieldedShare); // inferred: rounded down
+    if (attack?.postHitEffects?.some((effect) => effect.effect === "drain_defence" && effect.flat)) setNpcDefenceDrain(boss, (boss.debuffs?.defenceDrain ?? 0) + damage - left);
+    return left;
   }
   onPlayerAttackStarted(attack, context) {
     // Whether it lands is known once its hits are queued (absorbs).

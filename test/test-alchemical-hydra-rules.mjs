@@ -33,6 +33,7 @@ async function ticksOf(name) {
         state: engine.getEncounterSnapshot().state,
         shieldShare: rules.playerDamageOnNpc(40, { target: boss }) / 40,
         maxHit: engine.encounter.maxHitOf("range").maxHit,
+        drain: boss.debuffs?.defenceDrain ?? 0,
         outcome: engine.getEncounterOutcome().phase,
       };
     },
@@ -116,6 +117,13 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   // The red vent still under it, the electric form is empowered by it at its next eruption.
   const red = empowered.filter((tick) => ticks[tick].state.phase === "electric");
   assert.ok(red.length >= 1 && red.every((tick) => covers(tick, [27, 23]) && ticks[tick].maxHit === 52), red.join());
+}
+{
+  // A Bandos godsword's special on its shield drains its Defence by the hit before the shield takes three quarters of it.
+  const ticks = await ticksOf("drain");
+  const drains = ticks.flatMap((tick, n) => (n > 1 && tick.drain > ticks[n - 1].drain ? [{ drained: tick.drain - ticks[n - 1].drain, dealt: ticks[n - 1].hp - tick.hp }] : []));
+  assert.ok(drains.length >= 1);
+  for (const { drained, dealt } of drains) assert.ok(drained > 4 && dealt === Math.floor(drained / 4), JSON.stringify(drains));
 }
 {
   // The electric form's fourth attack: a ball onto the middle, and 3 ticks later four currents, one from each

@@ -6,7 +6,7 @@
 // many of that style, the vents, the blobs in the air and the pools, the
 // currents, the fires and the walls of its flame special. Each script decides
 // from it and the tick alone.
-import { attack, boss, protect, rangedGear, setBossHp } from "./common.mjs";
+import { attack, boss, meleeGear, protect, rangedGear, setBossHp, special } from "./common.mjs";
 import { vents, gapTo, footprintTiles, chebyshev } from "../../../client/encounters/alchemical-hydra/ids.js";
 
 const KIND = "alchemical_hydra";
@@ -166,6 +166,20 @@ export const scenarios = [
         const tile = lureTile(api, vent, []);
         if (tile && !same(tile, api.player().position)) return walk(api, tile);
       }
+      shoot(api);
+    },
+  },
+  {
+    // Two Bandos godsword specials on its shield.
+    name: "alchemical-hydra/drain",
+    kind: KIND,
+    seed: 18,
+    ticks: 25,
+    mechanics: health,
+    equipment: { ...meleeGear.equipment, weapon: 11804, shield: undefined },
+    script(tick, api) {
+      pray(api, tick);
+      if (tick === 1 || tick === 14) special(api);
       shoot(api);
     },
   },
