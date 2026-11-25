@@ -2600,6 +2600,15 @@ button.info-hint:before {
 .mechanics-choice-segmented.has-icons .mechanics-choice-segment {
   min-height: 46px;
 }
+/* A toggle with "wrap" (choices with long labels): the segments share a row
+   while their text fits and wrap onto the next row when it does not. */
+.mechanics-choice-segmented.is-wrapping {
+  flex-wrap: wrap;
+  display: flex;
+}
+.mechanics-choice-segmented.is-wrapping .mechanics-choice-segment {
+  flex: 1 1 auto;
+}
 .mechanics-choice-segment svg {
   flex: none;
   display: block;

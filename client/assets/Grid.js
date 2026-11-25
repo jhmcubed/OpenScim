@@ -12453,6 +12453,7 @@ var k$e = ({
   info: info,
   note: note,
   choices: choices,
+  wrap: wrap,
   value: value,
   disabled: disabled,
   dependent: dependent,
@@ -12510,14 +12511,19 @@ var k$e = ({
         (0, wn.jsx)("div", {
           className:
             "mechanics-choice-segmented" +
-            (choices.some((eQ) => eQ.icon) ? " has-icons" : ""),
+            (choices.some((eQ) => eQ.icon) ? " has-icons" : "") +
+            (wrap ? " is-wrapping" : ""),
           role: "radiogroup",
           "aria-label": label,
           "aria-disabled": eN.sQMMV(disabled, undefined),
-          style: {
-            gridTemplateColumns:
-              "repeat(" + Math.min(choices.length, 10) + ", minmax(0, 1fr))",
-          },
+          // Choices with long labels wrap onto rows as wide as their text
+          // (Grid.css .is-wrapping) instead of squeezing into equal columns.
+          style: wrap
+            ? undefined
+            : {
+                gridTemplateColumns:
+                  "repeat(" + Math.min(choices.length, 10) + ", minmax(0, 1fr))",
+              },
           children: choices.map((eQ) =>
             (0, wn.jsxs)(
               "button",
@@ -12651,6 +12657,7 @@ var Uie = ({
       key: fe,
       label: label,
       choices: choices,
+      wrap: wrap,
       dependsOn: dependsOn,
       info: info,
       setup: setup,
@@ -12678,6 +12685,7 @@ var Uie = ({
           info: info,
           note: fp,
           choices: choices,
+          wrap: wrap,
           disabled: fv,
           dependent: null != dependsOn && !setup,
           value: (choices.find((fw) => fw.value === fq) ?? choices[0]).value,
