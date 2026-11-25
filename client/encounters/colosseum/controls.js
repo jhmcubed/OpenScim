@@ -10,13 +10,15 @@ export const colosseumModifierChoiceKey = "colosseumModifierChoice";
 // are the colloquial names of WIKI's table of enemies: Shaman, Ranger,
 // Manti, Shocker ("Mager" is both the shaman's and the shocker's).
 export const colosseumSouthKeys = { a: "colosseumSouthA", b: "colosseumSouthB" };
+// The labels are kept short so the segments fit the practice panel; the info
+// of the switches names the monsters in full.
 const southChoices = [
   { value: "random", label: "Random" },
-  { value: "any", label: "Any monster" },
-  { value: "shaman", label: "Shaman (serpent shaman)" },
-  { value: "javelin", label: "Ranger (javelin colossus)" },
-  { value: "manticore", label: "Manti (manticore)" },
-  { value: "shockwave", label: "Shocker (shockwave colossus)" },
+  { value: "any", label: "Any" },
+  { value: "shaman", label: "Shaman" },
+  { value: "javelin", label: "Ranger" },
+  { value: "manticore", label: "Manti" },
+  { value: "shockwave", label: "Shocker" },
 ];
 /** What the mechanics ask to stand on the south spawn `slot` ("a" or "b"): a value of southChoices, "random" for anything else. */
 export function getSouthSpawnSetting(mechanics, slot) {
@@ -115,13 +117,15 @@ export function buildColosseumControls() {
         label: "South spawn A (near)",
         setup: true,
         choices: southChoices,
-        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. With B set too it is a double south, such as a Shaman or a Shocker (both called mager) in front on A with a Ranger behind on B, or a Manti on A or B with a Ranger or a mager. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
+        wrap: true,
+        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. Shaman is the serpent shaman, Ranger the javelin colossus, Manti the manticore and Shocker the shockwave colossus; Any is any monster of the wave. With B set too it is a double south, such as a Shaman or a Shocker (both called mager) in front on A with a Ranger behind on B, or a Manti on A or B with a Ranger or a mager. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
       },
       {
         key: colosseumSouthKeys.b,
         label: "South spawn B (far)",
         setup: true,
         choices: southChoices,
+        wrap: true,
         info: "Practice: what spawns on the far south spawn, the one the south B tile of Colosseum Tiles stands in. Applies from your next attempt.",
       },
       ...overlayToggles.map(({ default: unusedDefault, ...toggle }) => toggle),
