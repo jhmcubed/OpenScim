@@ -1,7 +1,7 @@
 // Araxxor (client/encounters/araxxor/). He comes up at 47,22 (7 x 7) with
 // nine eggs around him; the player stands on 53,29, beside his north-east
 // corner, where BigSneezi fought him in the recorded kills.
-import { attack, boss, magicGear, meleeGear, protect, rangedGear, setBossHp } from "./common.mjs";
+import { attack, boss, magicGear, meleeGear, protect, rangedGear, setBossHp, special } from "./common.mjs";
 
 const KIND = "araxxor";
 const BOSS = "araxxor";
@@ -149,6 +149,24 @@ export const scenarios = [
         const araxxor = boss(api), west = Math.floor(tick / 14) % 2 === 1;
         if (araxxor && tick % 14 === 0) api.moveTo(west ? 38 : 62, 24);
       }
+    },
+  },
+  {
+    // Elder maul specials: his Defence goes down by 45 levels and no further, before the enrage and after.
+    name: "araxxor/defence-drain",
+    kind: KIND,
+    seed: 7,
+    ticks: 60,
+    mechanics: { araxxorEggs: "red", infiniteHealth: true, infiniteSpecialAttack: true },
+    start: besideHim,
+    ...meleeGear,
+    equipment: { ...meleeGear.equipment, weapon: 21003, shield: undefined },
+    script(tick, api) {
+      if (tick === 1) attack(api, BOSS);
+      if (tick === 30) setBossHp(api, 200);
+      if (tick % 6 === 1) special(api); // a maul's attack every 6 ticks
+      const araxxor = boss(api);
+      if (araxxor && araxxor.vitals.hp < 120) setBossHp(api, 200);
     },
   },
 ];

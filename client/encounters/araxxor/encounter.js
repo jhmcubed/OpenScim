@@ -220,6 +220,7 @@ export const prayerLeaves = {
   magic: 0.5, // WIKI: "reduces it by about 50%"
   cleave: 0.34, // WIKI: "reducing the damage by ~66%"
 };
+const maxDefenceDrain = 45; // WIKI: "His Defence level can be only drained by up to 45 levels"
 // Aranea boots, WIKI and OBS (tsps, recordings 4060, 4067): they negate his
 // ranged at most once every 8 ticks and his cleave once every 20, each an
 // attack that would have hurt (tsps: inferred there). Magic and his bite never.
@@ -436,7 +437,7 @@ class AraxxorEncounter {
       id: bossActorId, kind: "npc", role: "boss", npcTypeId: ids.boss, archetypeId: "araxxor", size: bossSize, alive: true,
       position: [...bossStart], previousPosition: [...bossStart], facing: bossSpawnFacing, history: new Map(),
       deathPolicy: "queued", // OBS k1 356 and 357: his death animation the tick after the killing hit
-      vitals: { hp: maxHp, maxHp }, formulaStats,
+      vitals: { hp: maxHp, maxHp }, formulaStats, defenceDrainFloor: formulaStats.levels.defence - maxDefenceDrain,
       combat: { attackSpeed: attackTicks, attackRange: 1, meleeReach: "diagonal", attackStyle: "melee", nextActionTick: firstAttackTicks, targetId: "player", lastAttackTick: null,
         animations: { idle: seqs.idle, walk: seqs.walk, run: seqs.walk, attack: seqs.melee, death: seqs.death } },
     };
@@ -802,6 +803,7 @@ class AraxxorEncounter {
     // TABLE "Enraged" (WIKI: Defence +35, Magic +28, Ranged +31); what has
     // been drained stays drained (WIKI): the drains are kept apart.
     boss.formulaStats = { ...boss.formulaStats, levels: { ...tableStats(ids.boss, "Enraged").levels } };
+    boss.defenceDrainFloor = boss.formulaStats.levels.defence - maxDefenceDrain;
     boss.combat.attackSpeed = enragedAttackTicks;
     boss.combat.attackRange = cleaveReach; // WIKI: he still closes the gap
     this.nextAttackTick = context.tick + enrageFirstAttackTicks;

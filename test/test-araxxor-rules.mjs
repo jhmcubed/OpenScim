@@ -104,6 +104,13 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.ok(bare.some((tick) => tick?.damage.some((hit) => /cleave/.test(hit.source) && hit.effectiveDamage > 0)));
 }
 {
+  // His Defence goes down by 45 levels and no further, enraged too.
+  const ticks = await ticksOf("defence-drain");
+  const drains = ticks.map((tick) => tick.defenceDrain), enraged = ticks.findIndex((tick) => tick.enraged);
+  assert.ok(Math.max(...drains.slice(0, enraged)) === 45, `${drains}`);
+  assert.equal(Math.max(...drains), 45);
+}
+{
   // His death: the acid with the killing hit, his animation the tick after; the araxytes die with it and go 2
   // ticks later, the eggs crumble a tick after it and go 2 after that; won 5 ticks after it.
   const ticks = await ticksOf("enrage-and-kill");
