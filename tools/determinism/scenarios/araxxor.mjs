@@ -1,7 +1,7 @@
 // Araxxor (client/encounters/araxxor/). He comes up at 47,22 (7 x 7) with
 // nine eggs around him; the player stands on 53,29, beside his north-east
 // corner, where BigSneezi fought him in the recorded kills.
-import { attack, boss, meleeGear, protect, rangedGear, setBossHp } from "./common.mjs";
+import { attack, boss, magicGear, meleeGear, protect, rangedGear, setBossHp } from "./common.mjs";
 
 const KIND = "araxxor";
 const BOSS = "araxxor";
@@ -130,6 +130,25 @@ export const scenarios = [
       if (tick === 3) setBossHp(api, 250);
       if (tick === 7) api.moveTo(45, 30);
       if (tick === 9) api.moveTo(45, 33);
+    },
+  },
+  {
+    // Aranea boots, in magic armour (he shoots, its ranged defence being the
+    // lower): his shots at a player who runs from side to side; then the
+    // cleaves of his enrage at one who stands still.
+    name: "araxxor/aranea-boots",
+    kind: KIND,
+    seed: 5,
+    ticks: 130,
+    mechanics: { araxxorEggs: "red", infiniteHealth: true },
+    start: [63, 24],
+    equipment: { ...magicGear.equipment, boots: 29806 },
+    script(tick, api) {
+      if (tick === 80) setBossHp(api, 250);
+      if (tick < 80) {
+        const araxxor = boss(api), west = Math.floor(tick / 14) % 2 === 1;
+        if (araxxor && tick % 14 === 0) api.moveTo(west ? 38 : 62, 24);
+      }
     },
   },
 ];

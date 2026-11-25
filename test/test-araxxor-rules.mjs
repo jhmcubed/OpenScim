@@ -78,6 +78,32 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.deepEqual([0, 1, 2, 3].map((n) => ticks[cleave + n].boss.join()), ["47,22", "47,22", "47,22", "46,23"]);
 }
 {
+  // The boots: a shot that would have hurt is negated, at most one in 8 ticks, with the message as he shoots;
+  // a cleave, at most one in 20, with the message 2 ticks after the swing.
+  const message = "Your Aranea boots let you avoid the spider-based attack.";
+  const ticks = await ticksOf("aranea-boots");
+  const said = ticks.flatMap((tick, n) => (tick?.messages.includes(message) ? [n] : []));
+  const enraged = ticks.findIndex((tick) => tick?.enraged);
+  const shots = said.filter((n) => n < enraged), cleaves = said.filter((n) => n >= enraged);
+  assert.ok(shots.length > 1 && cleaves.length > 1, `${shots} / ${cleaves}`);
+  const shotTicks = all(ticks, "araxxor ranged"), cleaveTicks = all(ticks, "araxxor cleave");
+  shots.forEach((n, i) => {
+    assert.ok(shotTicks.includes(n));
+    if (i) assert.ok(n - shots[i - 1] >= 8);
+    assert.deepEqual(ticks[n + 3].hits.filter((hit) => hit.attackKind === "range_arrow").map((hit) => hit.damage), [0]);
+  });
+  cleaves.forEach((n, i) => {
+    assert.ok(cleaveTicks.includes(n - 2));
+    if (i) assert.ok(n - cleaves[i - 1] >= 20);
+    assert.ok(!ticks[n - 1].damage.some((hit) => /cleave/.test(hit.source)));
+  });
+  // Without them none is, and some hurt.
+  const worn = scenarios.find(({ name }) => name === "araxxor/aranea-boots").equipment;
+  const bare = await ticksOf("aranea-boots", { equipment: { ...worn, boots: undefined } });
+  assert.ok(!bare.some((tick) => tick?.messages.includes(message)));
+  assert.ok(bare.some((tick) => tick?.damage.some((hit) => /cleave/.test(hit.source) && hit.effectiveDamage > 0)));
+}
+{
   // His death: the acid with the killing hit, his animation the tick after; the araxytes die with it and go 2
   // ticks later, the eggs crumble a tick after it and go 2 after that; won 5 ticks after it.
   const ticks = await ticksOf("enrage-and-kill");

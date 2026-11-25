@@ -52,6 +52,7 @@ import { canFootprintStepInArena, getNpcPursuitMoves } from "../shared/npcMoveme
 import { buildActorVisualTarget, faceActorToward } from "../shared/npcHelpers.js";
 import { createOccupancyStepCheck } from "../../engine/occupancy.js";
 import { emitInfernoNpcAttack, emitInfernoVisual } from "../inferno/events.js";
+import { getCanonicalEquipmentId } from "../../data/equipment.js";
 import { araxxorLoadouts } from "./loadouts.js";
 
 export const araxxorKind = "araxxor";
@@ -219,6 +220,12 @@ export const prayerLeaves = {
   magic: 0.5, // WIKI: "reduces it by about 50%"
   cleave: 0.34, // WIKI: "reducing the damage by ~66%"
 };
+// Aranea boots, WIKI and OBS (tsps, recordings 4060, 4067): they negate his
+// ranged at most once every 8 ticks and his cleave once every 20, each an
+// attack that would have hurt (tsps: inferred there). Magic and his bite never.
+const araneaBoots = 29806;
+const araneaTicks = { range: 8, cleave: 20 };
+const araneaMessage = "Your Aranea boots let you avoid the spider-based attack.";
 const drainShare = 0.09; // WIKI, OBS (tsps), OBS (k1 222: 3 of 37 Prayer): 9% of the level as it is, rounded down
 const poolDamage = [4, 5]; // OBS (tsps): flat, however long the player stands in it; OBS: 4 and 4 (k1 217, k2 182)
 const ballDamage = [14, 18]; // OBS (tsps)
@@ -348,6 +355,7 @@ class AraxxorEncounter {
     this.queue = []; // { tick, run(context, hits) }
     this.turn = { attack: null, middle: null }; // what he does this tick, and where his middle was as it began
     this.targetTick = 0; // until then he has no target
+    this.araneaReady = { range: 0, cleave: 0 }; // when the Aranea boots can negate the next of each
     this.acidHitTick = null; // the last tick a landing blob's acid hurt the player
     this.playerTrail = []; // the player's tiles at the end of the last two ticks
     this.drip = null; // { from, until }
@@ -595,11 +603,16 @@ class AraxxorEncounter {
   distantAttack(boss, player, context) {
     const style = this.distantStyle(player);
     const shape = style === "magic" ? projectiles.magic : projectiles.ranged;
-    const attack = rollNpcAttack({
+    let attack = rollNpcAttack({
       attacker: boss, target: player, random: this.random,
       plan: { formulaStyle: style === "magic" ? "magic" : "ranged", damageType: style, attackKind: style === "magic" ? "magic" : "range_arrow",
         maxHit: maxHits[style], impactDelayTicks: distantHitTicks, sourceDeathPolicy: "cancel-before-impact" },
     });
+    // OBS (tsps): the message with the shot, which then hits a 0 and drains nothing.
+    if (style === "range" && attack?.accuracySucceeded && this.araneaNegates("range", attack.rolledDamage, player, context)) {
+      attack = { ...attack, accuracySucceeded: false, rolledDamage: 0 };
+      this.araneaMessage(context);
+    }
     emitInfernoNpcAttack(context, {
       actor: boss, target: player, clipId: style === "magic" ? "magic" : "ranged", kind: "araxxor_" + style, impactDelayTicks: distantHitTicks,
       projectiles: [this.projectile(shape, this.turn.middle, buildActorVisualTarget(player), shape.end)],
@@ -609,6 +622,14 @@ class AraxxorEncounter {
         graphics: [{ spotAnimId: spots.magicImpact, target: buildActorVisualTarget(player), height: magicImpactHeight, delayCycles: shape.end }] });
     }
     return { environmentalDamages: [], npcAttacks: attack ? [{ ...attack, prayerReduction: { type: "reduce", value: prayerLeaves[style] } }] : [] };
+  }
+  araneaNegates(kind, damage, player, context) {
+    if (!(damage > 0) || context.tick < this.araneaReady[kind] || getCanonicalEquipmentId(player.equipment.boots) !== araneaBoots) return false;
+    this.araneaReady[kind] = context.tick + araneaTicks[kind];
+    return true;
+  }
+  araneaMessage(context) {
+    context.tickEvents.emit({ type: "game_message", kind: "game", segments: [{ text: araneaMessage }] });
   }
   projectile(shape, from, target, endCycles) {
     return {
@@ -820,8 +841,11 @@ class AraxxorEncounter {
     this.later(cleaveHitTicks, (ctx, hits) => {
       if (this.outcome.phase !== "active") return;
       // OBS: the 1 x 3 still hurts when he cleaves a player under him.
-      if (ctx.world.getPlayer()?.alive && line.some((t) => key(t) === key(ctx.playerPos)))
-        hits.push({ source: "Araxxor's cleave", attackType: "melee", baseDamage: damage, playerPosition: [...ctx.playerPos], prayerReduction: { type: "reduce", value: prayerLeaves.cleave } });
+      const target = ctx.world.getPlayer();
+      if (!target?.alive || !line.some((t) => key(t) === key(ctx.playerPos))) return;
+      // OBS (tsps): the message 2 ticks after the swing and no hit; the acid lands all the same.
+      if (this.araneaNegates("cleave", damage, target, ctx)) this.later(1, (next) => this.araneaMessage(next));
+      else hits.push({ source: "Araxxor's cleave", attackType: "melee", baseDamage: damage, playerPosition: [...ctx.playerPos], prayerReduction: { type: "reduce", value: prayerLeaves.cleave } });
     });
     // WIKI, OBS: a player under him makes him cut himself.
     if (under) this.later(cleaveCutTicks, (ctx) => {
