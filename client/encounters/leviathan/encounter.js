@@ -1,5 +1,5 @@
-// The Leviathan, the fourth boss of Desert Treasure II: the post-quest fight.
-// The awakened one is not written yet (the definition offers it as coming).
+// The Leviathan, the fourth boss of Desert Treasure II: the post-quest version
+// and the awakened one (versions, below).
 // https://oldschool.runescape.wiki/w/The_Leviathan/Strategies
 //
 // It lies in the pool in the middle of its arena and never leaves it. From
@@ -23,6 +23,10 @@
 // good, rocks on the player, and the abyssal pathfinder, which walks the arena
 // clockwise. In its aura ranged hits cannot miss and do at least a fifth of
 // their max, magic does double; outside it the orbs go through prayers.
+//
+// Awakened it has three times the hitpoints, drops five rocks where the other
+// drops one, with loose debris all over the arena, and from half its hitpoints
+// a tornado follows the player, through the rocks and the pool.
 //
 // Sources, beside the usual: OBS 11/25 is four Outside recordings of 25
 // November 2026 (an ordinary world, the awakened fight, four deaths: 47 stuns,
@@ -73,8 +77,10 @@ const floorRows = {
 export const bossStart = [30, 33]; // OBS: 2078,6369
 export const bossSize = 7; // CACHE, WIKI
 // Beside the handholds the player climbs in by (CACHE: 22,32); the tile is
-// RSPSApp's (inferred). The fight's, and the sandbox's on the Scar.
+// RSPSApp's (inferred). The post-quest fight's, and the sandbox's on the Scar.
 export const playerStart = [24, 34];
+// OBS 11/25: the tile the handholds lead to (4 of 4), 5 ticks before it surfaces.
+const awakenedStart = [23, 32];
 const pool = { minX: 29, maxX: 37, minY: 32, maxY: 40 }; // CACHE
 // OBS: the pathfinder's corners, the middle of its 3 x 3, clockwise from the
 // north-west: north-west, north-east and south-east recorded, south-west the
@@ -90,8 +96,9 @@ const tells = {
 };
 
 export const ids = {
-  boss: 12214, // CACHE leviathan
+  boss: 12214, // CACHE leviathan; OBS 11/25: the awakened one's too
   pathfinder: 12220, // CACHE leviathan_buff_npc, "Abyssal pathfinder"
+  tornado: 12222, // CACHE leviathan_tornado; OBS 11/25
   rubble: 47590, // CACHE leviathan_rubble, the loc a fallen rock leaves
 };
 export const seqs = {
@@ -100,6 +107,7 @@ export const seqs = {
   orbStart: 10278, // CACHE npc_leviathan_01_projectile_start_01; OBS: the first orb of a volley, and every orb of a slower one
   orbLoop: 10279, // CACHE npc_leviathan_01_projectile_loop_01; OBS: the others of a one-tick volley
   orbSingle: 10281, // CACHE npc_leviathan_01_projectile_single_01; OBS: a tick after an orbStart of a slower volley
+  orbEnd: 10280, // CACHE npc_leviathan_01_projectile_end_01; OBS 11/25: as the enrage starts
   roar: 10282, // CACHE npc_leviathan_01_stun_01; OBS 11/25: as a stun is broken (47 of 47), and the enrage's roar (3 of 3)
   bite: 10283, // CACHE npc_leviathan_01_melee_01
   stunned: 10294, // CACHE npc_leviathan_01_stun_idle; OBS 11/25: from the tick after the stun until it is broken
@@ -112,6 +120,7 @@ export const seqs = {
   death: 10293, // CACHE npc_leviathan_01_death; OBS
   pathfinderIdle: 10295, // CACHE npc_buff01_idle01
   pathfinderSpawn: 10296, // CACHE npc_buff01_spawn01; OBS
+  tornado: 8100, // CACHE: its NPC's own
 };
 export const spots = {
   // CACHE vfx_leviathan_01_projectile_..., by style. OBS: the launch on the
@@ -138,11 +147,14 @@ export const spots = {
   sideOrbShadow: 1446, // OBS 11/25: on the tile one is falling to
   sideOrbLands: 2504, // CACHE vfx_leviathan_360_lightning; OBS 11/25: where one lands
   stunned: 2379, // OBS 11/25: on it as it is stunned
+  debris: [2475, 2476], // OBS 11/25: a rock that falls and does not stay
   pathfinderMark: 2298, // OBS 11/25: where the pathfinder will come
+  tornadoHit: 2507, // CACHE leviathan_tornado_spotanim; OBS 11/25: on a player it hits
 };
 
 export const bossActorId = "leviathan";
 const pathfinderActorId = "abyssal-pathfinder";
+const tornadoActorId = "leviathan-tornado";
 // The five tails in the water round the arena, which the scene draws
 // (presentation.js): they are part of no rule. OBS 11/25 (4 of 4), OBS: each
 // one's NPC, its south-west tile and the way it faces; each reacts as a stun is
@@ -243,15 +255,17 @@ const deathTicks = 6; // OBS: from the kill to its removal (24 deaths)
 const orbProjectile = { startHeight: 550, endHeight: 100, slope: 30, startOffset: 124 };
 const boulderProjectile = { startHeight: 600, endHeight: 100, slope: 40, startOffset: 80 }; // OBS 11/25: from its mouth, at once
 const sideOrbProjectile = { startHeight: 800, endHeight: 0, slope: 3, startOffset: 200 }; // OBS 11/25: from its middle
+const impactHeight = 100; // OBS 11/25
 const cyclesPerTick = 30;
 
-// The fight's numbers, to be another version's when it has one. Damage: WIKI, its infobox, but for
+// What differs between the two versions. Damage: WIKI, its infobox, but for
 // what it has none of. A hit is [least, most].
 export const versions = {
   postQuest: {
     tableVersion: "Post-quest", // TABLE: the "Post-quest" entry of 12214, 900 hitpoints
     maxHp: 900,
     enrageHp: 180, // WIKI: "Upon reaching 180 hitpoints (20% of its health)"
+    playerStart,
     orbMaxHit: { magic: 32, range: 24, melee: 50 },
     biteMaxHit: 50,
     earlyBites: 1, // OBS (video), above
@@ -270,10 +284,56 @@ export const versions = {
     // Enraged (WIKI): every 2 ticks, magic and ranged only. OBS: the first orb 5
     // ticks after the enrage, flying 5 ticks; a rock on the player every 8 ticks.
     enraged: { interval: 2, styles: ["magic", "range"], flight: 5 },
+    enrageDelay: 0,
     enrageFirstAttackTicks: 5,
-    enrageRockTicks: 8,
+    enrageRockTicks: () => 8,
+    pathfinderClear: 0, // OBS: a rock on the middle of a corner keeps the pathfinder from it, one beside it does not
+    rockSpread: [[0, 0]],
+    debrisChance: 0,
+    tornadoHp: 0,
+  },
+  awakened: {
+    tableVersion: "Awakened", // TABLE: the "Awakened" entry of 12214; OBS 11/25: 2,700 on its health bar (4 of 4)
+    maxHp: 2700,
+    enrageHp: 540, // WIKI; OBS 11/25: enraged at 491, 491 and 499, not yet at 557, 565 and 567
+    playerStart: awakenedStart,
+    // WIKI. OBS 11/25: unprotected magic 14 to 54 (8 hits), ranged 9 and 11, melee none.
+    orbMaxHit: { magic: 55, range: 41, melee: 86 },
+    biteMaxHit: 86, // WIKI
+    earlyBites: 0, // OBS 11/25: no bite in 26 turns with the player beside the pool, before any roar
+    roarMaxHit: 7, // WIKI; OBS 11/25: 7, 7 and 4
+    rockHit: [19, 25], // OBS 11/25: 19, 19, 20 and 25; WIKI: 25 at most
+    lightningHit: [19, 22], // OBS 11/25: 9 strikes, 19 to 22
+    sideOrbHit: [19, 25], // inferred: as the rocks; none of 1,164 landed on the player
+    smokeHit: [70, 75], // OBS 11/25: 70, 70 and 73; WIKI: 75 in its infobox, "70+"
+    stunTicks: 12, // OBS 11/25: still stunned 12 ticks in (2 of 47; 11 ticks in, 12 of 47), its end not seen. WIKI: half of 15
+    volleyAfterStun: () => 2, // OBS 11/25: the third, from the first stun to the thirteenth (32 orbs: 2 ticks apart, flying 4, melee among them)
+    // OBS 11/25: an orb a tick flying 3, magic and ranged (28 and 17); the first 6
+    // ticks after the roar's rocks fall (3 of 3); rocks again 8 ticks after those
+    // (3 of 3), then 10 (2 of 2).
+    enraged: { interval: 1, styles: ["magic", "range"], flight: 3 },
+    enrageDelay: 1, // OBS 11/25: its rocks fall the tick after the hit that enrages it (3 of 3)
+    enrageFirstAttackTicks: 6,
+    enrageRockTicks: (wave) => (wave === 0 ? 8 : 10),
+    pathfinderClear: 2, // OBS 11/25: past a corner with rocks 2 tiles from its middle, to one with none nearer than 3 (3 of 3)
+    rockSpread: [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]], // WIKI, OBS 11/25: a plus, but for its tiles that are not open (7 of 8; the eighth left out one a loose rock landed on that tick)
+    // OBS 11/25: 14 to 27 loose rocks a wave (8 waves of the enrage, 149), of 320
+    // tiles. At its other roars too (WIKI: "cause debris to fall around the arena").
+    debrisChance: 1 / 17,
+    tornadoHp: 1350, // WIKI; OBS 11/25: it comes at 1,345, 1,317 and 1,284, not yet at 1,359
+    tornadoHit: [42, 48], // OBS 11/25: 9 hits, 42 to 48; WIKI: "40+"
   },
 };
+// OBS 11/25: loose rocks land 6, 7 or 8 ticks after they are sent, drawn 20, 50 or
+// 80 cycles later.
+const debrisFalls = [{ ticks: 6, delay: 20 }, { ticks: 7, delay: 50 }, { ticks: 8, delay: 80 }];
+// The tornado. OBS 11/25: a step a tick towards where the player was (heading;
+// 796 of 796), through rocks and pool; on the player's tile it hits, and stays 7
+// ticks (8 of 8 that went on). It comes on the tick of the hit that takes the
+// Leviathan to its hitpoints, 2, 2 and 7 tiles from the player: which tile three
+// do not settle, here an open one so near, at random (inferred).
+const tornadoHold = 7;
+const tornadoNear = 7;
 
 // OBS 11/25 (47, 47, 23, 24 and 3 times). The colours are inferred: the game's are
 // the player's own for its highlights (green, purple, magenta).
@@ -316,6 +376,7 @@ const inWave = ([x, y]) => {
   return ring([x, y]) <= wave.reach && dx * dx + dy * dy >= wave.inner * wave.inner;
 };
 const waveDirections = [[1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1]].map(String);
+const prayerAgainst = { magic: "ProtectMagic", range: "ProtectRange", melee: "ProtectMelee" };
 
 // The bridge's open tiles (floorRows), with a collision map of its own: the
 // fight's arena, and the sandbox's on the Scar (sandbox/arenas.js).
@@ -359,9 +420,9 @@ class LeviathanEncounter {
   constructor(kind = leviathanKind, version = versions.postQuest) {
     this.kind = kind;
     Object.defineProperty(this, "version", { value: version }); // fixed for the fight: not state
-    // Not state: the arena as the engine handed it, its open tiles, and the
-    // world, for the hooks that are handed none.
-    for (const name of ["arenaBase", "floor", "world"]) Object.defineProperty(this, name, { value: null, writable: true });
+    // Not state: the arena as the engine handed it, its open tiles, the world,
+    // for the hooks that are handed none, and its undrained levels.
+    for (const name of ["arenaBase", "floor", "world", "levels"]) Object.defineProperty(this, name, { value: null, writable: true });
     this.floor = [];
     this.reset();
   }
@@ -396,6 +457,8 @@ class LeviathanEncounter {
     this.warnings = []; // { tile, from, until }: the tiles of this tick's lightning, for the scene
     this.inFlight = []; // { style, lands }: the orbs on their way, for the scene
     this.falling = []; // { tile, lands }: the rocks on their way down
+    // The awakened fight's own state; the post-quest one has none of it.
+    if (this.version === versions.awakened) this.awakened = { enrageTick: null, rockWaves: 0, tornado: null };
     if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
   }
   getSeeds() {
@@ -405,7 +468,7 @@ class LeviathanEncounter {
     return {};
   }
   getDefaultPlayerStart() {
-    return [...playerStart];
+    return [...this.version.playerStart];
   }
   getIntroConfig() {
     return null;
@@ -429,6 +492,7 @@ class LeviathanEncounter {
   createNpcs() {
     const formulaStats = tableFormulaStats(this.version);
     const { maxHp } = this.version;
+    this.levels = { ...formulaStats.levels };
     return [{
       id: bossActorId, kind: "npc", role: "boss", npcTypeId: ids.boss, archetypeId: "leviathan", size: bossSize, alive: true,
       position: [...bossStart], previousPosition: [...bossStart], facing: 0, history: new Map(),
@@ -438,6 +502,7 @@ class LeviathanEncounter {
     }];
   }
   moveNpc(npc, context) {
+    if (npc.id === tornadoActorId) return this.moveTornado(npc, context);
     if (npc.id !== pathfinderActorId || !this.pathfinder || context.tick < this.pathfinder.walkTick) return [];
     const step = this.pathfinderStep(npc);
     this.pathfinder.destination = step.destination;
@@ -474,6 +539,7 @@ class LeviathanEncounter {
   }
   processNpcTick(npc, context) {
     const idle = { environmentalDamages: [] };
+    if (npc.id === tornadoActorId) return this.tornadoTurn(npc, context);
     if (npc.id !== bossActorId) return idle;
     this.flushVisuals(context);
     const tick = context.tick;
@@ -481,10 +547,15 @@ class LeviathanEncounter {
       this.surfaced = true;
       this.animate(context, "spawn");
     }
-    if (!this.enraged && npc.vitals.hp <= this.version.enrageHp) this.enrage(npc, context);
+    if (this.awakened) {
+      npc.formulaStats.levels = { ...this.levels }; // WIKI: awakened it is immune to stat drains
+      if (!this.awakened.tornado && npc.vitals.hp <= this.version.tornadoHp) this.spawnTornado(context);
+    }
+    if (!this.enraged && npc.vitals.hp <= this.version.enrageHp && this.isEnrageDue(tick)) this.enrage(npc, context);
     if (this.enraged && tick >= this.nextEnrageRockTick) {
-      this.dropRock(context, context.playerPos);
-      this.nextEnrageRockTick = tick + this.version.enrageRockTicks;
+      this.dropRocks(context, context.playerPos);
+      this.dropDebris(context);
+      this.nextEnrageRockTick = tick + this.enrageRockGap();
     }
     if (this.specialDue) {
       this.specialDue = false;
@@ -555,11 +626,17 @@ class LeviathanEncounter {
       // the player before theirs.
       const middle = this.enraged ? this.pathfinderMiddleNext(ctx) : null;
       const pierces = middle !== null && chebyshev(middle, ctx.playerPos) > auraRadius;
-      emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.impact[style], target: buildActorVisualTarget(target), height: 0, delayCycles: 0 }] });
+      // OBS 11/25: awakened, its impact is drawn on a player it hurts alone (12 of
+      // 12; none of 57 that a prayer met), at that height.
+      if (!this.awakened || pierces || target.activePrayer !== prayerAgainst[style])
+        emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [],
+          graphics: [{ spotAnimId: spots.impact[style], target: buildActorVisualTarget(target), height: this.awakened ? impactHeight : 0, delayCycles: 0 }] });
       hits.push({ source: "The Leviathan's orb", attackType: style, baseDamage: damage, playerPosition: [...ctx.playerPos], ...(pierces ? { prayerReduction: { type: "bypass" } } : {}) });
     });
     this.nextAttackTick = tick + volley.interval;
-    if (!this.enraged && ++this.orbs >= volley.orbs) {
+    if (this.enraged) {
+      if (volley.interval === 1) this.orbs++; // its startup is the first orb's alone
+    } else if (++this.orbs >= volley.orbs) {
       this.orbs = 0;
       this.nextAttackTick += pauseAfterRoar(volley);
       this.later(volley.interval, (ctx) => {
@@ -582,23 +659,54 @@ class LeviathanEncounter {
     emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "bite", kind: "leviathan_bite", impactDelayTicks: 0 });
     return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
   }
-  // A roar: its chip a tick later, a rock on the player's tile, and the first
-  // time the two rocks that tell its first special.
+  // A roar: its chip a tick later, the rocks on the player, and the first time
+  // the two rocks that tell its first special.
   roar(context) {
     if (!this.enraged) this.roars++;
     this.epoch++;
     this.animate(context, "roar");
+    this.chip();
+    this.roarRocks(context);
+  }
+  chip() {
     this.later(chipTicks, (ctx, hits) => {
       if (ctx.world.getPlayer()?.alive) hits.push({ source: "The Leviathan's roar", attackType: "typeless", baseDamage: [0, this.version.roarMaxHit], playerPosition: [...ctx.playerPos] });
     });
-    this.dropRock(context, context.playerPos);
-    if (!this.firstRoar) return;
-    this.firstRoar = false;
-    for (const area of tells[this.nextSpecial]) {
-      const x = area.minX + Math.floor(this.random() * (area.maxX - area.minX + 1));
-      const y = area.minY + Math.floor(this.random() * (area.maxY - area.minY + 1));
-      this.dropRock(context, [x, y]);
+  }
+  roarRocks(context) {
+    this.dropRocks(context, context.playerPos);
+    if (this.firstRoar) {
+      this.firstRoar = false;
+      for (const area of tells[this.nextSpecial]) {
+        const x = area.minX + Math.floor(this.random() * (area.maxX - area.minX + 1));
+        const y = area.minY + Math.floor(this.random() * (area.maxY - area.minY + 1));
+        this.dropRock(context, [x, y]);
+      }
     }
+    this.dropDebris(context);
+  }
+  // The rocks that stay: one on the player, or a plus of them, its arms but where
+  // there is no open floor.
+  dropRocks(context, at) {
+    for (const [dx, dy] of this.version.rockSpread) {
+      const tile = [at[0] + dx, at[1] + dy];
+      if ((dx === 0 && dy === 0) || this.isOpen(tile)) this.dropRock(context, tile);
+    }
+  }
+  // The rocks that do not: here and there on the open floor.
+  dropDebris(context) {
+    if (this.version.debrisChance === 0) return;
+    for (const tile of this.floor) {
+      if (this.random() >= this.version.debrisChance || this.rubble.has(key(tile))) continue;
+      const fall = debrisFalls[Math.floor(this.random() * debrisFalls.length)];
+      const spotAnimId = spots.debris[Math.floor(this.random() * spots.debris.length)];
+      emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId, target: tileTarget(tile), height: 0, delayCycles: fall.delay }] });
+      this.falling.push({ tile: [...tile], lands: this.tick + fall.ticks });
+      this.later(fall.ticks, (ctx, hits) => this.rockHits(ctx, hits, tile, "A falling rock", true));
+    }
+  }
+  isOpen(tile) {
+    return (this.arenaBase?.walkableTiles?.has(key(tile)) ?? true) && !this.rubble.has(key(tile));
   }
   // A rock lands: it hurts a player still on its tile. `heard`: with the sound
   // recorded for it (audio.js).
@@ -787,15 +895,28 @@ class LeviathanEncounter {
   }
 
   // --- the enrage and the pathfinder --------------------------------------
+  // Awakened it waits a tick: the special its hit set off begins, and stops.
+  isEnrageDue(tick) {
+    if (!this.awakened) return true;
+    this.awakened.enrageTick ??= tick + this.version.enrageDelay;
+    return tick >= this.awakened.enrageTick;
+  }
   enrage(boss, context) {
     this.enraged = true;
     if (this.stun) this.endStun(boss);
     this.orbs = 0;
     // WIKI: a smoke under way still blasts (not one the same hit set off: above,
     // smoke); a lightning stops (inferred: RSPSApp's).
-    if (this.special?.kind !== "smoke" || context.tick <= this.special.start) this.special = null;
-    this.roar(context);
-    this.nextEnrageRockTick = context.tick + this.version.enrageRockTicks;
+    if (this.special?.kind !== "smoke" || context.tick <= this.special.start + this.version.enrageDelay) this.special = null;
+    if (this.awakened) {
+      // OBS 11/25 (3 of 3): its rocks first, and the roar, with its chip, a tick later.
+      this.epoch++;
+      this.animate(context, "orbEnd");
+      this.roarRocks(context);
+      this.chip();
+      this.later(chipTicks, (ctx) => this.animate(ctx, "roar"));
+    } else this.roar(context);
+    this.nextEnrageRockTick = context.tick + this.enrageRockGap();
     this.nextAttackTick = context.tick + this.version.enrageFirstAttackTicks;
     const corner = this.pathfinderCorner();
     // OBS 11/25 (3 of 3): a plus over its corner, four times a second apart.
@@ -805,11 +926,14 @@ class LeviathanEncounter {
       graphics: [0, 30, 60, 90].flatMap((delayCycles) => plus.map(([dx, dy]) => ({ spotAnimId: spots.pathfinderMark, target: tileTarget([cx + dx, cy + dy]), height: 0, delayCycles }))) });
     this.later(pathfinderTicks, (ctx) => this.spawnPathfinder(ctx, corner));
   }
-  // OBS, WIKI: the first corner clockwise from the north-west whose middle is
-  // clear of rubble (a rock beside it does not count: OBS, and a test on the
-  // wiki's talk page), the north-west if none is.
+  enrageRockGap() {
+    return this.version.enrageRockTicks(this.awakened ? this.awakened.rockWaves++ : 0);
+  }
+  // The first corner clockwise from the north-west that is clear of rubble, the
+  // north-west if none is (WIKI). What counts differs (versions, pathfinderClear).
   pathfinderCorner() {
-    return Math.max(0, pathfinderCorners.findIndex((corner) => !this.rubble.has(key(corner))));
+    const rocks = [...this.rubble.values()];
+    return Math.max(0, pathfinderCorners.findIndex((corner) => !rocks.some((rock) => chebyshev(rock, corner) <= this.version.pathfinderClear)));
   }
   spawnPathfinder(context, corner) {
     if (this.outcome.phase !== "active") return;
@@ -839,6 +963,39 @@ class LeviathanEncounter {
   inAura(world, at) {
     const middle = this.pathfinderCentre(world);
     return middle !== null && chebyshev(middle, at) <= auraRadius;
+  }
+
+  // --- the tornado -----------------------------------------------------
+  spawnTornado(context) {
+    const near = this.floor.filter((tile) => chebyshev(tile, context.playerPos) <= tornadoNear && !this.rubble.has(key(tile)));
+    const at = near[Math.floor(this.random() * near.length)] ?? [...context.playerPos];
+    this.awakened.tornado = { holdUntil: context.tick + 1, hitTick: null };
+    context.spawnNpc({
+      id: tornadoActorId, kind: "npc", role: "npc", npcTypeId: ids.tornado, archetypeId: tornadoActorId, size: 1, alive: true,
+      position: [...at], previousPosition: [...at], facing: 0,
+      untargetable: true, blocksNpcMovement: false, passThruNpcs: true, history: new Map(),
+      vitals: { hp: 1, maxHp: 1 },
+      combat: { attackSpeed: 1, attackRange: 0, attackStyle: "typeless", nextActionTick: Infinity, targetId: null, lastAttackTick: null,
+        animations: { idle: seqs.tornado, walk: seqs.tornado, run: seqs.tornado, attack: null, death: null } },
+    });
+  }
+  moveTornado(npc, context) {
+    const { tornado } = this.awakened;
+    if (context.tick < tornado.holdUntil) return [];
+    const [x, y] = npc.position;
+    const [dx, dy] = heading(context.playerPos[0] - x, context.playerPos[1] - y);
+    if (dx === 0 && dy === 0) {
+      tornado.hitTick = context.tick;
+      tornado.holdUntil = context.tick + tornadoHold;
+      return [];
+    }
+    return [{ npcId: npc.id, path: [[x + dx, y + dy]] }];
+  }
+  tornadoTurn(npc, context) {
+    const player = context.world.getPlayer();
+    if (this.awakened.tornado.hitTick !== context.tick || !player?.alive) return { environmentalDamages: [] };
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.tornadoHit, target: buildActorVisualTarget(player), height: 0, delayCycles: 0 }] });
+    return { environmentalDamages: [{ source: "The tornado", attackType: "typeless", baseDamage: [...this.version.tornadoHit], playerPosition: [...context.playerPos] }] };
   }
 
   // --- the rest --------------------------------------------------------
@@ -904,7 +1061,7 @@ class LeviathanEncounter {
     this.rubble.clear();
     this.cover.clear();
     if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
-    if (context.world.getNpc(pathfinderActorId)) context.despawnNpc(pathfinderActorId);
+    for (const id of [pathfinderActorId, tornadoActorId]) if (context.world.getNpc(id)) context.despawnNpc(id);
     this.pathfinder = null;
     if (completionOwnership !== "encounter-owned") return;
     this.outcome = { phase: "resolving", decisiveTick: defeat.tick, completionTick: defeat.tick + deathTicks, primaryActorId: bossActorId, completionActorIds: [bossActorId] };
@@ -948,15 +1105,17 @@ export const leviathanDefinition = {
     isWorkInProgress: true,
     collision: { mode: "custom" }, // getArenaConfig, above
     victory: { eyebrow: "Triumphant", title: "VICTORY", narrative: "THE LEVIATHAN DEFEATED", accent: "gold" },
-    // The awakened fight is a variant kind (client/dt2/bosses.js, awakenedKind), not written yet.
+    // The awakened fight is a variant kind (client/dt2/bosses.js, awakenedKind).
     variants: [
       { id: "post_quest", encounterKind: leviathanKind, name: "Post-quest", subtitle: "900 hitpoints.", available: true, presetsKey: leviathanKind },
-      { id: "awakened", encounterKind: leviathanAwakenedKind, name: "Awakened", subtitle: "2,700 hitpoints, a tornado and five rocks to a roar. Not yet written.", available: false, presetsKey: leviathanKind },
+      { id: "awakened", encounterKind: leviathanAwakenedKind, name: "Awakened", subtitle: "2,700 hitpoints, harder hits, five rocks to a roar, a tornado from half health, an orb a tick once enraged.", available: true, presetsKey: leviathanKind },
     ],
     variantLabel: "Version",
     loadouts: leviathanLoadouts,
   },
   controls: { defaultMechanicsConfig: {}, mechanicsToggles: [], debugActions: [] },
+  variantFactories: { [leviathanAwakenedKind]: () => new LeviathanEncounter(leviathanAwakenedKind, versions.awakened) },
+  variantControls: { [leviathanAwakenedKind]: { defaultMechanicsConfig: {}, mechanicsToggles: [], debugActions: [] } },
 };
 // How the registry finds it (encounters/registry.js), and where it stands in the encounter picker.
 export { leviathanDefinition as definition };

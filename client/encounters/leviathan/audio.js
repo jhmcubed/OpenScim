@@ -2,8 +2,8 @@
 // they are rules, keyed by the type of a tick event
 // (docs/ADDING-AN-ENCOUNTER.md, section 5, `audio`). The layers of all
 // encounters hear every event: a rule answers `pass` to what is not its own.
-// The sounds of the frames of its animations are in the cache with them, and the
-// scene plays those.
+// The sounds of the frames of its animations and the tornado's are in the
+// cache with them, and the scene plays those.
 //
 // OBS 11/25 as in encounter.js: each is there every time what it goes with is,
 // and the count is of those. Not recorded, so without a sound here: a melee orb
@@ -29,10 +29,11 @@ const pathfinderSound = everywhere(1678); // 3 of 3, as its mark comes
 const hurtSound = { id: 7031, range: 10, position: bossStart.map((at) => at + Math.floor(bossSize / 2)), channel: "area" }; // 200 of the 203 hits that hurt it
 const rockSounds = [3308, 7035].map((id) => ({ id, range: 5, channel: "area" })); // 289 of 289 rocks that land
 const sideOrbSound = { id: 7039, range: 3, channel: "area" }; // 1,164 of 1,164
+const tornadoSound = { id: 7021, range: 6, channel: "area" }; // 9 of 9
 
 // A falling rock's sounds come as it lands: so many cycles after it is sent.
-const landsAfter = (spotAnimId) =>
-  spots.falling.includes(spotAnimId) ? 210 : spotAnimId === spots.boulderLands ? 0 : null;
+const landsAfter = (spotAnimId, delayCycles) =>
+  spots.falling.includes(spotAnimId) ? 210 : spots.debris.includes(spotAnimId) ? { 20: 180, 50: 210, 80: 240 }[delayCycles] : spotAnimId === spots.boulderLands ? 0 : null;
 
 const play = (sounds) => (sounds.length > 0 ? { kind: "play", sound: sounds } : { kind: "pass" });
 
@@ -44,7 +45,7 @@ export const leviathanAudio = {
       resolve: ({ attack }) => play(Object.hasOwn(orbSounds, attack) ? [orbSounds[attack]] : []),
     },
     inferno_visual: {
-      preloadIds: [surfaceSound, roarSound, ...Object.values(lightningSounds), ...Object.values(smokeSounds), ...Object.values(impactSounds), rockHitSound, pathfinderSound, ...rockSounds, sideOrbSound].map(({ id }) => id),
+      preloadIds: [surfaceSound, roarSound, ...Object.values(lightningSounds), ...Object.values(smokeSounds), ...Object.values(impactSounds), rockHitSound, pathfinderSound, ...rockSounds, sideOrbSound, tornadoSound].map(({ id }) => id),
       resolve({ lightningCharges, rockHit, animations = [], projectiles = [], graphics = [] }) {
         const starts = (clip) => animations.some(({ actorId, clipId }) => actorId === bossActorId && clipId === clip);
         const draws = (id) => graphics.some(({ spotAnimId }) => spotAnimId === id);
@@ -61,9 +62,10 @@ export const leviathanAudio = {
           ...Object.keys(impactSounds).filter((id) => draws(Number(id))).map((id) => impactSounds[id]),
           ...(rockHit ? [rockHitSound] : []),
           ...(draws(spots.pathfinderMark) ? [pathfinderSound] : []),
+          ...(draws(spots.tornadoHit) ? graphics.filter(({ spotAnimId }) => spotAnimId === spots.tornadoHit).map(({ target }) => ({ ...tornadoSound, position: [...target.position] })) : []),
           ...graphics.filter(({ spotAnimId }) => spotAnimId === spots.sideOrbLands).map(({ target }) => ({ ...sideOrbSound, position: [...target.position] })),
-          ...graphics.flatMap(({ spotAnimId, target }) => {
-            const after = landsAfter(spotAnimId);
+          ...graphics.flatMap(({ spotAnimId, target, delayCycles }) => {
+            const after = landsAfter(spotAnimId, delayCycles);
             return after == null ? [] : rockSounds.map((sound) => ({ ...sound, ...(after ? { delayCycles: after } : {}), position: [...target.position] }));
           }),
         ]);

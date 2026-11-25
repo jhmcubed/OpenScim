@@ -35,10 +35,11 @@ const renderConfig = {
       attackClips: {
         spawn: seqs.spawn, orbStart: seqs.orbStart, orbLoop: seqs.orbLoop, orbSingle: seqs.orbSingle, roar: seqs.roar, bite: seqs.bite,
         stunned: seqs.stunned, lightning: seqs.lightning, lightningLoop: seqs.lightningLoop, lightningEnd: seqs.lightningEnd,
-        spit: seqs.spit, spitLoop: seqs.spitLoop, blast: seqs.blast,
+        spit: seqs.spit, spitLoop: seqs.spitLoop, blast: seqs.blast, orbEnd: seqs.orbEnd,
       },
     },
     { npcTypeId: ids.pathfinder, idleSeqId: seqs.pathfinderIdle, walkSeqId: seqs.pathfinderIdle, attackClips: { spawn: seqs.pathfinderSpawn } },
+    { npcTypeId: ids.tornado, idleSeqId: seqs.tornado, walkSeqId: seqs.tornado },
     ...Object.entries(tailSeqs).map(([npcTypeId, { idle, bite, weakSpot }]) => ({ npcTypeId: Number(npcTypeId), idleSeqId: idle, walkSeqId: idle, attackClips: { bite, weakSpot } })),
   ],
   spotAnimIds: [...new Set(Object.values(spots).flatMap((value) => (typeof value === "number" ? [value] : Object.values(value))))],
@@ -76,7 +77,7 @@ export const leviathanPresentation = (BaseScene) => ({
   audio: leviathanAudio,
   // The player comes in west of the pool and looks east at it. The recordings
   // have no camera: set in the browser (1280 x 850), steep and far enough that
-  // its head is below the health bar from the start.
+  // its head is below the health bar from both versions' starts.
   defaultCamera: { yaw: 270, pitch: -56, zoom: 265 },
   presentation: {
     title: "The Leviathan",
