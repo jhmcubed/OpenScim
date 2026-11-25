@@ -10,7 +10,7 @@
 // it roars: a little damage, and a rock falls on the player's tile 7 ticks
 // later and stays there. The first roar drops two more, on the east and west
 // of the arena if its first special attack will be the lightning, on the north
-// and south if the smoke. A player beside the pool is bitten.
+// and south if the smoke. A player beside the pool is bitten now and then.
 //
 // A shadow spell stuns it for 15 ticks: it turns no more, and from the front
 // only 10 gets through a hit. A hit on its back (or 25% of its hitpoints dealt
@@ -166,10 +166,15 @@ const stunBreakShare = 0.25; // WIKI: "25% of The Leviathan's health in damage";
 const rearRangedMinimum = 0.65; // WIKI: "at least a minimum of ~65% of your maximum hit"
 const auraRangedMinimum = 0.2; // WIKI
 const specialReduction = 0.33; // WIKI: "reduced by 33%"; rounded down (inferred)
-// WIKI: a bite only for a player beside the pool, diagonals included. OBS
-// (video): one bite early in the fight, then none until after the third roar.
+// WIKI: a bite only for a player beside the pool, diagonals included, and
+// "rarely used". OBS (video): one bite early in the fight, then none until
+// after the third roar, the orbs going on all the while beside the pool.
+// After the third roar, and enraged, how often it bites no record gives; the
+// orbs still go on beside the pool (OBS (video): RSPSApp's reading of a 2025
+// kill), so a bite takes only some of its turns: one in four (inferred).
 const earlyBites = 1;
 const bitesFreeAfterRoars = 3;
+const biteChance = 0.25;
 // The lightning, from the hit that set it off (OBS (video), RSPSApp's
 // reading: its loop 3 ticks in, 35 strikes from 5 ticks in, its end at 42
 // and the volleys back at 44). Each strike is warned on the player's tile
@@ -432,8 +437,7 @@ class LeviathanEncounter {
     const player = context.world.getPlayer();
     if (this.special || tick < this.nextAttackTick || !player?.alive) return idle;
     npc.combat.lastAttackTick = tick;
-    const canBite = this.enraged || this.bites < earlyBites || this.roars >= bitesFreeAfterRoars;
-    const turn = canBite && isBesidePool(player.position) ? this.bite(npc, player, context) : this.fireOrb(npc, player, context);
+    const turn = this.bitesNow(player) ? this.bite(npc, player, context) : this.fireOrb(npc, player, context);
     npc.combat.nextActionTick = this.nextAttackTick; // for the interface's attack timer
     return turn;
   }
@@ -441,6 +445,15 @@ class LeviathanEncounter {
   // --- its attacks -----------------------------------------------------
   currentVolley() {
     return this.enraged ? enraged : volleys[this.volley];
+  }
+  // Whether this turn is a bite: never for a player away from the pool; the
+  // early one for certain; then none until the third roar; after it, and
+  // enraged, on some turns only (biteChance).
+  bitesNow(player) {
+    if (!isBesidePool(player.position)) return false;
+    if (!this.enraged && this.bites < earlyBites) return true;
+    if (!this.enraged && this.roars < bitesFreeAfterRoars) return false;
+    return this.random() < biteChance;
   }
   fireOrb(boss, player, context) {
     const tick = context.tick;
