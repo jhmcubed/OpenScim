@@ -47,27 +47,33 @@ const solarflareRings = pillarSouthWestTiles.map(([x, y]) => [
 ]);
 // WIKI (Solarflare): the orb "damages the player on contact"; level II
 // "deals more damage", level III "even more damage" and disables prayers.
-// Sol's module hits only when the orb steps off the tile the player stands
-// on, for 10 to 20 at every level, the hit landing one tick later.
-// So a player who steps onto the orb and off it again before it moves on,
-// or onto whom it steps and who steps away, is never hit there.
-// inferred: contact is the orb and the player on one tile at any point of
-// the orb's turn: it steps onto him, he stepped onto it, he stands where it
-// rests, or it steps off the tile he stands on. A contact is one hit, as
-// Sol's rule gives one a pass: ticks of contact in a row are hit once, and
-// the orb hits again only after it and the player were apart. The hit lands
-// a tick later, as in Sol's module. No source has the damage of levels II
-// and III: 15 to 25 and 20 to 30 are inferred.
+// WIKI (strategy page, tips, "Solarflare skip"): at levels I and II "the
+// flare damages only on its second tick", and at III the way past it is to
+// click its true tile as it moves. Sol's module hits when the orb steps off
+// the tile the player stood on, for 10 to 20 at every level, the hit
+// landing one tick later.
+// Here, at levels I and II, an orb hits a player who stands on its tile on
+// the second tick it is on that tile (the tick it arrived is the first): a
+// player who steps off before then, or steps on after, is not hit. At level
+// III it hits on contact: the orb and the player on one tile at any point of
+// its turn, once a contact. inferred: that the second tick is the only one
+// at a corner where the orb rests longer; that the contact of level III
+// counts its arrival on the player and his stepping onto it alike; the
+// damage of levels II and III, 15 to 25 and 20 to 30. The hit lands a tick
+// later, as in Sol's module.
 const solarflareDamageByLevel = { 1: [10, 20], 2: [15, 25], 3: [20, 30] };
 const isSameTile = (tile, otherTile) => tile[0] === otherTile[0] && tile[1] === otherTile[1];
 // The orb's hits of the waves; Sol's fight keeps his module's rule.
 class WaveSolarflareDamage {
   pending = [];
-  // The ids of the orbs that touched the player on the last tick.
+  // Level III: the ids of the orbs that touched the player on the last tick.
   touching = new Set();
+  // The tick each orb arrived on the tile it stands on, by id.
+  arrivals = new Map();
   reset() {
     this.pending = [];
     this.touching = new Set();
+    this.arrivals = new Map();
   }
   // `orbs` are the orbs after their turns; `movements` the engine's record
   // of the steps they took this tick.
@@ -75,17 +81,27 @@ class WaveSolarflareDamage {
     const due = this.pending.filter((hit) => hit.tick <= context.tick);
     this.pending = this.pending.filter((hit) => hit.tick > context.tick);
     const damages = due.map((hit) => ({ baseDamage: hit.baseDamage, attackType: "typeless", source: "Solarflare", playerPosition: [...context.playerPos] }));
-    const touching = new Set(
-      orbs
-        .filter((orb) => {
-          const movement = movements.find((candidate) => candidate.npcId === orb.id);
-          return isSameTile(orb.position, context.playerPos) || (movement?.moved === true && isSameTile(movement.from, context.playerPos));
-        })
-        .map((orb) => orb.id),
-    );
-    const touchesAnew = [...touching].some((orbId) => !this.touching.has(orbId));
-    this.touching = touching;
-    if (touchesAnew) {
+    const movementOf = (orb) => movements.find((candidate) => candidate.npcId === orb.id);
+    for (const orb of orbs) {
+      if (movementOf(orb)?.moved === true) {
+        this.arrivals.set(orb.id, context.tick);
+      } else if (!this.arrivals.has(orb.id)) {
+        this.arrivals.set(orb.id, orb.spawnTick ?? context.tick);
+      }
+    }
+    let hits;
+    if (level >= 3) {
+      const touching = new Set(
+        orbs
+          .filter((orb) => isSameTile(orb.position, context.playerPos) || (movementOf(orb)?.moved === true && isSameTile(movementOf(orb).from, context.playerPos)))
+          .map((orb) => orb.id),
+      );
+      hits = [...touching].some((orbId) => !this.touching.has(orbId));
+      this.touching = touching;
+    } else {
+      hits = orbs.some((orb) => context.tick - this.arrivals.get(orb.id) === 1 && isSameTile(orb.position, context.playerPos));
+    }
+    if (hits) {
       this.pending.push({ tick: context.tick + 1, baseDamage: solarflareDamageByLevel[level] ?? solarflareDamageByLevel[1] });
       if (level >= 3 && context.world.getPlayer()?.activePrayer != null) {
         context.setProtectionPrayer?.(null);

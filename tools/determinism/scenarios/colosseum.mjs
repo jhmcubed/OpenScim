@@ -401,11 +401,13 @@ export const scenarios = [
   },
   {
     // Solarflare I, wave 1. An orb circles each pillar on the tiles touching it, placed with the wave on tick 5; the
-    // south-west pillar's starts at 23,25 and steps north every second tick. The player waits on 23,27, where it steps
-    // onto him on tick 8, and steps away to 21,27 before it moves on: the contact is a hit of 10 to 20 on tick 9. The
-    // orb rests for 7 ticks at the corner 23,29 from tick 12; he walks onto it there on tick 13 and off it again to
-    // 21,29 on tick 16, before it moves on: one hit, on tick 15. Sol's rule, a hit when the orb steps off the player's
-    // tile, gives neither. Every tick the snapshot's orbTiles, which the overlay Solarflare True Tile marks, are the orbs' tiles, or the scenario throws.
+    // south-west pillar's starts at 23,25 and steps north every second tick. At level I an orb hits only on its second
+    // tick on a tile (the wiki's "Solarflare skip"). The player waits on 23,27; the orb arrives there on tick 8 and he
+    // steps ahead of it to 23,28 on the same tick: no hit. It arrives on 23,28 on tick 10 and he is still there on
+    // tick 11, its second: a hit of 10 to 20 on tick 12, as he steps away to 21,28. The orb rests at the corner 23,29
+    // from tick 12 to 18; he stands on it from tick 14, after its second tick, and leaves on tick 17: no hit. Every
+    // tick the snapshot's orbTiles, which the overlay Solarflare True Tile marks, are the orbs' tiles, or the scenario
+    // throws.
     name: "colosseum/solarflare-contact",
     kind: KIND,
     seed: 81,
@@ -418,9 +420,10 @@ export const scenarios = [
       const orbTiles = api.npcs().filter((npc) => npc.id.startsWith("colosseum_solarflare_")).map((orb) => orb.position.join(","));
       if (seen(api).orbTiles.map((tile) => tile.join(",")).join(" ") !== orbTiles.join(" ")) throw new Error(`orbTiles on tick ${tick}`);
       if (tick === 1) api.moveTo(23, 27);
-      if (tick === 8) api.moveTo(21, 27);
-      if (tick === 13) api.moveTo(23, 29);
-      if (tick === 16) api.moveTo(21, 29);
+      if (tick === 8) api.moveTo(23, 28);
+      if (tick === 12) api.moveTo(21, 28);
+      if (tick === 14) api.moveTo(23, 29);
+      if (tick === 17) api.moveTo(21, 29);
     },
   },
   {
