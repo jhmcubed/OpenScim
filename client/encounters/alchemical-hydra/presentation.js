@@ -103,9 +103,9 @@ export const alchemicalHydraPresentation = (BaseScene) => ({
     return buildScene(HydraScene, renderConfig, context);
   },
   audio: alchemicalHydraAudio,
-  // The player comes in at the door, south-west of it, and looks north-east, steeply enough to see over the west wall
-  // (inferred: set in the browser).
-  defaultCamera: { yaw: 315, pitch: -72, zoom: 300 },
+  // The player comes in at the west door, south-west of it: looking north, neither the west wall nor the south one is
+  // between him and the camera, and the Hydra is in view (inferred: set in the browser).
+  defaultCamera: { yaw: 0, pitch: -55, zoom: 340 },
   presentation: {
     title: "Alchemical Hydra",
     tagline: "Karuulm Slayer Dungeon",
