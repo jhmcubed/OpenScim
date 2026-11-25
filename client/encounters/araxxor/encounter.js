@@ -25,25 +25,32 @@
 //
 // Sources, beside the usual: plain OBS is two kills BigSneezi recorded with
 // the Outside plugin on 24 November 2026 (https://outside.wiki/bigsneezi):
-// one with red eggs first, one with green. They were fought with melee
-// beside him, so his ranged attack, the spray and the cleave through Protect
-// from Melee are not in them. OBS (tsps) is RSPSApp's reading of rsprox
-// recordings 1077-1095, 1442, 1445 and 1508 of ordinary worlds
-// (RSPSApp/tsps docs/araxxor.md and server/plugins/bosses/araxxor). Ids are
-// the cache's, their names its gameval names as RSPSApp exports them.
+// k1, red eggs first (bigsneezi-araxxor-2026-11-24.jsonl.gz; he comes up at
+// t 164), and k2, green eggs first (the same name with "(1)"; he came up at
+// t -7, before its first tick). "OBS k1 218" is tick 218 of the first. They
+// were fought with melee beside him, so his ranged attack, the spray, the
+// Ruptura's blast on the player and the cleave through Protect from Melee are
+// not in them, nor an Acidic that is killed, nor an acid ball that hits. OBS
+// (tsps) is RSPSApp's reading of rsprox recordings 1077-1095, 1442, 1445 and
+// 1508 of ordinary worlds (RSPSApp/tsps docs/araxxor.md and
+// server/plugins/bosses/araxxor). Ids are the cache's, their names its gameval
+// names as RSPSApp exports them.
 //
-// Timing: the recorder sees a hit a tick after the engine applies it (an NPC's
-// melee is in the engine's tick of the swing and on the recorder's next), so
-// a hit recorded n ticks after its attack is n - 1 here. Animations, effects,
-// spawns and the acid on the floor are timed as recorded.
+// Timing: the recorder sees a hit on the player a tick after the engine
+// applies it (an NPC's melee is in the engine's tick of the swing and on the
+// recorder's next), so a hit on him recorded n ticks after its attack is n - 1
+// here. A hit on an NPC is recorded on the tick it lands (the player's own 77
+// on Araxxor are, in both kills, on the tick they land here). Animations,
+// effects, spawns, sounds and the acid on the floor are timed as recorded.
 import { getMonsterFormulaStats } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { CollisionFlag } from "../../engine/collision.js";
 import { setArenaConfig, getArenaDefaultWalkable } from "../../engine/arena.js";
 import { getPlayerDefenceRoll, getPlayerFormulaStats, getPrayerMultipliers } from "../../engine/combatFormulas.js";
 import { rollNpcAttack, isNpcInAttackRange } from "../shared/npcAttack.js";
-import { getNpcPursuitMoves } from "../shared/npcMovement.js";
+import { canFootprintStepInArena, getNpcPursuitMoves } from "../shared/npcMovement.js";
 import { buildActorVisualTarget } from "../shared/npcHelpers.js";
+import { createOccupancyStepCheck } from "../../engine/occupancy.js";
 import { emitInfernoNpcAttack, emitInfernoVisual } from "../inferno/events.js";
 import { araxxorLoadouts } from "./loadouts.js";
 
@@ -149,6 +156,10 @@ const enrageBodyTicks = 2; // OBS: 11489 2 ticks after 11488
 const cleaveReach = 2; // WIKI: "a cleave with range 2"
 const cleaveHitTicks = 1; // OBS: its hit and its acid 2 ticks after the swing
 const cleavePoolTicks = 2;
+// OBS: he drops his target with a cleave and has it back 3 ticks later (15 of
+// 17; k2 173 and 177 after 2).
+// Until then he neither turns nor steps (k1 333 and 334, k2 155, 158, 159).
+const cleaveTargetTicks = 3;
 // inferred (RSPSApp's): his ranged and magic reach 10 tiles; no source says.
 const distantReach = 10;
 const distantHitTicks = 3; // OBS, OBS (tsps): 4 ticks after the cast, whatever the distance
@@ -297,6 +308,8 @@ class AraxxorEncounter {
     this.araxytes = new Map(); // actor id -> { type, wakeTick, fuse, lastAttackTick }
     this.pools = new Map(); // tile key -> [x, y]
     this.queue = []; // { tick, run(context, hits) }
+    this.turn = { attack: null, middle: null }; // what he does this tick, and where his middle was as it began
+    this.targetTick = 0; // until then he has no target
     this.playerTrail = []; // the player's tiles at the end of the last two ticks
     this.drip = null; // { from, until }
     this.ball = null; // { id, middle, direction, hit, burstTick }
@@ -391,13 +404,55 @@ class AraxxorEncounter {
   }
   moveNpc(npc, context) {
     if (!npc.alive || this.outcome.phase !== "active") return [];
-    // The default pursuit, with the fight's own random draws (it steps out from under the player at random).
-    const pursuit = () => getNpcPursuitMoves(npc, { ...context, random: this.random });
-    if (npc.id === bossActorId) return this.spawned ? pursuit() : [];
+    if (npc.id === bossActorId) return this.moveBoss(npc, context);
     if (npc.id === this.ball?.id) return this.ball.step ? [{ npcId: npc.id, path: this.ball.step }] : [];
     const araxyte = this.araxytes.get(npc.id);
     if (!araxyte || context.tick < araxyte.wakeTick || araxyte.fuse !== null) return [];
-    return pursuit();
+    return this.pursuit(npc, context);
+  }
+  // The default pursuit, with the fight's own random draws (it steps out from under the player at random).
+  pursuit(npc, context) {
+    return getNpcPursuitMoves(npc, { ...context, random: this.random });
+  }
+  // OBS: an attack is decided, and leaves him, where he stands as the tick
+  // begins, and he steps in the same tick (k1 218: magic at a player 2 tiles
+  // away, from 50,25, and a step up to him); not with a cleave, which drops his
+  // target. He steps only along the axis he is short on (k1
+  // 218, 263 and 305 north, 335 west, where the default pursuit goes
+  // diagonally), and enraged too until he is beside the player (k1 335).
+  moveBoss(boss, context) {
+    const player = context.world.getPlayer();
+    this.turn = { attack: this.bossAttack(boss, player, context.tick), middle: middleOf(boss) };
+    if (!this.spawned || !player?.alive) return [];
+    if (boss.combat.targetId === null) {
+      if (context.tick < this.targetTick) return [];
+      boss.combat.targetId = "player";
+    }
+    if (this.turn.attack === "cleave") return [];
+    const [px, py] = player.position, [x, y] = boss.position;
+    if (gapTo(player.position, boss.position, bossSize) === 0) return this.pursuit(boss, context);
+    if (isNpcInAttackRange(boss, player, 1)) return [];
+    const dx = px < x ? -1 : px > x + bossSize - 1 ? 1 : 0, dy = py < y ? -1 : py > y + bossSize - 1 ? 1 : 0;
+    const isFree = createOccupancyStepCheck(context.world.occupancy);
+    const step = [[x + dx, y + dy], [x + dx, y], [x, y + dy]].find((to) =>
+      canFootprintStepInArena(boss.position, to, { width: bossSize, height: bossSize }) && isFree(boss.position, to, bossSize));
+    return step ? [{ npcId: boss.id, path: [step] }] : [];
+  }
+  bossAttack(boss, player, tick) {
+    if (!this.spawned || tick < this.nextAttackTick || !player?.alive || (!this.enraged && this.shouldEnrage(boss))) return null;
+    const gap = gapTo(player.position, boss.position, bossSize);
+    if (this.enraged) return gap <= cleaveReach ? "cleave" : gap <= distantReach ? "distant" : null;
+    if (gap <= distantReach && (this.attacks + 1) % specialEvery === 0) return "special";
+    if (gap > 0 && isNpcInAttackRange(boss, player, 1)) return "melee";
+    if (gap > 1 && gap <= distantReach) return "distant";
+    return null; // under him or out of his reach: he waits (inferred)
+  }
+  shouldEnrage(boss) {
+    return boss.vitals.hp <= Math.floor(boss.vitals.maxHp * enrageThreshold);
+  }
+  dropTarget(boss, context, ticks) {
+    boss.combat.targetId = null;
+    this.targetTick = context.tick + ticks;
   }
 
   // --- each tick, before the NPCs ---------------------------------------
@@ -453,25 +508,16 @@ class AraxxorEncounter {
       boss.combat.nextActionTick = this.nextAttackTick;
       return idle;
     }
-    if (!this.enraged && boss.vitals.hp <= Math.floor(boss.vitals.maxHp * enrageThreshold)) this.enrage(boss, context);
+    if (!this.enraged && this.shouldEnrage(boss)) this.enrage(boss, context);
     const player = context.world.getPlayer();
-    if (tick < this.nextAttackTick || !player?.alive) return idle;
-    const gap = gapTo(player.position, boss.position, bossSize);
-    let turn = null;
-    if (this.enraged) {
-      if (gap <= cleaveReach) turn = this.cleave(boss, player, context);
-      else if (gap <= distantReach) turn = this.distantAttack(boss, player, context);
-    } else if (gap <= distantReach && (this.attacks + 1) % specialEvery === 0) {
-      this.attacks++;
-      turn = this.specialAttack(boss, player, context);
-    } else if (gap > 0 && isNpcInAttackRange(boss, player, 1)) {
-      this.attacks++;
-      turn = this.melee(boss, player, context);
-    } else if (gap > 1 && gap <= distantReach) {
-      this.attacks++;
-      turn = this.distantAttack(boss, player, context);
-    }
-    if (!turn) return idle; // under him or out of his reach: he waits (inferred)
+    const { attack } = this.turn;
+    if (!attack) return idle;
+    if (!this.enraged) this.attacks++;
+    let turn;
+    if (attack === "cleave") turn = this.cleave(boss, player, context);
+    else if (attack === "special") turn = this.specialAttack(boss, player, context);
+    else if (attack === "melee") turn = this.melee(boss, player, context);
+    else turn = this.distantAttack(boss, player, context);
     boss.combat.lastAttackTick = tick;
     this.nextAttackTick = tick + (this.enraged ? enragedAttackTicks : attackTicks);
     boss.combat.nextActionTick = this.nextAttackTick; // for the interface's attack timer
@@ -505,7 +551,7 @@ class AraxxorEncounter {
     });
     emitInfernoNpcAttack(context, {
       actor: boss, target: player, clipId: style === "magic" ? "magic" : "ranged", kind: "araxxor_" + style, impactDelayTicks: distantHitTicks,
-      projectiles: [this.projectile(shape, middleOf(boss), buildActorVisualTarget(player), shape.end)],
+      projectiles: [this.projectile(shape, this.turn.middle, buildActorVisualTarget(player), shape.end)],
     });
     if (style === "magic") {
       emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [],
@@ -535,7 +581,7 @@ class AraxxorEncounter {
   // of the 6 ticks after it lands (OBS).
   dripAt(boss, player, context) {
     emitInfernoVisual(context.tickEvents, { animations: [], graphics: [],
-      projectiles: [this.projectile(projectiles.drip, middleOf(boss), buildActorVisualTarget(player), projectiles.drip.end)] });
+      projectiles: [this.projectile(projectiles.drip, this.turn.middle, buildActorVisualTarget(player), projectiles.drip.end)] });
     this.later(dripLandTicks, (ctx) => {
       const target = ctx.world.getPlayer();
       if (!target?.alive) return;
@@ -567,7 +613,7 @@ class AraxxorEncounter {
   // "in the player's general direction"; where exactly is RSPSApp's choice,
   // inferred: up to 3 tiles on past him and 1 back, 3 to either side).
   spray(boss, player, context) {
-    const middle = middleOf(boss);
+    const { middle } = this.turn;
     const [px, py] = player.position;
     const dx = Math.sign(px - middle[0]), dy = Math.sign(py - middle[1]);
     const tiles = new Map();
@@ -603,7 +649,7 @@ class AraxxorEncounter {
   // Araxxor's middle 2 tiles a tick, leaving acid on its middle and the tile
   // behind, until it reaches a wall; it throws six blobs, bursts and goes.
   throwBall(boss, player, context) {
-    const bossMiddle = middleOf(boss);
+    const bossMiddle = this.turn.middle;
     const [px, py] = player.position;
     const ox = px - bossMiddle[0], oy = py - bossMiddle[1];
     const toward = Math.abs(ox) >= Math.abs(oy) ? [-Math.sign(ox), 0] : [0, -Math.sign(oy)];
@@ -700,6 +746,7 @@ class AraxxorEncounter {
     const tile = [...player.position];
     const under = gapTo(tile, boss.position, bossSize) === 0;
     const line = this.cleaveLine(boss, tile);
+    this.dropTarget(boss, context, cleaveTargetTicks);
     emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "cleave", kind: "araxxor_cleave", impactDelayTicks: cleaveHitTicks });
     context.tickEvents.emit({ type: "overhead_text", anchor: { kind: "actor", actorId: bossActorId }, overheadText: "Skree!", overheadCycle: 3 });
     // Rolled as his melee (inferred); WIKI: up to his melee max.

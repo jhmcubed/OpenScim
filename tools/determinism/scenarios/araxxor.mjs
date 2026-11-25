@@ -75,4 +75,19 @@ export const scenarios = [
       } else if (tick % 8 > 1 && api.player().attackTarget !== BOSS) attack(api, BOSS);
     },
   },
+  {
+    // A tile back the tick before he attacks: magic from 2 tiles away, and a
+    // step straight up to the player in the same tick (BigSneezi's red eggs,
+    // t 218).
+    name: "araxxor/magic-and-step",
+    kind: KIND,
+    seed: 3,
+    ticks: 64,
+    mechanics: { araxxorEggs: "red", infiniteHealth: true },
+    start: besideHim,
+    ...meleeGear,
+    script(tick, api) {
+      if (tick === 54) api.moveTo(53, 30);
+    },
+  },
 ];
