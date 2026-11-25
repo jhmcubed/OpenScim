@@ -31,8 +31,13 @@
 // followed and the wiki's number named beside them. Numbers no source gives
 // are marked inferred. There are no Outside recordings of it yet.
 //
-// Not yet: "The chemical burns you as it cascades over you." (recorded, 9 to
-// 17 damage, from nothing anyone has found).
+// Not yet: "The chemical burns you as it cascades over you." (recorded 10
+// times, 9 to 17 damage). Nothing says where it comes from: OBS (tsps) it lines
+// up with no vent or fire tile; the wiki's two pages do not have it, and the
+// cache has no text of it. One draft of a wiki user's (User:Kanga/Sandbox1)
+// says that "standing on the vents above the chemical pool will deal damage to
+// the player when it bursts up", which the recordings do not bear out. (CACHE:
+// a player can stand on the three vents' tiles.)
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { setNpcDefenceDrain } from "../../engine/npcState.js";
@@ -87,7 +92,7 @@ const styleEvery = 3; // WIKI, OBS (tsps): three basic attacks a style, the coun
 const swayTicks = 3; // OBS (tsps): the heads sway 3 ticks after the third attack of a style
 const specialAt = 4; // WIKI, OBS (tsps): a phase's fourth attack is its special ...
 const specialEvery = 10; // ... then every tenth (OBS (tsps): 30 runs past the second)
-const reach = 10; // OBS (tsps): it attacks from up to 10 tiles of its footprint ...
+const reach = 10; // OBS (tsps): it attacks from up to 9 tiles of its footprint; 10 is tsps, theirs ...
 const closeIn = 4; // ... and walks while the player is further than 4 off it (13,643 of 13,773 ticks at 4 it stayed)
 const shieldedShare = 0.25; // WIKI: 75% damage reduction while shielded
 // OBS (tsps): every flight starts at cycle 30 and ends at 40 + 5 a tile from
