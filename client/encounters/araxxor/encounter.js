@@ -49,7 +49,7 @@ import { setArenaConfig, getArenaDefaultWalkable } from "../../engine/arena.js";
 import { getPlayerDefenceRoll, getPlayerFormulaStats, getPrayerMultipliers } from "../../engine/combatFormulas.js";
 import { rollNpcAttack, isNpcInAttackRange } from "../shared/npcAttack.js";
 import { canFootprintStepInArena, getNpcPursuitMoves } from "../shared/npcMovement.js";
-import { buildActorVisualTarget } from "../shared/npcHelpers.js";
+import { buildActorVisualTarget, faceActorToward } from "../shared/npcHelpers.js";
 import { createOccupancyStepCheck } from "../../engine/occupancy.js";
 import { emitInfernoNpcAttack, emitInfernoVisual } from "../inferno/events.js";
 import { araxxorLoadouts } from "./loadouts.js";
@@ -157,13 +157,18 @@ const cleaveReach = 2; // WIKI: "a cleave with range 2"
 const cleaveHitTicks = 1; // OBS: its hit and its acid 2 ticks after the swing
 const cleavePoolTicks = 2;
 // OBS: he drops his target with a cleave and has it back 3 ticks later (15 of
-// 17; k2 173 and 177 after 2).
+// 17; k2 173 and 177 after 2), with the acid ball's throw 4 (k2 35, 77, 119).
 // Until then he neither turns nor steps (k1 333 and 334, k2 155, 158, 159).
 const cleaveTargetTicks = 3;
+const ballTargetTicks = 4;
 // inferred (RSPSApp's): his ranged and magic reach 10 tiles; no source says.
 const distantReach = 10;
 const distantHitTicks = 3; // OBS, OBS (tsps): 4 ticks after the cast, whatever the distance
 const ballLandTicks = 2; // OBS
+// OBS: its middle is on the edge of his body in one of eight directions, the
+// nearest to the player's: k2 37 and 79, north-east, 53,28 for a player at
+// 53,29; k2 121, north, 50,28 for one at 51,29. tsps: on the player's tile.
+const ballLandDistance = 3;
 // OBS: each of three balls rolled 7 tiles (2, 2, 2, then 1) and burst, each
 // at the lair's wall too. tsps: it rolls until its next step is blocked.
 const ballRollTiles = 7;
@@ -416,8 +421,8 @@ class AraxxorEncounter {
   }
   // OBS: an attack is decided, and leaves him, where he stands as the tick
   // begins, and he steps in the same tick (k1 218: magic at a player 2 tiles
-  // away, from 50,25, and a step up to him); not with a cleave, which drops his
-  // target. He steps only along the axis he is short on (k1
+  // away, from 50,25, and a step up to him); not with a cleave or the ball,
+  // which drop his target. He steps only along the axis he is short on (k1
   // 218, 263 and 305 north, 335 west, where the default pursuit goes
   // diagonally), and enraged too until he is beside the player (k1 335).
   moveBoss(boss, context) {
@@ -428,7 +433,7 @@ class AraxxorEncounter {
       if (context.tick < this.targetTick) return [];
       boss.combat.targetId = "player";
     }
-    if (this.turn.attack === "cleave") return [];
+    if (this.turn.attack === "cleave" || (this.turn.attack === "special" && this.special === "ball")) return [];
     const [px, py] = player.position, [x, y] = boss.position;
     if (gapTo(player.position, boss.position, bossSize) === 0) return this.pursuit(boss, context);
     if (isNpcInAttackRange(boss, player, 1)) return [];
@@ -643,26 +648,27 @@ class AraxxorEncounter {
     }
     if (flights.length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: flights, graphics: [] });
   }
-  // The acid ball: 2 ticks after the throw it lands, its middle a tile from
-  // the player towards Araxxor (OBS, three of three; OBS (tsps) says on the
-  // player's tile), and hurts a player under it. Then it rolls away from
-  // Araxxor's middle 2 tiles a tick, leaving acid on its middle and the tile
-  // behind, until it reaches a wall; it throws six blobs, bursts and goes.
+  // The acid ball: he turns to the nearest of eight directions (OBS: facing
+  // 1280 at k2 36 and 78, 1024 at 120), and 2 ticks after the throw it is at
+  // his edge there and hurts a player under it. Then it rolls on 2 tiles a
+  // tick, leaving acid on its middle and the tile behind, until it reaches a
+  // wall; it throws six blobs, bursts and goes.
   throwBall(boss, player, context) {
     const bossMiddle = this.turn.middle;
-    const [px, py] = player.position;
-    const ox = px - bossMiddle[0], oy = py - bossMiddle[1];
-    const toward = Math.abs(ox) >= Math.abs(oy) ? [-Math.sign(ox), 0] : [0, -Math.sign(oy)];
-    const landing = [px + toward[0], py + toward[1]];
+    const ox = player.position[0] - bossMiddle[0], oy = player.position[1] - bossMiddle[1];
+    const eighth = (Math.round(Math.atan2(oy, ox) / (Math.PI / 4)) * Math.PI) / 4;
+    // North for a player on his middle (inferred).
+    const direction = ox === 0 && oy === 0 ? [0, 1] : [Math.round(Math.cos(eighth)) + 0, Math.round(Math.sin(eighth)) + 0];
+    const landing = [bossMiddle[0] + direction[0] * ballLandDistance, bossMiddle[1] + direction[1] * ballLandDistance];
+    faceActorToward(boss, { position: [boss.position[0] + direction[0], boss.position[1] + direction[1]], size: bossSize });
+    this.dropTarget(boss, context, ballTargetTicks);
     this.later(ballLandTicks, (ctx, hits) => {
       if (this.ball) return; // one at a time (inferred)
-      const direction = [Math.sign(landing[0] - bossMiddle[0]), Math.sign(landing[1] - bossMiddle[1])];
-      if (direction[0] === 0 && direction[1] === 0) direction[1] = 1;
       const id = ballActorId(++this.balls);
       const position = [landing[0] - 1, landing[1] - 1];
       ctx.spawnNpc({
         id, kind: "npc", role: "npc", npcTypeId: ids.ball, archetypeId: "acid-ball", size: ballSize, alive: true,
-        position, previousPosition: [...position], facing: 0, history: new Map(),
+        position, previousPosition: [...position], facing: boss.facing, history: new Map(),
         untargetable: true, blocksNpcMovement: false, passThruNpcs: true,
         vitals: { hp: 1, maxHp: 1 },
         combat: { attackSpeed: 1, attackRange: 0, attackStyle: "typeless", nextActionTick: Infinity, targetId: null, lastAttackTick: null,

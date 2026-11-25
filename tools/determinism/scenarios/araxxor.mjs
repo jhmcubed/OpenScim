@@ -90,4 +90,15 @@ export const scenarios = [
       if (tick === 54) api.moveTo(53, 30);
     },
   },
+  {
+    // The acid ball at a player north of him: it rolls straight north from
+    // his edge (BigSneezi's green eggs, t 119).
+    name: "araxxor/ball-north",
+    kind: KIND,
+    seed: 3,
+    ticks: 56,
+    mechanics: { araxxorEggs: "green", infiniteHealth: true },
+    start: [51, 29],
+    ...meleeGear,
+  },
 ];

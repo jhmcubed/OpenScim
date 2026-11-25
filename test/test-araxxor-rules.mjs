@@ -39,5 +39,13 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.deepEqual([ticks[54].boss, ticks[55].boss], [[47, 22], [47, 23]]);
   assert.ok(!ticks[55].clips.includes("araxxor attack"));
 }
+{
+  // The ball: from his edge in one of eight directions; at a player at 51,29 north, from 50,28.
+  const ticks = await ticksOf("ball-north");
+  const thrown = first(ticks, "araxxor ball");
+  const path = [2, 3, 4, 5, 6, 7].map((n) => ticks[thrown + n].npcs.get("acid-ball-1")?.position.join());
+  assert.deepEqual(path, ["49,27", "49,29", "49,31", "49,33", "49,34", "49,34"]);
+  assert.deepEqual([0, 1, 2, 3, 4].map((n) => ticks[thrown + n].bossTarget), [null, null, null, null, "player"]);
+}
 console.log("Araxxor's rules are as recorded");
 process.exit(0);
