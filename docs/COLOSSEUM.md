@@ -193,11 +193,12 @@ Not the game's: tools to practise a wave.
   (`ColosseumEncounter.planPracticeRestart`).
 - **South spawn A (near)** and **South spawn B (far)** (set-up choices)
   say what stands on the two south spawn points, 29,31 (A) and 32,27 (B):
-  Random (the game's draw), Any monster, or one kind: Mage (serpent
-  shaman), Ranger (javelin colossus), Mantis (manticore), Shocker
-  (shockwave colossus). Both set is a double south: Shocker on A and
-  Ranger on B is "mage front, range back", Mantis on A or B with a Ranger
-  or a Mage the "A/B mantis" of the strategy page's A/B offtick. A kind
+  Random (the game's draw), Any monster, or one kind, by WIKI's
+  colloquial names: Shaman (serpent shaman), Ranger (javelin colossus),
+  Manti (manticore), Shocker (shockwave colossus); "Mager" is both the
+  shaman's and the shocker's. Both set is a double south: a mager on A
+  and a Ranger on B is "mage front, range back", a Manti on A or B with a
+  Ranger or a mager the "A/B mantis" of the strategy page's A/B offtick. A kind
   the wave has no monster of, or a point near the player, is left to
   chance; the other monsters keep the game's shuffled order (`waves.js`).
   The wiki's strategy page speaks of south spawns without naming them;

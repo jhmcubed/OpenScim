@@ -6,14 +6,16 @@ import { canSpawnWave } from "./waves.js";
 
 export const colosseumStartWaveKey = "colosseumStartWave";
 export const colosseumModifierChoiceKey = "colosseumModifierChoice";
-// The practice switches of the south spawns A and B (waves.js).
+// The practice switches of the south spawns A and B (waves.js). The labels
+// are the colloquial names of WIKI's table of enemies: Shaman, Ranger,
+// Manti, Shocker ("Mager" is both the shaman's and the shocker's).
 export const colosseumSouthKeys = { a: "colosseumSouthA", b: "colosseumSouthB" };
 const southChoices = [
   { value: "random", label: "Random" },
   { value: "any", label: "Any monster" },
-  { value: "shaman", label: "Mage (serpent shaman)" },
+  { value: "shaman", label: "Shaman (serpent shaman)" },
   { value: "javelin", label: "Ranger (javelin colossus)" },
-  { value: "manticore", label: "Mantis (manticore)" },
+  { value: "manticore", label: "Manti (manticore)" },
   { value: "shockwave", label: "Shocker (shockwave colossus)" },
 ];
 /** What the mechanics ask to stand on the south spawn `slot` ("a" or "b"): a value of southChoices, "random" for anything else. */
@@ -113,7 +115,7 @@ export function buildColosseumControls() {
         label: "South spawn A (near)",
         setup: true,
         choices: southChoices,
-        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. With B set too it is a double south: Shocker on A and Ranger on B is mage front, range back; Mantis on A or B with a Ranger or a Mage is the A/B mantis. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
+        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. With B set too it is a double south, such as a Shaman or a Shocker (both called mager) in front on A with a Ranger behind on B, or a Manti on A or B with a Ranger or a mager. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
       },
       {
         key: colosseumSouthKeys.b,
