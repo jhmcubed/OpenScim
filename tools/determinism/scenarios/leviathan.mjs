@@ -1,6 +1,6 @@
 // The Leviathan (client/encounters/leviathan/), post-quest and awakened. It lies at 30,33 (7 x 7) in
 // the pool, which is blocked from 29,32 to 37,40 but for its corners; the
-// player starts at 24,34, west of it. The snapshot tells the orbs on their way
+// player starts at 23,32, west of it. The snapshot tells the orbs on their way
 // (`orbs`, each with its style and the tick it lands) and the rocks on theirs
 // (`falling`), which is what a player watches for.
 import { isSheltered } from "../../../client/encounters/leviathan/geometry.js";

@@ -76,11 +76,12 @@ const floorRows = {
 };
 export const bossStart = [30, 33]; // OBS: 2078,6369
 export const bossSize = 7; // CACHE, WIKI
-// Beside the handholds the player climbs in by (CACHE: 22,32); the tile is
-// RSPSApp's (inferred). The post-quest fight's, and the sandbox's on the Scar.
+// The tile the handholds (CACHE: 22,32) lead to. OBS 11/25: 4 of 4, 5 ticks before
+// it surfaces; awakened, but both fights are climbed into there.
+const climbedTo = [23, 32];
+// Where the sandbox's player starts on the Scar (sandbox/arenas.js) without it as
+// the host: RSPSApp's tile beside the handholds (inferred).
 export const playerStart = [24, 34];
-// OBS 11/25: the tile the handholds lead to (4 of 4), 5 ticks before it surfaces.
-const awakenedStart = [23, 32];
 const pool = { minX: 29, maxX: 37, minY: 32, maxY: 40 }; // CACHE
 // OBS: the pathfinder's corners, the middle of its 3 x 3, clockwise from the
 // north-west: north-west, north-east and south-east recorded, south-west the
@@ -265,7 +266,6 @@ export const versions = {
     tableVersion: "Post-quest", // TABLE: the "Post-quest" entry of 12214, 900 hitpoints
     maxHp: 900,
     enrageHp: 180, // WIKI: "Upon reaching 180 hitpoints (20% of its health)"
-    playerStart,
     orbMaxHit: { magic: 32, range: 24, melee: 50 },
     biteMaxHit: 50,
     earlyBites: 1, // OBS (video), above
@@ -296,7 +296,6 @@ export const versions = {
     tableVersion: "Awakened", // TABLE: the "Awakened" entry of 12214; OBS 11/25: 2,700 on its health bar (4 of 4)
     maxHp: 2700,
     enrageHp: 540, // WIKI; OBS 11/25: enraged at 491, 491 and 499, not yet at 557, 565 and 567
-    playerStart: awakenedStart,
     // WIKI. OBS 11/25: unprotected magic 14 to 54 (8 hits), ranged 9 and 11, melee none.
     orbMaxHit: { magic: 55, range: 41, melee: 86 },
     biteMaxHit: 86, // WIKI
@@ -468,7 +467,7 @@ class LeviathanEncounter {
     return {};
   }
   getDefaultPlayerStart() {
-    return [...this.version.playerStart];
+    return [...climbedTo];
   }
   getIntroConfig() {
     return null;
@@ -626,11 +625,11 @@ class LeviathanEncounter {
       // the player before theirs.
       const middle = this.enraged ? this.pathfinderMiddleNext(ctx) : null;
       const pierces = middle !== null && chebyshev(middle, ctx.playerPos) > auraRadius;
-      // OBS 11/25: awakened, its impact is drawn on a player it hurts alone (12 of
-      // 12; none of 57 that a prayer met), at that height.
-      if (!this.awakened || pierces || target.activePrayer !== prayerAgainst[style])
+      // OBS 11/25: its impact is drawn on a player it hurts alone (12 of 12; none of
+      // 57 that a prayer met). One whose roll misses too (inferred: none did).
+      if (pierces || target.activePrayer !== prayerAgainst[style])
         emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [],
-          graphics: [{ spotAnimId: spots.impact[style], target: buildActorVisualTarget(target), height: this.awakened ? impactHeight : 0, delayCycles: 0 }] });
+          graphics: [{ spotAnimId: spots.impact[style], target: buildActorVisualTarget(target), height: impactHeight, delayCycles: 0 }] });
       hits.push({ source: "The Leviathan's orb", attackType: style, baseDamage: damage, playerPosition: [...ctx.playerPos], ...(pierces ? { prayerReduction: { type: "bypass" } } : {}) });
     });
     this.nextAttackTick = tick + volley.interval;
@@ -657,6 +656,7 @@ class LeviathanEncounter {
       plan: { formulaStyle: "melee_stab", damageType: "melee", attackKind: "melee_stab", maxHit: this.version.biteMaxHit, impactDelayTicks: 0, sourceDeathPolicy: "cancel-before-impact" },
     });
     emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "bite", kind: "leviathan_bite", impactDelayTicks: 0 });
+    this.animateTails(context, "bite"); // OBS
     return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
   }
   // A roar: its chip a tick later, the rocks on the player, and the first time
@@ -1100,7 +1100,7 @@ export const leviathanDefinition = {
     displayName: "The Leviathan",
     description: "Desert Treasure II. The Scar: volleys of orbs to pray against, rocks from its roars, a shadow stun, lightning and smoke, and the abyssal pathfinder.",
     mapSquare: leviathanMapSquare,
-    playerStart,
+    playerStart: climbedTo,
     loadsMapLocs: true,
     isWorkInProgress: true,
     collision: { mode: "custom" }, // getArenaConfig, above

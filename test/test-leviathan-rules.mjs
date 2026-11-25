@@ -187,6 +187,30 @@ for (const kind of [BOSS, AWAKENED]) {
     assert.equal(run.ticksOf(clip("bite")).length, kind === AWAKENED ? 0 : 1);
   });
 
+  test(`${kind}: the player climbs in at 23,32, the tails answer a bite, and an orb is seen to land on a player it hurts`, { skip }, async () => {
+    const impacts = [2490, 2491, 2492];
+    for (const prayed of [false, true]) {
+      const run = await fight({ kind, ticks: 22, script(tick, api) {
+        const orb = prayed && state(api).orbs.find(({ lands }) => lands === tick);
+        const wanted = orb && (orb.style === "magic" ? "ProtectMagic" : "ProtectRange");
+        if (wanted && api.player().activePrayer !== wanted) protect(api, wanted);
+      } });
+      assert.deepEqual(run.at.get(0).player, [23, 32]);
+      const landed = run.ticksOf((entry) => entry.orb).map((tick) => tick + 5).filter((tick) => tick <= 22);
+      assert.ok(landed.length >= 3);
+      assert.deepEqual(run.ticksOf((entry) => impacts.includes(entry.graphic)), prayed ? [] : landed);
+    }
+    const bitten = await fight({ kind, ticks: 24, script(tick, api) {
+      if (tick === 1) {
+        place(api, [28, 36]);
+        api.engine.encounter.roars = 3; // it may bite on any turn
+      }
+    } });
+    const bites = bitten.ticksOf(clip("bite"));
+    assert.ok(bites.length > 0, "no bite");
+    for (const n of [0, 1, 2, 3, 4]) assert.deepEqual(bitten.ticksOf((entry) => entry.clip === "bite" && entry.actor === "leviathan-tail-" + n), bites);
+  });
+
   test(`${kind}: melee cannot reach it`, { skip }, async () => {
     const run = await fight({ kind, ticks: 12, gear: meleeGear, script(tick, api) {
       if (tick === 1) place(api, [29, 37]);
