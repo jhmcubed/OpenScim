@@ -32,8 +32,7 @@
 // are marked inferred. There are no Outside recordings of it yet.
 //
 // Not yet: "The chemical burns you as it cascades over you." (recorded, 9 to
-// 17 damage, from nothing anyone has found); the Hydra's last form, which
-// only plays its death (hydraboss_finaldeath).
+// 17 damage, from nothing anyone has found).
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { CollisionFlag } from "../../engine/collision.js";
@@ -104,6 +103,7 @@ const ventOnTicks = 5;
 const ventCountsAfter = 2;
 // OBS (tsps): at 0 hitpoints it plays its death, becomes its last form 3 ticks
 // later and is gone 7 ticks after that.
+const lastFormAfter = 3;
 const deathTicks = 10;
 const messages = {
   weakened: "The chemicals neutralise the Alchemical Hydra's defences!",
@@ -168,8 +168,9 @@ class AlchemicalHydraEncounter {
   randomInt(low, high) {
     return low + Math.floor(this.random() * (high - low + 1));
   }
-  later(ticks, task) {
-    this.tasks.push({ tick: this.now + ticks, task });
+  // `outlivesIt`: runs after its death too.
+  later(ticks, task, { outlivesIt = false } = {}) {
+    this.tasks.push({ tick: this.now + ticks, task, outlivesIt });
   }
   boss(world = this.world) {
     return world?.getNpc(bossActorId);
@@ -566,7 +567,7 @@ class AlchemicalHydraEncounter {
     if (defeat.npcId !== bossActorId) return;
     this.dead = true;
     this.epoch++;
-    this.tasks = [];
+    this.tasks = this.tasks.filter((entry) => entry.outlivesIt);
     this.pending = [];
     this.changing = null;
     // tsps: its death clears every pool, current and fire.
@@ -577,6 +578,13 @@ class AlchemicalHydraEncounter {
     this.updateArena();
     const boss = this.boss(context.world);
     if (boss) this.visual(context, { sounds: [{ id: sounds.death, range: 15, position: this.middle(boss) }] });
+    // Its last form, drawn playing hydra_death (presentation.js). inferred: killed before it was enraged, it falls the same.
+    this.later(lastFormAfter, (ctx) => {
+      const dead = this.boss(ctx.world);
+      if (!dead || dead.alive) return;
+      this.swapForm(dead, { npcTypeId: npcTypeIds.dead });
+      this.visual(ctx, { animations: ["finalDeath"] });
+    }, { outlivesIt: true });
     if (completionOwnership !== "encounter-owned") return;
     this.outcome = { phase: "resolving", decisiveTick: defeat.tick, completionTick: defeat.tick + deathTicks, primaryActorId: bossActorId, completionActorIds: [bossActorId] };
   }

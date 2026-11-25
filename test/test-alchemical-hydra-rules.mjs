@@ -196,12 +196,15 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   assert.equal(ticks[special].projectiles.filter((p) => p.spotAnimId === spots.poison).length, 1);
 }
 {
-  // Enraged, the style changes every attack; at 0 hitpoints the fight is won 10 ticks later.
+  // Enraged, the style changes every attack; at 0 hitpoints it takes its last form 3 ticks later (8622, its clip) and the
+  // fight is won 7 ticks after that.
   const ticks = await ticksOf("enraged");
   const kinds = attacksOf(ticks).map((tick) => ticks[tick].clips.find((clip) => attackClips.includes(clip))).filter((kind) => kind !== "special");
   assert.ok(kinds.every((kind, n) => n === 0 || kind !== kinds[n - 1]), kinds.join());
   const dead = ticks.findIndex((tick) => tick?.hp === 0);
   assert.equal(ticks.findIndex((tick) => tick?.outcome === "victory"), dead + 10);
+  assert.deepEqual(clipTicks(ticks, "finalDeath"), [dead + 3]);
+  assert.ok(ticks.every((tick, n) => (tick.type === 8622) === (n >= dead + 3)));
 }
 {
   // The whole fight: each of the three shields taken by its own vent, and won.

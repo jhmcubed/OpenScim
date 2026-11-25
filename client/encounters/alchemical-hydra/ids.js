@@ -19,6 +19,7 @@ export const npcTypeIds = {
   electric: 8619, // hydraboss_4
   flame: 8620, // hydraboss_3
   enraged: 8621, // hydraboss_2
+  dead: 8622, // hydraboss_finaldeath: what is left of it, 3 ticks into its death
 };
 export const bossSize = 6; // CACHE, TABLE
 
@@ -34,7 +35,8 @@ export const seqIds = {
   switch: [9111, 9112, 9113], // hydra_stage_N_switch_attack: the heads sway back
   phaseOut: [8237, 8244, 8251], // hydra_stage_N_death: a head falls off
   phaseIn: [8238, 8245, 8252], // hydra_stage_N+1_spawn
-  death: 8257, // hydra_stage_4_death
+  death: 8257, // hydra_stage_4_death: 90 cycles, 3 ticks
+  finalDeath: 8258, // hydra_death: 208 cycles of its last form's 7 ticks
 };
 
 export const spotAnims = {

@@ -45,7 +45,7 @@ try {
   assert.deepEqual(setup, { weapon: 20997, items: 28, ammo: 33595, crossbow: 26374 });
 
   // Every form it takes is loaded, its first drawn where it stands.
-  const forms = [8615, 8616, 8617, 8618, 8619, 8620, 8621];
+  const forms = [8615, 8616, 8617, 8618, 8619, 8620, 8621, 8622];
   await page.waitForFunction((forms) => forms.every((id) => scene.isNpcTypeLoaded(id)), forms, { timeout: 60000 });
 
   // The vents erupt: each drawn as its map object with the eruption's sequence, on its own tile.
@@ -70,8 +70,12 @@ try {
     { timeout: 30000 },
   );
 
-  // Killed; the application's own loop plays its death and ends the fight.
+  // Killed; the application's own loop plays its death, draws its last form, and ends the fight.
   await page.evaluate(() => engine.setBossHp(0));
+  await page.waitForFunction(() => {
+    const { instanceRegistry, dyingInstances } = scene.npcInstanceManager;
+    return engine.worldState.getNpc("alchemical-hydra").npcTypeId === 8622 && engine.getEncounterOutcome().phase === "resolving" && dyingInstances.size === 0 && [...instanceRegistry.values()].some((instance) => instance.npcTypeId === 8622);
+  }, null, { timeout: 60000, polling: 50 });
   await page.waitForFunction(() => engine.getEncounterOutcome().phase === "victory" && document.body.innerText.includes("THE ALCHEMICAL HYDRA DEFEATED"), null, { timeout: 120000 });
   assert.deepEqual(errors, []);
   console.log("The Alchemical Hydra loaded on /alchemical-hydra/, was drawn with its vents and its forms, and was won");

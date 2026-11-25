@@ -53,6 +53,16 @@ const change = (npcTypeId, phase) => ({
   attackClips: { phaseOut: seqIds.phaseOut[phase] },
 });
 
+// Its last form. It only plays its death, and holds its last frame: as a stand that loops its frame step (CACHE: one
+// frame), which a replay taken up in the middle shows too.
+const lastForm = {
+  npcTypeId: npcTypeIds.dead,
+  idleSeqId: seqIds.finalDeath,
+  idlePlayMode: "loopFrameStep",
+  walkSeqId: seqIds.finalDeath,
+  attackClips: { finalDeath: seqIds.finalDeath },
+};
+
 const renderConfig = {
   terrainMapSquare: alchemicalHydraMapSquare,
   primaryNpc: { actorId: bossActorId, npcTypeId: npcTypeIds.serpentine, basePosition: bossStart, size: bossSize, deathSeqId: seqIds.death },
@@ -64,6 +74,7 @@ const renderConfig = {
     form(npcTypeIds.flame, 2),
     change(npcTypeIds.toEnraged, 2),
     form(npcTypeIds.enraged, 3),
+    lastForm,
   ],
   spotAnimIds: [...new Set(Object.values(spotAnims).flat())],
   createSceneObjectController: ventScene,
@@ -73,16 +84,20 @@ export const alchemicalHydraPresentation = (BaseScene) => ({
   kind: alchemicalHydraKind,
   renderConfig,
   // The scene draws an NPC as the type it was first drawn as: when the Hydra takes another form, the old one is taken
-  // away and drawn again as the new.
+  // away and drawn again as the new. Dead, it is drawn dying as the type it died as (the scene's dying instances) until
+  // it takes its last form; that one is handed to the scene as if it stood, for a dead boss gets no new type.
   sceneBuilder(context) {
     class HydraScene extends BaseScene {
       syncNpcInstances(npcs, ...rest) {
-        for (const npc of npcs ?? []) {
+        const { instanceRegistry, dyingInstances } = this.npcInstanceManager;
+        const lastFormLoaded = this.isNpcTypeLoaded(npcTypeIds.dead);
+        const shown = npcs?.map((npc) => (!npc.alive && npc.npcTypeId === npcTypeIds.dead && lastFormLoaded ? { ...npc, alive: true } : npc));
+        for (const npc of shown ?? []) {
           const id = this.getNpcRenderInstanceId(npc.id);
-          const drawn = this.npcInstanceManager.instanceRegistry.get(id);
+          const drawn = instanceRegistry.get(id) ?? dyingInstances.get(id)?.instance;
           if (drawn && drawn.npcTypeId !== npc.npcTypeId && this.isNpcTypeLoaded(npc.npcTypeId)) this.npcInstanceManager.removeInstance(id);
         }
-        return super.syncNpcInstances(npcs, ...rest);
+        return super.syncNpcInstances(shown, ...rest);
       }
     }
     return buildScene(HydraScene, renderConfig, context);
