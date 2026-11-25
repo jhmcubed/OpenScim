@@ -80,6 +80,7 @@ export const sandboxCatalogExclusions = {
   8619: "the Alchemical Hydra, electric: as the serpentine form",
   8620: "the Alchemical Hydra, flame: as the serpentine form",
   8621: "the Alchemical Hydra, enraged: as the serpentine form",
+  8622: "what is left of the Alchemical Hydra: only drawn for the 7 ticks of its death",
   12167: "Duke Sucellus asleep: only drawn until he wakes, and has no attack",
   12191: "Duke Sucellus never leaves his seat and has no walk: he is fought in his own asylum",
   12214: "the Leviathan never leaves its pool and has no walk: it is fought in its own arena",
