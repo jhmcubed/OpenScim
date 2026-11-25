@@ -191,8 +191,15 @@ Not the game's: tools to practise a wave.
   keeps the seed, so a player who stands still until the monsters are
   placed gets the same spawns; Random Spawns draws a new seed
   (`ColosseumEncounter.planPracticeRestart`).
-- **Force double south** (a set-up switch) puts two of every wave's
-  monsters on the two south spawn points, 29,31 and 32,27 (`waves.js`).
+- **South spawn A (near)** and **South spawn B (far)** (set-up choices)
+  say what stands on the two south spawn points, 29,31 (A) and 32,27 (B):
+  Random (the game's draw), Any monster, or one kind: Mage (serpent
+  shaman), Ranger (javelin colossus), Mantis (manticore), Shocker
+  (shockwave colossus). Both set is a double south: Shocker on A and
+  Ranger on B is "mage front, range back", Mantis on A or B with a Ranger
+  or a Mage the "A/B mantis" of the strategy page's A/B offtick. A kind
+  the wave has no monster of, or a point near the player, is left to
+  chance; the other monsters keep the game's shuffled order (`waves.js`).
   The wiki's strategy page speaks of south spawns without naming them;
   the RuneLite ground markers of the preset "Colosseum Tiles" mark them
   with their south A (30,32) and B (33,28).

@@ -6,7 +6,21 @@ import { canSpawnWave } from "./waves.js";
 
 export const colosseumStartWaveKey = "colosseumStartWave";
 export const colosseumModifierChoiceKey = "colosseumModifierChoice";
-export const colosseumDoubleSouthKey = "colosseumDoubleSouth";
+// The practice switches of the south spawns A and B (waves.js).
+export const colosseumSouthKeys = { a: "colosseumSouthA", b: "colosseumSouthB" };
+const southChoices = [
+  { value: "random", label: "Random" },
+  { value: "any", label: "Any monster" },
+  { value: "shaman", label: "Mage (serpent shaman)" },
+  { value: "javelin", label: "Ranger (javelin colossus)" },
+  { value: "manticore", label: "Mantis (manticore)" },
+  { value: "shockwave", label: "Shocker (shockwave colossus)" },
+];
+/** What the mechanics ask to stand on the south spawn `slot` ("a" or "b"): a value of southChoices, "random" for anything else. */
+export function getSouthSpawnSetting(mechanics, slot) {
+  const value = mechanics?.[colosseumSouthKeys[slot]];
+  return southChoices.some((choice) => choice.value === value) ? value : "random";
+}
 // The practice of a wave (ColosseumEncounter.planPracticeRestart): the same
 // wave again with the same spawns, or with new ones.
 export const retryWaveCommandType = "retry-wave";
@@ -76,7 +90,8 @@ export function buildColosseumControls() {
       // A choice's value is a string, as the Inferno's start wave is.
       [colosseumStartWaveKey]: String(startWaves[0]),
       [colosseumModifierChoiceKey]: true,
-      [colosseumDoubleSouthKey]: false,
+      [colosseumSouthKeys.a]: "random",
+      [colosseumSouthKeys.b]: "random",
       ...Object.fromEntries(overlayToggles.map((toggle) => [toggle.key, toggle.default])),
     },
     mechanicsToggles: [
@@ -94,10 +109,18 @@ export function buildColosseumControls() {
         info: "As in the game: click Minimus to start, and choose one of three modifiers before every wave. Switched off, the waves follow each other by themselves with the modifiers of the set-up. Applies from your next attempt.",
       },
       {
-        key: colosseumDoubleSouthKey,
-        label: "Force double south",
+        key: colosseumSouthKeys.a,
+        label: "South spawn A (near)",
         setup: true,
-        info: "Practice: two of every wave's monsters spawn on the two south spawns, the ones the south A and B tiles of Colosseum Tiles stand in. Applies from your next attempt.",
+        choices: southChoices,
+        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. With B set too it is a double south: Shocker on A and Ranger on B is mage front, range back; Mantis on A or B with a Ranger or a Mage is the A/B mantis. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
+      },
+      {
+        key: colosseumSouthKeys.b,
+        label: "South spawn B (far)",
+        setup: true,
+        choices: southChoices,
+        info: "Practice: what spawns on the far south spawn, the one the south B tile of Colosseum Tiles stands in. Applies from your next attempt.",
       },
       ...overlayToggles.map(({ default: unusedDefault, ...toggle }) => toggle),
     ],

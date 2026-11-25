@@ -55,7 +55,8 @@ import {
 import {
   colosseumStartWaveKey,
   colosseumModifierChoiceKey,
-  colosseumDoubleSouthKey,
+  colosseumSouthKeys,
+  getSouthSpawnSetting,
   retryWaveCommandType,
   rerollWaveCommandType,
   getColosseumStartWave,
@@ -153,7 +154,7 @@ function createWaveActor(kind, { id, position, spawnTick, slot, relentless }) {
 export class ColosseumEncounter {
   kind = colosseumKind;
   // The mechanics that stay as they were once a run has started.
-  runStartMechanicsKeys = [colosseumStartWaveKey, colosseumModifierChoiceKey, colosseumDoubleSouthKey];
+  runStartMechanicsKeys = [colosseumStartWaveKey, colosseumModifierChoiceKey, colosseumSouthKeys.a, colosseumSouthKeys.b];
 
   // `setupModifiers` is { id: level } of the modifiers chosen in the set-up.
   constructor(setupModifiers = {}) {
@@ -357,8 +358,8 @@ export class ColosseumEncounter {
     const startWave = getColosseumStartWave(mechanics);
     // Whether Minimus offers a modifier before each wave.
     this.choosing = mechanics[colosseumModifierChoiceKey] !== false;
-    // The practice switch of waves.js: two monsters on south spawn points.
-    this.doubleSouth = mechanics[colosseumDoubleSouthKey] === true;
+    // The practice switches of waves.js: what stands on the south spawns.
+    this.practiceSouth = { a: getSouthSpawnSetting(mechanics, "a"), b: getSouthSpawnSetting(mechanics, "b") };
     if (!this.choosing) {
       this.beginWave(startWave, 0);
     } else {
@@ -596,7 +597,7 @@ export class ColosseumEncounter {
   placeWave(context) {
     // OBS: the line, and that it is red.
     context.tickEvents.emit({ type: "game_message", kind: "game", segments: [{ text: `Wave: ${this.wave}`, color: solMessageColors.red }] });
-    const spawns = buildWaveSpawns(this.encounterSeed, this.wave, this.playerTileBeforePlacing ?? context.playerPos, this.modifiers, { doubleSouth: this.doubleSouth });
+    const spawns = buildWaveSpawns(this.encounterSeed, this.wave, this.playerTileBeforePlacing ?? context.playerPos, this.modifiers, { south: this.practiceSouth });
     for (const spawn of spawns) {
       this.placeMonster(spawn, context);
       if (spawn.kind === "shockwave" && this.modifiers.dynamicduo) {

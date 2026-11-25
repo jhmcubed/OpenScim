@@ -12,8 +12,8 @@
 // its monsters is left, and the next one is placed 8 ticks later; after
 // wave 11 the run is won 3 ticks after the wave is completed.
 import { attack, command, magicGear, protect, rangedGear } from "./common.mjs";
-import { buildReinforcementSpawns, buildWaveSpawns } from "../../../client/encounters/colosseum/waves.js";
-import { colosseumMonsters, southSpawnPoints, spawnPointExclusionDistance, waveSpawnPoints } from "../../../client/encounters/colosseum/constants.js";
+import { buildReinforcementSpawns, buildWaveSpawns, getWaveMonsterKinds } from "../../../client/encounters/colosseum/waves.js";
+import { colosseumMonsters, southSpawns, spawnPointExclusionDistance, waveSpawnPoints } from "../../../client/encounters/colosseum/constants.js";
 
 const KIND = "colosseum";
 /** Mechanics without Minimus and his offers: a run starts with its first wave, and a wave follows a wave. */
@@ -79,28 +79,43 @@ function spawnAllocation() {
   return rows;
 }
 
-// The practice switch "Force double south" (waves.js), for four seeds, every wave and three player tiles. Three things
-// must hold of each, or the scenario throws: the warband stands where it stands without the switch; as many of the
-// wave's monsters as it has, up to two, are on the south spawn points, fewer only when fewer of them are away from
-// the player; the wave has as many monsters as without the switch.
-function doubleSouth() {
-  const isSouth = ([x, y]) => southSpawnPoints.some((point) => point[0] === x && point[1] === y);
+// The practice switches of the south spawns A and B (waves.js), for four seeds, every wave and three player tiles,
+// with A and B each random, any, or each kind the wave has. Five things must hold of each, or the scenario throws:
+// both random is the game's wave; the warband stands where it stands without the switches; a kind asked for stands
+// on its point, and "any" puts a monster there, unless the point is near the player or no monster is left for it;
+// no two monsters share a point; the wave has as many monsters as without them.
+function southSpawnPresets() {
+  const isAt = (spawn, point) => spawn.position[0] === point[0] && spawn.position[1] === point[1];
   const rows = [];
   for (const seed of [1, 2, 77, 4000000000]) {
     for (let wave = 1; wave <= 11; wave++) {
+      const kinds = [...new Set(getWaveMonsterKinds(wave))];
+      const settings = ["random", "any", ...kinds];
       for (const playerTile of [START, [29, 34], [32, 30]]) {
         const plain = buildWaveSpawns(seed, wave, playerTile);
-        const practised = buildWaveSpawns(seed, wave, playerTile, {}, { doubleSouth: true });
-        const monsters = practised.slice(3);
-        const southAway = southSpawnPoints.filter((point) => steps(point, playerTile) > spawnPointExclusionDistance).length;
-        const south = monsters.filter((spawn) => isSouth(spawn.position)).length;
-        rows.push({ seed, wave, playerTile, spawns: monsters.map((spawn) => [spawn.kind, ...spawn.position]), south });
-        const checks = [
-          JSON.stringify(plain.slice(0, 3)) === JSON.stringify(practised.slice(0, 3)),
-          south === Math.min(2, monsters.length, southAway),
-          monsters.length === plain.length - 3,
-        ];
-        if (checks.includes(false)) throw new Error(`colosseum/double-south: a check failed for ${JSON.stringify({ seed, wave, playerTile, checks, plain, practised })}`);
+        for (const a of settings) {
+          for (const b of settings) {
+            const practised = buildWaveSpawns(seed, wave, playerTile, {}, { south: { a, b } });
+            const monsters = practised.slice(3);
+            const onPoint = (point) => monsters.find((spawn) => isAt(spawn, point));
+            const available = (point) => steps(point, playerTile) > spawnPointExclusionDistance;
+            // What can be met: A first among kinds, so B's kind needs a monster A did not take.
+            const counts = Object.fromEntries(kinds.map((kind) => [kind, getWaveMonsterKinds(wave).filter((other) => other === kind).length]));
+            if (kinds.includes(a) && available(southSpawns.a)) counts[a]--;
+            const metA = a === "random" || !available(southSpawns.a) || (a === "any" ? onPoint(southSpawns.a) : onPoint(southSpawns.a)?.kind === a);
+            const bPossible = available(southSpawns.b) && (b === "any" ? monsters.length > (a === "random" ? 0 : 1) : (counts[b] ?? 0) > 0);
+            const metB = b === "random" || !bPossible || (b === "any" ? onPoint(southSpawns.b) : onPoint(southSpawns.b)?.kind === b);
+            const checks = [
+              a !== "random" || b !== "random" || JSON.stringify(plain) === JSON.stringify(practised),
+              JSON.stringify(plain.slice(0, 3)) === JSON.stringify(practised.slice(0, 3)),
+              metA && metB,
+              new Set(monsters.map((spawn) => spawn.position.join())).size === monsters.length,
+              monsters.length === plain.length - 3,
+            ];
+            if (checks.includes(false)) throw new Error(`colosseum/south-spawn-presets: a check failed for ${JSON.stringify({ seed, wave, playerTile, a, b, checks, practised })}`);
+            if (playerTile === START) rows.push({ seed, wave, a, b, south: [onPoint(southSpawns.a)?.kind ?? null, onPoint(southSpawns.b)?.kind ?? null] });
+          }
+        }
       }
     }
   }
@@ -184,7 +199,7 @@ function modifierOffers(engine, objTypeLoader) {
 export const scenarios = [
   { name: "colosseum/spawn-allocation", pure: spawnAllocation },
   { name: "colosseum/modifier-offers", pure: modifierOffers },
-  { name: "colosseum/double-south", pure: doubleSouth },
+  { name: "colosseum/south-spawn-presets", pure: southSpawnPresets },
   { name: "colosseum/practice-restart", pure: practiceRestart },
   {
     // Minimus and his offers, through wave 1 into wave 2. He stands at 32,34 from tick 1. A click on him on tick 3
@@ -445,19 +460,19 @@ export const scenarios = [
     },
   },
   {
-    // Wave 8 with the practice switch "Force double south": of its four monsters placed on tick 5, two stand on the
-    // south spawn points 29,31 and 32,27, or the scenario throws. The player stands on the start tile.
-    name: "colosseum/double-south-wave-8",
+    // Wave 8 with the practice switches set to mage front, range back: a shockwave colossus on south spawn A (29,31)
+    // and a javelin colossus on B (32,27), placed on tick 5, or the scenario throws. The player stands on the start
+    // tile.
+    name: "colosseum/south-presets-wave-8",
     kind: KIND,
     seed: 83,
     ticks: 12,
-    mechanics: { ...noMinimus, infiniteHealth: true, colosseumStartWave: "8", colosseumDoubleSouth: true },
+    mechanics: { ...noMinimus, infiniteHealth: true, colosseumStartWave: "8", colosseumSouthA: "shockwave", colosseumSouthB: "javelin" },
     ...rangedGear,
     script(tick, api) {
       if (tick !== 6) return;
-      const placed = monsters(api, "javelin", "manticore", "shockwave");
-      const south = placed.filter((npc) => southSpawnPoints.some(([x, y]) => npc.position[0] === x && npc.position[1] === y));
-      if (placed.length !== 4 || south.length !== 2) throw new Error(`colosseum/double-south-wave-8: ${placed.length} placed, ${south.length} south`);
+      const at = ([x, y]) => monsters(api).find((npc) => npc.position[0] === x && npc.position[1] === y)?.id.split("_")[1];
+      if (at(southSpawns.a) !== "shockwave" || at(southSpawns.b) !== "javelin") throw new Error(`colosseum/south-presets-wave-8: ${at(southSpawns.a)} on A, ${at(southSpawns.b)} on B`);
     },
   },
 ];
