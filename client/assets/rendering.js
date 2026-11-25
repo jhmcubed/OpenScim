@@ -2871,7 +2871,7 @@ async function mg(e) {
 }
 var hg = 60000;
 async function fg(e, a = {}) {
-  const { idleTimeoutMs: t = hg, onProgress: onProgress } = a;
+  const { idleTimeoutMs: t = hg, onProgress: onProgress, cache: cache } = a;
   const s = new AbortController();
   let r;
   let i = false;
@@ -2886,6 +2886,7 @@ async function fg(e, a = {}) {
   try {
     const a = await mg(
       fetch(e, {
+        cache: cache,
         signal: s.signal,
       }),
     );
@@ -2941,8 +2942,11 @@ async function fg(e, a = {}) {
   }
   var o;
 }
+// The cache's manifest.json and keys.json, whose URLs never change: asked of
+// the server every time. A manifest out of the HTTP cache names an earlier
+// deploy's disk.zip, and the fights added since load to a black screen.
 async function ug(e) {
-  const { bytes: bytes } = await fg(e);
+  const { bytes: bytes } = await fg(e, { cache: "no-cache" });
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 async function vg(e, a = cg) {
