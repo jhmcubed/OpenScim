@@ -1167,6 +1167,11 @@ export const araxxorDefinition = {
     collision: { mode: "auto", seed: playerStart },
     victory: { eyebrow: "Triumphant", title: "VICTORY", narrative: "ARAXXOR DEFEATED", accent: "gold" },
     loadouts: araxxorLoadouts,
+    // Each number on its egg's south-west tile.
+    tileMarkerPresets: [{
+      id: "araxxor_eggs", name: "Egg order", description: "The nine eggs in the order they hatch: the south-easternmost first, then clockwise",
+      link: "https://oldschool.runescape.wiki/w/Araxxor/Strategies", markers: eggTiles.map(([x, y], index) => [x, y, "#CCFFAB00", String(index + 1)]),
+    }],
   },
   controls: {
     defaultMechanicsConfig: { [patternKey]: "random" },
