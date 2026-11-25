@@ -1,10 +1,12 @@
 // What draws the Leviathan: the default scene, with what it has to load. Its
 // model and sequences, the pathfinder's, the orbs and the rocks are the game
 // cache's (encounter.js names each). The rocks that have fallen are the loc
-// they leave in the game, drawn from the fight's snapshot. The arena is a
-// bridge (encounter.js): the actors stand on its level, as Zebak's do on his.
+// they leave in the game, drawn from the fight's snapshot. Its five tails round
+// the arena are drawn here alone: they are no actors of the fight. The arena is
+// a bridge (encounter.js): the actors stand on its level, as Zebak's do on his.
 import { buildScene } from "../shared/buildScene.js";
-import { bossStart, ids, leviathanKind, leviathanMapSquare, seqs, spots } from "./encounter.js";
+import { leviathanAudio } from "./audio.js";
+import { bossStart, ids, leviathanKind, leviathanMapSquare, seqs, spots, tails, tailSeqs } from "./encounter.js";
 
 const identity = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 
@@ -37,6 +39,7 @@ const renderConfig = {
       },
     },
     { npcTypeId: ids.pathfinder, idleSeqId: seqs.pathfinderIdle, walkSeqId: seqs.pathfinderIdle, attackClips: { spawn: seqs.pathfinderSpawn } },
+    ...Object.entries(tailSeqs).map(([npcTypeId, { idle, bite, weakSpot }]) => ({ npcTypeId: Number(npcTypeId), idleSeqId: idle, walkSeqId: idle, attackClips: { bite, weakSpot } })),
   ],
   spotAnimIds: [...new Set(Object.values(spots).flatMap((value) => (typeof value === "number" ? [value] : Object.values(value))))],
   createSceneObjectController: rubbleScene,
@@ -53,15 +56,28 @@ export const onTheBridge = (BaseScene) =>
     }
   };
 
+// With its tails: NPCs of the scene alone, which the visual events of the fight
+// name (encounter.js, animateTails).
+const withTails = (BaseScene) =>
+  class extends BaseScene {
+    syncNpcInstances(npcs, hidden, state, ...rest) {
+      const boss = npcs.find((npc) => npc.npcTypeId === ids.boss);
+      const drawn = boss ? tails.map((tail) => ({ ...boss, ...tail, position: [...tail.position], previousPosition: [...tail.position], lockedFacing: tail.facing, role: "npc", alive: true, deathTick: undefined, despawnTick: undefined, combatTargetId: null })) : [];
+      return super.syncNpcInstances([...npcs, ...drawn], hidden, state, ...rest);
+    }
+  };
+
 export const leviathanPresentation = (BaseScene) => ({
   kind: leviathanKind,
   renderConfig,
   sceneBuilder(context) {
-    return buildScene(onTheBridge(BaseScene), renderConfig, context);
+    return buildScene(withTails(onTheBridge(BaseScene)), renderConfig, context);
   },
-  // The player comes in west of the pool and looks east at it (inferred: to be
-  // set in the browser).
-  defaultCamera: { yaw: 270, pitch: -45, zoom: 330 },
+  audio: leviathanAudio,
+  // The player comes in west of the pool and looks east at it. The recordings
+  // have no camera: set in the browser (1280 x 850), steep and far enough that
+  // its head is below the health bar from the start.
+  defaultCamera: { yaw: 270, pitch: -56, zoom: 265 },
   presentation: {
     title: "The Leviathan",
     tagline: "Desert Treasure II",

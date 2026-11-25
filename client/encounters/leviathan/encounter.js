@@ -12,19 +12,28 @@
 // of the arena if its first special attack will be the lightning, on the north
 // and south if the smoke. A player beside the pool is bitten now and then.
 //
-// A shadow spell stuns it for 15 ticks: it turns no more, and from the front
-// only 10 gets through a hit. A hit on its back (or 25% of its hitpoints dealt
-// since the stun) wakes it with a special attack, lightning and smoke in
-// turn, and its volleys start again from the second. During a special it
-// takes a third less damage.
+// A shadow spell stuns it: it turns no more, and from the front only 10 gets
+// through a hit. A hit on its back (or 25% of its hitpoints dealt since the
+// stun) wakes it with a special attack, lightning and smoke in turn, and its
+// volleys start again further on. During a special it takes a third less
+// damage. The lightning is a wedge of tiles that turns after the player; the
+// smoke is sheltered from behind any rock.
 //
-// At 180 hitpoints it is enraged: one roar, orbs every 2 ticks for good, a
-// rock on the player every 8 ticks, and the abyssal pathfinder, which walks
-// the arena clockwise. In its aura ranged hits cannot miss and do at least a
-// fifth of their max, magic does double; outside it the orbs go through
-// prayers.
+// At a fifth of its hitpoints it is enraged: one roar, orbs at one speed for
+// good, rocks on the player, and the abyssal pathfinder, which walks the arena
+// clockwise. In its aura ranged hits cannot miss and do at least a fifth of
+// their max, magic does double; outside it the orbs go through prayers.
 //
-// Sources, beside the usual: plain OBS is rsprox recordings 1703 (an ordinary
+// Sources, beside the usual: OBS 11/25 is four Outside recordings of 25
+// November 2026 (an ordinary world, the awakened fight, four deaths: 47 stuns,
+// each broken from behind; 23 lightnings, 24 smokes, 3 of them cut short by
+// the enrage; 3 enrages; no kill, and no roar but the enrages', for every
+// volley was cut short by a stun). What they show of the specials, the stun,
+// the sounds and the messages is taken for both versions: the wiki's list of
+// what awakened changes (The Leviathan/Strategies) has none of it, and the
+// videos of ordinary kills agree on when a special starts, strikes and ends.
+// What they show of damage and of the volleys is the awakened version's alone.
+// Plain OBS is rsprox recordings 1703 (an ordinary
 // world's quest fight), 1751, 3285 and six more of Leagues V and Grid Master
 // worlds (the 900-hitpoint Leviathan), as RSPSApp/tsps reads them
 // (docs/leviathan-normal-evidence.md and docs/leviathan.md,
@@ -42,6 +51,7 @@ import { setArenaConfig, getArenaDefaultWalkable } from "../../engine/arena.js";
 import { rollNpcAttack } from "../shared/npcAttack.js";
 import { buildActorVisualTarget } from "../shared/npcHelpers.js";
 import { emitInfernoNpcAttack, emitInfernoVisual } from "../inferno/events.js";
+import { centre, heading, isSheltered, lightningSectors, ring, sectorCount, sectorOf, turnSector } from "./geometry.js";
 import { leviathanLoadouts } from "./loadouts.js";
 
 export const leviathanKind = "leviathan";
@@ -61,10 +71,9 @@ const floorRows = {
   41: [[23, 42]], 42: [[24, 42]], 43: [[24, 42]], 44: [[24, 42]], 45: [[24, 41]], 46: [[27, 29], [35, 40]], 47: [[36, 38]],
 };
 export const bossStart = [30, 33]; // OBS: 2078,6369
-const bossSize = 7; // CACHE, WIKI
-const centre = [33, 36]; // the middle of its 7 x 7
+export const bossSize = 7; // CACHE, WIKI
 // Beside the handholds the player climbs in by (CACHE: 22,32); the tile is
-// RSPSApp's (inferred).
+// RSPSApp's (inferred). The fight's, and the sandbox's on the Scar.
 export const playerStart = [24, 34];
 const pool = { minX: 29, maxX: 37, minY: 32, maxY: 40 }; // CACHE
 // OBS: the pathfinder's corners, the middle of its 3 x 3, clockwise from the
@@ -91,15 +100,15 @@ export const seqs = {
   orbStart: 10278, // CACHE npc_leviathan_01_projectile_start_01; OBS: the first orb of a volley, and every orb of a slower one
   orbLoop: 10279, // CACHE npc_leviathan_01_projectile_loop_01; OBS: the others of a one-tick volley
   orbSingle: 10281, // CACHE npc_leviathan_01_projectile_single_01; OBS: a tick after an orbStart of a slower volley
-  roar: 10282, // CACHE npc_leviathan_01_stun_01: its stun; its roars and the start of the smoke too (inferred: RSPSApp's)
+  roar: 10282, // CACHE npc_leviathan_01_stun_01; OBS 11/25: as a stun is broken (47 of 47), and the enrage's roar (3 of 3)
   bite: 10283, // CACHE npc_leviathan_01_melee_01
-  stunned: 10294, // CACHE npc_leviathan_01_stun_idle; OBS (video): held after the stun's 10282
-  lightning: 10285, // CACHE npc_leviathan_01_360_start
-  lightningLoop: 10286, // CACHE npc_leviathan_01_360_loop
-  lightningEnd: 10287, // CACHE npc_leviathan_01_360_end
-  spit: 10288, // CACHE npc_leviathan_01_spit_start
-  spitLoop: 10289, // CACHE npc_leviathan_01_spit_loop
-  blast: 10290, // CACHE npc_leviathan_01_explosion_start
+  stunned: 10294, // CACHE npc_leviathan_01_stun_idle; OBS 11/25: from the tick after the stun until it is broken
+  lightning: 10285, // CACHE npc_leviathan_01_360_start; OBS 11/25
+  lightningLoop: 10286, // CACHE npc_leviathan_01_360_loop; OBS 11/25
+  lightningEnd: 10287, // CACHE npc_leviathan_01_360_end; OBS 11/25: of the smoke too
+  spit: 10288, // CACHE npc_leviathan_01_spit_start; OBS 11/25
+  spitLoop: 10289, // CACHE npc_leviathan_01_spit_loop; OBS 11/25
+  blast: 10290, // CACHE npc_leviathan_01_explosion_start; OBS 11/25
   death: 10293, // CACHE npc_leviathan_01_death; OBS
   pathfinderIdle: 10295, // CACHE npc_buff01_idle01
   pathfinderSpawn: 10296, // CACHE npc_buff01_spawn01; OBS
@@ -116,16 +125,41 @@ export const spots = {
   // staying. OBS: on the tile of a roar's rock 50 cycles after the roar, its
   // number the rotation of the loc it leaves.
   falling: [2477, 2478, 2479, 2480],
-  boulder: 2472, // CACHE projanim_brain_01: the smoke's thrown rocks (OBS (video), CACHE: grey rock, not the orb)
-  boulderLands: 2473, // CACHE projanim_brain_01_impact_01: it settles and stays
-  smoke: 2494, // CACHE spotanim_leviathan_explode: the blast (inferred: RSPSApp's)
-  lightningWarning: 2503, // CACHE vfx_leviathan_360_ground
-  lightningStrike: 2504, // CACHE vfx_leviathan_360_lightning; OBS (video): also where a side orb lands
-  sideOrb: 2506, // CACHE dt2_leviathan_bomb01; OBS (video): the cyan orbs of the lightning
+  boulder: 2472, // CACHE projanim_brain_01: the smoke's thrown rocks (OBS 11/25)
+  boulderLands: 2473, // CACHE projanim_brain_01_impact_01; OBS 11/25: where one lands and stays
+  blastCharge: 2494, // CACHE spotanim_leviathan_explode; OBS 11/25: on it as the smoke gathers
+  blast: 2505, // CACHE spotanim_leviathan_explode_02; OBS 11/25: on it as the smoke blows
+  // OBS 11/25: the smoke's wave, one to a tile, by the way out from its middle:
+  // east, then clockwise.
+  wave: [2495, 2496, 2497, 2498, 2499, 2500, 2501, 2502],
+  lightning: 2493, // OBS 11/25: on it with each strike
+  lightningGround: 2503, // CACHE vfx_leviathan_360_ground; OBS 11/25: on each tile of a strike
+  sideOrb: 2506, // CACHE dt2_leviathan_bomb01: the cyan orbs of the lightning (OBS 11/25)
+  sideOrbShadow: 1446, // OBS 11/25: on the tile one is falling to
+  sideOrbLands: 2504, // CACHE vfx_leviathan_360_lightning; OBS 11/25: where one lands
+  stunned: 2379, // OBS 11/25: on it as it is stunned
+  pathfinderMark: 2298, // OBS 11/25: where the pathfinder will come
 };
 
-const bossActorId = "leviathan";
+export const bossActorId = "leviathan";
 const pathfinderActorId = "abyssal-pathfinder";
+// The five tails in the water round the arena, which the scene draws
+// (presentation.js): they are part of no rule. OBS 11/25 (4 of 4), OBS: each
+// one's NPC, its south-west tile and the way it faces; each reacts as a stun is
+// broken (47 of 47), and to a bite (OBS).
+export const tails = [
+  { npcTypeId: 12216, position: [5, 19], facing: 1248 },
+  { npcTypeId: 12217, position: [31, 10], facing: 1009 },
+  { npcTypeId: 12216, position: [27, 57], facing: 32 },
+  { npcTypeId: 12216, position: [47, 21], facing: 736 },
+  { npcTypeId: 12218, position: [48, 53], facing: 238 },
+].map((tail, n) => ({ id: "leviathan-tail-" + n, ...tail }));
+// By NPC: CACHE npc_leviathan_tail01_...; OBS 11/25 the stance and the reaction, OBS the bite's.
+export const tailSeqs = {
+  12216: { idle: 10298, bite: 10301, weakSpot: 10304 },
+  12217: { idle: 10299, bite: 10302, weakSpot: 10305 },
+  12218: { idle: 10300, bite: 10303, weakSpot: 10306 },
+};
 
 // The volleys, from the WIKI's seven: the ticks between orbs and the styles.
 // OBS: the orbs of each (1751's first three; the fourth to the seventh from a
@@ -146,21 +180,15 @@ const volleys = [
 // (the one-tick volleys: 7 from last orb to first, OBS (video)).
 const pauseAfterRoar = (volley) => (volley.interval > 1 ? 5 : 6);
 const firstAttackTicks = 4; // OBS: the first orb 4 ticks after it surfaces
-// WIKI: the stun resets it to the second volley, and each later one a volley
-// further down.
-const volleyAfterStun = (stuns) => Math.min(volleys.length - 1, Math.max(1, stuns));
-// Enraged (WIKI): every 2 ticks, magic and ranged only. OBS: the first orb 5
-// ticks after the enrage, flying 5 ticks; a rock on the player every 8 ticks.
-const enraged = { interval: 2, styles: ["magic", "range"], flight: 5 };
-const enrageFirstAttackTicks = 5;
-const enrageRockTicks = 8;
-const pathfinderTicks = 3; // OBS: it appears 3 ticks after the enrage,
-const pathfinderWalkTicks = 3; // OBS: and takes its first step 3 ticks after that, then one a tick.
-const auraRadius = 2; // WIKI: a 5 x 5
+const pathfinderTicks = 3; // OBS, OBS 11/25 (3 of 3): it appears 3 ticks after the enrage's rocks fall,
+const pathfinderWalkTicks = 3; // OBS, OBS 11/25: and takes its first step 3 ticks after that, then one a tick.
+// WIKI: a 5 x 5, 7 x 7 awakened. OBS 11/25: awakened too, orbs met with the
+// right prayer went through it 3 tiles from its middle (2 of 2) and never
+// closer (24 of 24).
+const auraRadius = 2;
 const rockTicks = 7; // OBS: a roar's rock lands 7 ticks after it (1,151 of 1,151)
 const fallingDelayCycles = 50; // OBS
 const chipTicks = 1; // inferred (RSPSApp's): the roar's chip a tick after it
-const stunTicks = 15; // WIKI
 const stunCap = 10; // WIKI: what gets through a hit from the front while it is stunned
 const stunBreakShare = 0.25; // WIKI: "25% of The Leviathan's health in damage"; counted from the stun (inferred)
 const rearRangedMinimum = 0.65; // WIKI: "at least a minimum of ~65% of your maximum hit"
@@ -172,36 +200,53 @@ const specialReduction = 0.33; // WIKI: "reduced by 33%"; rounded down (inferred
 // After the third roar, and enraged, how often it bites no record gives; the
 // orbs still go on beside the pool (OBS (video): RSPSApp's reading of a 2025
 // kill), so a bite takes only some of its turns: one in four (inferred).
-const earlyBites = 1;
 const bitesFreeAfterRoars = 3;
 const biteChance = 0.25;
-// The lightning, from the hit that set it off (OBS (video), RSPSApp's
-// reading: its loop 3 ticks in, 35 strikes from 5 ticks in, its end at 42
-// and the volleys back at 44). Each strike is warned on the player's tile
-// and lands 2 ticks later, 1 for a player on 25 hitpoints or less (WIKI,
-// update of 7 February 2024). Five cyan orbs at once every 6 ticks, landing 8
-// ticks later on tiles not beside the pool (WIKI: "never on the tiles
-// surrounding the pool"; OBS (video)).
-const lightning = { loop: 3, first: 5, strikes: 35, end: 42, over: 44, warning: 2, lowHpWarning: 1, lowHp: 25, sideEvery: 6, sideOrbs: 5, sideFlight: 8 };
-// The smoke, from the hit that set it off (OBS (video), RSPSApp's reading):
-// a roar, the spit 3 ticks in, ten rocks at the player one a tick from 4 ticks
-// in (WIKI: ten, each 2 ticks in the air), the blast's charge at 14, the
-// blast at 16, the volleys back at 19. WIKI: only the rocks of this smoke
-// shelter from the blast. Rocks still in the air at the enrage land, and the
-// blast still comes (WIKI).
-const smoke = { spit: 3, firstRock: 4, rocks: 10, rockFlight: 2, charge: 14, blast: 16, over: 19 };
+// The lightning, from the hit that set it off. OBS 11/25 (23 of 23): a roar, its
+// start 3 ticks in, its loop at 7, a strike a tick from 7 to 41, its end at 42,
+// still at 44, and the first orb at 48 (12 of 12 not stunned before it). OBS
+// (video) agrees within a tick on the first and the last strike and the end.
+// A strike is on the sector the player was in 2 ticks before, as far as it can
+// turn (turnSector; 782 of 782); WIKI, update of 7 February 2024: a tick sooner
+// for a player on 25 hitpoints or less. The first is on the sector next to the
+// one the player is in as its start begins, counter-clockwise (23 of 23). It
+// hits a player on a tile of it as the tick begins (9 of 9, and no one else).
+const lightning = { start: 3, loop: 7, first: 7, strikes: 35, end: 42, over: 44, rest: 4, lowHp: 25 };
+// OBS 11/25: a strike on every fourth sector (192 of 193) also throws orbs at one
+// of two sets of tiles, even odds (91 and 101). Each tile of it has the same
+// chance (1,164 orbs of 2,728), and each flies 4, 5 or 6 ticks (387, 397, 380).
+const sideOrbSets = [
+  [[27, 32], [27, 34], [27, 37], [30, 30], [30, 42], [32, 42], [33, 30], [35, 42], [37, 30], [39, 38]],
+  [[27, 33], [27, 35], [27, 39], [27, 41], [28, 30], [29, 42], [31, 29], [31, 42], [33, 42], [33, 43], [34, 30], [36, 29], [36, 42], [38, 42], [39, 33], [39, 35], [39, 39], [39, 41]],
+];
+const sideOrbEvery = 4;
+const sideOrbChance = 0.43;
+const sideOrbFlights = [{ ticks: 4, from: 20, shadow: 30 }, { ticks: 5, from: 40, shadow: 60 }, { ticks: 6, from: 60, shadow: 90 }]; // OBS 11/25; from and shadow in cycles
+// The smoke, from the hit that set it off. OBS 11/25 (21 of 21): a roar, the spit
+// 3 ticks in, ten rocks at the player one a tick from 4 to 13, each 2 ticks in
+// the air, its charge at 13, the blast at 16, still at 18, and the first orb at
+// 24 (3 of 3 not stunned before it). OBS (video) agrees within a tick. Any rock
+// shelters, an older one too (4 of 4 behind one of an earlier smoke alone were
+// unhurt, 3 of 3 behind none were hit). WIKI: rocks still in the air at the
+// enrage land, and the blast still comes; OBS 11/25: not if the enrage comes of
+// the very hit that set the smoke off (3 of 3).
+const smoke = { spit: 3, firstRock: 4, rocks: 10, rockFlight: 2, charge: 13, blast: 16, over: 18, rest: 6 };
+// OBS 11/25: the wave is drawn on the floor and the pool's rim between these
+// distances from its middle, 3 cycles later for each tile further out.
+const wave = { inner: 4, reach: 9, cycles: 3, first: -6 };
 const deathTicks = 6; // OBS: from the kill to its removal (24 deaths)
 
-// Projectiles. OBS: from 30 cycles to the impact tick, from height 550 to 100,
-// slope 30, 124 out from the mouth (an orb of one tick leaves at once:
-// inferred, RSPSApp's). The
-// mouth is 2 tiles out from its middle towards the player, on each side of
-// its 7 x 7 the player is beyond (OBS). The thrown rocks and side orbs as the
-// orbs (inferred: RSPSApp's).
+// Projectiles. OBS, OBS 11/25: from 30 cycles to the impact tick, from height 550
+// to 100, slope 30, 124 out from the mouth (an orb of one tick leaves at once:
+// inferred, RSPSApp's). The mouth is 2 tiles out from its middle towards the
+// player, on each side of its 7 x 7 the player is beyond (OBS, OBS 11/25).
 const orbProjectile = { startHeight: 550, endHeight: 100, slope: 30, startOffset: 124 };
+const boulderProjectile = { startHeight: 600, endHeight: 100, slope: 40, startOffset: 80 }; // OBS 11/25: from its mouth, at once
+const sideOrbProjectile = { startHeight: 800, endHeight: 0, slope: 3, startOffset: 200 }; // OBS 11/25: from its middle
 const cyclesPerTick = 30;
 
-// Max hits (WIKI, its infobox), but for those it gives none.
+// The fight's numbers, to be another version's when it has one. Damage: WIKI, its infobox, but for
+// what it has none of. A hit is [least, most].
 export const versions = {
   postQuest: {
     tableVersion: "Post-quest", // TABLE: the "Post-quest" entry of 12214, 900 hitpoints
@@ -209,15 +254,36 @@ export const versions = {
     enrageHp: 180, // WIKI: "Upon reaching 180 hitpoints (20% of its health)"
     orbMaxHit: { magic: 32, range: 24, melee: 50 },
     biteMaxHit: 50,
+    earlyBites: 1, // OBS (video), above
     roarMaxHit: 7, // WIKI: "up to 7 chip damage"; that it can be 0 is inferred
-    rockMaxHit: 25, // WIKI: the falling rocks
+    rockHit: [0, 25], // WIKI: the falling rocks
     // inferred: RSPSApp's provisional 30; no source gives one.
-    lightningMaxHit: 30,
+    lightningHit: [0, 30],
     // inferred: the side orbs as the rocks (RSPSApp's).
-    sideOrbMaxHit: 25,
+    sideOrbHit: [0, 25],
     // WIKI: 60 in its infobox; its Strategies says up to 59, which fits under it.
-    smokeMaxHit: 60,
+    smokeHit: [0, 60],
+    stunTicks: 15, // WIKI
+    // WIKI: the stun resets it to the second volley, and each later one a volley
+    // further down.
+    volleyAfterStun: (stuns) => Math.min(volleys.length - 1, Math.max(1, stuns)),
+    // Enraged (WIKI): every 2 ticks, magic and ranged only. OBS: the first orb 5
+    // ticks after the enrage, flying 5 ticks; a rock on the player every 8 ticks.
+    enraged: { interval: 2, styles: ["magic", "range"], flight: 5 },
+    enrageFirstAttackTicks: 5,
+    enrageRockTicks: 8,
   },
+};
+
+// OBS 11/25 (47, 47, 23, 24 and 3 times). The colours are inferred: the game's are
+// the player's own for its highlights (green, purple, magenta).
+const messages = {
+  stunned: { text: "Your spell stuns the Leviathan!", color: "#2f9e3f" },
+  weakSpot: { text: "You hit the Leviathan right in its weak spot!", color: "#2f9e3f" },
+  lightning: { text: "The Leviathan charges up a lightning attack...", color: "#b58cd9" },
+  smoke: { text: "The Leviathan begins to spit out debris...", color: "#b58cd9" },
+  enraged: { text: "The Leviathan focuses on you intensely...", color: "#e05ad0" },
+  melee: { text: "Your melee attacks can't reach the lure!" }, // WIKI; that it comes with each attack is inferred
 };
 
 const key = ([x, y]) => x + "," + y;
@@ -238,34 +304,18 @@ function mouthFor([px, py]) {
   const [cx, cy] = centre;
   return [cx + (Math.abs(px - cx) > 3 ? Math.sign(px - cx) * 2 : 0), cy + (Math.abs(py - cy) > 3 ? Math.sign(py - cy) * 2 : 0)];
 }
-// Which way it faces, of the four, as it is stunned: towards the player
-// (inferred: RSPSApp's). Its back is the side of the pool away from that, as
-// wide as the pool, beyond its edge (inferred: RSPSApp's; how wide the weak
-// spot is no source says).
-function stunFacing([px, py]) {
-  const dx = px - centre[0], dy = py - centre[1];
-  return Math.abs(dx) > Math.abs(dy) ? [Math.sign(dx) || 1, 0] : [0, Math.sign(dy) || 1];
-}
+// Its back while it is stunned: the half of the arena away from where the player
+// stood as it was. OBS 11/25: 47 hits from 0 to 84 degrees off straight behind
+// it, every one on its weak spot; how far it goes past that none shows.
 function isBehind(face, [px, py]) {
-  const dx = px - centre[0], dy = py - centre[1];
-  return dx * face[0] + dy * face[1] <= -4 && Math.abs(dx * face[1] - dy * face[0]) <= 4;
+  return (px - centre[0]) * face[0] + (py - centre[1]) * face[1] < 0;
 }
-// The tiles a line from the middle of the pool to the player crosses, but for
-// its ends (inferred: RSPSApp's; what shelters from the blast no source draws).
-function lineBetween(from, to) {
-  let [x, y] = from;
-  const [tx, ty] = to, dx = Math.abs(tx - x), dy = Math.abs(ty - y);
-  const sx = x < tx ? 1 : -1, sy = y < ty ? 1 : -1;
-  let error = dx - dy;
-  const tiles = [];
-  while (x !== tx || y !== ty) {
-    const e = error * 2;
-    if (e > -dy) { error -= dy; x += sx; }
-    if (e < dx) { error += dx; y += sy; }
-    if (x !== tx || y !== ty) tiles.push([x, y]);
-  }
-  return tiles;
-}
+// The tiles the smoke's wave is drawn on, but for those that are sheltered.
+const inWave = ([x, y]) => {
+  const dx = x - centre[0], dy = y - centre[1];
+  return ring([x, y]) <= wave.reach && dx * dx + dy * dy >= wave.inner * wave.inner;
+};
+const waveDirections = [[1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1]].map(String);
 
 // The bridge's open tiles (floorRows), with a collision map of its own: the
 // fight's arena, and the sandbox's on the Scar (sandbox/arenas.js).
@@ -332,7 +382,7 @@ class LeviathanEncounter {
     // what was queued before one of them checks it before it goes off.
     this.epoch = 0;
     this.stun = null; // { until, face, dealt }
-    this.special = null; // { kind, start, id }
+    this.special = null; // { kind, start, id }; the lightning's sector and where the player was too
     this.specialDue = false;
     this.nextSpecial = this.random() < 0.5 ? "lightning" : "smoke"; // inferred: either, evenly
     this.firstRoar = true;
@@ -342,8 +392,8 @@ class LeviathanEncounter {
     this.queue = []; // { tick, run(context, hits) }, in the order queued
     this.pendingVisuals = [];
     this.rubble = new Map(); // tile key -> [x, y, rotation]
-    this.cover = new Set(); // the tiles of this smoke's rocks
-    this.warnings = []; // { tile, from, until }: the lightning's marks, for the scene
+    this.cover = new Set(); // the tiles sheltered from this smoke's blast
+    this.warnings = []; // { tile, from, until }: the tiles of this tick's lightning, for the scene
     this.inFlight = []; // { style, lands }: the orbs on their way, for the scene
     this.falling = []; // { tile, lands }: the rocks on their way down
     if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
@@ -389,12 +439,17 @@ class LeviathanEncounter {
   }
   moveNpc(npc, context) {
     if (npc.id !== pathfinderActorId || !this.pathfinder || context.tick < this.pathfinder.walkTick) return [];
-    // OBS: one step a tick, straight along the side, through the rubble.
+    const step = this.pathfinderStep(npc);
+    this.pathfinder.destination = step.destination;
+    return [{ npcId: npc.id, path: [[step.middle[0] - 1, step.middle[1] - 1]] }];
+  }
+  // OBS: one step a tick, straight along the side, through the rubble.
+  pathfinderStep(npc) {
     const at = [npc.position[0] + 1, npc.position[1] + 1];
-    if (key(at) === key(pathfinderCorners[this.pathfinder.destination])) this.pathfinder.destination = (this.pathfinder.destination + 1) % pathfinderCorners.length;
-    const to = pathfinderCorners[this.pathfinder.destination];
-    const next = [at[0] + Math.sign(to[0] - at[0]), at[1] + Math.sign(to[1] - at[1])];
-    return [{ npcId: npc.id, path: [[next[0] - 1, next[1] - 1]] }];
+    let { destination } = this.pathfinder;
+    if (key(at) === key(pathfinderCorners[destination])) destination = (destination + 1) % pathfinderCorners.length;
+    const to = pathfinderCorners[destination];
+    return { destination, middle: [at[0] + Math.sign(to[0] - at[0]), at[1] + Math.sign(to[1] - at[1])] };
   }
 
   // --- each tick, before the NPCs ---------------------------------------
@@ -429,7 +484,7 @@ class LeviathanEncounter {
     if (!this.enraged && npc.vitals.hp <= this.version.enrageHp) this.enrage(npc, context);
     if (this.enraged && tick >= this.nextEnrageRockTick) {
       this.dropRock(context, context.playerPos);
-      this.nextEnrageRockTick = tick + enrageRockTicks;
+      this.nextEnrageRockTick = tick + this.version.enrageRockTicks;
     }
     if (this.specialDue) {
       this.specialDue = false;
@@ -450,14 +505,14 @@ class LeviathanEncounter {
 
   // --- its attacks -----------------------------------------------------
   currentVolley() {
-    return this.enraged ? enraged : volleys[this.volley];
+    return this.enraged ? this.version.enraged : volleys[this.volley];
   }
   // Whether this turn is a bite: never for a player away from the pool; the
-  // early one for certain; then none until the third roar; after it, and
-  // enraged, on some turns only (biteChance).
+  // early one, if its version has one, for certain; then none until the third
+  // roar; after it, and enraged, on some turns only (biteChance).
   bitesNow(player) {
     if (!isBesidePool(player.position)) return false;
-    if (!this.enraged && this.bites < earlyBites) return true;
+    if (!this.enraged && this.bites < this.version.earlyBites) return true;
     if (!this.enraged && this.roars < bitesFreeAfterRoars) return false;
     return this.random() < biteChance;
   }
@@ -494,11 +549,13 @@ class LeviathanEncounter {
     this.later(volley.flight, (ctx, hits) => {
       const target = ctx.world.getPlayer();
       if (!target?.alive) return;
-      emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.impact[style], target: buildActorVisualTarget(target), height: 0, delayCycles: 0 }] });
       // WIKI: enraged, its attacks go through the prayer of a player out of the
       // pathfinder's aura (not before the pathfinder is there: the update of 16
-      // August 2023).
-      const pierces = this.enraged && this.pathfinderCentre(ctx.world) !== null && !this.inAura(ctx.world, ctx.playerPos);
+      // August 2023). OBS 11/25: as the pathfinder stands after this tick's step,
+      // the player before theirs.
+      const middle = this.enraged ? this.pathfinderMiddleNext(ctx) : null;
+      const pierces = middle !== null && chebyshev(middle, ctx.playerPos) > auraRadius;
+      emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.impact[style], target: buildActorVisualTarget(target), height: 0, delayCycles: 0 }] });
       hits.push({ source: "The Leviathan's orb", attackType: style, baseDamage: damage, playerPosition: [...ctx.playerPos], ...(pierces ? { prayerReduction: { type: "bypass" } } : {}) });
     });
     this.nextAttackTick = tick + volley.interval;
@@ -543,6 +600,13 @@ class LeviathanEncounter {
       this.dropRock(context, [x, y]);
     }
   }
+  // A rock lands: it hurts a player still on its tile. `heard`: with the sound
+  // recorded for it (audio.js).
+  rockHits(context, hits, tile, source, heard) {
+    if (!context.world.getPlayer()?.alive || key(context.playerPos) !== key(tile)) return;
+    hits.push({ source, attackType: "typeless", baseDamage: [...this.version.rockHit], playerPosition: [...context.playerPos] });
+    if (heard) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [], rockHit: true });
+  }
   // A rock that falls for 7 ticks, hurts a player still on its tile and stays.
   dropRock(context, at) {
     const tile = [...at];
@@ -550,8 +614,7 @@ class LeviathanEncounter {
     emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.falling[rotation], target: tileTarget(tile), height: 0, delayCycles: fallingDelayCycles }] });
     this.falling.push({ tile, lands: this.tick + rockTicks });
     this.later(rockTicks, (ctx, hits) => {
-      if (ctx.world.getPlayer()?.alive && key(ctx.playerPos) === key(tile))
-        hits.push({ source: "A falling rock", attackType: "typeless", baseDamage: [0, this.version.rockMaxHit], playerPosition: [...ctx.playerPos] });
+      this.rockHits(ctx, hits, tile, "A falling rock", false);
       this.placeRubble(tile, rotation);
     });
   }
@@ -578,35 +641,41 @@ class LeviathanEncounter {
     dealt = Math.min(dealt, target.vitals.hp);
     if (stunned && dealt > 0) {
       this.stun.dealt += dealt;
-      if (rear || this.stun.dealt >= this.version.maxHp * stunBreakShare) this.breakStun(target);
+      if (rear || this.stun.dealt >= this.version.maxHp * stunBreakShare) this.breakStun(target, rear);
     } else if (!stunned && !this.enraged && !this.special && attack.style === "magic" && shadowSpells.has(attack.spellId)) {
-      // WIKI: a shadow spell always stuns it. That a splash does too is inferred.
+      // WIKI: a shadow spell always stuns it. OBS 11/25: 47 of 47 in ranged gear,
+      // none of them splashed, and none did any damage.
       this.beginStun(target, at);
+      return 0;
     }
     return dealt;
   }
   beginStun(boss, at) {
     this.stuns++;
     this.epoch++;
-    this.stun = { until: this.tick + stunTicks, face: stunFacing(at), dealt: 0 };
+    this.stun = { until: this.tick + this.version.stunTicks, face: [at[0] - centre[0], at[1] - centre[1]], dealt: 0 };
     boss.lockedFacing = boss.facing;
-    this.pendingVisuals.push({ clipId: "roar" });
+    this.pendingVisuals.push({ message: messages.stunned });
     const epoch = this.epoch;
-    // OBS (video), CACHE: the stun's 10282 lasts 90 cycles, then it holds still.
-    this.later(3, (ctx) => {
-      if (this.epoch === epoch && this.stun) this.animate(ctx, "stunned");
+    // OBS 11/25: the tick after, it holds still.
+    this.later(1, (ctx) => {
+      if (this.epoch !== epoch || !this.stun) return;
+      this.animate(ctx, "stunned");
+      this.onBoss(ctx, spots.stunned, 30);
     });
   }
   endStun(boss) {
     this.stun = null;
     delete boss.lockedFacing;
   }
-  breakStun(boss) {
+  breakStun(boss, rear) {
     this.endStun(boss);
     this.epoch++;
-    this.volley = volleyAfterStun(this.stuns);
+    this.volley = this.version.volleyAfterStun(this.stuns);
     this.orbs = 0;
     this.specialDue = true;
+    if (rear) this.pendingVisuals.push({ message: messages.weakSpot });
+    this.pendingVisuals.push({ tails: "weakSpot" });
   }
   beginSpecial(boss, context) {
     if (this.enraged) return;
@@ -616,88 +685,105 @@ class LeviathanEncounter {
     const special = { kind, start: context.tick, id: this.epoch };
     this.special = special;
     const on = () => this.special === special;
+    this.say(context, messages[kind]);
+    this.animate(context, "roar");
     if (kind === "lightning") this.lightning(context, on);
     else this.smoke(context, on);
   }
-  endSpecial() {
+  // `rest`: the ticks to the next orb.
+  endSpecial(rest) {
     this.special = null;
-    this.nextAttackTick = this.tick + this.currentVolley().interval;
+    this.nextAttackTick = this.tick + rest;
   }
   lightning(context, on) {
-    this.animate(context, "lightning");
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [], lightningCharges: true });
+    this.later(lightning.start, (ctx) => {
+      if (!on()) return;
+      this.animate(ctx, "lightning");
+      this.special.sector = (sectorOf(ctx.playerPos) + 1) % sectorCount;
+    });
     this.later(lightning.loop, (ctx) => on() && this.animate(ctx, "lightningLoop"));
-    for (let n = 0; n < lightning.strikes; n++)
-      this.later(lightning.first + n, (ctx) => {
-        if (!on()) return;
-        const player = ctx.world.getPlayer();
-        if (!player?.alive) return;
-        const tile = [...ctx.playerPos];
-        const warning = player.vitals.hp <= lightning.lowHp ? lightning.lowHpWarning : lightning.warning;
-        this.warnings.push({ tile, from: ctx.tick, until: ctx.tick + warning });
-        emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.lightningWarning, target: tileTarget(tile), height: 0, delayCycles: 0 }] });
-        this.later(warning, (later, hits) => {
-          emitInfernoVisual(later.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.lightningStrike, target: tileTarget(tile), height: 0, delayCycles: 0 }] });
-          if (later.world.getPlayer()?.alive && key(later.playerPos) === key(tile))
-            hits.push({ source: "The Leviathan's lightning", attackType: "typeless", baseDamage: [0, this.version.lightningMaxHit], playerPosition: [...later.playerPos] });
-        });
-      });
-    for (let at = lightning.first; at < lightning.first + lightning.strikes; at += lightning.sideEvery)
-      this.later(at, (ctx) => {
-        if (!on()) return;
-        const tiles = this.floor.filter((tile) => !isBesidePool(tile));
-        const projectiles = [];
-        const landing = [];
-        for (let n = 0; n < lightning.sideOrbs && tiles.length; n++) {
-          const tile = tiles[Math.floor(this.random() * tiles.length)]; // inferred: any, evenly, again and again
-          const mouth = mouthFor(tile);
-          landing.push(tile);
-          projectiles.push({ spotAnimId: spots.sideOrb, sourcePosition: [mouth[0] + 0.5, mouth[1] + 0.5], target: tileTarget(tile),
-            startDelayCycles: 0, endDelayCycles: lightning.sideFlight * cyclesPerTick, ...orbProjectile, endHeight: 0 });
-        }
-        emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles, graphics: [] });
-        this.later(lightning.sideFlight, (later, hits) => {
-          emitInfernoVisual(later.tickEvents, { animations: [], projectiles: [], graphics: landing.map((tile) => ({ spotAnimId: spots.lightningStrike, target: tileTarget(tile), height: 0, delayCycles: 0 })) });
-          const player = later.world.getPlayer();
-          for (const tile of landing)
-            if (player?.alive && key(later.playerPos) === key(tile))
-              hits.push({ source: "The Leviathan's lightning orb", attackType: "typeless", baseDamage: [0, this.version.sideOrbMaxHit], playerPosition: [...later.playerPos] });
-        });
-      });
+    for (let n = 0; n < lightning.strikes; n++) this.later(lightning.first + n, (ctx, hits) => on() && this.strike(ctx, hits));
     this.later(lightning.end, (ctx) => on() && this.animate(ctx, "lightningEnd"));
-    this.later(lightning.over, () => on() && this.endSpecial());
+    this.later(lightning.over, () => on() && this.endSpecial(lightning.rest));
+  }
+  // One strike, on every tile of a sector at once.
+  strike(context, hits) {
+    const { special } = this;
+    const player = context.world.getPlayer();
+    if (!player?.alive) return;
+    // Where it aims: where the player was a tick ago, but for the first strike.
+    if (special.seen) special.sector = turnSector(special.sector, sectorOf(player.vitals.hp <= lightning.lowHp ? context.playerPos : special.seen));
+    special.seen = [...context.playerPos];
+    const tiles = lightningSectors[special.sector];
+    this.warnings = tiles.map((tile) => ({ tile: [...tile], from: context.tick, until: context.tick + 1 }));
+    this.onBoss(context, spots.lightning);
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [],
+      graphics: tiles.map((tile) => ({ spotAnimId: spots.lightningGround, target: tileTarget(tile), height: 0, delayCycles: 2 * ring(tile) })) });
+    if (tiles.some((tile) => key(tile) === key(context.playerPos)))
+      hits.push({ source: "The Leviathan's lightning", attackType: "typeless", baseDamage: [...this.version.lightningHit], playerPosition: [...context.playerPos] });
+    if (special.sector % sideOrbEvery === 0) this.sideOrbs(context);
+  }
+  sideOrbs(context) {
+    const set = sideOrbSets[this.random() < 0.5 ? 0 : 1];
+    for (const tile of set) {
+      if (this.random() >= sideOrbChance) continue;
+      const flight = sideOrbFlights[Math.floor(this.random() * sideOrbFlights.length)];
+      emitInfernoVisual(context.tickEvents, { animations: [],
+        projectiles: [{ spotAnimId: spots.sideOrb, sourcePosition: [centre[0] + 0.5, centre[1] + 0.5], target: tileTarget(tile),
+          startDelayCycles: flight.from, endDelayCycles: flight.ticks * cyclesPerTick, ...sideOrbProjectile }],
+        graphics: [{ spotAnimId: spots.sideOrbShadow, target: tileTarget(tile), height: 0, delayCycles: flight.shadow }] });
+      this.later(flight.ticks, (later, hits) => {
+        emitInfernoVisual(later.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.sideOrbLands, target: tileTarget(tile), height: 0, delayCycles: 0 }] });
+        if (later.world.getPlayer()?.alive && key(later.playerPos) === key(tile))
+          hits.push({ source: "The Leviathan's lightning orb", attackType: "typeless", baseDamage: [...this.version.sideOrbHit], playerPosition: [...later.playerPos] });
+      });
+    }
   }
   smoke(context, on) {
     this.cover = new Set();
-    this.animate(context, "roar");
     this.later(smoke.spit, (ctx) => on() && this.animate(ctx, "spit"));
     for (let n = 0; n < smoke.rocks; n++)
       this.later(smoke.firstRock + n, (ctx) => {
         if (!on() || !ctx.world.getPlayer()?.alive) return;
-        this.animate(ctx, "spitLoop");
+        if (n === 0) this.animate(ctx, "spitLoop");
         const tile = [...ctx.playerPos];
         const mouth = mouthFor(tile);
         emitInfernoVisual(ctx.tickEvents, { animations: [], graphics: [],
           projectiles: [{ spotAnimId: spots.boulder, sourcePosition: [mouth[0] + 0.5, mouth[1] + 0.5], target: tileTarget(tile),
-            startDelayCycles: 0, endDelayCycles: smoke.rockFlight * cyclesPerTick, ...orbProjectile, endHeight: 0 }] });
+            startDelayCycles: 0, endDelayCycles: smoke.rockFlight * cyclesPerTick, ...boulderProjectile }] });
         this.falling.push({ tile, lands: ctx.tick + smoke.rockFlight });
         this.later(smoke.rockFlight, (later, hits) => {
           if (this.outcome.phase !== "active") return;
-          emitInfernoVisual(later.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.boulderLands, target: tileTarget(tile), height: 0, delayCycles: 0 }] });
-          // inferred (RSPSApp's): a rock that lands on the player hurts as a falling one does.
-          if (later.world.getPlayer()?.alive && key(later.playerPos) === key(tile))
-            hits.push({ source: "A thrown rock", attackType: "typeless", baseDamage: [0, this.version.rockMaxHit], playerPosition: [...later.playerPos] });
-          if (this.placeRubble(tile, Math.floor(this.random() * 4))) this.cover.add(key(tile));
+          this.rockHits(later, hits, tile, "A thrown rock", true);
+          // OBS 11/25: a second rock on a tile leaves nothing more, and is not drawn landing.
+          if (this.placeRubble(tile, 0))
+            emitInfernoVisual(later.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.boulderLands, target: tileTarget(tile), height: 0, delayCycles: 0 }] });
         });
       });
-    this.later(smoke.charge, (ctx) => on() && this.animate(ctx, "blast"));
-    this.later(smoke.blast, (ctx, hits) => {
+    this.later(smoke.charge, (ctx) => {
       if (!on()) return;
-      emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.smoke, target: tileTarget(centre), height: 0, delayCycles: 0 }] });
-      const sheltered = lineBetween(centre, ctx.playerPos).some((tile) => this.cover.has(key(tile)));
-      if (ctx.world.getPlayer()?.alive && !sheltered)
-        hits.push({ source: "The Leviathan's smoke blast", attackType: "typeless", baseDamage: [0, this.version.smokeMaxHit], playerPosition: [...ctx.playerPos] });
+      this.animate(ctx, "blast");
+      this.onBoss(ctx, spots.blastCharge);
     });
-    this.later(smoke.over, () => on() && this.endSpecial());
+    this.later(smoke.blast, (ctx, hits) => on() && this.blast(ctx, hits));
+    this.later(smoke.over, () => on() && this.endSpecial(smoke.rest));
+  }
+  blast(context, hits) {
+    this.animate(context, "lightningEnd");
+    this.onBoss(context, spots.blast);
+    const sheltered = (tile) => isSheltered(tile, (rock) => this.rubble.has(key(rock)));
+    this.cover = new Set(this.floor.filter(sheltered).map(key));
+    const rim = [];
+    for (let x = pool.minX; x <= pool.maxX; x++) for (let y = pool.minY; y <= pool.maxY; y++) if (inPool([x, y])) rim.push([x, y]);
+    const graphics = [...this.floor, ...rim].filter((tile) => inWave(tile) && !sheltered(tile)).map((tile) => {
+      const dx = tile[0] - centre[0], dy = tile[1] - centre[1];
+      return { spotAnimId: spots.wave[waveDirections.indexOf(String(heading(dx, dy)))], target: tileTarget(tile), height: 0,
+        delayCycles: wave.cycles * (Math.abs(dx) + Math.abs(dy)) + wave.first };
+    });
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics });
+    if (context.world.getPlayer()?.alive && !this.cover.has(key(context.playerPos)))
+      hits.push({ source: "The Leviathan's smoke blast", attackType: "typeless", baseDamage: [...this.version.smokeHit], playerPosition: [...context.playerPos] });
   }
 
   // --- the enrage and the pathfinder --------------------------------------
@@ -705,21 +791,31 @@ class LeviathanEncounter {
     this.enraged = true;
     if (this.stun) this.endStun(boss);
     this.orbs = 0;
-    // WIKI: a smoke under way still blasts; a lightning stops (inferred: RSPSApp's).
-    if (this.special?.kind !== "smoke") this.special = null;
+    // WIKI: a smoke under way still blasts (not one the same hit set off: above,
+    // smoke); a lightning stops (inferred: RSPSApp's).
+    if (this.special?.kind !== "smoke" || context.tick <= this.special.start) this.special = null;
     this.roar(context);
-    this.nextEnrageRockTick = context.tick + enrageRockTicks;
-    this.nextAttackTick = context.tick + enrageFirstAttackTicks;
-    this.later(pathfinderTicks, (ctx) => this.spawnPathfinder(ctx));
+    this.nextEnrageRockTick = context.tick + this.version.enrageRockTicks;
+    this.nextAttackTick = context.tick + this.version.enrageFirstAttackTicks;
+    const corner = this.pathfinderCorner();
+    // OBS 11/25 (3 of 3): a plus over its corner, four times a second apart.
+    const [cx, cy] = pathfinderCorners[corner];
+    const plus = [[0, 0], [0, 1], [0, -1], [-1, 0], [1, 0]];
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [],
+      graphics: [0, 30, 60, 90].flatMap((delayCycles) => plus.map(([dx, dy]) => ({ spotAnimId: spots.pathfinderMark, target: tileTarget([cx + dx, cy + dy]), height: 0, delayCycles }))) });
+    this.later(pathfinderTicks, (ctx) => this.spawnPathfinder(ctx, corner));
   }
-  // OBS, WIKI: in the first corner clockwise from the north-west whose middle
-  // is clear of rubble (a rock beside it does not count: OBS, and a test on the
+  // OBS, WIKI: the first corner clockwise from the north-west whose middle is
+  // clear of rubble (a rock beside it does not count: OBS, and a test on the
   // wiki's talk page), the north-west if none is.
-  spawnPathfinder(context) {
+  pathfinderCorner() {
+    return Math.max(0, pathfinderCorners.findIndex((corner) => !this.rubble.has(key(corner))));
+  }
+  spawnPathfinder(context, corner) {
     if (this.outcome.phase !== "active") return;
-    const index = Math.max(0, pathfinderCorners.findIndex((corner) => !this.rubble.has(key(corner))));
-    const [cx, cy] = pathfinderCorners[index];
-    this.pathfinder = { walkTick: context.tick + pathfinderWalkTicks, destination: (index + 1) % pathfinderCorners.length };
+    const [cx, cy] = pathfinderCorners[corner];
+    this.say(context, messages.enraged); // OBS 11/25: as it appears (3 of 3)
+    this.pathfinder = { walkTick: context.tick + pathfinderWalkTicks, destination: (corner + 1) % pathfinderCorners.length };
     context.spawnNpc({
       id: pathfinderActorId, kind: "npc", role: "npc", npcTypeId: ids.pathfinder, archetypeId: pathfinderActorId, size: 3, alive: true,
       position: [cx - 1, cy - 1], previousPosition: [cx - 1, cy - 1], facing: 0,
@@ -734,20 +830,44 @@ class LeviathanEncounter {
     const npc = world?.getNpc(pathfinderActorId);
     return npc?.alive ? [npc.position[0] + 1, npc.position[1] + 1] : null;
   }
+  // Its middle once it has taken this tick's step, for what comes before the NPCs.
+  pathfinderMiddleNext(context) {
+    const npc = context.world.getNpc(pathfinderActorId);
+    if (!npc?.alive) return null;
+    return this.pathfinder && context.tick >= this.pathfinder.walkTick ? this.pathfinderStep(npc).middle : [npc.position[0] + 1, npc.position[1] + 1];
+  }
   inAura(world, at) {
     const middle = this.pathfinderCentre(world);
     return middle !== null && chebyshev(middle, at) <= auraRadius;
   }
 
   // --- the rest --------------------------------------------------------
+  // WIKI: what a melee attack of the player's comes to.
+  onPlayerAttackStarted(attack, context) {
+    if (attack.targetId === bossActorId && attack.attackType === "melee") this.say(context, messages.melee);
+  }
   later(ticks, run) {
     this.queue.push({ tick: this.tick + ticks, run });
   }
   animate(context, clipId, actorId = bossActorId) {
     emitInfernoVisual(context.tickEvents, { animations: [{ actorId, clipId, delayCycles: 0 }], projectiles: [], graphics: [] });
   }
+  animateTails(context, clipId) {
+    emitInfernoVisual(context.tickEvents, { animations: tails.map(({ id }) => ({ actorId: id, clipId, delayCycles: 0 })), projectiles: [], graphics: [] });
+  }
+  onBoss(context, spotAnimId, delayCycles = 0) {
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [],
+      graphics: [{ spotAnimId, target: buildActorVisualTarget(context.world.getNpc(bossActorId)), height: 0, delayCycles }] });
+  }
+  say(context, { text, color }) {
+    context.tickEvents.emit({ type: "game_message", kind: "game", segments: [color ? { text, color } : { text }] });
+  }
+  // What a hit of the player's set off, which has no context of its own.
   flushVisuals(context) {
-    for (const { clipId } of this.pendingVisuals) this.animate(context, clipId);
+    for (const visual of this.pendingVisuals) {
+      if (visual.message) this.say(context, visual.message);
+      if (visual.tails) this.animateTails(context, visual.tails);
+    }
     this.pendingVisuals = [];
   }
   getEngineRules() {
