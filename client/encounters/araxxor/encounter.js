@@ -152,7 +152,9 @@ const specialOf = { acidic: "ball", mirrorback: "spray", ruptura: "drip" };
 
 const attackTicks = 6; // WIKI, OBS (k1 170 to 314, k2 5 to 143)
 const enragedAttackTicks = 4; // WIKI, OBS (k1 320 to 352, k2 149 to 181)
-// OBS: every seventh attack (k1 206, 248, 290; k2 35, 77, 119; WIKI: "every six standard attacks")
+// OBS: every seventh attack (k1 206, 248, 290; k2 35, 77, 119; WIKI: "every six
+// standard attacks"); at a player under him it is a bite, and the special the
+// next attack (n2 38 and 44, then 86 and 128).
 const specialEvery = 7;
 const firstAttackTicks = 6; // OBS: 6 ticks after he comes up (k1 164 and 170)
 // OBS (20 of 20): the first egg hatches 21 ticks after he comes up and the next
@@ -238,9 +240,9 @@ const cyclesPerTick = 30;
 // Max hits (WIKI) and what a protection prayer leaves of them.
 export const maxHits = { melee: 38, range: 34, magic: 21, acidic: 15 };
 export const prayerLeaves = {
-  // OBS: through Protect from Melee his legs hit 0 to 3 (42 swings, none
-  // above 3; of the 38 that landed alone 11 were 0, 9 were 1, 8 were 2 and 10
-  // were 3): a tenth of a hit, rounded down (inferred). WIKI says at most 5.
+  // OBS: through Protect from Melee his legs hit 0 to 3 (388 swings that landed
+  // alone: 153 were 0, 89 were 1, 76 were 2 and 70 were 3): a tenth of a hit,
+  // rounded down (inferred). WIKI says at most 5.
   melee: 0.1,
   range: 0.55, // WIKI: "reduces it by about 45%, to a max of 18"
   magic: 0.5, // WIKI: "reduces it by about 50%"
@@ -372,6 +374,7 @@ class AraxxorEncounter {
     this.choosePattern();
     this.spawned = false;
     this.attacks = 0;
+    this.sinceSpecial = 0; // his attacks since the last special
     this.nextAttackTick = firstAttackTicks;
     this.enraged = false;
     this.nextHatchTick = firstHatchTicks;
@@ -500,11 +503,13 @@ class AraxxorEncounter {
   // away, from 50,25, and a step up to him); not with a cleave or the ball,
   // which drop his target. He steps only along the axis he is short on (k1
   // 218, 263 and 305 north, 335 west, where the default pursuit goes
-  // diagonally), and enraged too until he is beside the player (k1 335).
+  // diagonally), and enraged too until he is beside the player (k1 335); from
+  // off his corner, beside it, so that the player is beside one of his sides
+  // (n2 84).
   moveBoss(boss, context) {
     const player = context.world.getPlayer();
     this.turn = { attack: this.bossAttack(boss, player, context.tick), middle: middleOf(boss) };
-    if (!this.spawned || !player?.alive) return [];
+    if (!this.spawned || !player?.alive || context.tick < this.spawnTick + stillTicks) return [];
     if (boss.combat.targetId === null) {
       if (context.tick < this.targetTick) return [];
       boss.combat.targetId = "player";
@@ -512,10 +517,10 @@ class AraxxorEncounter {
     if (this.turn.attack === "cleave" || (this.turn.attack === "special" && this.special === "ball")) return [];
     const [px, py] = player.position, [x, y] = boss.position;
     if (gapTo(player.position, boss.position, bossSize) === 0) return this.pursuit(boss, context);
-    if (isNpcInAttackRange(boss, player, 1)) return [];
     const dx = px < x ? -1 : px > x + bossSize - 1 ? 1 : 0, dy = py < y ? -1 : py > y + bossSize - 1 ? 1 : 0;
+    if ((dx === 0 || dy === 0) && isNpcInAttackRange(boss, player, 1)) return [];
     const isFree = createOccupancyStepCheck(context.world.occupancy);
-    const step = [[x + dx, y + dy], [x + dx, y], [x, y + dy]].find((to) =>
+    const step = [[x + dx, y + dy], [x + dx, y], [x, y + dy]].find((to) => gapTo(player.position, to, bossSize) > 0 &&
       canFootprintStepInArena(boss.position, to, { width: bossSize, height: bossSize }) && isFree(boss.position, to, bossSize));
     return step ? [{ npcId: boss.id, path: [step] }] : [];
   }
@@ -523,10 +528,10 @@ class AraxxorEncounter {
     if (!this.spawned || tick < this.nextAttackTick || !player?.alive || (!this.enraged && this.shouldEnrage(boss))) return null;
     const gap = gapTo(player.position, boss.position, bossSize);
     if (this.enraged) return gap <= cleaveReach ? "cleave" : gap <= distantReach ? "distant" : null;
-    if (gap <= distantReach && (this.attacks + 1) % specialEvery === 0) return "special";
-    if (gap > 0 && isNpcInAttackRange(boss, player, 1)) return "melee";
+    if (gap > 0 && gap <= distantReach && this.sinceSpecial >= specialEvery - 1) return "special";
+    if (gap === 0 || isNpcInAttackRange(boss, player, 1)) return "melee"; // OBS: at a player under him too (n2 38, n8 42)
     if (gap > 1 && gap <= distantReach) return "distant";
-    return null; // under him or out of his reach: he waits (inferred)
+    return null; // out of his reach: he waits (inferred)
   }
   shouldEnrage(boss) {
     return boss.vitals.hp < boss.vitals.maxHp * enrageThreshold;
@@ -610,7 +615,10 @@ class AraxxorEncounter {
     const player = context.world.getPlayer();
     const { attack } = this.turn;
     if (!attack) return idle;
-    if (!this.enraged) this.attacks++;
+    if (!this.enraged) {
+      this.attacks++;
+      this.sinceSpecial = attack === "special" ? 0 : this.sinceSpecial + 1;
+    }
     let turn;
     if (attack === "cleave") turn = this.cleave(boss, player, context);
     else if (attack === "special") turn = this.specialAttack(boss, player, context);
@@ -938,7 +946,8 @@ class AraxxorEncounter {
     const position = [...eggTiles[next.index]];
     context.spawnNpc({
       id, kind: "npc", role: "minion", npcTypeId: ids.araxytes[type], archetypeId: "araxyte-" + type, size: araxyteSize, alive: true,
-      position, previousPosition: [...position], facing: egg.facing, history: new Map(), passThruNpcs: true,
+      // OBS: they are not in his way (n14 171: he steps onto an Acidic; n2 41: onto a Mirrorback being killed).
+      position, previousPosition: [...position], facing: egg.facing, history: new Map(), passThruNpcs: true, blocksNpcMovement: false,
       ...(type === "mirrorback" ? { deathPolicy: "queued" } : {}), // OBS: its death animation the tick after the killing hit (k1 291, k2 84)
       vitals: { hp: left, maxHp: araxyteHitpoints }, formulaStats: tableStats(ids.araxytes[type]),
       combat: { attackSpeed: attackTicks, attackRange: type === "acidic" ? acidicHoldRange : 1, attackStyle: type === "acidic" ? "range" : "melee",
