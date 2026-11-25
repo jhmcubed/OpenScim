@@ -248,6 +248,7 @@ const projectiles = {
   acidicDeath: { spotAnimId: spots.blob, start: 30, base: 90, startHeight: 140, endHeight: 0, slope: 35, startOffset: 20 },
   acidic: { spotAnimId: spots.acidic, start: 39, base: 39, startHeight: 32, endHeight: 64, slope: 16, startOffset: 40 },
 };
+const magicImpactHeight = 50; // OBS k1 218
 const sprayBlobs = 9; // OBS (tsps)
 const burstBlobs = 6; // OBS (tsps): within 2 tiles of the ball
 const burstSpread = 2;
@@ -335,6 +336,7 @@ class AraxxorEncounter {
     this.queue = []; // { tick, run(context, hits) }
     this.turn = { attack: null, middle: null }; // what he does this tick, and where his middle was as it began
     this.targetTick = 0; // until then he has no target
+    this.acidHitTick = null; // the last tick a landing blob's acid hurt the player
     this.playerTrail = []; // the player's tiles at the end of the last two ticks
     this.drip = null; // { from, until }
     this.ball = null; // { id, middle, direction, hit, burstTick }
@@ -488,8 +490,6 @@ class AraxxorEncounter {
     this.context = context;
     const hits = [];
     if (this.outcome.phase !== "active") return hits;
-    // The acid under the player, as it was at the end of the last tick.
-    if (this.pools.has(key(context.playerPos)) && context.world.getPlayer()?.alive) hits.push(this.poolHit(context.playerPos));
     const due = this.queue.filter((entry) => entry.tick <= context.tick);
     this.queue = this.queue.filter((entry) => entry.tick > context.tick);
     for (const entry of due) entry.run(context, hits);
@@ -510,9 +510,12 @@ class AraxxorEncounter {
   }
   // --- each tick, after the player -------------------------------------
   processPostTick(context) {
+    const hits = [];
+    // OBS: the acid hurts the player who ends a tick in it (k1 216, recorded on 217; k2 181, on 182).
+    if (this.pools.has(key(context.playerPos)) && this.acidHitTick !== context.tick && context.world.getPlayer()?.alive) hits.push(this.poolHit(context.playerPos));
     this.playerTrail = [this.playerTrail[1] ?? [...context.playerPos], [...context.playerPos]];
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
-    return [];
+    return hits;
   }
   processNpcTick(npc, context) {
     const idle = { environmentalDamages: [] };
@@ -589,7 +592,7 @@ class AraxxorEncounter {
     });
     if (style === "magic") {
       emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [],
-        graphics: [{ spotAnimId: spots.magicImpact, target: buildActorVisualTarget(player), height: 0, delayCycles: shape.end }] });
+        graphics: [{ spotAnimId: spots.magicImpact, target: buildActorVisualTarget(player), height: magicImpactHeight, delayCycles: shape.end }] });
     }
     return { environmentalDamages: [], npcAttacks: attack ? [{ ...attack, prayerReduction: { type: "reduce", value: prayerLeaves[style] } }] : [] };
   }
@@ -661,21 +664,25 @@ class AraxxorEncounter {
     }
     this.throwBlobs(context, middle, [...tiles.values()], projectiles.spray);
   }
-  // Blobs from a tile, each landing by its own distance: its splash, then the
-  // pool, which hurts a player on that tile as it lands (WIKI: "the splatters
-  // will damage before the pool forms").
+  // Blobs from a tile, each landing by its own distance: its splash (OBS: on
+  // the cycle it lands, 100 to 110 after the throw in k2 41, 83 and 125), then
+  // the pool, which hurts a player on that tile as it lands (WIKI: "the
+  // splatters will damage before the pool forms").
   throwBlobs(context, from, tiles, shape) {
-    const flights = [];
+    const flights = [], splats = [];
     for (const tile of tiles) {
       const end = shape.base + 10 * chebyshev(from, tile);
       flights.push(this.projectile(shape, from, tileTarget(tile), end));
+      splats.push({ spotAnimId: spots.splat, target: tileTarget(tile), height: 0, delayCycles: end });
       this.later(landingTicks(end), (ctx, hits) => {
-        emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.splat, target: tileTarget(tile), height: 0, delayCycles: 0 }] });
-        if (ctx.world.getPlayer()?.alive && key(ctx.playerPos) === key(tile)) hits.push(this.poolHit(ctx.playerPos));
+        if (ctx.world.getPlayer()?.alive && key(ctx.playerPos) === key(tile)) {
+          hits.push(this.poolHit(ctx.playerPos));
+          this.acidHitTick = ctx.tick;
+        }
         this.placePool(tile);
       });
     }
-    if (flights.length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: flights, graphics: [] });
+    if (flights.length) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: flights, graphics: splats });
   }
   // The acid ball: he turns to the nearest of eight directions (OBS: facing
   // 1280 at k2 36 and 78, 1024 at 120), and 2 ticks after the throw it is at
