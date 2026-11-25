@@ -819,7 +819,13 @@ Every step adds files of your own; none edits a list.
    each entry; `node tools/determinism/harness.mjs --update --only
    sandbox/catalog/` records their digests (`docs/SANDBOX.md`, "New
    encounters' monsters").
-6. For a boss, its equipment and inventory setups, before it is pushed: the
+6. Auto markers: does the fight have moments a player would want to start
+   again from (a wave, reinforcements, healers, a phase)? If so,
+   `getAutoMarkers({ world })` lists them for the replay
+   (`docs/ARCHITECTURE.md`, "What the engine calls on an encounter"). Read
+   them from the state you have; a field kept only for this changes the
+   digests for nothing.
+7. For a boss, its equipment and inventory setups, before it is pushed: the
    descriptor's `loadouts` (section 3), from the Equipment section of its
    wiki strategies page (`<boss>/Strategies`, as
    https://oldschool.runescape.wiki/w/The_Leviathan/Strategies).

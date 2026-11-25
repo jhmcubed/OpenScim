@@ -360,6 +360,12 @@ class DoomEncounter {
       visuals: {},
     };
   }
+  // The replay's auto markers (client/replay/markers.js): the shield as he raises it, and the burrow.
+  getAutoMarkers() {
+    if (this.phase === "shield") return [{ id: `shield ${this.shield.raisedAt}`, label: "shield" }];
+    if (this.phase === "burrow" && this.burrow.active) return [{ id: `burrow ${this.burrow.active.at}`, label: "burrow" }];
+    return [];
+  }
   getNpcDamageSourceLabel(npcId) {
     return npcId === bossActorId ? "Doom of Mokhaiotl" : "Demonic larva";
   }
