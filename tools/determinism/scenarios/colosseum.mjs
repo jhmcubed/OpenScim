@@ -156,7 +156,8 @@ export const scenarios = [
   {
     // The ten modifiers that are also Sol Heredit's, all chosen in the set-up, without Minimus, through wave 1 into
     // wave 2. Placed with the wave on tick 5: a second berserker one tile south-east of the archer (Quartet), two bee
-    // swarms (Bees! II) and the orb at 23,25 (Solarflare I), whose round takes it over the start tile. The player has
+    // swarms (Bees! II) and the orb at 23,25 (Solarflare I), whose round takes it over the start tile: it steps onto
+    // him on tick 26 and hits on tick 27, and in wave 2 on tick 198, hitting on 199. The player has
     // infinite health, stands on the start tile, prays against magic and from tick 21 shoots: a totem first, then the
     // shaman, the warband and the jaguar. Every hit that hurts him adds a stack of Doom, past the 15 that would kill
     // him without infinite health. The shaman is down to half its hitpoints on tick 34: a totem appears beside it at
@@ -333,6 +334,44 @@ export const scenarios = [
       if (wounded) {
         if (api.player().attackTarget !== null) attack(api, null);
         api.moveTo(javelin.position[0] - 6, javelin.position[1] + 1);
+      }
+    },
+  },
+  {
+    // Solarflare I, wave 1. The orb is placed at 23,25 on tick 5 and steps north every second tick. The player walks to
+    // 23,30, where the orb steps onto him on tick 14, and steps away to 21,30 before it moves on: the contact is a hit
+    // of 10 to 20 on tick 15. From tick 37 he walks to the corner 23,44, where the orb rests from tick 42 to 48; he
+    // stands on it from tick 43 and steps off to 21,44 on tick 45, before it moves on: one hit, on tick 45. Sol's
+    // rule, a hit when the orb steps off the player's tile, gives neither.
+    name: "colosseum/solarflare-contact",
+    kind: KIND,
+    seed: 81,
+    ticks: 60,
+    mechanics: { ...noMinimus, infiniteHealth: true },
+    ...modifiers({ solarflare: 1 }),
+    ...rangedGear,
+    script(tick, api) {
+      if (tick === 1) api.moveTo(23, 30);
+      if (tick === 14) api.moveTo(21, 30);
+      if (tick === 37) api.moveTo(23, 44);
+      if (tick === 45) api.moveTo(21, 44);
+    },
+  },
+  {
+    // Solarflare III, wave 1. The orb steps every tick. The player stands on 23,30 with Protect from Magic up: the
+    // orb steps onto him on tick 10 and off him on tick 11, one contact, which turns his prayer off and hits him on
+    // tick 11 for 20 to 30.
+    name: "colosseum/solarflare-iii",
+    kind: KIND,
+    seed: 82,
+    ticks: 20,
+    mechanics: { ...noMinimus, infiniteHealth: true },
+    ...modifiers({ solarflare: 3 }),
+    ...rangedGear,
+    script(tick, api) {
+      if (tick === 1) {
+        api.moveTo(23, 30);
+        pray(api, "ProtectMagic");
       }
     },
   },
