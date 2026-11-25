@@ -112,6 +112,8 @@ const messages = {
   enraged: "The Alchemical Hydra becomes enraged!",
   changingForm: "You cannot attack the Alchemical Hydra as it changes form!",
 }; // OBS (tsps)
+const roar = "Roaaaaaaaaaaar!"; // WIKI, OBS (tsps)
+const roarTicks = 5; // inferred: how long it stays over its heads, as Sol Heredit's lines do
 const sounds = { switch: 4106, roar: 4076, geyser: 4078, death: 4080 }; // OBS (tsps)
 
 // TABLE: its stats, by phase (its four versions; the same but for the flame form's burn immunity).
@@ -331,10 +333,11 @@ class AlchemicalHydraEncounter {
       if (gapTo(tile, boss.position) !== 0) continue;
       if (colour === want) {
         if (!this.shielded) continue;
-        // OBS (tsps): once a phase; the roar and its sound.
+        // OBS (tsps): once a phase; the roar and its sound. WIKI: "Roaaaaaaaaaaar!" over it.
         this.shielded = false;
         this.empowered = false;
         this.message(context, messages.weakened);
+        context.tickEvents.emit({ type: "overhead_text", anchor: { kind: "actor", actorId: bossActorId }, overheadText: roar, overheadCycle: roarTicks });
         this.visual(context, { sounds: [{ id: sounds.roar, range: 15, position: this.middle(boss) }] });
       } else {
         // OBS (tsps): any other vent, every eruption, enraged too.

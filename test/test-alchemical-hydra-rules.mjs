@@ -27,6 +27,7 @@ async function ticksOf(name) {
         projectiles: visuals.flatMap((event) => event.projectiles),
         graphics: visuals.flatMap((event) => event.graphics),
         messages: events.filter((event) => event.type === "game_message").map((event) => event.segments.map(({ text }) => text).join("")),
+        overhead: events.filter((event) => event.type === "overhead_text").map((event) => [event.anchor.actorId, event.overheadText]),
         damage: engine.damageHistory.filter((hit) => hit.tick === tick).map(({ source, effectiveDamage }) => ({ source, effectiveDamage })),
         state: engine.getEncounterSnapshot().state,
         shieldShare: rules.playerDamageOnNpc(40, { target: boss }) / 40,
@@ -103,6 +104,8 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   assert.ok(starts.includes(weakened[0] - 2) && covers(weakened[0], [27, 23]) && weakened[0] > green.at(-1));
   const after = ticks[weakened[0]];
   assert.deepEqual([after.state.shielded, after.state.empowered, after.shieldShare, after.maxHit], [false, false, 1, 17]);
+  // It roars, once, over its heads.
+  assert.deepEqual(ticks.flatMap((tick, n) => (tick?.overhead ?? []).map((text) => [n, ...text])), [[weakened[0], BOSS, "Roaaaaaaaaaaar!"]]);
   // The red vent still under it, the electric form is empowered by it at its next eruption.
   const red = empowered.filter((tick) => ticks[tick].state.phase === "electric");
   assert.ok(red.length >= 1 && red.every((tick) => covers(tick, [27, 23]) && ticks[tick].maxHit === 52), red.join());
