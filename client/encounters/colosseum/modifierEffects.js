@@ -30,21 +30,28 @@ import { registerWithInfernoVisuals, withInfernoVisuals } from "./visuals.js";
 // at a corner).
 // The pillars are 3 by 3; their south-west tiles are the map's (24,26 is the
 // south-west pillar's, losLinks.js). A ring is 5 by 5, its corners one tile
-// diagonally out from the pillar's. inferred: the orbs go clockwise, as Sol's
-// do, and each starts on its ring's south-west corner.
-const pillarSouthWestTiles = [
-  [24, 26],
-  [24, 41],
-  [39, 41],
-  [39, 26],
+// diagonally out from the pillar's. Each orb appears on its ring's corner
+// that faces the middle of the arena (the south-west pillar's on its
+// north-east corner) and goes clockwise, as Sol's do (VIDEO: a player's
+// Solarflare III wave, youtu.be/hOMVTeauUHg, 0:05 to 0:08, camera north).
+const pillars = [
+  { southWestTile: [24, 26], innerCorner: "northEast" },
+  { southWestTile: [24, 41], innerCorner: "southEast" },
+  { southWestTile: [39, 41], innerCorner: "southWest" },
+  { southWestTile: [39, 26], innerCorner: "northWest" },
 ];
 const pillarSize = 3;
-const solarflareRings = pillarSouthWestTiles.map(([x, y]) => [
-  [x - 1, y - 1],
-  [x - 1, y + pillarSize],
-  [x + pillarSize, y + pillarSize],
-  [x + pillarSize, y - 1],
-]);
+const clockwiseCorners = ["southWest", "northWest", "northEast", "southEast"];
+const solarflareRings = pillars.map(({ southWestTile: [x, y], innerCorner }) => {
+  const ring = [
+    [x - 1, y - 1],
+    [x - 1, y + pillarSize],
+    [x + pillarSize, y + pillarSize],
+    [x + pillarSize, y - 1],
+  ];
+  const start = clockwiseCorners.indexOf(innerCorner);
+  return [...ring.slice(start), ...ring.slice(0, start)];
+});
 // WIKI (Solarflare): the orb "damages the player on contact"; level II
 // "deals more damage", level III "even more damage" and disables prayers.
 // WIKI (strategy page, tips, "Solarflare skip"): at levels I and II "the

@@ -416,11 +416,12 @@ export const scenarios = [
   },
   {
     // Solarflare I, wave 1. An orb circles each pillar on the tiles touching it, placed with the wave on tick 5; the
-    // south-west pillar's starts at 23,25 and steps north every second tick. At level I an orb hits only on its second
-    // tick on a tile (the wiki's "Solarflare skip"). The player waits on 23,27; the orb arrives there on tick 8 and he
-    // steps ahead of it to 23,28 on the same tick: no hit. It arrives on 23,28 on tick 10 and he is still there on
-    // tick 11, its second: a hit of 10 to 20 on tick 12, as he steps away to 21,28. The orb rests at the corner 23,29
-    // from tick 12 to 18; he stands on it from tick 14, after its second tick, and leaves on tick 17: no hit. Every
+    // south-west pillar's starts at 27,29, its corner facing the middle, and steps south every second tick. At level I
+    // an orb hits only on its second tick on a tile (the wiki's "Solarflare skip"). The player waits on 27,27; the orb
+    // arrives there on tick 8 and he steps ahead of it to 27,26 on the same tick: no hit. It arrives on 27,26 on tick
+    // 10 and he is still there on tick 11, its second: a hit of 10 to 20 on tick 12, as he steps away to 29,26. The orb
+    // rests at the corner 27,25 from tick 12 to 18; he stands on it from tick 14, after its second tick, and leaves on
+    // tick 17: no hit. Every
     // tick the snapshot's orbTiles, which the overlay Solarflare True Tile marks, are the orbs' tiles, or the scenario
     // throws.
     name: "colosseum/solarflare-contact",
@@ -434,16 +435,16 @@ export const scenarios = [
       // The overlay's true tiles (overlays.js) are the orbs' own tiles, every tick.
       const orbTiles = api.npcs().filter((npc) => npc.id.startsWith("colosseum_solarflare_")).map((orb) => orb.position.join(","));
       if (seen(api).orbTiles.map((tile) => tile.join(",")).join(" ") !== orbTiles.join(" ")) throw new Error(`orbTiles on tick ${tick}`);
-      if (tick === 1) api.moveTo(23, 27);
-      if (tick === 8) api.moveTo(23, 28);
-      if (tick === 12) api.moveTo(21, 28);
-      if (tick === 14) api.moveTo(23, 29);
-      if (tick === 17) api.moveTo(21, 29);
+      if (tick === 1) api.moveTo(27, 27);
+      if (tick === 8) api.moveTo(27, 26);
+      if (tick === 12) api.moveTo(29, 26);
+      if (tick === 14) api.moveTo(27, 25);
+      if (tick === 17) api.moveTo(29, 25);
     },
   },
   {
-    // Solarflare III, wave 1. The orbs step every tick. The player stands on 23,28 with Protect from Magic up: the
-    // south-west pillar's orb steps onto him on tick 8 and off him on tick 9, one contact, which turns his prayer off
+    // Solarflare III, wave 1. The orbs step every tick. The player stands on 27,26 with Protect from Magic up: the
+    // south-west pillar's orb, from 27,29, steps onto him on tick 8 and off him on tick 9, one contact, which turns his prayer off
     // and hits him on tick 9 for 20 to 30.
     name: "colosseum/solarflare-iii",
     kind: KIND,
@@ -454,7 +455,7 @@ export const scenarios = [
     ...rangedGear,
     script(tick, api) {
       if (tick === 1) {
-        api.moveTo(23, 28);
+        api.moveTo(27, 26);
         pray(api, "ProtectMagic");
       }
     },
