@@ -2,7 +2,7 @@
 // on, and whether Minimus offers a modifier before each wave. (The modifiers
 // a run starts with are the descriptor's, ColosseumEncounter.js.)
 import { firstWave, lastWave, colosseumMonsters } from "./constants.js";
-import { canSpawnWave } from "./waves.js";
+import { canSpawnWave, getWaveMonsterKinds } from "./waves.js";
 
 export const colosseumStartWaveKey = "colosseumStartWave";
 export const colosseumModifierChoiceKey = "colosseumModifierChoice";
@@ -11,7 +11,9 @@ export const colosseumModifierChoiceKey = "colosseumModifierChoice";
 // Manti, Shocker ("Mager" is both the shaman's and the shocker's).
 export const colosseumSouthKeys = { a: "colosseumSouthA", b: "colosseumSouthB" };
 // The labels are kept short so the segments fit the practice panel; the info
-// of the switches names the monsters in full.
+// of the switches names the monsters in full. A monster is offered only while
+// the start wave has it (WIKI, the strategy page's waves: waves.js). Its
+// reinforcements do not count, they do not use the spawn points.
 const southChoices = [
   { value: "random", label: "Random" },
   { value: "any", label: "Any" },
@@ -19,11 +21,19 @@ const southChoices = [
   { value: "javelin", label: "Ranger" },
   { value: "manticore", label: "Manti" },
   { value: "shockwave", label: "Shocker" },
-];
-/** What the mechanics ask to stand on the south spawn `slot` ("a" or "b"): a value of southChoices, "random" for anything else. */
+].map((choice) => ({ ...choice, isOffered: ({ config }) => isSouthChoiceOffered(choice.value, config) }));
+function isSouthChoiceOffered(value, mechanics) {
+  return value === "random" || value === "any" || getWaveMonsterKinds(getColosseumStartWave(mechanics ?? {})).includes(value);
+}
+/**
+ * What the mechanics ask to stand on the south spawn `slot` ("a" or "b"): a
+ * value of southChoices, "random" for anything else. A monster the start wave
+ * does not have is not offered, so it counts as "random" in the later waves
+ * of the run too, as the panel shows it.
+ */
 export function getSouthSpawnSetting(mechanics, slot) {
   const value = mechanics?.[colosseumSouthKeys[slot]];
-  return southChoices.some((choice) => choice.value === value) ? value : "random";
+  return southChoices.some((choice) => choice.value === value) && isSouthChoiceOffered(value, mechanics) ? value : "random";
 }
 // The practice of a wave (ColosseumEncounter.planPracticeRestart): the same
 // wave again with the same spawns, or with new ones.
@@ -118,7 +128,7 @@ export function buildColosseumControls() {
         setup: true,
         choices: southChoices,
         wrap: true,
-        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. Shaman is the serpent shaman, Ranger the javelin colossus, Manti the manticore and Shocker the shockwave colossus; Any is any monster of the wave. With B set too it is a double south, such as a Shaman or a Shocker (both called mager) in front on A with a Ranger behind on B, or a Manti on A or B with a Ranger or a mager. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
+        info: "Practice: what spawns on the near south spawn, the one the south A tile of Colosseum Tiles stands in. Shaman is the serpent shaman, Ranger the javelin colossus, Manti the manticore and Shocker the shockwave colossus; Any is any monster of the wave. Only the monsters of the Start Wave are listed. With B set too it is a double south, such as a Shaman or a Shocker (both called mager) in front on A with a Ranger behind on B, or a Manti on A or B with a Ranger or a mager. A monster the wave does not have is left to chance. Applies from your next attempt; Retry Wave and Random Spawns keep it.",
       },
       {
         key: colosseumSouthKeys.b,
@@ -126,7 +136,7 @@ export function buildColosseumControls() {
         setup: true,
         choices: southChoices,
         wrap: true,
-        info: "Practice: what spawns on the far south spawn, the one the south B tile of Colosseum Tiles stands in. Applies from your next attempt.",
+        info: "Practice: what spawns on the far south spawn, the one the south B tile of Colosseum Tiles stands in. Only the monsters of the Start Wave are listed. Applies from your next attempt.",
       },
       ...overlayToggles.map(({ default: unusedDefault, ...toggle }) => toggle),
     ],
