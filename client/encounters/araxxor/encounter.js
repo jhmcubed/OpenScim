@@ -215,7 +215,11 @@ const dripTicks = 7; // OBS (k1 210 to 216, 252 to 258, 294 to 300), OBS (tsps):
 const dripPools = 6; // OBS: a pool on each of the next 6 ticks (k1 211 to 216, 253 to 258, 295 to 300)
 // OBS: the Ruptura blows up 2 ticks after it reaches the player, its blast
 // lands on Araxxor 2 ticks later (k1 205 and 207, 333 and 335; k2 120 and 122)
-// and, inferred, is recorded then on the player too; it goes 2 after that.
+// and, inferred, is recorded then on the player too (n0 123 and n8 85: not on
+// one who ends that tick 2 tiles away, having been 4 away the tick before); it
+// goes 2 after that, his death or not (n10 169 and 173, he dies at 171). One
+// that has not reached the player plays it as he dies, with no effect and no
+// blast, and goes as many ticks later (n7 236 and 240).
 const rupturaFuseTicks = 2;
 const rupturaNpcBlastTicks = 2;
 const rupturaPlayerBlastTicks = 1;
@@ -223,11 +227,16 @@ const rupturaGoneTicks = 4;
 // OBS: it walks until it is 8 tiles away and spits from no farther (471 spits;
 // the first of each on the tick it gets there: k1 242, k2 25 and 150).
 const acidicHoldRange = 8;
-const mirrorbackGoneTicks = 3; // OBS: gone 3 ticks after the killing hit (k1 290 and 293, k2 83 and 86)
+// OBS: 11498 is 60 cycles long, and an Acidic that is still in it shows no
+// death with him (spat with his 11481: n4; 1 tick before: k1, n7, n9, n12; 2
+// ticks before: k2, n12). One whose two ticks took 61 cycles does (n14), and so
+// do the 25 others.
+const acidicSpitAnimationTicks = 2;
+const mirrorbackGoneTicks = 2; // OBS: gone 2 ticks after its death animation (k1 291 and 293, k2 84 and 86, n2 161 and 163)
 // OBS, from his death animation 11481: the araxytes die with it, the eggs
-// crumble a tick later, the araxytes go 2 ticks after it and the eggs 3
-// (k1 357, 358, 359, 360; k2 183, 184, 185, 186), and 5 after it he is his
-// corpse (k1 362, k2 188; OBS (tsps)).
+// crumble a tick later, the araxytes go 2 ticks after it and the eggs 3, and 5
+// after it he is his corpse (19 of 19; OBS (tsps)). Killed the tick after a
+// cleave, his araxytes die and go a tick later (n4 206 and 208, the one case).
 const deathTicks = 5;
 const eggCrumbleTicks = 1;
 const araxytesGoneTicks = 2;
@@ -391,6 +400,7 @@ class AraxxorEncounter {
     this.eggs = this.pattern.map((type, index) => ({ index, type, state: "egg" }));
     this.araxytes = new Map(); // actor id -> { type, hatchTick, wakeTick, fuse }
     this.pools = new Map(); // tile key -> [x, y]
+    this.placed = { tick: null, tiles: [] }; // the pools of the last tick that placed one
     this.queue = []; // { tick, run(context, hits) }
     this.turn = { attack: null, middle: null }; // what he does this tick, and where his middle was as it began
     this.targetTick = 0; // until then he has no target
@@ -495,7 +505,7 @@ class AraxxorEncounter {
     return [boss, ...eggs];
   }
   moveNpc(npc, context) {
-    if (!npc.alive || this.outcome.phase !== "active") return [];
+    if (!npc.alive || this.outcome.phase !== "active" || this.isBossDying(context)) return [];
     if (npc.id === bossActorId) return this.moveBoss(npc, context);
     if (npc.id === this.ball?.id) return this.ball.step ? [{ npcId: npc.id, path: this.ball.step }] : [];
     const araxyte = this.araxytes.get(npc.id);
@@ -592,7 +602,7 @@ class AraxxorEncounter {
   }
   processNpcTick(npc, context) {
     const idle = { environmentalDamages: [] };
-    if (this.outcome.phase !== "active") return idle;
+    if (this.outcome.phase !== "active" || this.isBossDying(context)) return idle;
     const araxyte = this.araxytes.get(npc.id);
     if (!npc.alive) {
       // OBS: a Mirrorback still bites on the tick of the hit that kills it, and the bite does nothing (k1 290, k2 83).
@@ -1029,7 +1039,7 @@ class AraxxorEncounter {
     araxyte.fuse = context.tick;
     this.later(rupturaFuseTicks, (ctx) => {
       const ruptura = ctx.world.getNpc(npc.id);
-      if (!ruptura?.alive || this.outcome.phase !== "active") return;
+      if (!ruptura?.alive) return;
       ruptura.untargetable = true;
       const share = ruptura.vitals.hp / ruptura.vitals.maxHp; // WIKI: "proportional to its health"
       emitInfernoVisual(ctx.tickEvents, { animations: [{ actorId: npc.id, clipId: "explode", delayCycles: 0 }], projectiles: [],
@@ -1054,8 +1064,8 @@ class AraxxorEncounter {
       this.later(rupturaGoneTicks, (later) => {
         if (later.world.getNpc(npc.id)) later.despawnNpc(npc.id);
         this.araxytes.delete(npc.id);
-      });
-    });
+      }, true);
+    }, true);
   }
   // The Acidic's death: it bursts into 13 blobs within 4 tiles (OBS (tsps)).
   acidicBurst(npc, context) {
@@ -1083,6 +1093,8 @@ class AraxxorEncounter {
   placePool(tile) {
     if (!this.isAcidTile(tile) || this.pools.has(key(tile))) return false;
     this.pools.set(key(tile), [...tile]);
+    if (this.placed.tick !== this.tick) this.placed = { tick: this.tick, tiles: [] };
+    this.placed.tiles.push(key(tile));
     return true;
   }
   poolHit(tile) {
@@ -1140,14 +1152,16 @@ class AraxxorEncounter {
       },
     };
   }
+  onPlayerAttackResolved(hit) {
+    if (hit.hpBefore > 0 && hit.hpAfter === 0) this.slain.add(hit.targetId);
+  }
   onNpcDefeated(defeat, context, completionOwnership) {
     const araxyte = this.araxytes.get(defeat.npcId);
     if (araxyte) {
       const npc = context.world.getNpc(defeat.npcId);
       if (araxyte.type === "acidic" && this.outcome.phase === "active") this.acidicBurst(npc, context);
       if (araxyte.type === "mirrorback") {
-        this.deathAnimationTick(npc, defeat);
-        this.later(mirrorbackGoneTicks, (ctx) => {
+        this.later(this.deathAnimationTick(npc, defeat) - defeat.tick + mirrorbackGoneTicks, (ctx) => {
           if (ctx.world.getNpc(defeat.npcId)) ctx.despawnNpc(defeat.npcId);
         });
       }
@@ -1161,34 +1175,43 @@ class AraxxorEncounter {
       return;
     }
     if (defeat.npcId !== bossActorId) return;
-    this.queue = [];
+    this.queue = this.queue.filter((entry) => entry.outlives);
     this.drip = null;
     this.cleaves = [];
     this.cleaveHit = null;
     this.pendingPlayerHits = [];
-    // OBS: the acid goes with the killing hit (k1 356, k2 183).
-    this.pools.clear();
+    // OBS: the acid goes with the killing hit (19 of 19), what came on that very
+    // tick a tick later (8 of 8; k2 183, n14 202).
+    const last = this.placed.tick === defeat.tick ? this.placed.tiles : [];
+    for (const tile of this.pools.keys()) if (!last.includes(tile)) this.pools.delete(tile);
+    if (last.length > 0) this.later(1, () => this.pools.clear());
     if (this.ball) {
       context.despawnNpc(this.ball.id);
       this.ball = null;
     }
     // Ticks from now to his death animation.
     const wait = this.deathAnimationTick(context.world.getNpc(bossActorId), defeat) - defeat.tick;
-    const left = [...this.araxytes];
-    const araxytes = context.world.getNpcs().map((npc) => npc.id).filter((id) => id.startsWith("araxyte-"));
+    // A Ruptura that has reached the player blows up as it would have (inferred: to no effect).
+    const left = [...this.araxytes].filter(([, { fuse }]) => fuse === null);
+    const rupturas = [...this.araxytes].filter(([, { type }]) => type === "ruptura").map(([id]) => id);
+    const unlit = left.map(([id]) => id).filter((id) => rupturas.includes(id));
+    const araxytes = context.world.getNpcs().map((npc) => npc.id).filter((id) => id.startsWith("araxyte-") && !rupturas.includes(id));
     const eggs = this.eggs.filter((e) => e.state === "egg").map((e) => eggActorId(e.index));
-    for (const [id] of left) {
+    for (const id of this.araxytes.keys()) {
       const npc = context.world.getNpc(id);
       if (!npc) continue;
       npc.untargetable = true;
       context.world.removePendingHitsFromSource?.(id);
     }
-    // OBS: the oldest Acidic plays none of it and goes with the others (k1
-    // 357, k2 183); why does not show, so all of them do here.
+    const isSpitting = (npc, tick) => npc.combat.lastAttackTick !== null && npc.combat.lastAttackTick >= tick - acidicSpitAnimationTicks;
     const die = (ctx) => {
-      for (const [id, { type }] of left) if (ctx.world.getNpc(id)) this.animate(ctx, type === "mirrorback" ? "death" : "explode", id);
+      for (const [id, { type }] of left) {
+        const npc = ctx.world.getNpc(id);
+        if (npc && !(type === "acidic" && isSpitting(npc, ctx.tick))) this.animate(ctx, type === "mirrorback" ? "death" : "explode", id);
+      }
     };
-    if (wait > 0) this.later(wait, die);
+    const afterCleave = this.cleaveTick !== null && defeat.tick === this.cleaveTick + 1 ? 1 : 0;
+    if (wait + afterCleave > 0) this.later(wait + afterCleave, die);
     else die(context);
     this.later(wait + eggCrumbleTicks, (ctx) => {
       for (const id of eggs) if (ctx.world.getNpc(id)) this.animate(ctx, "crumble", id);
@@ -1196,20 +1219,36 @@ class AraxxorEncounter {
     const despawn = (ids) => (ctx) => {
       for (const id of ids) if (ctx.world.getNpc(id)) ctx.despawnNpc(id);
     };
-    this.later(wait + araxytesGoneTicks, despawn(araxytes));
+    this.later(wait + afterCleave + araxytesGoneTicks, despawn(araxytes));
+    this.later(wait + afterCleave + rupturaGoneTicks, despawn(unlit));
     this.later(wait + eggsGoneTicks, despawn(eggs));
     this.araxytes.clear();
     if (completionOwnership !== "encounter-owned") return;
     this.outcome = { phase: "resolving", decisiveTick: defeat.tick, completionTick: defeat.tick + wait + deathTicks, primaryActorId: bossActorId, completionActorIds: [bossActorId] };
   }
   // OBS: the tick after the killing hit, for one that stepped the tick before
-  // it too (the Mirrorback of k1, 289 to 291); the engine waits 3 ticks from a
-  // step. (Killed by his own cut he plays it on that tick, k2 183: not done.)
+  // it too (the Mirrorback of k1, 289 to 291; the engine waits 3 ticks from a
+  // step). On its tick when he cut himself to death (9 of 9: k2 183, n2 185, n6
+  // 171, n8 148, n9 149, n12 194, n13 164, n14 202, n15 190), when a Mirrorback
+  // died of its share (n2 161), or when the player's killing hit on him lands 2
+  // ticks after a cleave (4 of 4: n1 163, n5 179, n11 193, n16 181; the 6 others
+  // of the player's a tick later: k1 356, n0 173, n3 168, n4 204, n7 235, n10 171).
+  diesAtOnce(npcId, tick) {
+    if (npcId === bossActorId && this.cleaveTick !== null && tick === this.cleaveTick + cleaveCutTicks) return true;
+    return !this.slain.has(npcId) && this.selfHits.get(npcId) === tick;
+  }
   deathAnimationTick(npc, defeat) {
     if (!npc?.death) return defeat.tick;
     delete npc.lastStepTick;
+    if (this.diesAtOnce(npc.id, defeat.tick)) npc.death.processTick = defeat.tick;
     npc.deathAnimationTick = npc.death.processTick;
     return npc.deathAnimationTick;
+  }
+  // Whether he has died this tick, before the others' turns, of what plays his
+  // death at once: they do nothing more (OBS n9 149, n11 193, n14 202: no step).
+  isBossDying(context) {
+    const boss = context.world.getNpc(bossActorId);
+    return boss?.alive === false && boss.death?.killTick === context.tick && this.diesAtOnce(bossActorId, context.tick);
   }
   getOutcome() {
     return this.outcome;
