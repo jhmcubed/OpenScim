@@ -81,6 +81,7 @@ export const eggTiles = [
 const eggSize = 2; // CACHE
 const araxyteSize = 2; // CACHE
 const ballSize = 3; // CACHE
+const corpseSize = 3; // CACHE
 
 export const ids = {
   boss: 13668, // CACHE araxxor
@@ -88,8 +89,15 @@ export const ids = {
   eggs: { mirrorback: 13670, ruptura: 13672, acidic: 13674 },
   araxytes: { mirrorback: 13671, ruptura: 13673, acidic: 13675 },
   ball: 13676, // CACHE: the acid ball, 3 x 3
+  corpse: 13669, // CACHE, OBS: what he is 5 ticks into his death (19 of 19), 3 x 3
   pool: 54148, // CACHE araxxor_acidpool, "Acid pool"
 };
+// His body once he is enraged, the acid on his front legs: OBS (tsps) has
+// model 54288 in the place of 54289 (CACHE: his models are 54289 and 54290)
+// from the second of the enrage's two animations on. The recorder does not see
+// an NPC's models: nothing else of him changes there (no npc_changed, effect or
+// animation set at any of the 20 enrages). CACHE: his corpse is 54288 too.
+export const enragedModels = [54288, 54290];
 export const seqs = {
   // CACHE: his stand (13668, opcode 13) and his walk (opcode 14); OBS: the
   // recorder names them so (k1 164, "moves"), and he is in 11473 on 2,361 of the
@@ -107,6 +115,7 @@ export const seqs = {
   enrage: 11488, // OBS
   enraged: 11489, // OBS: 2 ticks after 11488
   death: 11481, // OBS
+  corpseIdle: 11485, // CACHE: his corpse's stand; OBS
   eggSpawn: 11506, // OBS egg_araxyte_spawn_01
   eggIdle: 11507, // CACHE: the egg's stand
   eggCrumble: 11508, // OBS: the eggs left when he dies
@@ -137,6 +146,7 @@ const bossActorId = "araxxor";
 const eggActorId = (index) => `araxxor-egg-${index}`;
 const araxyteActorId = (index) => `araxyte-${index}`;
 const ballActorId = (count) => `acid-ball-${count}`;
+export const corpseActorId = "araxxor-corpse";
 
 // WIKI: the three orders; OBS: the colours in that order in every fight.
 // Which one a fight gets is inferred: any, evenly (OBS: green first in 11 of
@@ -395,6 +405,7 @@ class AraxxorEncounter {
     this.sinceSpecial = 0; // his attacks since the last special
     this.nextAttackTick = firstAttackTicks;
     this.enraged = false;
+    this.enragedBody = false; // the acid on his front legs
     this.nextHatchTick = firstHatchTicks;
     // The eggs, in the order they hatch: "egg", "hatched", "destroyed" or "spoiled".
     this.eggs = this.pattern.map((type, index) => ({ index, type, state: "egg" }));
@@ -597,7 +608,10 @@ class AraxxorEncounter {
     if (this.pools.has(key(context.playerPos)) && this.acidHitTick !== context.tick && player?.alive) hits.push(this.poolHit(context.playerPos));
     this.endDrip(context);
     this.playerTrail = [this.playerTrail[1] ?? [...context.playerPos], [...context.playerPos]];
-    if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
+    if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) {
+      this.outcome = { ...this.outcome, phase: "victory" };
+      this.leaveCorpse(context);
+    }
     return hits;
   }
   processNpcTick(npc, context) {
@@ -886,7 +900,11 @@ class AraxxorEncounter {
     this.nextAttackTick = context.tick + enrageFirstAttackTicks;
     boss.combat.nextActionTick = this.nextAttackTick;
     this.animate(context, "enrage");
-    this.later(enrageBodyTicks, (ctx) => this.outcome.phase === "active" && this.animate(ctx, "enraged"));
+    this.later(enrageBodyTicks, (ctx) => {
+      if (this.outcome.phase !== "active") return;
+      this.enragedBody = true;
+      this.animate(ctx, "enraged");
+    });
   }
   // A line of three tiles through the player's, across the blow (OBS: a
   // player north or south of his middle gets an east-west line, k1 320 to 328,
@@ -1250,6 +1268,23 @@ class AraxxorEncounter {
     const boss = context.world.getNpc(bossActorId);
     return boss?.alive === false && boss.death?.killTick === context.tick && this.diesAtOnce(bossActorId, context.tick);
   }
+  // OBS (19 of 19): 5 ticks into his death he is his corpse, 3 x 3 in his
+  // middle. What the game has from there on (Harvest: 2282 on the player, the
+  // loot 2 ticks later, 11486 on the corpse 3 and gone 5; 17 logs) is not here:
+  // the run is won.
+  leaveCorpse(context) {
+    const boss = context.world.getNpc(bossActorId);
+    if (!boss) return;
+    const position = boss.position.map((tile) => tile + 2);
+    context.spawnNpc({
+      id: corpseActorId, kind: "npc", role: "npc", npcTypeId: ids.corpse, archetypeId: "araxxor-corpse", size: corpseSize, alive: true,
+      position, previousPosition: [...position], facing: boss.facing, history: new Map(),
+      untargetable: true, blocksNpcMovement: false, passThruNpcs: true,
+      vitals: { hp: 1, maxHp: 1 },
+      combat: { attackSpeed: 1, attackRange: 0, attackStyle: "typeless", nextActionTick: Infinity, targetId: null, lastAttackTick: null,
+        animations: { idle: seqs.corpseIdle, walk: seqs.corpseIdle, run: seqs.corpseIdle, attack: null, death: null } },
+    });
+  }
   getOutcome() {
     return this.outcome;
   }
@@ -1261,6 +1296,7 @@ class AraxxorEncounter {
         special: this.special,
         attacks: this.attacks,
         enraged: this.enraged,
+        enragedBody: this.enragedBody,
         nextHatchTick: this.spawned ? this.nextHatchTick : null,
         pools: [...this.pools.values()].map((tile) => [...tile]),
         dripping: this.drip !== null,
