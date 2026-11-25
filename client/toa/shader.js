@@ -2,17 +2,17 @@
 // of the Tombs of Amascut scenery. It pairs with the renderer's scene-effects
 // vertex shader. A mesh picks its look with uniforms.u_animParams = [mode, a, b, c]:
 //
-//   11 sand   a, b = position of the light on the ground, c = how far it reaches (tiles)
+//   11 sand   a, b = position of the light on the ground, c = how far it reaches (tiles);
+//             beyond it the sand is lit by the moon only
 //             vertex alpha = how much sand lies there; the edge dissolves into grains
-//   12 veil   a sheet of light in a doorway; a = 1 for an open way, 0 for a locked one
-//   13 fall   sand pouring off an edge
 //   14 shaft  a beam of light
 //
-// Veil, fall and shaft are standing sheets: the vertex alpha sets how strong
-// each end is, and normal.x runs from -1 to 1 across the sheet (toaMesh, below).
+// A shaft is a standing sheet: the vertex alpha sets how strong each end is,
+// and normal.x runs from -1 to 1 across the sheet (toaMesh, below). Modes 12
+// and 13 were the gateway's veil and falling sand, gone with its door.
 //
 // Modes start at 11 because the vertex shader animates modes 1 to 10 itself.
-export const toaShaderModes = { sand: 11, veil: 12, fall: 13, shaft: 14 };
+export const toaShaderModes = { sand: 11, shaft: 14 };
 
 // How every scenery fragment shader starts: its inputs and value noise.
 export const fragmentShaderHead = `#version 300 es
@@ -64,28 +64,13 @@ void main() {
     alpha = smoothstep(grain * 0.85, grain * 0.85 + 0.1, v_color.a * 1.3);
     float dune = fbm(vec2(cell.x * 0.8 + seconds * 0.02, cell.y * 2.4));
     colour *= 0.8 + 0.4 * dune;
+    // Lit as the lobby's floor is: moonlight everywhere, warmer where the
+    // light of the door reaches. Steady: the light does not flicker.
     float reach = 1.0 - clamp(distance(cell.xy, u_animParams.yz) / u_animParams.w, 0.0, 1.0);
-    float flicker = 0.88 + 0.12 * noise(vec2(seconds * 6.0, 1.5));
-    colour *= 0.3 + 1.25 * reach * reach * flicker;
+    colour *= mix(vec3(0.62, 0.68, 0.86), vec3(1.05, 0.98, 0.85), reach * reach);
     vec2 speck = floor(v_worldPos.xy * 32.0);
     float glint = step(0.993, hash(speck)) * max(0.0, sin(seconds * 2.2 + hash(speck + 7.0) * 40.0));
-    colour += glint * 0.3 * (0.3 + reach);
-  } else if (mode < 12.5) {
-    float open = u_animParams.y;
-    float across = abs(v_normal.x);
-    float along = cell.x * 1.3 + cell.y * 1.7;
-    float rise = fbm(vec2(along * 2.4, cell.z * 1.5 - seconds * mix(0.06, 0.5, open)));
-    float strands = smoothstep(0.4, 0.7, rise);
-    float glyph = step(0.6, hash(floor(vec2(along * 5.0, cell.z * 4.0 - seconds * 0.35 * open))));
-    float sides = 1.0 - smoothstep(0.6, 1.0, across);
-    alpha = v_color.a * sides * (0.3 + 0.5 * strands + 0.2 * glyph * strands) * mix(0.55, 1.0, open);
-    colour = mix(colour, vec3(1.0, 0.96, 0.78), 0.65 * strands);
-    colour = mix(vec3(dot(colour, vec3(0.3, 0.5, 0.2))) * 0.7, colour, open);
-  } else if (mode < 13.5) {
-    float along = cell.x * 1.3 + cell.y * 1.7;
-    float pour = fbm(vec2(along * 5.0, cell.z * 0.45 + seconds * 1.1));
-    alpha = v_color.a * smoothstep(0.42, 0.62, pour);
-    colour *= 0.55 + 0.6 * pour;
+    colour += glint * 0.15 * (0.3 + reach);
   } else {
     float core = 1.0 - clamp(abs(v_normal.x), 0.0, 1.0);
     float drift = fbm(vec2(cell.x * 1.3 + cell.y * 1.7, cell.z * 0.45 - seconds * 0.3));

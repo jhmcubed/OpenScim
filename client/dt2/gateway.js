@@ -1,29 +1,62 @@
 // The Desert Treasure II gateway in the lobby: the platform's own floor
-// reaches out to the door of the Ancient Vault. The four ancient elements run
-// along the floor into the door, and a rune ring turns around it; the ring's
-// inner ring ignites when the gate wakes.
+// reaches out to the Ancient Vault, the game's own, lifted whole from its map
+// square (lobby/structure.js) and turned so that the steps up to its door come
+// down towards the platform. The four ancient elements run along the floor
+// to the foot of the steps.
 import { awakenedColour, bosses } from "./bosses.js";
 import { chooseBoss } from "./chooser.js";
 import { dt2Mesh, dt2ShaderModes } from "./shader.js";
 import { centerX, lobbyGateway, rimY } from "../lobby/gateway.js";
+import { spokeDegreesOf } from "../lobby/hall.js";
+import { lobbyStructure } from "../lobby/structure.js";
 
 // Where the gateway stands: the direction of its spoke, in degrees
-// anticlockwise from east. Sol Heredit stands at 31; the camera looks north
-// from south of the centre, so what lies behind him shows to his right.
-// Below about 30 the door leaves the right edge of the default view.
-const spokeDegrees = 33;
+// anticlockwise from east. The hall (lobby/hall.js) says which: at the head of
+// its horseshoe, left of the raids.
+const spokeDegrees = spokeDegreesOf("dt2");
 
-// Laid out as if the spoke pointed north (see lobby/gateway.js).
+// Laid out as if the spoke pointed north (see lobby/gateway.js). `door` is the
+// foot of the vault's steps: a click there, or on the row in front of it,
+// opens the boss chooser.
 const door = { x: 30, y: 47, width: 3, depth: 1 };
 const walkway = { minX: 30, maxX: 32, minY: 39 };
 
-// [object id, x, y, rotation, type].
-const placements = [
-  [46743, door.x, door.y, 0], // the vault door, facing the platform
-];
+// The vault: map square 54,46, whose objects 46720 to 46772, with the walls,
+// door frame and floor marks about them, are the vault. It stands on a raised
+// floor (level 1) that its steps climb from the west; its door (46743) is at
+// the square's tile (55, 26). The foot of the steps is (43, 27.5). Turned 90
+// degrees, the steps point down the spoke.
+const vaultScale = 0.55;
+const stepsFoot = [43, 27.5];
+const vaultMiddle = [53, 27.5];
+const vaultTurn = 90;
+const vaultIds = new Set([85, 2745, 44066, 44235, 44236, 44237, 44238, 44239, 44240, 44772, 46763, 46866, 47353]);
+const vault = lobbyStructure({
+  mapSquare: [54, 46],
+  area: { minX: 42, minY: 19, maxX: 62, maxY: 36 },
+  keep: (location) => (location.id >= 46720 && location.id <= 46772 && location.id !== 46750) || vaultIds.has(location.id),
+  ground: [43, 27],
+  from: stepsFoot,
+  to: [centerX, door.y - 0.5],
+  scale: vaultScale,
+  degrees: vaultTurn,
+});
 
-const { toLayout, turnMatrix, tilesIn, gatewayLocs, turnGatewayObject } = lobbyGateway(spokeDegrees, placements);
-export { gatewayLocs, turnGatewayObject };
+const { fromLayout, toLayout, turnMatrix, tilesIn, turnGatewayObject, structureLocs } = lobbyGateway(spokeDegrees, []);
+export { turnGatewayObject };
+export const gatewayLocs = (loader, context) => structureLocs(vault, context);
+
+// Where a point of the vault's square lies in the layout.
+const vaultPoint = ([x, y]) => {
+  const turn = (vaultTurn * Math.PI) / 180, dx = (x - stepsFoot[0]) * vaultScale, dy = (y - stepsFoot[1]) * vaultScale;
+  return [centerX + dx * Math.cos(turn) - dy * Math.sin(turn), door.y - 0.5 + dx * Math.sin(turn) + dy * Math.cos(turn)];
+};
+const vaultCentre = vaultPoint(vaultMiddle);
+// How high the vault's roof stands over the floor, in tiles, at its scale (OBS, from the lobby).
+const roofHeight = 6;
+
+// Where the lobby writes the gateway's name: above the vault.
+export const gatewayAnchor = { position: fromLayout(...vaultCentre), height: roofHeight + 1 };
 
 // A click on the door or on the row in front of it opens the boss chooser.
 export const gatewayPortals = tilesIn(door.x, door.y - 1, door.x + door.width, door.y + door.depth).map(
@@ -36,8 +69,8 @@ export function extendLobbyArena(walkable, block) {
   for (const [x, y] of tilesIn(door.x, door.y, door.x + door.width, door.y + door.depth)) block(x + 0.5, y + 0.5);
 }
 
-// The floor: a strip from the rim to the door and a round dais under the
-// door and its ring. The lobby builds it with its own floor, tile by tile on
+// The floor: a strip from the rim to the foot of the vault's steps and a
+// round dais there. The lobby builds it with its own floor, tile by tile on
 // its own grid, so the platform has no seam. Takes a lobby position.
 const stripHalfWidth = 2.1, daisRadius = 3.4;
 export function gatewayFloor(lobbyX, lobbyY) {
@@ -71,21 +104,12 @@ export function gatewayMeshes({ baseZ, hsl }) {
     );
   });
 
-  // The rune ring stands around the door and faces the platform.
-  const ringRadius = 3.3, ringY = door.y + 0.75, ringZ = baseZ + 2.5;
-  const ring = part("ring", 6, "read", [dt2ShaderModes.ring, ringRadius, -1, 0]);
-  ring.quad(
-    ring.vertex(centerX - ringRadius, ringY, ringZ - ringRadius, violet, 1, -1, -1),
-    ring.vertex(centerX + ringRadius, ringY, ringZ - ringRadius, violet, 1, 1, -1),
-    ring.vertex(centerX + ringRadius, ringY, ringZ + ringRadius, violet, 1, 1, 1),
-    ring.vertex(centerX - ringRadius, ringY, ringZ + ringRadius, violet, 1, -1, 1),
-  );
-
-  // A beam of light above the door, like the ones over the lobby's bosses.
-  const beamY = door.y + 0.5, radius = 1.5;
+  // A beam of light from the vault's roof, like the ones over the lobby's
+  // other gateways.
+  const radius = 1.5;
   const shaft = part("shaft", 8, "read", [dt2ShaderModes.shaft, 0, 0, 0]);
-  shaft.sheet([centerX - radius, beamY], [centerX + radius, beamY], baseZ + 5, 20, violet, 0.55, 0);
-  shaft.sheet([centerX, beamY - radius], [centerX, beamY + radius], baseZ + 5, 20, violet, 0.55, 0);
+  shaft.sheet([vaultCentre[0] - radius, vaultCentre[1]], [vaultCentre[0] + radius, vaultCentre[1]], baseZ + roofHeight, 20, violet, 0.55, 0);
+  shaft.sheet([vaultCentre[0], vaultCentre[1] - radius], [vaultCentre[0], vaultCentre[1] + radius], baseZ + roofHeight, 20, violet, 0.55, 0);
 
-  return [streams, ring, shaft].map((mesh) => mesh.command());
+  return [streams, shaft].map((mesh) => mesh.command());
 }

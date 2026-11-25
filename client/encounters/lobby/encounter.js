@@ -1,6 +1,7 @@
 // The lobby: what the registry has of it (encounters/registry.js says what a
 // definition holds). It has no route (`slug: null`) and makes its own arena.
 import { LobbyEncounter } from "./LobbyEncounter.js";
+import { spawn } from "../../lobby/hall.js";
 
 export const definition = {
   kind: "lobby",
@@ -14,7 +15,7 @@ export const definition = {
       x: 25,
       y: 73,
     },
-    playerStart: [31, 25],
+    playerStart: [...spawn.tile],
     collision: {
       mode: "custom",
     },

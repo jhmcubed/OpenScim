@@ -1,15 +1,16 @@
 import { extendLobbyArena } from "/lobby/gateways.js";
 import { lobbyNpcs } from "./lobbyNpcs.js";
+import { plinthRadius, spawn } from "../../lobby/hall.js";
 import { CollisionFlag } from "../../engine/collision.js";
 import { activeOutcome } from "../shared/npcHelpers.js";
 var LobbyEncounter = class {
   kind = "lobby";
   getDefaultPlayerStart() {
-    return [31, 25];
+    return [...spawn.tile];
   }
   getIntroConfig() {
     return {
-      facingAngle: 1024,
+      facingAngle: spawn.facingAngle,
       animationSeqId: 12152,
     };
   }
@@ -82,12 +83,9 @@ var LobbyEncounter = class {
         }
       }
     };
-    for (let index = 0; index < 8; index++) {
-      const angle = (index / 8) * Math.PI * 2 + Math.PI / 8;
-      blockDisc(lobbyCenterX + Math.cos(angle) * 11, lobbyCenterY + Math.sin(angle) * 11, 0.7);
-    }
+    // Each boss stands on a plinth (lobby/hall.js): the player walks around it.
     for (const lobbyNpc of lobbyNpcs) {
-      blockDisc(lobbyNpc.position[0] + 1.5, lobbyNpc.position[1] + 1.5, 2.3);
+      blockDisc(lobbyNpc.position[0] + 1.5, lobbyNpc.position[1] + 1.5, plinthRadius);
     }
     extendLobbyArena(walkableTiles, blockTile);
     const collisionMap = {

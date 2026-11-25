@@ -4,6 +4,8 @@
 // centre to the spoke: game objects only rotate in quarter turns, so the turn
 // is applied to their meshes when they are drawn.
 
+import { multiply } from "./structure.js";
+
 // The lobby floor is a disc of this radius around this point.
 export const platform = { x: 31.5, y: 25.5, radius: 16.5 };
 // In a layout the spoke runs up the line x = centerX and leaves the platform at y = rimY.
@@ -47,6 +49,14 @@ export function lobbyGateway(spokeDegrees, placements) {
     return tiles;
   }
 
+  // The height of the lobby's floor, in the game's units (128 to a tile,
+  // upward negative), as the lobby itself takes it: the mean of the corners of
+  // the platform's middle.
+  const floorHeight = (terrainHeights) => {
+    const at = (x, y) => terrainHeights?.[x]?.[y] ?? 0;
+    return (at(31, 25) + at(33, 25) + at(33, 27) + at(31, 27)) / 4;
+  };
+
   const gatewayLocs = (loader) =>
     placements.flatMap(([id, localX, localY, rotation, type = 10]) => {
       const locType = loader.loadLocType(id);
@@ -63,24 +73,34 @@ export function lobbyGateway(spokeDegrees, placements) {
     });
 
   // Turns one of the gateway's object meshes from the layout to the spoke.
+  // A gateway whose objects are a building lifted from another map square
+  // (lobby/structure.js) first carries them into the layout: `placeObjects`
+  // takes the matrix that does.
+  let objectMatrix = turnMatrix;
+  const placeObjects = (layoutMatrix) => {
+    objectMatrix = multiply(turnMatrix, layoutMatrix);
+  };
   const turned = new WeakSet();
   function turnGatewayObject(command) {
     if (turned.has(command)) return;
     turned.add(command);
     const m = command.modelMatrix;
     if (!m) {
-      command.modelMatrix = turnMatrix;
+      command.modelMatrix = objectMatrix;
       return;
     }
-    const out = new Float32Array(16);
-    for (let column = 0; column < 4; column++)
-      for (let row = 0; row < 4; row++) {
-        let sum = 0;
-        for (let k = 0; k < 4; k++) sum += turnMatrix[k * 4 + row] * m[column * 4 + k];
-        out[column * 4 + row] = sum;
-      }
-    command.modelMatrix = out;
+    command.modelMatrix = multiply(objectMatrix, m);
   }
 
-  return { fromLayout, toLayout, turnMatrix, tilesIn, gatewayLocs, turnGatewayObject };
+  // The objects of a building lifted from a map square (lobby/structure.js),
+  // carried into the layout. `context` is what the lobby hands every gateway
+  // (gateways.js, loadGatewayObjects).
+  async function structureLocs(structure, { terrainHeights, loadMapSquare }) {
+    if (!loadMapSquare) return [];
+    const height = floorHeight(terrainHeights);
+    placeObjects(structure.matrix(-height / 128));
+    return structure.locs(loadMapSquare, height);
+  }
+
+  return { fromLayout, toLayout, turnMatrix, tilesIn, gatewayLocs, turnGatewayObject, structureLocs };
 }
