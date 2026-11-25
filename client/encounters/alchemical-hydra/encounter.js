@@ -32,9 +32,8 @@
 // are marked inferred. There are no Outside recordings of it yet.
 //
 // Not yet: "The chemical burns you as it cascades over you." (recorded, 9 to
-// 17 damage, from nothing anyone has found); the game's message when the player
-// clicks it as it changes form (the engine drops the player's target instead);
-// the Hydra's last form, which only plays its death (hydraboss_finaldeath).
+// 17 damage, from nothing anyone has found); the Hydra's last form, which
+// only plays its death (hydraboss_finaldeath).
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { CollisionFlag } from "../../engine/collision.js";
@@ -111,6 +110,7 @@ const messages = {
   empowered: "The chemicals are absorbed by the Alchemical Hydra, empowering it further!",
   absorbed: "The Alchemical Hydra's defences partially absorb your attack!",
   enraged: "The Alchemical Hydra becomes enraged!",
+  changingForm: "You cannot attack the Alchemical Hydra as it changes form!",
 }; // OBS (tsps)
 const sounds = { switch: 4106, roar: 4076, geyser: 4078, death: 4080 }; // OBS (tsps)
 
@@ -198,7 +198,7 @@ class AlchemicalHydraEncounter {
     Object.assign(boss, this.formOf(0));
     boss.position = [...bossStart];
     boss.previousPosition = [...bossStart];
-    boss.untargetable = false;
+    boss.attackBlockedUntilTick = undefined;
     boss.combat.targetId = "player";
   }
   formOf(phase) {
@@ -263,6 +263,7 @@ class AlchemicalHydraEncounter {
     this.now = context.tick;
     this.world = context.world;
     for (let due = this.takeDueTask(); due; due = this.takeDueTask()) due.task(context);
+    if (this.changing) this.refuseAttack(context);
     if (!this.dead) {
       this.vents(context);
       for (const hit of this.fire.tick(context)) this.hurt(hit);
@@ -380,12 +381,21 @@ class AlchemicalHydraEncounter {
     this.epoch++;
     this.changing = { from, until: context.tick + phases[from].changeTicks };
     this.swapForm(boss, { npcTypeId: phases[from].toNext });
-    boss.untargetable = true; // the player's attack ends: his next needs a click (OBS (tsps): 425 of 426)
+    boss.attackBlockedUntilTick = context.tick + 1; // the player's attack ends quietly: his next needs a click (OBS (tsps): 425 of 426)
     this.visual(context, { animations: ["phaseOut"] });
     // WIKI: a special in progress ends; the lightning dissipates; the fires stay.
     this.fire.endSpecial(boss);
     this.lightning.reset();
     this.later(phases[from].changeTicks, (ctx) => this.endChange(ctx));
+  }
+  // It changes form: a click on it (the player's target is read before this, so a target now is a click of this tick)
+  // is refused with the game's message (OBS (tsps)), wherever the player stands (inferred). Blocking it for this tick
+  // alone drops the target before he moves or attacks, and lets the next tick's click reach here.
+  refuseAttack(context) {
+    const boss = this.boss(context.world);
+    if (!boss) return;
+    if (context.world.getPlayer().attackTarget === bossActorId) this.message(context, messages.changingForm);
+    boss.attackBlockedUntilTick = context.tick + 1;
   }
   endChange(context) {
     const boss = this.boss(context.world);
@@ -396,7 +406,7 @@ class AlchemicalHydraEncounter {
     this.shielded = this.phase < 3; // WIKI: no shield once enraged
     this.empowered = false;
     this.swapForm(boss, this.formOf(this.phase));
-    boss.untargetable = false;
+    boss.attackBlockedUntilTick = undefined;
     boss.combat.attackSpeed = this.phase === 3 ? enragedAttackTicks : attackTicks;
     this.nextAttackAt = context.tick + afterSpawnTicks[this.phase];
     boss.combat.nextActionTick = this.nextAttackAt;
@@ -422,7 +432,7 @@ class AlchemicalHydraEncounter {
     this.shielded = phase < 3;
     this.empowered = false;
     this.swapForm(boss, this.formOf(phase));
-    boss.untargetable = false;
+    boss.attackBlockedUntilTick = undefined;
     boss.combat.attackSpeed = phase === 3 ? enragedAttackTicks : attackTicks;
     this.nextAttackAt = Math.max(this.nextAttackAt, context.tick + 1);
   }

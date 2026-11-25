@@ -20,8 +20,9 @@ async function ticksOf(name) {
       const boss = engine.worldState.getNpc(BOSS);
       const rules = engine.encounter.getEngineRules();
       ticks[tick] = {
-        boss: [...boss.position], type: boss.npcTypeId, untargetable: boss.untargetable === true, hp: boss.vitals.hp,
+        boss: [...boss.position], type: boss.npcTypeId, target: engine.player().attackTarget, hp: boss.vitals.hp,
         player: [...engine.player().position],
+        playerAttacked: events.some((event) => event.type === "attack_started" && event.sourceId === "player"),
         clips: visuals.flatMap((event) => event.animations.filter((a) => a.actorId === BOSS).map((a) => a.clipId)),
         projectiles: visuals.flatMap((event) => event.projectiles),
         graphics: visuals.flatMap((event) => event.graphics),
@@ -177,7 +178,13 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   assert.deepEqual(ins.map((tick, n) => tick - outs[n]), [2, 1, 2]);
   assert.deepEqual(outs.map((tick) => ticks[tick].type), [8616, 8617, 8618]);
   assert.deepEqual(ins.map((tick) => ticks[tick].type), [8619, 8620, 8621]);
-  assert.ok(outs.every((tick, n) => ticks.slice(tick, ins[n]).every((t) => t.untargetable)) && ins.every((tick) => !ticks[tick].untargetable));
+  // As it changes the player's target is gone, quietly; a click on it is refused with the game's message, the target
+  // dropped again and no attack made; from the new form's tick a click stands.
+  const refused = outs.flatMap((tick, n) => Array.from({ length: ins[n] - tick - 1 }, (_, k) => tick + 1 + k));
+  assert.ok(refused.length >= 2);
+  assert.deepEqual(messageTicks(ticks, "as it changes form"), refused);
+  assert.ok(outs.every((tick, n) => ticks.slice(tick, ins[n]).every((t) => t.target === null && !t.playerAttacked)));
+  assert.ok(ins.every((tick) => ticks[tick].target === BOSS));
   assert.deepEqual(messageTicks(ticks, "becomes enraged"), [ins[2]]);
   assert.deepEqual(ins.map((tick) => ticks[tick].state.nextAttackAt - tick), [6, 6, 4]);
   assert.deepEqual(ins.slice(1).map((tick) => attacksOf(ticks).find((attack) => attack > tick) - tick), [6, 4]);

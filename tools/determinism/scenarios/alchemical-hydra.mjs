@@ -33,7 +33,7 @@ function pray(api, tick) {
 }
 function shoot(api) {
   const target = hydra(api);
-  if (target && !target.untargetable && api.player().attackTarget !== BOSS) attack(api, BOSS);
+  if (target && !state(api).changing && api.player().attackTarget !== BOSS) attack(api, BOSS);
 }
 function walk(api, tile) {
   if (api.player().attackTarget !== null) attack(api, null);
@@ -230,7 +230,8 @@ export const scenarios = [
   {
     // Its forms one after the other, by hitpoints set just above each
     // threshold: the player's hits take it past them. Into the enraged form
-    // while the flame phase's fires stand: its first poison is one blob.
+    // while the flame phase's fires stand: its first poison is one blob. He
+    // keeps clicking it as it changes form, and is refused.
     name: "alchemical-hydra/phases",
     kind: KIND,
     seed: 14,
@@ -243,6 +244,7 @@ export const scenarios = [
       if (s.phase === "electric" && !s.changing && hydra(api).vitals.hp > 551) setBossHp(api, 551);
       if (s.phase === "flame" && s.blocked.length && s.fireSpecial === null && hydra(api).vitals.hp > 276) setBossHp(api, 276);
       pray(api, tick);
+      if (s.changing) attack(api, BOSS);
       shoot(api);
     },
   },
