@@ -187,8 +187,8 @@ export const scenarios = [
     },
   },
   {
-    // Beside the pool: one bite early, then orbs until the third roar, then a
-    // bite on some of its turns, the volleys and roars going on.
+    // Beside the pool: a bite early at most, then orbs until the one-tick
+    // volleys, then a bite on some of their turns, the volleys and roars going on.
     name: "leviathan/bites",
     kind: KIND,
     seed: 9,

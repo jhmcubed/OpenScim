@@ -8,12 +8,12 @@
 // the right protection prayer blocks if it is up as the orb lands. Seven
 // volleys, each faster than the last; the seventh repeats. After each volley
 // it roars: a little damage, and a rock falls on the player's tile 7 ticks
-// later and stays there. The first roar drops two more, on the east and west
+// later and stays there, with loose ones all over the arena that do not. The first roar drops two more, on the east and west
 // of the arena if its first special attack will be the lightning, on the north
 // and south if the smoke. A player beside the pool is bitten now and then.
 //
-// A shadow spell stuns it: it turns no more, and from the front only 10 gets
-// through a hit. A hit on its back (or 25% of its hitpoints dealt since the
+// A shadow spell stuns it, and starts no attack delay: it turns no more, and
+// from the front only 10 gets through a hit made after it. A hit on its back (or 25% of its hitpoints dealt since the
 // stun) wakes it with a special attack, lightning and smoke in turn, and its
 // volleys start again further on. During a special it takes a third less
 // damage. The lightning is a wedge of tiles that turns after the player; the
@@ -25,7 +25,7 @@
 // their max, magic does double; outside it the orbs go through prayers.
 //
 // Awakened it has three times the hitpoints, drops five rocks where the other
-// drops one, with loose debris all over the arena, and from half its hitpoints
+// drops one, and from half its hitpoints
 // a tornado follows the player, through the rocks and the pool.
 //
 // Sources, beside the usual: OBS 11/25 is four Outside recordings of 25
@@ -37,6 +37,10 @@
 // what awakened changes (The Leviathan/Strategies) has none of it, and the
 // videos of ordinary kills agree on when a special starts, strikes and ends.
 // What they show of damage and of the volleys is the awakened version's alone.
+// OBS kills is 23 Outside recordings of post-quest kills of 25 November 2026
+// (kill counts 2,766 to 2,789, one player, in ranged gear: 23 stuns, each
+// broken from behind; 11 lightnings, 12 smokes; 23 enrages; 168 roars that
+// are not a stun's; 9 bites, 8 of them in the one fight spent beside the pool).
 // Plain OBS is rsprox recordings 1703 (an ordinary
 // world's quest fight), 1751, 3285 and six more of Leagues V and Grid Master
 // worlds (the 900-hitpoint Leviathan), as RSPSApp/tsps reads them
@@ -191,6 +195,8 @@ const volleys = [
 // OBS: the roar comes a volley's interval after its last orb, and the next
 // volley's first orb 5 ticks after the roar (the first three), 6 after it
 // (the one-tick volleys: 7 from last orb to first, OBS (video)).
+// OBS kills: after a one-tick volley the roar's rocks and chip come on time,
+// with its end (orbEnd) and the roar itself a tick later (46 of 46).
 const pauseAfterRoar = (volley) => (volley.interval > 1 ? 5 : 6);
 const firstAttackTicks = 4; // OBS: the first orb 4 ticks after it surfaces
 const pathfinderTicks = 3; // OBS, OBS 11/25 (3 of 3): it appears 3 ticks after the enrage's rocks fall,
@@ -201,7 +207,7 @@ const pathfinderWalkTicks = 3; // OBS, OBS 11/25: and takes its first step 3 tic
 const auraRadius = 2;
 const rockTicks = 7; // OBS: a roar's rock lands 7 ticks after it (1,151 of 1,151)
 const fallingDelayCycles = 50; // OBS
-const chipTicks = 1; // inferred (RSPSApp's): the roar's chip a tick after it
+const chipTicks = 1; // OBS kills: the roar's chip a tick after its rocks (168 of 168)
 const stunCap = 10; // WIKI: what gets through a hit from the front while it is stunned
 const stunBreakShare = 0.25; // WIKI: "25% of The Leviathan's health in damage"; counted from the stun (inferred)
 const rearRangedMinimum = 0.65; // WIKI: "at least a minimum of ~65% of your maximum hit"
@@ -209,12 +215,15 @@ const auraRangedMinimum = 0.2; // WIKI
 const specialReduction = 0.33; // WIKI: "reduced by 33%"; rounded down (inferred)
 // WIKI: a bite only for a player beside the pool, diagonals included, and
 // "rarely used". OBS (video): one bite early in the fight, then none until
-// after the third roar, the orbs going on all the while beside the pool.
-// After the third roar, and enraged, how often it bites no record gives; the
-// orbs still go on beside the pool (OBS (video): RSPSApp's reading of a 2025
-// kill), so a bite takes only some of its turns: one in four (inferred).
-const bitesFreeAfterRoars = 3;
-const biteChance = 0.25;
+// after the third roar. OBS kills, turns with the player beside the pool: in
+// the first volley a bite on the sixth (1 of 7); in the second and third
+// none, after a stun too (0 of 40); in the one-tick volleys 6 of 34; enraged
+// 2 of 108. A bite takes a turn of its own, not one of the volley's orbs, and
+// the next attack is 4 ticks after it (9 of 9). The early bite comes once at
+// most (OBS (video)), on a turn at the same odds (inferred).
+const biteChance = 1 / 6;
+const enragedBiteChance = 1 / 50;
+const biteRest = 4;
 // The lightning, from the hit that set it off. OBS 11/25 (23 of 23): a roar, its
 // start 3 ticks in, its loop at 7, a strike a tick from 7 to 41, its end at 42,
 // still at 44, and the first orb at 48 (12 of 12 not stunned before it). OBS
@@ -250,10 +259,11 @@ const wave = { inner: 4, reach: 9, cycles: 3, first: -6 };
 const deathTicks = 6; // OBS: from the kill to its removal (24 deaths)
 
 // Projectiles. OBS, OBS 11/25: from 30 cycles to the impact tick, from height 550
-// to 100, slope 30, 124 out from the mouth (an orb of one tick leaves at once:
-// inferred, RSPSApp's). The mouth is 2 tiles out from its middle towards the
+// to 100, slope 30, 124 out from the mouth. OBS kills: an orb of one tick from 30
+// cycles to 50, and it lands the next tick (1 of 1). The mouth is 2 tiles out from its middle towards the
 // player, on each side of its 7 x 7 the player is beyond (OBS, OBS 11/25).
 const orbProjectile = { startHeight: 550, endHeight: 100, slope: 30, startOffset: 124 };
+const oneTickOrbCycles = 50;
 const boulderProjectile = { startHeight: 600, endHeight: 100, slope: 40, startOffset: 80 }; // OBS 11/25: from its mouth, at once
 const sideOrbProjectile = { startHeight: 800, endHeight: 0, slope: 3, startOffset: 200 }; // OBS 11/25: from its middle
 const impactHeight = 100; // OBS 11/25
@@ -267,29 +277,35 @@ export const versions = {
     maxHp: 900,
     enrageHp: 180, // WIKI: "Upon reaching 180 hitpoints (20% of its health)"
     orbMaxHit: { magic: 32, range: 24, melee: 50 },
-    biteMaxHit: 50,
+    // OBS kills: 7 bites that landed, none met by Protect from Melee: 34, 35, 40,
+    // 45, 48, 50, 50; WIKI: 50 at most. Not rolled for accuracy (inferred: none missed).
+    biteHit: [34, 50],
     earlyBites: 1, // OBS (video), above
-    roarMaxHit: 7, // WIKI: "up to 7 chip damage"; that it can be 0 is inferred
-    rockHit: [0, 25], // WIKI: the falling rocks
-    // inferred: RSPSApp's provisional 30; no source gives one.
-    lightningHit: [0, 30],
+    roarHit: [4, 7], // OBS kills: 168 chips, 4 to 7, none 0; WIKI: "up to 7 chip damage"
+    rockHit: [0, 25], // WIKI: the falling rocks; OBS kills: none hit the player
+    lightningHit: [18, 22], // OBS kills: 18, 19, 20 and 22
+    // OBS kills: none of the lightning's orbs, the smoke's rocks or its blast hit the player.
     // inferred: the side orbs as the rocks (RSPSApp's).
     sideOrbHit: [0, 25],
     // WIKI: 60 in its infobox; its Strategies says up to 59, which fits under it.
     smokeHit: [0, 60],
     stunTicks: 15, // WIKI
     // WIKI: the stun resets it to the second volley, and each later one a volley
-    // further down.
+    // further down. OBS kills: the second after the first stun (23 of 23).
     volleyAfterStun: (stuns) => Math.min(volleys.length - 1, Math.max(1, stuns)),
-    // Enraged (WIKI): every 2 ticks, magic and ranged only. OBS: the first orb 5
-    // ticks after the enrage, flying 5 ticks; a rock on the player every 8 ticks.
+    // Enraged (WIKI): every 2 ticks, magic and ranged only. OBS, OBS kills: the
+    // first orb 5 ticks after the enrage's rocks (21 of 23), flying 5 ticks, every
+    // 2 (318 of 318); one rock on the player 8 ticks after those, then every 10
+    // (22 of 23; 95 waves).
     enraged: { interval: 2, styles: ["magic", "range"], flight: 5 },
     enrageDelay: 0,
     enrageFirstAttackTicks: 5,
-    enrageRockTicks: () => 8,
+    enrageRockTicks: (wave) => (wave === 0 ? 8 : 10),
     pathfinderClear: 0, // OBS: a rock on the middle of a corner keeps the pathfinder from it, one beside it does not
     rockSpread: [[0, 0]],
-    debrisChance: 0,
+    // OBS kills: loose rocks with every roar's and every enraged wave's rocks, 9 to
+    // 35, 20 on average (5,040 in 252), of 320 tiles.
+    debrisChance: 1 / 16,
     tornadoHp: 0,
   },
   awakened: {
@@ -298,9 +314,10 @@ export const versions = {
     enrageHp: 540, // WIKI; OBS 11/25: enraged at 491, 491 and 499, not yet at 557, 565 and 567
     // WIKI. OBS 11/25: unprotected magic 14 to 54 (8 hits), ranged 9 and 11, melee none.
     orbMaxHit: { magic: 55, range: 41, melee: 86 },
-    biteMaxHit: 86, // WIKI
+    // WIKI: 86 at most. The least inferred: the post-quest bite's share of its most.
+    biteHit: [58, 86],
     earlyBites: 0, // OBS 11/25: no bite in 26 turns with the player beside the pool, before any roar
-    roarMaxHit: 7, // WIKI; OBS 11/25: 7, 7 and 4
+    roarHit: [4, 7], // OBS 11/25: 7, 7 and 4; the least as post-quest (OBS kills)
     rockHit: [19, 25], // OBS 11/25: 19, 19, 20 and 25; WIKI: 25 at most
     lightningHit: [19, 22], // OBS 11/25: 9 strikes, 19 to 22
     sideOrbHit: [19, 25], // inferred: as the rocks; none of 1,164 landed on the player
@@ -431,10 +448,9 @@ class LeviathanEncounter {
     this.outcome = { phase: "active" };
     this.tick = 0;
     this.surfaced = false;
-    // The volleys: which, how many orbs of it so far; the roars and bites so far.
+    // The volleys: which, how many orbs of it so far; the bites so far.
     this.volley = 0;
     this.orbs = 0;
-    this.roars = 0;
     this.bites = 0;
     this.stuns = 0;
     this.nextAttackTick = firstAttackTicks;
@@ -448,6 +464,7 @@ class LeviathanEncounter {
     this.firstRoar = true;
     this.enraged = false;
     this.nextEnrageRockTick = null;
+    this.rockWaves = 0; // the enraged waves of rocks so far
     this.pathfinder = null; // { spawnTick, destination }
     this.queue = []; // { tick, run(context, hits) }, in the order queued
     this.pendingVisuals = [];
@@ -457,7 +474,7 @@ class LeviathanEncounter {
     this.inFlight = []; // { style, lands }: the orbs on their way, for the scene
     this.falling = []; // { tile, lands }: the rocks on their way down
     // The awakened fight's own state; the post-quest one has none of it.
-    if (this.version === versions.awakened) this.awakened = { enrageTick: null, rockWaves: 0, tornado: null };
+    if (this.version === versions.awakened) this.awakened = { enrageTick: null, tornado: null };
     if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
   }
   getSeeds() {
@@ -577,13 +594,13 @@ class LeviathanEncounter {
   currentVolley() {
     return this.enraged ? this.version.enraged : volleys[this.volley];
   }
-  // Whether this turn is a bite: never for a player away from the pool; the
-  // early one, if its version has one, for certain; then none until the third
-  // roar; after it, and enraged, on some turns only (biteChance).
+  // Whether this turn is a bite (biteChance, above): never for a player away
+  // from the pool; in the first volley as long as its version has an early bite
+  // to come; in the others only the one-tick ones; enraged now and then.
   bitesNow(player) {
     if (!isBesidePool(player.position)) return false;
-    if (!this.enraged && this.bites < this.version.earlyBites) return true;
-    if (!this.enraged && this.roars < bitesFreeAfterRoars) return false;
+    if (this.enraged) return this.random() < enragedBiteChance;
+    if (this.volley === 0 ? this.bites >= this.version.earlyBites : volleys[this.volley].interval > 1) return false;
     return this.random() < biteChance;
   }
   fireOrb(boss, player, context) {
@@ -603,11 +620,11 @@ class LeviathanEncounter {
     });
     const damage = attack?.accuracySucceeded ? attack.rolledDamage : 0;
     const mouth = mouthFor(player.position);
-    const flightCycles = volley.flight * cyclesPerTick;
+    const flightCycles = volley.flight > 1 ? volley.flight * cyclesPerTick : oneTickOrbCycles;
     emitInfernoNpcAttack(context, {
       actor: boss, target: player, clipId: startup ? "orbStart" : "orbLoop", kind: "leviathan_" + style, impactDelayTicks: volley.flight,
       projectiles: [{ spotAnimId: spots.orb[style], sourcePosition: [mouth[0] + 0.5, mouth[1] + 0.5], target: buildActorVisualTarget(player),
-        startDelayCycles: volley.flight > 1 ? cyclesPerTick : 0, endDelayCycles: flightCycles, ...orbProjectile }],
+        startDelayCycles: cyclesPerTick, endDelayCycles: flightCycles, ...orbProjectile }],
     });
     emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [],
       graphics: [{ spotAnimId: (startup ? spots.launchStart : spots.launch)[style], target: buildActorVisualTarget(boss), height: 0, delayCycles: 0 }] });
@@ -640,37 +657,42 @@ class LeviathanEncounter {
       this.nextAttackTick += pauseAfterRoar(volley);
       this.later(volley.interval, (ctx) => {
         if (this.epoch !== epoch || this.enraged || this.stun || this.special) return;
-        this.roar(ctx);
+        this.roar(ctx, volley.interval === 1);
         this.volley = Math.min(volleys.length - 1, this.volley + 1);
       });
     }
     return { environmentalDamages: [] };
   }
-  // The bite, for a player beside the pool (WIKI: Protect from Melee blocks it;
-  // a stab, its accuracy rolled: inferred).
+  // The bite, for a player beside the pool (WIKI: Protect from Melee blocks it).
+  // OBS kills: it lands a tick after it starts (7 of 7), and the volley goes on
+  // 4 ticks after it (biteRest).
   bite(boss, player, context) {
     if (!this.enraged) this.bites++;
-    this.nextAttackTick = context.tick + this.currentVolley().interval; // inferred (RSPSApp's): the volley goes on after
-    const attack = rollNpcAttack({
-      attacker: boss, target: player, random: this.random,
-      plan: { formulaStyle: "melee_stab", damageType: "melee", attackKind: "melee_stab", maxHit: this.version.biteMaxHit, impactDelayTicks: 0, sourceDeathPolicy: "cancel-before-impact" },
-    });
-    emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "bite", kind: "leviathan_bite", impactDelayTicks: 0 });
+    this.nextAttackTick = context.tick + biteRest;
+    emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "bite", kind: "leviathan_bite", impactDelayTicks: 1 });
     this.animateTails(context, "bite"); // OBS
-    return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
+    this.later(1, (ctx, hits) => {
+      if (!ctx.world.getPlayer()?.alive) return;
+      hits.push({ source: "The Leviathan's bite", attackType: "melee", baseDamage: [...this.version.biteHit], playerPosition: [...ctx.playerPos] });
+    });
+    return { environmentalDamages: [] };
   }
   // A roar: its chip a tick later, the rocks on the player, and the first time
-  // the two rocks that tell its first special.
-  roar(context) {
-    if (!this.enraged) this.roars++;
+  // the two rocks that tell its first special. `late`: after a one-tick volley,
+  // its end now and the roar itself a tick later (pauseAfterRoar, above).
+  roar(context, late = false) {
     this.epoch++;
-    this.animate(context, "roar");
+    if (late) {
+      this.animate(context, "orbEnd");
+      const epoch = this.epoch;
+      this.later(1, (ctx) => this.epoch === epoch && this.animate(ctx, "roar"));
+    } else this.animate(context, "roar");
     this.chip();
     this.roarRocks(context);
   }
   chip() {
     this.later(chipTicks, (ctx, hits) => {
-      if (ctx.world.getPlayer()?.alive) hits.push({ source: "The Leviathan's roar", attackType: "typeless", baseDamage: [0, this.version.roarMaxHit], playerPosition: [...ctx.playerPos] });
+      if (ctx.world.getPlayer()?.alive) hits.push({ source: "The Leviathan's roar", attackType: "typeless", baseDamage: [...this.version.roarHit], playerPosition: [...ctx.playerPos] });
     });
   }
   roarRocks(context) {
@@ -735,11 +757,14 @@ class LeviathanEncounter {
   }
 
   // --- the stun and the specials -----------------------------------------
-  // What it does to a hit of the player's on it, as the hit lands.
+  // What it does to a hit of the player's on it, as the hit lands. OBS kills: a
+  // shot let go before the stun, landing in it from the front, does its whole
+  // damage (20 of 20 let go the tick after the cast: 19 to 43, or 0 for 6).
   playerHit(damage, attack, target, player) {
     if (target.id !== bossActorId || !target.alive) return damage;
     const at = player.position;
-    const stunned = this.stun !== null;
+    const launched = this.tick - (attack.impactDelayTicks ?? 0);
+    const stunned = this.stun !== null && launched >= this.stun.since;
     const rear = stunned && isBehind(this.stun.face, at);
     const aura = this.enraged && this.inAura(this.world, at);
     let dealt = damage;
@@ -750,7 +775,7 @@ class LeviathanEncounter {
     if (stunned && dealt > 0) {
       this.stun.dealt += dealt;
       if (rear || this.stun.dealt >= this.version.maxHp * stunBreakShare) this.breakStun(target, rear);
-    } else if (!stunned && !this.enraged && !this.special && attack.style === "magic" && shadowSpells.has(attack.spellId)) {
+    } else if (this.stun === null && !this.enraged && !this.special && attack.style === "magic" && shadowSpells.has(attack.spellId)) {
       // WIKI: a shadow spell always stuns it. OBS 11/25: 47 of 47 in ranged gear,
       // none of them splashed, and none did any damage.
       this.beginStun(target, at);
@@ -758,10 +783,13 @@ class LeviathanEncounter {
     }
     return dealt;
   }
+  wouldStun(spellId) {
+    return shadowSpells.has(spellId) && this.stun === null && !this.enraged && !this.special;
+  }
   beginStun(boss, at) {
     this.stuns++;
     this.epoch++;
-    this.stun = { until: this.tick + this.version.stunTicks, face: [at[0] - centre[0], at[1] - centre[1]], dealt: 0 };
+    this.stun = { since: this.tick, until: this.tick + this.version.stunTicks, face: [at[0] - centre[0], at[1] - centre[1]], dealt: 0 };
     boss.lockedFacing = boss.facing;
     this.pendingVisuals.push({ message: messages.stunned });
     const epoch = this.epoch;
@@ -927,7 +955,7 @@ class LeviathanEncounter {
     this.later(pathfinderTicks, (ctx) => this.spawnPathfinder(ctx, corner));
   }
   enrageRockGap() {
-    return this.version.enrageRockTicks(this.awakened ? this.awakened.rockWaves++ : 0);
+    return this.version.enrageRockTicks(this.rockWaves++);
   }
   // The first corner clockwise from the north-west that is clear of rubble, the
   // north-west if none is (WIKI). What counts differs (versions, pathfinderClear).
@@ -1032,6 +1060,11 @@ class LeviathanEncounter {
       // WIKI: "Your melee attacks can't reach the lure!"
       validateAttack: (attackKind, targetId) => (targetId === bossActorId && attackKind.startsWith("melee") ? false : null),
       playerDamageOnNpc: (damage, { attacker, target, attack }) => this.playerHit(damage, attack, target, attacker),
+      // WIKI: stunning it resets the attack delay. OBS kills: the shot came the tick
+      // after the cast in 20 of 23, with the weapon ready as it was cast: a shadow
+      // spell cast on it to stun it starts no cooldown. Cast from the spellbook
+      // (manualCastSpell), as it was in all of them.
+      playerAttackKeepsReady: (target) => target.id === bossActorId && this.wouldStun(this.world?.getPlayer()?.manualCastSpell),
       // Its weak spot while it is stunned, the pathfinder's aura once enraged:
       // ranged cannot miss (inferred: RSPSApp's for the weak spot; WIKI for the
       // aura) and does at least a share of its max (WIKI).

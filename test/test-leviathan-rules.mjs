@@ -181,10 +181,60 @@ for (const kind of [BOSS, AWAKENED]) {
     }
   });
 
-  test(`${kind}: a bite for a player beside the pool`, { skip }, async () => {
-    const run = await fight({ kind, ticks: 24, script: (tick, api) => tick === 1 && place(api, [28, 36]) });
-    // OBS (video): one early, post-quest; OBS 11/25: none awakened before a roar.
-    assert.equal(run.ticksOf(clip("bite")).length, kind === AWAKENED ? 0 : 1);
+  test(`${kind}: bites beside the pool: one early at most, none in the second and third volleys, some in the one-tick ones`, { skip }, async () => {
+    // From the volley `volley` (0 is the first), the player beside the pool, praying `prayer` or nothing.
+    const beside = (volley, seed, ticks, prayer) =>
+      fight({ kind, seed, ticks, script(tick, api) {
+        if (tick === 1) {
+          place(api, [28, 36]);
+          api.engine.encounter.volley = volley;
+          if (prayer) protect(api, prayer);
+        }
+      } });
+    // The first volley: OBS (video), OBS kills: one early bite at most, post-quest; OBS 11/25: none awakened.
+    let early = 0;
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const bites = (await beside(0, seed, 22)).ticksOf(clip("bite")).length;
+      assert.ok(bites <= (kind === AWAKENED ? 0 : 1), `seed ${seed}: ${bites} bites`);
+      early += bites;
+    }
+    if (kind === BOSS) assert.ok(early > 0, "no early bite in 8 fights");
+    // The second and third volleys (OBS kills: 0 of 40 turns, after a stun too).
+    assert.deepEqual((await beside(1, 5, 45)).ticksOf(clip("bite")), []);
+    // The one-tick ones: on some turns, the next attack 4 ticks after; it lands a tick later, and Protect from Melee
+    // blocks it.
+    const [least, most] = kind === AWAKENED ? [58, 86] : [34, 50];
+    for (const prayer of [null, "ProtectMelee"]) {
+      const run = await beside(3, 5, 40, prayer);
+      const bites = run.ticksOf(clip("bite"));
+      assert.ok(bites.length > 0, "no bite");
+      const attacks = run.ticksOf((entry) => entry.orb);
+      for (const bite of bites) {
+        assert.equal(attacks.find((tick) => tick > bite), bite + 4, `after the bite at ${bite}`);
+        const bitten = run.hitsOn("player").filter(({ tick, amount }) => tick === bite + 1 && amount >= least && amount <= most);
+        assert.equal(bitten.length, prayer ? 0 : 1, `the bite at ${bite}`);
+      }
+    }
+  });
+
+  test(`${kind}: a shadow spell cast to stun it starts no attack delay, and a shot let go before the stun is not held to 10`, { skip }, async () => {
+    let early = 0;
+    for (const seed of [1, 2, 3]) {
+      let ready = null;
+      const run = await fight({ kind, seed, ticks: 8, script(tick, api) {
+        if (tick === 1) {
+          place(api, [24, 36]);
+          castOn(api, BOSS, "Shadow Barrage");
+        }
+        // OBS kills: the shot the tick after the cast (20 of 23).
+        if (tick === 2) ready = api.engine.combatSystem.getNextAttackTick(api.player().id) ?? 0;
+        if (tick > 1 && api.player().manualCastSpell === null && api.player().attackTarget !== BOSS) attack(api, BOSS);
+      } });
+      assert.ok(ready <= 2, `the weapon is ready from tick ${ready}`);
+      const stunned = run.first(message("stuns the Leviathan"));
+      early += run.hitsOn(BOSS).filter(({ tick, amount }) => tick === stunned && amount > 10).length;
+    }
+    assert.ok(early > 0, "every shot let go before the stun was held to 10");
   });
 
   test(`${kind}: the player climbs in at 23,32, the tails answer a bite, and an orb is seen to land on a player it hurts`, { skip }, async () => {
@@ -203,7 +253,7 @@ for (const kind of [BOSS, AWAKENED]) {
     const bitten = await fight({ kind, ticks: 24, script(tick, api) {
       if (tick === 1) {
         place(api, [28, 36]);
-        api.engine.encounter.roars = 3; // it may bite on any turn
+        api.engine.encounter.volley = 3; // a one-tick volley: it may bite on any turn
       }
     } });
     const bites = bitten.ticksOf(clip("bite"));
@@ -364,4 +414,39 @@ test("awakened: an orb goes through the right prayer three tiles from the pathfi
     const impacts = along.filter((tick) => run.log.some((entry) => entry.tick === tick && (entry.graphic === 2490 || entry.graphic === 2492)));
     assert.equal(impacts.length > 0, hurt, `${away} beside, ${behind} behind: ${impacts.length} of ${along.length} went through`);
   }
+});
+
+// Prays against each orb as it lands.
+function prayAgainstOrbs(api, tick) {
+  const orb = state(api).orbs.find(({ lands }) => lands === tick);
+  const wanted = orb && (orb.style === "magic" ? "ProtectMagic" : "ProtectRange");
+  if (wanted && api.player().activePrayer !== wanted) protect(api, wanted);
+}
+
+test("post-quest: after a one-tick volley its end, the roar a tick later; the chip a tick after the rocks, loose ones with them", { skip }, async () => {
+  const run = await fight({ kind: BOSS, ticks: 24, script(tick, api) {
+    if (tick === 1) api.engine.encounter.volley = 3;
+    prayAgainstOrbs(api, tick);
+  } });
+  const end = run.first(clip("orbEnd"));
+  const last = Math.max(...run.ticksOf((entry) => entry.orb).filter((tick) => tick < end));
+  // OBS kills: its end a tick after the last orb, the roar a tick after that (46 of 46).
+  assert.deepEqual([end, run.first(clip("roar"))], [last + 1, last + 2]);
+  assert.deepEqual(unique(run.ticksOf((entry) => entry.graphic >= 2477 && entry.graphic <= 2480)), [end]);
+  assert.ok(run.ticksOf((entry) => entry.graphic === 2475 || entry.graphic === 2476).filter((tick) => tick === end).length > 3, "few loose rocks");
+  // OBS kills: 4 to 7, a tick after the rocks (168 of 168).
+  const chip = run.hitsOn("player").filter(({ tick, amount }) => amount > 0 && tick < end + 7); // before its rock lands
+  assert.equal(chip.length, 1, chip.map(({ tick, amount }) => `${amount} at ${tick}`).join());
+  assert.equal(chip[0].tick, end + 1);
+  assert.ok(chip[0].amount >= 4 && chip[0].amount <= 7, String(chip[0].amount));
+});
+
+test("post-quest: enraged, a rock on the player 8 ticks after the enrage's, then every 10", { skip }, async () => {
+  const run = await fight({ kind: BOSS, ticks: 45, script(tick, api) {
+    if (tick === 1) setBossHp(api, 180);
+    prayAgainstOrbs(api, tick);
+  } });
+  const waves = unique(run.ticksOf((entry) => entry.graphic >= 2477 && entry.graphic <= 2480));
+  assert.deepEqual(waves.map((tick) => tick - waves[0]), [0, 8, 18, 28, 38].slice(0, waves.length));
+  assert.ok(waves.length >= 4, waves.join());
 });
