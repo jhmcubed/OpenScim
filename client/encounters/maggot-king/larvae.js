@@ -1,19 +1,21 @@
 // Ur-maggot larvae (https://oldschool.runescape.wiki/w/Ur-maggot_larvae).
 //
 // From his screeches below 85% of his hitpoints he throws one in, west and
-// east in turn, the first in the west; below a fifth, the first screech fills
-// the room up to four, two a side (encounter.js says when). OBS, the 26
-// larvae of the recordings: one comes up at x 27 (west) or 37 (east), y 43,
-// 3 ticks into the screech, a second of a side beside it (26 or 28, 36). It
-// flies south over the bones a tile a tick and lands 8 ticks after it came;
-// it goes on south to a row of the floor (33 to 36, any), and from there
-// along it, eating the carrion it comes to: a tick on the tile, and the King
-// heals 1 (WIKI). At the floor's end it turns back.
+// east in turn, the first in the west; below about 299, the first screech
+// fills the room up to four, two a side (encounter.js says when). OBS, the 59
+// larvae of 15 kills: one comes up at x 27 (west) or 37 (east), y 43 (in
+// three kills 44), 3 ticks into the screech (59 of 59), a second of a side
+// beside it (26 or 28 west, 36 or 38 east: 3 and 3). It flies south over the
+// bones a tile a tick and lands 8 ticks after it came (on the floor's first
+// row 7 ticks after, 49 of 58); it goes on south to a row of the floor (33 to
+// 36, any; four of a fill to a row each, WIKI, OBS 4 fills of 6), and from
+// there along it, eating the carrion it comes to: a tick on the tile, and the
+// King heals 1 (WIKI). At the floor's end it turns back.
 //
 // Over the player it stays and leeches him, more each tick he stays under it,
-// and the King heals as much (WIKI); stepping off starts the count again.
-// OBS: 1 for a first tick (twice), then 2 and 3 for a player who stayed (the
-// wiki says it starts at 3).
+// and the King heals as much (WIKI; OBS 4 of 4); stepping off starts the count
+// again. OBS: 1 for a first tick (twice), then 2 and 3 for a player who stayed
+// (the wiki says it starts at 3). Only kill 686 shows a leech: none past 3.
 //
 // In the air a standard ranged hit kills it, and costs the weapon no time
 // (WIKI; encounter.js's rules). The King's death kills them all.
@@ -23,8 +25,8 @@ import { healNpc } from "../shared/npcHelpers.js";
 import { emitInfernoVisual } from "../inferno/events.js";
 import { npcTypeIds, spotAnims, floor, onFloor } from "./ids.js";
 
-const spawnY = 43; // OBS (two of 26 at 44)
-const flightTicks = 8; // OBS: from its spawn to its landing, 22 of 26 (four at 9)
+const spawnY = 43; // OBS 15 kills: 45 of 59 (the others at 44: all of kills 693 and 697, the last four of 686)
+const flightTicks = 8; // OBS: from its spawn to its landing, 22 of 26 of the first kills (four at 9)
 const leechStart = 1; // OBS; WIKI 3
 const middleX = (floor.minX + floor.maxX) >> 1;
 
@@ -58,22 +60,24 @@ export class Larvae {
     this.nextSide = side === "west" ? "east" : "west";
     this.launch(context, side === "west" ? 27 : 37, side);
   }
-  // The screech below a fifth: up to four in the room, two a side, each
-  // larva already there counted on the side it came from (OBS: four into an
-  // empty room; three beside one, twice, the missing one on the side the
-  // other had come from, wherever it had crawled since).
+  // The fill: up to four in the room, two a side, each larva already there
+  // counted on the side it came from (OBS: four into an empty room, five
+  // times; three beside one, twice, the missing one on the side the other had
+  // come from, wherever it had crawled since). Each to a row of its own.
   fill(context) {
     const living = this.living(context.world);
-    for (const [side, columns] of [["west", [27, this.encounter.random() < 0.5 ? 26 : 28]], ["east", [37, 36]]]) {
+    const random = this.encounter.random;
+    const rows = [];
+    for (let y = floor.minY; y <= floor.maxY; y++) rows.splice(Math.floor(random() * (rows.length + 1)), 0, y);
+    for (const [side, columns] of [["west", [27, random() < 0.5 ? 26 : 28]], ["east", [37, random() < 0.5 ? 36 : 38]]]) {
       const there = living.filter((larva) => larva.state.side === side).length;
-      for (const x of columns.slice(0, Math.max(0, 2 - there))) this.launch(context, x, side);
+      for (const x of columns.slice(0, Math.max(0, 2 - there))) this.launch(context, x, side, rows.shift());
     }
   }
-  launch(context, x, side) {
+  launch(context, x, side, row = floor.minY + Math.floor(this.encounter.random() * (floor.maxY - floor.minY + 1))) {
     const id = "maggot-larva-" + this.count++;
     const hp = getMonsterHitpoints(npcTypeIds.larva); // TABLE: 30
     const position = [x, spawnY];
-    const row = floor.minY + Math.floor(this.encounter.random() * (floor.maxY - floor.minY + 1));
     context.spawnNpc(larvaDefinition.createActor(
       {
         id, kind: "npc", role: "minion", npcTypeId: npcTypeIds.larva, archetypeId: "maggot-king-larva", size: 1, alive: true,
