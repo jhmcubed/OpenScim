@@ -28,7 +28,8 @@
 // The Plugin Hub's Larva Tracker is in the set-up's aids (larvaTracker.js).
 //
 // ponytail: not yet: the shield's own hitpoint bar (the interface shows his
-// hitpoints), acid's venom, sounds.
+// hitpoints), acid's venom, the sounds the server sends but the rocks'
+// (audio.js).
 import { getMonsterFormulaStats } from "../../engine/monsterStats.js";
 import { canNpcActAtTick } from "../../engine/npcState.js";
 import { createSeededRandom } from "../../engine/random.js";
