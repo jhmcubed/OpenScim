@@ -1,6 +1,6 @@
 // The Maggot King's ids and his lair's tiles. The ids are the game cache's
 // (revision 243, as RSPSApp/tsps docs/maggot-king.md lists them); OBS is the
-// four kills of one player's Outside recordings (format 6, revision 243),
+// 15 kills of one player's Outside recordings (format 6, revision 243),
 // which also give the tiles: local to map square 45,125 (region 11645), the
 // square the instance copies whole.
 export const npcTypeIds = {
@@ -48,11 +48,13 @@ export const locIds = {
 // y 37 that blocks the way north and lets projectiles through.
 export const floor = { minX: 24, maxX: 38, minY: 33, maxY: 36 };
 export const bossSize = 5; // CACHE
-// OBS: his south-west tile. Far, he stands with y 39 and x from 26 to 32
-// (centre 28 to 34); near, on the bones, with y 37 and x from 24 to 34.
+// OBS: his south-west tile. Far, he stands with y 39 and x from 26 to 33
+// (centre 28 to 35; 33 once, kill 694, back up from near there); near, on
+// the bones, with y 37 and x from 24 to 34. OBS 15 kills: with 33 his far
+// walk (encounter.js) gives his tile on 2295 of 2295 ticks.
 export const farY = 39;
 export const nearY = 37;
-export const farX = { min: 26, max: 32 };
+export const farX = { min: 26, max: 33 };
 export const nearX = { min: 24, max: 34 };
 // OBS: where his first tick of the four recordings had him (28 to 31), in the middle.
 export const bossStart = [29, farY];
