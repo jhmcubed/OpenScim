@@ -443,7 +443,10 @@ class PhosanisNightmareEncounter {
     // tsps (rsprox 1148, 1156): in her third phase the protection that would stop the attack goes off on her animation,
     // any other stays on. While cursed, the shuffled one (tsps, theirs; OBS (Outside): all 4 of her cursed attacks that
     // met a protection that would stop them, Protect from Melee off as her magic came, Protect from Magic as her ranged
-    // came; the 3 that met one that would not, it stayed on). OBS (runelogs): of the protections the
+    // came; the 3 that met one that would not, it stayed on). OBS (Outside, five recordings): in her third phase the
+    // protection that would stop the attack, on the tick before her animation, was off on the tick of it 25 times of 25
+    // (9 of them cursed, each the shuffled one), and any other stayed on (34 of 34); in her first two phases it stayed on
+    // through her animation's tick 56 times of 57. OBS (runelogs): of the protections the
     // player had on that went off with none in their place, those 4 ticks before a hit on him (her magic or ranged
     // animation) or 2 before one 4 after the last (her melee): 23 of 95 in her third phase, 14 of 206 in the two before.
     if (last && player.activePrayer === protectionPrayers[stoppedBy]) context.setProtectionPrayer?.(null);

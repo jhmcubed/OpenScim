@@ -44,7 +44,9 @@ export const huskMessages = {
 // tsps: her animation; 2 ticks later it flies at the player; 3 after that it
 // takes hold. 20 ticks later it bursts out (21 if weakened, 84 of 84
 // captured): 56 to 80 fully grown, 4 to 9 if a Sanfew serum or Relicym's
-// balm weakened it first (tsps; WIKI: "massive" damage). It acts 6 ticks after
+// balm weakened it first (tsps; WIKI: "massive" damage). OBS (Outside, five
+// recordings): 21 ticks every time it was weakened (7 of 7), and those bursts
+// hit 9, 5, 6, 10, 9, 7 and 9: at least 10 weakened, so 4 to 10 here. It acts 6 ticks after
 // it is out, then every 4: 31 to 50 back on her shield, or as much from the
 // least charged totem, or else an attack on the player, ranged first, 12 at
 // most (10 weakened), which the right protection stops. WIKI: weakened, 55
@@ -53,11 +55,13 @@ export const huskMessages = {
 const parasiteFlightTicks = 2;
 const infectTicks = 5; // from her animation
 const burstTicks = { full: 20, weak: 21 };
-const burstDamage = { full: [56, 80], weak: [4, 9] };
+const burstDamage = { full: [56, 80], weak: [4, 10] }; // tsps; OBS (Outside): the weakened top
 const parasiteFirst = 6;
 const parasiteEvery = 4;
 const parasiteHeal = [31, 50];
 const parasiteMaxHit = { full: 12, weak: 10 };
+// OBS (Outside): its projectiles start at 84 (magic 1771, drain 1773, heal 1774) and 40 (ranged 1775) in the game's
+// height units, a quarter of that here (21 and 10); its magic's impact (1772) shows at 104. Their timing is tsps's.
 // Sanfew serum(4) to (1) and Relicym's balm(4) to (1).
 export const parasiteCures = new Set([10925, 10927, 10929, 10931, 4842, 4844, 4846, 4848]);
 export const parasiteMessages = {
@@ -88,7 +92,8 @@ export const parasiteMessages = {
 // 15, the next ones 8 apart. OBS (Outside): the first rises 2 ticks after her
 // desperation form (tsps: 2), walks from its seventh tick, and is taken in a
 // tick after it is beside her; its hit lands 4 ticks after that, 19 ticks after
-// her form (OBS (runelogs, the 4 kills that lasted that long): 19 too).
+// her form (OBS (runelogs, the 4 kills that lasted that long): 19 too). OBS
+// (Outside, five recordings): every one of its hits on the player 15 (6 of 6).
 export const sleepwalkerCounts = [2, 3, 4];
 const riseTicks = 2;
 const walkAfter = { early: 4, last: 7 };
@@ -383,7 +388,7 @@ export class Minions {
     const amount = parasiteHeal[0] + Math.floor(e.random() * (parasiteHeal[1] - parasiteHeal[0] + 1));
     if (boss && e.stage === "shield" && e.shield < e.shieldMax) {
       faceActorToward(parasite, boss);
-      e.visual(context, { animations: [{ actorId: parasite.id, clipId: "cast" }], projectiles: [e.projectileFrom(parasite, boss, { spotAnimId: spotAnims.parasiteHeal, start: 35, end: 60, slope: 2, startOffset: 32, startHeight: 26, endHeight: 26 })] });
+      e.visual(context, { animations: [{ actorId: parasite.id, clipId: "cast" }], projectiles: [e.projectileFrom(parasite, boss, { spotAnimId: spotAnims.parasiteHeal, start: 35, end: 60, slope: 2, startOffset: 32, startHeight: 21, endHeight: 26 })] });
       e.later(2, () => e.healShield(amount));
       return idle;
     }
@@ -392,7 +397,7 @@ export class Minions {
       const target = context.world.getNpc(this.totemId(totem));
       if (target) {
         faceActorToward(parasite, target);
-        e.visual(context, { animations: [{ actorId: parasite.id, clipId: "cast" }], projectiles: [e.projectileFrom(parasite, target, { spotAnimId: spotAnims.parasiteDrain, start: 35, end: 60, slope: 2, startOffset: 32, startHeight: 26, endHeight: 26 })] });
+        e.visual(context, { animations: [{ actorId: parasite.id, clipId: "cast" }], projectiles: [e.projectileFrom(parasite, target, { spotAnimId: spotAnims.parasiteDrain, start: 35, end: 60, slope: 2, startOffset: 32, startHeight: 21, endHeight: 26 })] });
         e.later(2, (ctx) => this.drainTotem(ctx.world, totem, amount));
         return idle;
       }
@@ -410,12 +415,12 @@ export class Minions {
       },
     });
     const projectile = style === "magic"
-      ? { spotAnimId: spotAnims.parasiteMagic, start: 35, end: 60, slope: 2, startOffset: 32, startHeight: 26, endHeight: 26 }
-      : { spotAnimId: spotAnims.parasiteRange, start: 35, end: 60, slope: 0, startOffset: 20, startHeight: 26, endHeight: 26 };
+      ? { spotAnimId: spotAnims.parasiteMagic, start: 35, end: 60, slope: 2, startOffset: 32, startHeight: 21, endHeight: 26 }
+      : { spotAnimId: spotAnims.parasiteRange, start: 35, end: 60, slope: 0, startOffset: 20, startHeight: 10, endHeight: 26 };
     e.visual(context, {
       animations: [{ actorId: parasite.id, clipId: style === "magic" ? "cast" : "range" }],
       projectiles: [e.projectileFrom(parasite, player, projectile)],
-      graphics: style === "magic" ? [{ spotAnimId: spotAnims.parasiteMagicImpact, target: e.playerTarget(player), height: 100, delayCycles: 60 }] : [],
+      graphics: style === "magic" ? [{ spotAnimId: spotAnims.parasiteMagicImpact, target: e.playerTarget(player), height: 104, delayCycles: 60 }] : [],
     });
     return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
   }
