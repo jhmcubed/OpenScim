@@ -21,7 +21,7 @@
 // weapon no time and does half as much again, and a crush one rarely misses.
 //
 // Sources: OBS is 15 kills (kill counts 686 to 700) of one player's Outside
-// recordings, 80 screeches, 152 slams, 324 spits and 59 larvae among them;
+// recordings, 80 screeches, 152 slams, 324 spits and 86 larvae among them;
 // WIKI the Maggot King and its Strategies page; CACHE and tsps RSPSApp/tsps
 // docs/maggot-king.md, which read the cache and the wiki. Numbers no source
 // gives are marked inferred. His hitpoints at a screech are those after the
@@ -90,7 +90,7 @@ const roarWindow = [3, 8];
 const screechHurts = [3, 4];
 const screechDamage = [2, 25];
 const screechSource = "Screech";
-const throwTick = 3; // OBS 15 kills: shadows, piles thrown (79 screeches), larvae launched (59 of 59), the roar's graphic
+const throwTick = 3; // OBS 15 kills: shadows, piles thrown (79 screeches), larvae launched (86 of 86), the roar's graphic
 const pileTicks = 4; // OBS 15 kills: projectile 3796 flies 120 cycles; a pile hits 7 ticks into the screech (3 of 3)
 const fragmentTicks = 2; // OBS 15 kills: projectile 3797 flies 60 cycles; a fragment hits 9 ticks into the screech (32 of 32), carrion lies from then (79 of 79)
 const pileMaxHit = 25; // WIKI; OBS 15 kills: 10, 11 and 20, without a protection prayer

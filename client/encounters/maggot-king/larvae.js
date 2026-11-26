@@ -2,9 +2,9 @@
 //
 // From his screeches below 85% of his hitpoints he throws one in, west and
 // east in turn, the first in the west; below about 299, the first screech
-// fills the room up to four, two a side (encounter.js says when). OBS, the 59
+// fills the room up to four, two a side (encounter.js says when). OBS, the 86
 // larvae of 15 kills: one comes up at x 27 (west) or 37 (east), y 43 (in
-// three kills 44), 3 ticks into the screech (59 of 59), a second of a side
+// three kills 44), 3 ticks into the screech (86 of 86), a second of a side
 // beside it (26 or 28 west, 36 or 38 east: 3 and 3). It flies south over the
 // bones a tile a tick and lands 8 ticks after it came (on the floor's first
 // row 7 ticks after, 49 of 58); it goes on south to a row of the floor (33 to
@@ -25,7 +25,7 @@ import { healNpc } from "../shared/npcHelpers.js";
 import { emitInfernoVisual } from "../inferno/events.js";
 import { npcTypeIds, spotAnims, floor, onFloor } from "./ids.js";
 
-const spawnY = 43; // OBS 15 kills: 45 of 59 (the others at 44: all of kills 693 and 697, the last four of 686)
+const spawnY = 43; // OBS 15 kills: 72 of 86 (the others at 44: all of kill 697, the last four of 686 and 693)
 const flightTicks = 8; // OBS: from its spawn to its landing, 22 of 26 of the first kills (four at 9)
 const leechStart = 1; // OBS; WIKI 3
 const middleX = (floor.minX + floor.maxX) >> 1;
