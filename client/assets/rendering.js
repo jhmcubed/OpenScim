@@ -43740,7 +43740,10 @@ var UIOverlayRenderer = class e {
     }
   }
   static bL(e) {
-    const { activePrayer: activePrayer } = e;
+    // An encounter may show another icon over the player than his prayer's: its snapshot's
+    // state.playerOverheadPrayer when set (Phosani's curse, encounters/phosanis-nightmare).
+    const shown = e.encounter?.state?.playerOverheadPrayer;
+    const activePrayer = shown !== undefined ? shown : e.activePrayer;
     if (activePrayer) {
       return V_[activePrayer];
     }
