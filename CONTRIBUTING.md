@@ -28,8 +28,11 @@ rules and known pitfalls.
   as long as behaviour stays the same.
 - **Missing images**: 62 images have no public source yet; `ROADMAP.md`,
   phase 3, lists them.
-- **Accuracy**: a mechanic that differs from the real game. Open an issue with
-  a recording or clip if you have one.
+- **Engine and plugins**: a new mechanic, hook, or plugin change. Check that
+  nobody is building it (below).
+- **Accuracy**: a mechanic that differs from the real game, or engine
+  behaviour that is wrong in every fight (formulas, weapon stats, tick
+  timing). Open an issue with a recording or clip if you have one.
 
 The wider plan is in `ROADMAP.md`.
 
@@ -45,6 +48,19 @@ Every fight being built has a post in the `#bosses` channel of the
 
 Not on Discord? Check the open pull requests, then open a draft of your own
 early so that others can see it.
+
+## Before you start other work
+
+Plugin changes, engine features and other ideas have a post in the
+`#suggestions` channel of the [Discord](https://discord.gg/openscim), tagged
+by kind: `Engine`, `Plugin`, `Feature`, `Interface` and so on.
+
+- **No post**: make one with the matching tag. If you are building it, tag it
+  `In progress` and link a draft pull request when you open one.
+- **`In progress`**: taken. Ask in the post how you can help.
+
+Engine behaviour that is wrong in every fight is not a suggestion: open an
+issue instead.
 
 ## Before you open a pull request
 
