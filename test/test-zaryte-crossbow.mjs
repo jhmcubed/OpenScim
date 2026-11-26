@@ -32,8 +32,9 @@ function profile(weaponId, ammoId, extra = {}) {
   });
 }
 
-// The special: 75% energy, Evoke's animation.
-assert.deepEqual(getSpecialAttackDefinition(ZCB), { energyCost: 75, animationId: 9166 });
+// The special: 75% energy, and the crossbow's own shot as its animation (OBS: 9168 on every recorded Evoke).
+assert.deepEqual(getSpecialAttackDefinition(ZCB), { energyCost: 75, animationId: 9168 });
+assert.deepEqual(getSpecialAttackDefinition(27186), getSpecialAttackDefinition(ZCB));
 
 // Evoke doubles the attack roll and guarantees the bolt.
 {
