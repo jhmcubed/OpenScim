@@ -19,8 +19,10 @@ import {
 // gets none under him (WIKI). The pattern (tsps, "captured: about 40 a set
 // (24-55), some 10 of them within two tiles of the player (826 sets)"): each
 // tile within two of the player a portal 2 times in 5, any other tile of the
-// floor 9 times in 100. The logs of runelogs carry no graphics, so they add
-// nothing here.
+// floor 9 times in 100. OBS (Outside, 35 sets, 29 to 50 portals): one under
+// the player in all 34 sets but the one her husks held him in (where he stood
+// as the tick began); within two tiles of him 312 of 812 (38%), further out
+// 955 of 10,878 (9%). The logs of runelogs carry no graphics.
 const clawHitTicks = 4; // tsps
 const clawDamage = [50, 65]; // WIKI, tsps
 const clawNear = 2; // tsps
@@ -54,7 +56,8 @@ const flowerQuadrants = { ne: ["north", "east"], nw: ["north", "west"], se: ["so
 const sporeTimes = { planted: 1, message: 2, armed: 5, end: 30 };
 const sporeClawsAfter = 6;
 // Drowsy (tsps): 25 ticks; a yawn 2 ticks in and every 6 after; no running.
-// WIKI: her attacks come 2 ticks slower, "doubled when using magic".
+// WIKI: her attacks come 2 ticks slower, "doubled when using magic" (OBS
+// (Outside): drowsy, the Eye of Ayak, a 3-tick staff, cast 7 ticks apart twice).
 // Each yawn drains 5 + one per 20 of the prayer left: tsps's estimate from
 // three yawns, which five yawns of one runelogs log bear out (OBS (runelogs):
 // 8 to 2, 29 to 22, 21 to 15, 13 to 8 and 31 to 25, a point of the ordinary
@@ -120,8 +123,10 @@ export class Specials {
     const e = this.e;
     const player = context.world.getPlayer();
     const held = e.minions.frozen ? key(player.position) : null;
+    const mine = key(player.position);
     const tiles = floorTiles.filter((tile) => {
       if (isTotemTile(tile) || key(tile) === held) return false;
+      if (key(tile) === mine) return true; // OBS (Outside)
       return e.random() < (chebyshev(tile, player.position) <= clawNear ? clawNearChance : clawFarChance);
     });
     this.clawSets.push({ at: context.tick + clawHitTicks, tiles: new Set(tiles.map(key)) });

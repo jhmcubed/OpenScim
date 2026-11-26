@@ -78,26 +78,33 @@ export const parasiteMessages = {
 // kills one; the blast does 5, and 144 more shared out over those that reached
 // her (OBS (runelogs): 5 with none taken in, 41 with one of four, 53 with
 // one of three).
+// OBS (Outside, one kill): they rose 2 ticks after her blast form, and walked
+// from their fourth tick after her first two phases but their seventh after
+// her last. Her blast came 2 or 3 ticks after the last one's death (254 after
+// 251, 481 after 478, 717 after 715): an even number of ticks after they rose,
+// at least 2 after the death.
 //
 // Her desperation (WIKI, tsps): one at a time, each that reaches her a hit of
-// 15. OBS (runelogs, the 4 kills that lasted that long): the player clicks the
-// first 9 ticks after her desperation form and its hit lands 19 ticks in, the
-// next ones 8 apart (WIKI, tsps); so it rises 9 ticks in (tsps: 2), and the 6
-// steps from any of the eight tiles take it to her 10 ticks after it rose.
+// 15, the next ones 8 apart. OBS (Outside): the first rises 2 ticks after her
+// desperation form (tsps: 2), walks from its seventh tick, and is taken in a
+// tick after it is beside her; its hit lands 4 ticks after that, 19 ticks after
+// her form (OBS (runelogs, the 4 kills that lasted that long): 19 too).
 export const sleepwalkerCounts = [2, 3, 4];
 const riseTicks = 2;
-const walkAfter = 4;
+const walkAfter = { early: 4, last: 7 };
 const latestBlast = 16;
 const absorbGoneTicks = 2;
 const blastAfterAbsorb = 3;
-const blastAfterDeath = 1;
+const blastAfterDeath = 2;
+const blastEvery = 2;
 const blastImpactTicks = 4;
 const blastHitTicks = 2;
 const nextFormTicks = 9;
 const blastDamage = (absorbed, spawned) => 5 + Math.floor((144 * absorbed) / Math.max(1, spawned));
-const desperationFirst = 9;
+const desperationFirst = 2;
 const desperationEvery = 8;
 const desperationDamage = 15;
+const desperationHitTicks = 4;
 export const walkerMessages = {
   charging: { text: "The Nightmare begins to charge up a devastating attack.", color: "#ff3045" },
   restores: { text: "The Nightmare restores her shield.", color: "#ff3045" },
@@ -434,6 +441,7 @@ export class Minions {
       }
       for (let n = 0; n < count; n++) if (this.rise(ctx, tiles[n % tiles.length], false)) state.spawned++;
       state.risen = true;
+      state.risenAt = ctx.tick;
       state.readyAt = ctx.tick + 1;
       e.later(latestBlast, (late) => {
         if (e.epoch !== epoch || this.walk !== state || state.blasted) return;
@@ -447,7 +455,8 @@ export class Minions {
   rise(context, tile, desperate) {
     const id = `nightmare-sleepwalker-${this.count++}`;
     const hp = getMonsterHitpoints(npcTypeIds.sleepwalker); // TABLE: 10
-    const walker = sleepwalkerDefinition.createActor({ ...baseActor(id, npcTypeIds.sleepwalker, tile, 1, hp), blocksNpcMovement: false }, { walkAt: context.tick + walkAfter, desperate, absorbed: false });
+    const late = desperate || this.e.phase >= sleepwalkerCounts.length;
+    const walker = sleepwalkerDefinition.createActor({ ...baseActor(id, npcTypeIds.sleepwalker, tile, 1, hp), blocksNpcMovement: false }, { walkAt: context.tick + (late ? walkAfter.last : walkAfter.early), desperate, absorbed: false });
     context.spawnNpc(walker);
     this.walkers.add(id);
     this.e.visual(context, { animations: [{ actorId: id, clipId: "rise" }] });
@@ -485,7 +494,10 @@ export class Minions {
     walker.untargetable = true;
     this.gone(context, walker.id, blastAfterAbsorb);
     e.visual(context, { animations: [{ actorId: walker.id, clipId: "absorb" }] });
-    if (walker.state.desperate) e.hurt({ baseDamage: desperationDamage, attackType: "typeless", source: "Sleepwalker" });
+    if (walker.state.desperate) {
+      const epoch = e.epoch;
+      e.later(desperationHitTicks, () => e.epoch === epoch && e.hurt({ baseDamage: desperationDamage, attackType: "typeless", source: "Sleepwalker" }));
+    }
     else if (this.walk) this.walk.absorbed++;
     e.later(absorbGoneTicks, (ctx) => ctx.world.getNpc(walker.id) && ctx.despawnNpc(walker.id));
   }
@@ -502,6 +514,7 @@ export class Minions {
   blastWhenClear(context) {
     const state = this.walk;
     if (!state || !state.risen || state.blasted || this.walkers.size > 0 || context.tick < state.readyAt) return;
+    if ((context.tick - state.risenAt) % blastEvery !== 0) return;
     state.blasted = true;
     const e = this.e;
     const epoch = e.epoch;

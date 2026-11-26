@@ -47,15 +47,16 @@ const dreamObjects = () => ({
   },
 });
 
-// Her forms: the same sequences in every one (CACHE: they stand with 8592 and walk with 8593; her blast form walks with
-// 8603), her death in her last.
+// Her forms: the same sequences in every one (OBS (Outside): they stand with 8593 and walk with 8592; her blast form
+// stands with 8603; asleep she stands with 8613), her death in her last.
 const bossClips = {
+  wake: seqIds.wake,
   magic: seqIds.magic, range: seqIds.range, melee: seqIds.melee, claws: seqIds.claws,
   clawRunStart: seqIds.clawRunStart, clawRun: seqIds.clawRun, clawRunEnd: seqIds.clawRunEnd,
   husks: seqIds.husks, parasite: seqIds.parasite, curse: seqIds.curse, spores: seqIds.spores, flowers: seqIds.flowers,
   leave: seqIds.leave, back: seqIds.back, surge: seqIds.surge, blastForm: seqIds.blastForm, blast: seqIds.blast, death: seqIds.death,
 };
-const form = (npcTypeId, walkSeqId = seqIds.walk) => ({ npcTypeId, idleSeqId: seqIds.idle, walkSeqId, deathSeqId: seqIds.death, bossDeathAnimationEnabled: true, attackClips: bossClips });
+const form = (npcTypeId, idleSeqId = seqIds.idle) => ({ npcTypeId, idleSeqId, walkSeqId: seqIds.walk, deathSeqId: seqIds.death, bossDeathAnimationEnabled: true, attackClips: bossClips });
 const totemTypes = Object.values(npcTypeIds.totems).flatMap(([dormant, ready, charged]) => [
   { npcTypeId: dormant, attackClips: {} },
   { npcTypeId: ready, attackClips: {} },
@@ -72,7 +73,8 @@ const renderConfig = {
   primaryNpc: { actorId: bossActorId, npcTypeId: 11153, basePosition: bossStart, size: bossSize, deathSeqId: seqIds.death },
   preloadNpcTypes: [
     ...Object.entries(npcTypeIds.forms).flatMap(([shielded, weak]) => [form(Number(shielded)), form(weak)]),
-    form(npcTypeIds.blast, seqIds.blastWalk),
+    form(npcTypeIds.asleep, seqIds.asleep),
+    form(npcTypeIds.blast, seqIds.blastIdle),
     form(npcTypeIds.desperation),
     ...totemTypes,
     ...Object.values(npcTypeIds.husks).map((npcTypeId) => ({ npcTypeId, idleSeqId: husk.idle, walkSeqId: husk.walk, deathSeqId: husk.death, attackClips: { rise: husk.spawn, magic: husk.magic, range: husk.range } })),
