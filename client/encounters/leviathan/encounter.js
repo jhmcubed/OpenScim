@@ -295,7 +295,10 @@ export const versions = {
     sideOrbHit: [0, 25],
     // WIKI: 60 in its infobox; its Strategies says up to 59, which fits under it.
     smokeHit: [0, 60],
-    stunTicks: 15, // WIKI
+    // OBS 11/26: three stuns let run out: held still to 13, 13 and 14 ticks after
+    // the message, the next orb at 14, 14 and 15, the volley going on where it
+    // stopped, no special. WIKI: 15.
+    stunTicks: 14,
     // WIKI: the stun resets it to the second volley, and each later one a volley
     // further down. OBS kills: the second after the first stun (23 of 23). OBS
     // 11/26: the second, the third, then the third again.
@@ -332,7 +335,9 @@ export const versions = {
     lightningHit: [19, 22], // OBS 11/25: 9 strikes, 19 to 22
     sideOrbHit: [19, 25], // inferred: as the rocks; none of 1,164 landed on the player
     smokeHit: [70, 75], // OBS 11/25: 70, 70 and 73; WIKI: 75 in its infobox, "70+"
-    stunTicks: 12, // OBS 11/25: still stunned 12 ticks in (2 of 47; 11 ticks in, 12 of 47), its end not seen. WIKI: half of 15
+    // OBS 11/25: still stunned 12 ticks in (2 of 47; 11 ticks in, 12 of 47), its
+    // end not seen; as post-quest (inferred). WIKI: half of 15, which is not so.
+    stunTicks: 14,
     volleyAfterStun: () => 2, // OBS 11/25: the third, from the first stun to the thirteenth (32 orbs: 2 ticks apart, flying 4, melee among them)
     // OBS 11/25: an orb a tick flying 3, magic and ranged (28 and 17); the first 6
     // ticks after the roar's rocks fall (3 of 3); rocks again 8 ticks after those
@@ -590,8 +595,9 @@ class LeviathanEncounter {
     }
     if (this.stun) {
       if (tick < this.stun.until) return idle;
+      // Run out: the volley goes on where it stopped, its next orb at once (OBS 11/26).
       this.endStun(npc);
-      this.nextAttackTick = tick + this.currentVolley().interval;
+      this.nextAttackTick = tick;
     }
     const player = context.world.getPlayer();
     if (this.special || tick < this.nextAttackTick || !player?.alive) return idle;
@@ -819,7 +825,6 @@ class LeviathanEncounter {
     return shadowSpells.has(spellId) && this.stun === null && !this.enraged && !this.special;
   }
   beginStun(boss, at) {
-    this.stuns++;
     this.epoch++;
     this.stun = { since: this.tick, until: this.tick + this.version.stunTicks, face: [at[0] - centre[0], at[1] - centre[1]], dealt: 0 };
     boss.lockedFacing = boss.facing;
@@ -836,7 +841,10 @@ class LeviathanEncounter {
     this.stun = null;
     delete boss.lockedFacing;
   }
+  // OBS 11/26: only the stuns broken count towards the volley after one (a stun
+  // run out and one broken: the second after it, not the third).
   breakStun(boss, rear) {
+    this.stuns++;
     this.endStun(boss);
     this.epoch++;
     this.volley = this.version.volleyAfterStun(this.stuns);

@@ -152,14 +152,14 @@ for (const kind of [BOSS, AWAKENED]) {
     });
     const stunned = run.first(message("stuns the Leviathan"));
     assert.deepEqual(run.hitsOn(BOSS).filter(({ tick }) => tick <= stunned).map(({ amount }) => amount), [0]);
-    const length = kind === AWAKENED ? 12 : 15; // awakened, a hit 12 ticks in still finds it stunned
+    const length = 14; // OBS 11/26, post-quest: the next orb 14 ticks after (2 of 3); awakened, as it (inferred)
     assert.equal(until - stunned, length);
     const front = run.hitsOn(BOSS).filter(({ tick }) => tick > stunned && tick < stunned + length);
     assert.ok(front.length > 0 && front.every(({ amount }) => amount <= 10), front.map(({ amount }) => amount).join());
     assert.equal(run.first(message("weak spot")), undefined);
-    // Held still for its time: 15 ticks (WIKI), 12 awakened, then an orb its interval later.
-    const orb = run.first((entry) => entry.orb && entry.tick > stunned);
-    assert.ok(orb >= stunned + length && orb <= stunned + length + 3, `an orb ${orb - stunned} ticks in`);
+    // Held still for its time, then an orb at once, with no special.
+    assert.equal(run.first((entry) => entry.orb && entry.tick > stunned), stunned + length);
+    assert.equal(run.first(message("charges up")) ?? run.first(message("spit out")), undefined);
 
     // From the west, a player almost level with its middle to the east of it is behind it; one to the west is not.
     for (const [from, tile, behind] of [[[24, 36], [34, 42], true], [[24, 36], [32, 42], false], [[26, 43], [41, 37], true]]) {
@@ -487,4 +487,34 @@ test("awakened: its first volley is the post-quest second, 2 ticks apart", { ski
   const run = await fight({ kind: AWAKENED, ticks: 16, script: (tick, api) => prayAgainstOrbs(api, tick) });
   const orbs = run.ticksOf((entry) => entry.orb);
   assert.deepEqual(orbs.slice(1, 5).map((tick, n) => tick - orbs[n]), [2, 2, 2, 2]); // OBS 11/26
+});
+
+test("post-quest: a stun that runs out goes on with the volley, and does not count towards the next one broken", { skip }, async () => {
+  // OBS 11/26: a stun run out in the third volley, its orbs going on to 8; then a stun broken: the second volley after it.
+  let woken = false;
+  let broken = false;
+  let after = null;
+  const run = await fight({ kind: BOSS, ticks: 120, script(tick, api) {
+    if (tick === 1) {
+      api.engine.encounter.volley = 2;
+      api.engine.encounter.nextSpecial = "smoke";
+      place(api, [24, 36]);
+      castOn(api, BOSS, "Shadow Barrage");
+    }
+    const s = state(api);
+    if (!woken && s.stunnedUntil === null && api.engine.encounter.stuns === 0 && tick > 25) {
+      woken = true; // it ran out: stun it again, and break this one from behind
+      castOn(api, BOSS, "Shadow Barrage");
+    }
+    if (woken && s.stunnedUntil !== null && !broken) {
+      if (api.player().position[0] < 37) place(api, [39, 36]);
+      attack(api, BOSS);
+    }
+    if (s.special) broken = true;
+    if (broken && !s.special && after === null && tick > 40) after = s.volley;
+  } });
+  const first = run.first(message("stuns the Leviathan"));
+  const orbs = run.ticksOf((entry) => entry.orb && entry.tick > first && entry.tick < first + 30);
+  assert.deepEqual(orbs.slice(0, 2).map((tick) => tick - first), [14, 16], "the third volley goes on, 2 ticks apart");
+  assert.equal(after, 2, "the second volley after the first stun broken");
 });
