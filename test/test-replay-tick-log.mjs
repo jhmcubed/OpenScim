@@ -1,11 +1,14 @@
-// The replay's tick log (client/replay/tickLog.js, tickLogPanel.js). First
-// what it says, without a page: on frames made up here, then on two
-// scripted fights of each file of the determinism harness, where every
-// hitsplat, monster attack on the player and death has its line on its tick.
-// Then in the application, on the Fortis Colosseum: it opens with the replay,
-// a click on a tick moves the playhead there and leaves the replay's keys
-// working, it follows the playhead as the replay plays, hides the kinds one
-// hides and closes to its title, and goes with the replay.
+// The replay's tick log (client/replay/tickLog.js, tickLogPanel.js) and the
+// strip over its slider (traceStrip.js). First what they say, without a
+// page: on frames made up here, then on two scripted fights of each file of
+// the determinism harness, where every hitsplat, monster attack on the player
+// and death has its line on its tick. Then in the application, on the Fortis
+// Colosseum: the log opens with the replay, a click on a tick moves the
+// playhead there and leaves the replay's keys working, it follows the
+// playhead as the replay plays, hides the kinds one hides and closes to its
+// title, and goes with the replay; the strip draws the fight where the slider
+// has each tick, says over a tick what happened on it, and a click or a drag
+// on it moves the playhead.
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { cacheZip, loadEnvironment, loadScenarios, runScenario, scenarioFiles } from "../tools/determinism/harness.mjs";
@@ -17,6 +20,7 @@ if (!existsSync(cacheZip)) {
 }
 await loadEnvironment();
 const { describeFrame, createNames, createTickLog, rowAtFrame, sentence, tickLogKinds, tickLogText, prayerName } = await import("../client/replay/tickLog.js");
+const { traceOf, frameX, frameAtX, columnsOf, pointNear } = await import("../client/replay/traceStrip.js");
 
 // --- one tick, made up --------------------------------------------------------
 const items = { 26374: "Zaryte crossbow", 22322: "Avernic defender", 3024: "Super restore(4)", 13441: "Anglerfish" };
@@ -151,6 +155,39 @@ assert.equal(tickLogText(rows, (kind) => kind !== "marker"), "tick 101: Araxxor 
 assert.deepEqual([0, 1, 2, 3, 5, 6, 9].map((frameIndex) => rowAtFrame(rows, frameIndex)), [-1, 0, 0, 1, 2, 3, 3]);
 assert.equal(rowAtFrame([], 4), -1);
 
+// --- the strip over the slider, made up ----------------------------------------
+// A tick's hits added up (twice the same hit is twice its damage), healing left out; flags for the rest.
+const traced = traceOf([
+  { frameIndex: 1, tick: 11, entries: [{ kind: "hit", amount: 3, splat: "damage", count: 2 }, { kind: "hit", amount: 9, splat: "heal" }, { kind: "taken", amount: 7, splat: "venom" }] },
+  { frameIndex: 2, tick: 12, entries: [{ kind: "xp", text: "+10 xp" }, { kind: "message", text: "Wave: 2" }, { kind: "marker", text: "wave 2" }] },
+  { frameIndex: 3, tick: 13, entries: [{ kind: "attack", text: "Araxxor: drip", special: true }, { kind: "death", text: "Araxxor egg died", count: 2 }, { kind: "prayer", text: "Rigour on" }] },
+  { frameIndex: 4, tick: 14, entries: [{ kind: "death", text: "You died", you: true }, { kind: "taken", amount: 0, splat: "block" }] },
+]);
+assert.deepEqual(
+  traced.map(({ frameIndex, dealt, taken, bossSpecial, kills, died, prayer }) => ({ frameIndex, dealt, taken, bossSpecial, kills, died, prayer })),
+  [
+    { frameIndex: 1, dealt: 6, taken: 7, bossSpecial: false, kills: 0, died: false, prayer: false },
+    { frameIndex: 3, dealt: 0, taken: 0, bossSpecial: true, kills: 2, died: false, prayer: true },
+    { frameIndex: 4, dealt: 0, taken: 0, bossSpecial: false, kills: 0, died: true, prayer: false },
+  ],
+  "a tick with nothing to draw (XP, messages, markers) is left out",
+);
+// Each frame where the slider has it, and back.
+for (let frameIndex = 0; frameIndex < 57; frameIndex++) assert.equal(frameAtX(frameX(frameIndex, 57, 400, 6), 57, 400, 6), frameIndex);
+assert.equal(frameX(0, 57, 400, 6), 3);
+assert.equal(frameX(56, 57, 400, 6), 397);
+assert.equal(frameAtX(-20, 57, 400, 6), 0);
+assert.equal(frameAtX(900, 57, 400, 6), 56);
+// More ticks than pixels: those of a pixel are added up.
+const crowded = Array.from({ length: 6 }, (unused, index) => ({ frameIndex: 3000 + index, tick: 3000 + index, dealt: 10, taken: 1, bossSpecial: index === 5, special: false, kills: 0, died: false, prayer: false, gear: false, supply: false }));
+const [column, ...others] = columnsOf(crowded, 6000, 100, 6);
+assert.equal(column.x, 50);
+assert.equal(others.length, 0);
+assert.deepEqual([column.dealt, column.taken, column.bossSpecial], [60, 6, true]);
+// Over the strip, the tick near the pointer, if one is near enough.
+assert.equal(pointNear(traced, frameX(3, 57, 400, 6) + 3, 57, 400, 6).frameIndex, 3);
+assert.equal(pointNear(traced, frameX(20, 57, 400, 6), 57, 400, 6), null);
+
 // --- the scripted fights, two of each file: each hitsplat, attack on the player and death has its line, on its tick ---
 const counted = (entries, kind) => entries.filter((entry) => entry.kind === kind).reduce((total, entry) => total + (entry.count ?? 1), 0);
 let fights = 0;
@@ -175,6 +212,12 @@ for (const scenario of scenarios) {
     for (const entry of entries) assert.ok(entry.text && !/undefined|NaN|\[object/.test(sentence(entry)), `${where}: "${sentence(entry)}"`);
     if (byFrame.has(index)) assert.equal(byFrame.get(index).tick, frame.state.currentTick);
   });
+  // The strip draws all the damage done, to the monsters and to you.
+  const splats = recorded.flatMap((frame) => frame.events.filter((event) => event.type === "hitsplat_spawned" && event.hitsplatType !== "heal"));
+  const fightTrace = traceOf(fightRows);
+  const added = (key) => fightTrace.reduce((sum, point) => sum + point[key], 0);
+  assert.equal(added("dealt"), splats.filter((event) => event.targetId !== "player").reduce((sum, event) => sum + event.amount, 0), `${scenario.name}: the damage done`);
+  assert.equal(added("taken"), splats.filter((event) => event.targetId === "player").reduce((sum, event) => sum + event.amount, 0), `${scenario.name}: the damage taken`);
 }
 assert.ok(fights > 15, `${fights} fights`);
 console.log(`The tick log says every hit, attack and death of ${fights} scripted fights on its tick`);
@@ -260,6 +303,48 @@ try {
   assert.equal(await follow.getAttribute("aria-pressed"), "true");
   assert.ok(await inView());
 
+  // The strip over the slider: the fight drawn, each tick where the slider has it; over one, what happened on it;
+  // a click goes to it and a drag along the strip goes along the replay.
+  const strip = await page.evaluate(async () => {
+    const { traceOf, frameX } = await import("/replay/traceStrip.js");
+    const { createTickLog } = await import("/replay/tickLog.js");
+    const frames = recorder.L$();
+    const element = document.querySelector(".replay-trace");
+    const rect = element.getBoundingClientRect();
+    const scale = rect.width / element.clientWidth;
+    const thumb = parseFloat(getComputedStyle(document.querySelector(".replay-seek-track")).getPropertyValue("--seek-thumb"));
+    const canvas = element.querySelector("canvas");
+    const pixels = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+    let painted = 0;
+    for (let index = 3; index < pixels.length; index += 4) if (pixels[index] > 0) painted++;
+    const at = (frameIndex) => rect.left + frameX(frameIndex, frames.length, element.clientWidth, thumb) * scale;
+    // The slider's own thumb at the same frame: the strip has each tick where the slider has it.
+    const seek = document.querySelector(".replay-seek");
+    const seekRect = seek.getBoundingClientRect();
+    const sliderAt = (frameIndex) => seekRect.left + (thumb / 2 + ((seek.clientWidth - thumb) * frameIndex) / (frames.length - 1)) * scale;
+    const points = traceOf(createTickLog().rows(frames)).map(({ frameIndex }) => ({ frameIndex, x: at(frameIndex), slider: sliderAt(frameIndex) }));
+    return { painted, points, left: rect.left, right: rect.right, y: rect.top + rect.height / 2, total: frames.length };
+  });
+  assert.ok(strip.points.length > 0 && strip.painted > 0, "the fight is drawn");
+  for (const { x, slider } of strip.points) assert.ok(Math.abs(x - slider) < 1, `a tick at ${x} on the strip, ${slider} on the slider`);
+  const marked = strip.points[Math.floor(strip.points.length / 2)];
+  await page.mouse.move(marked.x, strip.y);
+  const tip = page.locator(".replay-trace__tip");
+  await tip.waitFor({ timeout: 5000 });
+  assert.match(await tip.innerText(), new RegExp(`^Tick ${ticks[marked.frameIndex]}\\n.+`));
+  await page.mouse.click(marked.x, strip.y);
+  await fight.waitForPlayhead(marked.frameIndex);
+  await page.mouse.move(strip.left + 2, strip.y);
+  await page.mouse.down();
+  await fight.waitForPlayhead(0);
+  await page.mouse.move(strip.right - 2, strip.y, { steps: 10 });
+  await page.mouse.up();
+  await fight.waitForPlayhead(strip.total - 1);
+  await page.keyboard.press("ArrowLeft");
+  await fight.waitForPlayhead(strip.total - 2);
+  await page.mouse.move(strip.left, strip.y - 200);
+  await tip.waitFor({ state: "hidden", timeout: 5000 });
+
   // A kind hidden is gone from every tick, and kept; the log closes to its title, and is kept closed.
   const kind = listed.flatMap(({ kinds }) => kinds).find((each) => each !== "marker");
   const lines = page.locator(".replay-tick-log__entry--" + kind);
@@ -286,7 +371,7 @@ try {
   await fight.closeReplay();
 
   assert.deepEqual(errors, []);
-  console.log("The tick log lists the replay's ticks, goes to one on a click, follows the playhead, hides kinds and closes");
+  console.log("The tick log lists the replay's ticks, goes to one on a click, follows the playhead, hides kinds and closes; the strip draws the fight where the slider has each tick and goes where it is clicked or dragged");
 } finally {
   await browser.close();
 }
