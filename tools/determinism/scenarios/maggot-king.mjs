@@ -108,7 +108,7 @@ export const scenarios = [
     },
   },
   {
-    // Below a fifth (300): the first screech fills the room with four larvae.
+    // Below about 299 (at 290): the first screech fills the room with four larvae.
     // The player shoots two down in the air and lets the others land; one of
     // them crawls under him and leeches him until he steps off.
     name: "maggot-king/larvae",
@@ -118,7 +118,7 @@ export const scenarios = [
     mechanics: { infiniteHealth: true, infinitePrayer: true },
     ...rangedGear,
     script(tick, api) {
-      if (tick === 1) setBossHp(api, 300);
+      if (tick === 1) setBossHp(api, 290);
       pray(api, tick);
       const larvae = api.npcs().filter((npc) => npc.npcTypeId === 15743);
       const flying = flyingLarva(api, tick);
