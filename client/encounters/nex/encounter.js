@@ -767,7 +767,8 @@ export const nexDefinition = {
     defaultMechanicsConfig: { [teamSizeKey]: defaultTeamSize },
     mechanicsToggles: [{
       key: teamSizeKey, label: "Team size", setup: true,
-      choices: [1, 2, 3, 4, 5].map((size) => ({ value: size, label: size === 1 ? "Solo" : `${size} (you and ${size - 1})` })),
+      choices: [1, 2, 3, 4, 5].map((size) => ({ value: size, label: size === 1 ? "Solo" : String(size) })),
+      info: "Players in all, you included. The others are teammates the fight plays for you.",
     }],
     bossHpPresets: phasePresets,
     debugActions: [],
