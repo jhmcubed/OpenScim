@@ -17,10 +17,6 @@ const rebuildsPerFight = 6;
 // Fights that use what the application does not record: the tutorial's pause and commands, settings changed before the
 // first tick, and a boss taken out of the world by hand.
 const notRecorded = new Set(["engine/tutorial-controls", "inferno/setup-changed-before-start", "sol-heredit/boss-despawned"]);
-// What is known to be wrong: fights that can be gone back to and then go another way. A bug; the test fails when it is
-// gone, so that this line goes with it. The Doom of Mokhaiotl, rebuilt, has no collision where his rocks stand
-// (encounter.js, refineArenaConfig).
-const isKnownWrong = (name) => name.startsWith("doom/");
 // What the application leaves out as it compares (Grid.js, rIe, UAe): logs and the histories the scene draws from.
 const leftOut = new Set(["eventLog", "playerHistory", "primaryNpcHistory", "history", "crawlMovement", "damageHistory"]);
 const compared = (value) =>
@@ -36,7 +32,6 @@ const skip = !existsSync(cacheZip) && `${cacheZip} is missing (npm run assets)`;
 
 test("every fight can be gone back to, all through it, and ends the same from there", { skip }, async () => {
   const problems = [];
-  const wrong = new Set();
   let fights = 0, rebuilds = 0;
   for (const scenario of await loadScenarios()) {
     if (scenario.pure || notRecorded.has(scenario.name)) continue;
@@ -73,14 +68,12 @@ test("every fight can be gone back to, all through it, and ends the same from th
             rebuilt.advanceTick(frame.input);
           }
           const end = stateText(rebuilt, new Set());
-          if (end !== final && isKnownWrong(scenario.name)) wrong.add(scenario.name);
-          else if (end !== final) problems.push(`${scenario.name}: played on from tick ${tick}, it ends differently: ${firstDifference(final, end)}`);
+          if (end !== final) problems.push(`${scenario.name}: played on from tick ${tick}, it ends differently: ${firstDifference(final, end)}`);
         }
       },
     });
   }
   assert.deepEqual(problems, []);
-  assert.ok(wrong.size > 0, "what is known to be wrong still is");
   assert.ok(fights > 100 && rebuilds > 500, `${fights} fights, ${rebuilds} rebuilds`);
 });
 
