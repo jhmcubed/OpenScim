@@ -18113,9 +18113,16 @@ var ea = class {
             antialias: a.antialias,
           };
     // An overlay drawn over the scene (widgetModelView) needs a canvas that
-    // shows through where it draws nothing.
+    // shows through where it draws nothing. What it draws is premultiplied
+    // already: its faces are blended (SRC_ALPHA) onto a clear canvas, so a
+    // face of alpha a leaves its colour times a. Declared so, the page lays
+    // it over the scene as it is; declared not, the browser multiplies by
+    // alpha once more to composite (its translucent faces came out darker):
+    // a conversion on every frame the overlay is drawn. OBS 11/2026: the
+    // Duke's gaze dropped frames on Firefox, not on Edge; that this
+    // conversion is why is inferred.
     if (a?.alpha === true) {
-      this.contextAttributes = { ...this.contextAttributes, alpha: true };
+      this.contextAttributes = { ...this.contextAttributes, alpha: true, premultipliedAlpha: true };
     }
     const context4 = e.getContext("webgl2", this.contextAttributes);
     sg.end("PicoGLRenderer.getContext");
