@@ -661,7 +661,7 @@ export function zebakDefinition({
         },
         {
           key: "other",
-          label: "Other raid points",
+          label: "Invocation level",
           setup: true,
           choices: [
             0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600,

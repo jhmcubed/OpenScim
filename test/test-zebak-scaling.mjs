@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {chromium} from "playwright-core";
 import {soloZebakHitpoints, zebakAutoMaxHit} from "../client/toa/zebak/rules.js";
+import {zebakDefinition} from "../client/toa/zebak/native.js";
 
 // Published solo observations in the Wiki DPS calculator's TombsOfAmascut.test.ts
 // and the path 4, raid 145 HUD in https://youtu.be/mwKeq1tP05Y?t=545.
@@ -15,6 +16,11 @@ for (const [raid, path, melee, projectile] of [
   assert.equal(zebakAutoMaxHit(true, raid, path), melee);
   assert.equal(zebakAutoMaxHit(false, raid, path), projectile);
 }
+
+// The practice menu names the raid level chosen beside the invocations' own toggles "Invocation level".
+const raidChoice = zebakDefinition({seedRandom: () => () => 0.5, walkable: () => new Set(), animate() {}})
+  .controls.mechanicsToggles.find(toggle => toggle.key === "other");
+assert.equal(raidChoice.label, "Invocation level");
 
 const browser = await chromium.launch({
   executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe",
