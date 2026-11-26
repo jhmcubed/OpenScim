@@ -66,8 +66,19 @@ try {
     }),
     ["2", { x: 53, y: 100 }, false, true],
   );
+
+  // Another delve chosen in the set-up is the one Restart fights, and the
+  // chat says which: delve 4, his 600 hitpoints (TABLE).
+  await page.getByRole("button", { name: "Practice" }).click();
+  await page.getByRole("radiogroup", { name: "Delve" }).getByRole("radio").nth(2).click(); // 2, 3, 4
+  await page.getByRole("button", { name: "Restart fight" }).click();
+  await page.waitForFunction(
+    () => engine.encounter.rules.delve === 4 && engine.worldState.actors.get("doom").vitals.maxHp === 600 && document.body.innerText.includes("Delve level: 4"),
+    null,
+    { timeout: 30000 },
+  );
   assert.deepEqual(errors, []);
-  console.log("The Doom of Mokhaiotl loaded on /doom-of-mokhaiotl/, attacked, and was won; delves 2-8 load their own room");
+  console.log("The Doom of Mokhaiotl loaded on /doom-of-mokhaiotl/, attacked, and was won; delves 2-8 load their own room, and a restart names the delve chosen");
 } finally {
   await browser.close();
 }

@@ -79,6 +79,11 @@ const shieldEndAttackChance = 0.5;
 const shieldPoints = 500;
 const shieldChargeTicks = 17;
 const shieldStoreCap = 50;
+// OBS: "Delve level: N" in the game's red (mes_hl_red) as each delve starts,
+// 122 of 122 delves 2 to 8, 5 or more ticks before he surfaces; delve 1's
+// comes before the recordings start (inferred). The red is the one the other
+// fights' red messages use (inferred).
+const delveMessageColor = "#ff3045";
 
 const bossDefinition = defineNpc({
   id: "doom-of-mokhaiotl",
@@ -205,6 +210,8 @@ class DoomEncounter {
     this.burrow.reset();
     // He surfaces as the fight starts (captured: anim 12418 with graphic 3372).
     this.later(1, (ctx) => this.animate(ctx, "emerge", [{ spotAnimId: spotAnims.emerge, target: buildActorVisualTarget(this.boss(ctx.world)), height: 0, delayCycles: 0 }]));
+    // The game names the delve as it starts, so a restart says which one is fought.
+    this.later(1, (ctx) => ctx.tickEvents.emit({ type: "game_message", kind: "game", segments: [{ text: `Delve level: ${this.rules.delve}`, color: delveMessageColor }] }));
   }
   randomInt(low, high) {
     return low + Math.floor(this.random() * (high - low + 1));
