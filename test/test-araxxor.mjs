@@ -35,6 +35,24 @@ try {
   await page.waitForFunction(() => window.engine && window.scene, null, { timeout: 60000 });
   await page.locator(".loading-screen").waitFor({ state: "hidden", timeout: 60000 });
   assert.equal(new URL(page.url()).pathname, "/araxxor/");
+
+  // In the setup panel each choice of eggs fits its box (the labels once ran
+  // out of them and over each other); the specials are in the row's info.
+  const practice = page.getByRole("button", { name: "Practice", exact: true }).first();
+  await practice.click();
+  const eggChoices = page.getByRole("radiogroup", { name: "Eggs" });
+  await eggChoices.waitFor({ timeout: 10000 });
+  const choices = await eggChoices.getByRole("radio").evaluateAll((buttons) => buttons.map((button) => {
+    const style = getComputedStyle(button);
+    const room = button.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return { label: button.textContent, fits: button.querySelector("span").getBoundingClientRect().width <= room };
+  }));
+  assert.equal(choices.length, 4);
+  for (const { label, fits } of choices) assert.ok(fits, `"${label}" runs out of its box`);
+  assert.ok(await page.getByRole("button", { name: "About Eggs" }).isVisible());
+  await practice.click();
+  await eggChoices.waitFor({ state: "hidden", timeout: 10000 });
+
   const enragedType = 1_013_668; // the scene's own (presentation.js)
   const types = [13668, enragedType, 13669, 13670, 13671, 13672, 13673, 13674, 13675, 13676];
   await page.waitForFunction((ids) => ids.every((id) => scene.isNpcTypeLoaded(id)), types, { timeout: 60000 });
