@@ -46,6 +46,7 @@ import { delveRules, npcTypeIds, spotAnims, bossStart, bossSize, tongueMaxHit } 
 import { Rocks, Larvae, Shockwave, Acid, roomDefinitions, bossCentre, holyWater } from "./hazards.js";
 import { Burrow } from "./burrow.js";
 import { larvaTrackerToggles, larvaTrackerKeys, larvaTrackerSetting, larvaColor, larvaCounterInfobox } from "./larvaTracker.js";
+import { doomLoadouts } from "./loadouts.js";
 
 export const doomKind = "doom_of_mokhaiotl";
 // The room of the delves, below the Ruins of Mokhaiotl.
@@ -705,6 +706,7 @@ export const doomDefinition = {
     loadsMapLocs: true,
     collision: { mode: "auto", seed: playerStart },
     victory: { title: "VICTORY", narrative: "DOOM OF MOKHAIOTL DEFEATED", accent: "blood" },
+    loadouts: doomLoadouts,
     isWorkInProgress: true,
     variants: roomVariants,
     variantLabel: "Delve",
