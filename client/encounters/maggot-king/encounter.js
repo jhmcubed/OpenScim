@@ -78,6 +78,12 @@ const finalHp = 305;
 const fillHp = 299;
 const spitMaxHit = 46; // WIKI
 const spitTicks = 2; // OBS 15 kills: the hit lands 2 ticks after the spit (324 of 324; the projectile flies from 45 to 60 cycles)
+// WIKI (Maggot King/Strategies): the ranged spit "will also poison the player
+// starting at 8 damage": 40 on the engine's scale (ceil(40 / 5) = 8). OBS (a
+// player's own fights, 2026-11-26): it poisons through Protect from Missiles
+// too, unless the player is immune; the engine poisons on an accurate hit. The
+// 15 recorded kills cannot show it: every player was immune.
+const spitPoison = 40;
 const bileTicks = 3; // OBS 15 kills: the bile lies 3 ticks after the spit lands (324 of 324; its drops fall 90 cycles)
 // His Defence is halved (TABLE "Roaring") from 3 to 8 ticks into a screech
 // (inferred: the time the player's protection prayer was down in the first 23).
@@ -405,7 +411,7 @@ class MaggotKingEncounter {
     boss.facing = boss.lockedFacing ?? 0; // the helper turns him to the player
     const tile = [...player.position];
     this.later(spitTicks, (ctx) => this.splash(ctx, tile, style === "range" ? "poison" : "sticky", spotAnimId));
-    return attack;
+    return style === "range" ? { ...attack, applyPoison: spitPoison } : attack;
   }
   // OBS: the tile and two of its eight neighbours on the floor, at random.
   splash(context, tile, bile, spotAnimId) {
