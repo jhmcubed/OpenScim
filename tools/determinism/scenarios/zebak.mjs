@@ -290,7 +290,7 @@ export const scenarios = [
       if (tick >= 105 && tick < 119) dodge(api); // lets the first crest pass in its gap
       if (tick === 120) walkTo(api, 36, 26); // runs into the two rows behind the first crest, by the southern edge:
       // struck on tick 123 and thrown off the platform, into the water on row 20
-      if (tick === 137) setBossHp(api, 140); // under 25%: enrage, the crests still out vanish
+      if (tick === 137) setBossHp(api, 140); // under 25%: enrage, the crests still out run on to the far shore
       if (tick === 139) walkTo(api, 30, 30); // out by the southern Rock steps
     },
   },
