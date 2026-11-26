@@ -315,7 +315,10 @@ members are optional: `onTickStart`, `playerInputLocked`,
 `monsterStatOverrides`, `onPlayerDamageTaken`, `isTombsOfAmascut`,
 `playerDamageOnNpc`. The last, `(damage, { attacker, target, attack }) =>
 damage`, decides a player's hit on one of the encounter's NPCs as it lands
-(the Doom of Mokhaiotl's larvae and shield); `isDemonbaneAttack(attack)` of
+(the Doom of Mokhaiotl's larvae and shield). `predictPlayerDamageOnNpc`, of
+the same form, says what such a hit will do as the attack is launched,
+without side effects: the experience and the XP drop's hit are given from it
+(the Alchemical Hydra's shield). `isDemonbaneAttack(attack)` of
 `engine/playerAttack/formula.js` tells a demonbane weapon or spell. An NPC
 whose `formulaStats.alwaysAccuratePlayerHit` is true is hit by every attack.
 Two rules are asked as a player's attack is planned, with the rules
