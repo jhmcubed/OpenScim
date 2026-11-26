@@ -54,7 +54,7 @@ import {
   mapSquare, bossSize, bossStart, playerStart, npcTypeIds, formCycle, totems as totemSpecs, isFloor, floorBounds,
   gapTo, footprintTiles, chebyshev, spotAnims, sounds,
 } from "./ids.js";
-import { Specials, drowsyAttackDelay, runCounts } from "./specials.js";
+import { Specials, drowsyAttackDelay, runCounts, curseStops } from "./specials.js";
 import { Minions, totemDefinition, huskDefinition, parasiteDefinition, sleepwalkerDefinition, sleepwalkerCounts } from "./minions.js";
 import { phosanisNightmareLoadouts } from "./loadouts.js";
 
@@ -700,9 +700,18 @@ class PhosanisNightmareEncounter {
         melee: this.melee.filter((swing) => swing.at >= now).map((swing) => ({ ...swing, stoppedBy: this.specials.protectionFor("melee") })),
         ...this.specials.snapshot(now),
         ...this.minions.snapshot(now),
+        ...(this.specials.curse ? { playerOverheadPrayer: this.cursedOverhead() } : {}),
       },
       visuals: {},
     };
+  }
+  // Cursed, the icon over the player is that of the style his protection stops now (OBS (Outside, five recordings,
+  // 282 cursed ticks, none otherwise): Protect from Magic shows the missiles icon, Protect from Melee the magic one,
+  // Protect from Missiles the melee one). Read by the scene in place of his prayer's own (rendering.js).
+  cursedOverhead() {
+    const prayer = this.world?.getPlayer()?.activePrayer ?? null;
+    const style = Object.keys(protectionPrayers).find((key) => protectionPrayers[key] === prayer);
+    return style ? protectionPrayers[curseStops[style]] : prayer;
   }
   getNpcDamageSourceLabel(npcId) {
     if (npcId?.startsWith("nightmare-husk")) return "Husk";
