@@ -1347,6 +1347,9 @@ var SOUND_NAMES = {
   9320: "Emberlight Spec (Layer 2)",
   9321: "Emberlight Spec (Layer 3)",
   3892: "Armadyl Crossbow Spec",
+  5306: "Zaryte Crossbow Spec",
+  2911: "Ruby Bolt Effect",
+  2913: "Diamond Bolt Effect",
   9325: "Scorching Bow Spec Impact (Layer 1)",
   9326: "Scorching Bow Spec Impact (Layer 2)",
   9327: "Scorching Bow Spec (Layer 1)",
@@ -37347,6 +37350,13 @@ var xve = new Set([
   spotAnimIds.VFX_IGNITE_STAFF_01_2X2,
   spotAnimIds.VFX_IGNITE_STAFF_01_3X3,
 ]);
+// An enchanted bolt's effect is heard with its graphic on the target (OBS,
+// recorded kills: ruby's graphic 754 with 2911, 2 client cycles on; diamond's
+// 758 with 2913, 1 on). The other bolts' effects were not recorded.
+var BOLT_EFFECT_SOUNDS = new Map([
+  [754, { id: 2911, delayCycles: 2 }],
+  [758, { id: 2913, delayCycles: 1 }],
+]);
 var Tve = [5053, 5035];
 var ANCIENT_SPELL_SOUNDS = {
   "Smoke Rush": [183, 185],
@@ -37470,6 +37480,12 @@ var Gve = {
   id: 3892,
   delayCycles: 15,
 };
+// Zaryte crossbow, Evoke: 5306 two-thirds of a tick after the shot, in place
+// of the crossbow's 2695 (OBS: all 18 recorded Evokes in Nex kills).
+var ZARYTE_EVOKE_SOUND = {
+  id: 5306,
+  delayCycles: 20,
+};
 var Kve = [
   5027,
   {
@@ -37523,6 +37539,7 @@ var awe = Rve(11802, 20368, 11806, 20372, 11808, 20374);
 var iwe = Rve(4151, 12773, 12774, 26482, 12006, 26484);
 var owe = Rve(29589);
 var rwe = Rve(11785);
+var ZARYTE_CROSSBOW_WEAPONS = Rve(26374, 27186);
 var swe = Rve(27690);
 var lwe = Rve(21003, 27100);
 var cwe = Rve(13263);
@@ -37720,6 +37737,9 @@ function vwe(h2) {
       if (rwe.has(h6)) {
         return Gve;
       }
+      if (ZARYTE_CROSSBOW_WEAPONS.has(h6)) {
+        return ZARYTE_EVOKE_SOUND;
+      }
       if (swe.has(h6)) {
         return Kve;
       }
@@ -37877,6 +37897,7 @@ var coreAudioRules = {
       ...Wve.map((h2) => h2.id),
       Gve.id,
       ...zve.map((h2) => h2.id),
+      ZARYTE_EVOKE_SOUND.id,
       3869,
       5027,
       6182,
@@ -38033,8 +38054,13 @@ var coreAudioRules = {
     preloadIds: [6847, 2681],
   },
   npc_graphic_applied: {
-    resolve: (h2) => (xve.has(h2.spotAnimId) ? cr(Nve) : cC),
-    preloadIds: [Nve.id],
+    resolve: (h2) =>
+      xve.has(h2.spotAnimId)
+        ? cr(Nve)
+        : BOLT_EFFECT_SOUNDS.has(h2.spotAnimId)
+          ? cr(BOLT_EFFECT_SOUNDS.get(h2.spotAnimId))
+          : cC,
+    preloadIds: [Nve.id, ...[...BOLT_EFFECT_SOUNDS.values()].map((h2) => h2.id)],
   },
   status_effect_expired: {
     resolve: (h2) => {
