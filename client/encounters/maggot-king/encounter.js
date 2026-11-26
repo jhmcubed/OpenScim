@@ -193,8 +193,23 @@ class MaggotKingEncounter {
     this.incoming = []; // what will land where: { kind: "bile" | "slam" | "pile" | "fragment", tiles, landsAt }
     this.punish = null;
     this.lastTargetId = null;
+    this.begun = false; // he has had his first turn (an attack or a screech)
+    this.wentFar = true; // a far rotation has been fought: the next far one takes the other style
     this.floor.reset();
     this.larvae.reset();
+  }
+  // The rotation he opens with. In the game he opens far, at full hitpoints.
+  // Hitpoints set before his first turn (the practice panel's "Boss health",
+  // during the countdown) open the run in the phase they call for, as after
+  // a screech at them (inferred: no recording starts below full): near below
+  // meleeHp, near for good below finalHp, the first far rotation ranged.
+  openAt(hp) {
+    if (this.begun) return;
+    const near = hp <= meleeHp;
+    this.phase = near ? "melee" : "distant";
+    this.movement = near ? "near" : "far";
+    this.final = hp <= finalHp;
+    this.wentFar = !near;
   }
   randomInt(low, high) {
     return low + Math.floor(this.random() * (high - low + 1));
@@ -234,6 +249,11 @@ class MaggotKingEncounter {
     boss.position = [...bossStart];
     boss.previousPosition = [...bossStart];
     boss.formulaStats = structuredClone(versions.Far);
+    this.openAt(boss.vitals.hp); // a setting changed during the countdown keeps the hitpoints set before it
+  }
+  // The practice panel set his hitpoints (SimulationEngine.setBossHp).
+  syncBossHp(hp) {
+    this.openAt(hp);
   }
   createNpcs() {
     const hp = getMonsterHitpoints(npcTypeIds.king); // TABLE: 1500
@@ -342,6 +362,7 @@ class MaggotKingEncounter {
     const result = { environmentalDamages: [], npcAttacks: [] };
     const player = context.world.getPlayer();
     if (!boss.alive || !player.alive || this.phase === "dead" || context.tick < this.nextAt) return result;
+    this.begun = true;
     if (this.attacksLeft <= 0) {
       this.screech(boss, context);
       return result;
@@ -444,7 +465,10 @@ class MaggotKingEncounter {
     const fill = !this.filled && hp <= fillHp;
     if (fill) this.filled = true;
     // OBS 15 kills: the far rotations take turns, ranged first, then magic and ranged, whatever near ones come between (59 of 59).
-    if (next === "distant") this.style = this.style === "range" ? "magic" : "range";
+    if (next === "distant") {
+      if (this.wentFar) this.style = this.style === "range" ? "magic" : "range";
+      this.wentFar = true;
+    }
     this.screechAt = tick;
     this.phase = next;
     this.speed = next === "melee" ? slamSpeed : distantSpeed;
