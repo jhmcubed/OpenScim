@@ -106,6 +106,13 @@ try {
         const matrix = scene.npcInstanceManager.instanceRegistry.get(jug.actor.id).currentModelMatrix;
         return window.projectTile({x:matrix[12], y:matrix[13], level:matrix[14]+0.3});
       });
+      // Hovered, a resting jug shows its first option (CACHE, NPC 11735: Push, Pull, Hit), as Zebak shows his,
+      // its name in the cyan of its cache name "<col=00ffff>Jug</col>".
+      await page.mouse.move(jugPoint.clientX, jugPoint.clientY);
+      await page.waitForFunction(() => [...document.querySelectorAll("span")].some(span =>
+        span.textContent === "Jug" && getComputedStyle(span).color === "rgb(0, 255, 255)" &&
+        span.previousElementSibling?.textContent === "Push "), null, {timeout: 3000});
+      assert.ok(!(await page.locator("body").innerText()).includes("<col="));
       if (action === "Pull") {
         await page.mouse.click(jugPoint.clientX, jugPoint.clientY, {button:"right"});
         const item = await page.getByText("Pull", {exact:true}).last().boundingBox();

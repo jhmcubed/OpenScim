@@ -195,6 +195,9 @@ export class ZebakPhases {
       previousPosition: [...position],
       facing: 0,
       ...(kind === "cloud" ? {lockedFacing: 0} : {}),
+      // CACHE (NPC 11735, Jug): options Push, Pull and Hit, no Attack. Hovered, the game shows the first,
+      // "Push Jug", as it shows "Attack Zebak" over him.
+      ...(kind === "jug" ? {hoverShowsOption: true} : {}),
       size: model === 11742 ? 2 : 1,
       alive: true,
       spawnTick: context.tick,
