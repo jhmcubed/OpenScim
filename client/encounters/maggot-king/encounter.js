@@ -77,8 +77,8 @@ const finalHp = 305;
 // OBS 15 kills: the fill at 296 and below (7 screeches), one larva at 303 and 305; WIKI: about 299.
 const fillHp = 299;
 const spitMaxHit = 46; // WIKI
-const spitTicks = 2; // OBS: the hit lands 2 ticks after the spit (the projectile flies from 45 to 60 cycles)
-const bileTicks = 3; // OBS: the bile lies 3 ticks after the spit lands (its drops fall 90 cycles)
+const spitTicks = 2; // OBS 15 kills: the hit lands 2 ticks after the spit (324 of 324; the projectile flies from 45 to 60 cycles)
+const bileTicks = 3; // OBS 15 kills: the bile lies 3 ticks after the spit lands (324 of 324; its drops fall 90 cycles)
 // His Defence is halved (TABLE "Roaring") from 3 to 8 ticks into a screech
 // (inferred: the time the player's protection prayer was down in the first 23).
 const roarWindow = [3, 8];
@@ -90,9 +90,9 @@ const roarWindow = [3, 8];
 const screechHurts = [3, 4];
 const screechDamage = [2, 25];
 const screechSource = "Screech";
-const throwTick = 3; // OBS: shadows, piles thrown, larvae launched, the roar's graphic
-const pileTicks = 4; // OBS: projectile 3796 flies 120 cycles
-const fragmentTicks = 2; // OBS: projectile 3797 flies 60 cycles
+const throwTick = 3; // OBS 15 kills: shadows, piles thrown (79 screeches), larvae launched (59 of 59), the roar's graphic
+const pileTicks = 4; // OBS 15 kills: projectile 3796 flies 120 cycles; a pile hits 7 ticks into the screech (3 of 3)
+const fragmentTicks = 2; // OBS 15 kills: projectile 3797 flies 60 cycles; a fragment hits 9 ticks into the screech (32 of 32), carrion lies from then (79 of 79)
 const pileMaxHit = 25; // WIKI; OBS 15 kills: 10, 11 and 20, without a protection prayer
 // OBS 15 kills: 3 to 6, all 32 fragments that hit (WIKI: up to 10), with
 // Protect from Missiles or Magic up too (3 of them).
@@ -443,7 +443,7 @@ class MaggotKingEncounter {
     // The fill comes once, at the first screech below its line.
     const fill = !this.filled && hp <= fillHp;
     if (fill) this.filled = true;
-    // OBS: the far rotations take turns, ranged and magic, whatever near ones come between.
+    // OBS 15 kills: the far rotations take turns, ranged first, then magic and ranged, whatever near ones come between (59 of 59).
     if (next === "distant") this.style = this.style === "range" ? "magic" : "range";
     this.screechAt = tick;
     this.phase = next;
