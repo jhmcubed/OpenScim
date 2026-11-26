@@ -21,6 +21,7 @@ async function ticksOf(name) {
       const rules = engine.encounter.getEngineRules();
       ticks[tick] = {
         boss: [...boss.position], type: boss.npcTypeId, target: engine.player().attackTarget, hp: boss.vitals.hp,
+        bossTarget: boss.combat.targetId, facing: boss.facing,
         player: [...engine.player().position],
         playerLands: engine.worldState.pendingHits.some((hit) => hit.sourceId === "player" && hit.launchTick === tick && hit.accuracySucceeded),
         playerAttacked: events.some((event) => event.type === "attack_started" && event.sourceId === "player"),
@@ -170,6 +171,16 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   const arrived = ticks.findIndex((tick, n) => n > special && tick.state.blocked.length === 36);
   assert.deepEqual(ticks[arrived].boss, [20, 25]);
   assert.ok(ticks.slice(special + 1, arrived + 1).every((tick, n) => n === 0 || gap(tick.boss, ticks[special + n].boss) <= 1));
+  // On the way it looks where it goes, not at the player: it lets go of him as it sets off (the scene turns an NPC
+  // to its target while it has one), and every step turns it to the step.
+  const steps = ticks.slice(special + 1, arrived + 1).flatMap((tick, n) => {
+    const [dx, dy] = [tick.boss[0] - ticks[special + n].boss[0], tick.boss[1] - ticks[special + n].boss[1]];
+    return dx || dy ? [[tick.facing, (Math.round(Math.atan2(-dx, -dy) * (2048 / (Math.PI * 2))) + 2048) % 2048]] : [];
+  });
+  assert.ok(steps.length > 0);
+  assert.ok(steps.every(([facing, step]) => facing === step), JSON.stringify(steps));
+  assert.ok(ticks.slice(special, arrived + 1).every((tick) => tick.bossTarget === null), ticks.slice(special, arrived + 1).map((tick) => tick.bossTarget).join());
+  assert.equal(ticks[special - 1].bossTarget, "player");
   assert.deepEqual(messageTicks(ticks, "stuns you"), [arrived + 1]);
   assert.ok(ticks.slice(arrived + 1, arrived + 8).every((tick) => same(tick.player, ticks[arrived + 1].player)));
   assert.ok(!same(ticks[arrived + 8].player, ticks[arrived + 1].player));

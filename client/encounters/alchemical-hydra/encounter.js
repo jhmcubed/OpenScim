@@ -539,7 +539,7 @@ class AlchemicalHydraEncounter {
     const kind = phases[this.phase].special;
     if (kind === "fire") {
       // WIKI: it walks to the middle first; the breaths carry their own sequences.
-      this.fire.start(context);
+      this.fire.start(boss, context);
       return;
     }
     faceActorToward(boss, player);
