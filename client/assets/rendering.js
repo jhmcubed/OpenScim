@@ -63879,8 +63879,10 @@ var AZ = new Float64Array(16);
 var LZ = new Float64Array(16);
 var DZ = new Float64Array(0);
 var HZ = new Float64Array(0);
-function MZ(e, a, t, n, s, r) {
-  if (a.useBoundingBox === true) {
+// `boxOnly`: whether the pointer is over the model's box alone, the test the
+// game makes before it looks at a larger model's faces (below).
+function MZ(e, a, t, n, s, r, boxOnly = false) {
+  if (a.useBoundingBox === true || boxOnly) {
     return (function (e, a, t, n, s, r) {
       const {
         verticesX: verticesX,
@@ -63892,12 +63894,14 @@ function MZ(e, a, t, n, s, r) {
       if (verticesCount === 0) {
         return null;
       }
-      let c = Number.POSITIVE_INFINITY;
-      let m = Number.POSITIVE_INFINITY;
-      let h = Number.POSITIVE_INFINITY;
-      let f = Number.NEGATIVE_INFINITY;
-      let u = Number.NEGATIVE_INFINITY;
-      let v = Number.NEGATIVE_INFINITY;
+      // The game's box of a larger model takes in its origin: its minimum
+      // and maximum start there.
+      let c = boxOnly ? modelMatrix[12] : Number.POSITIVE_INFINITY;
+      let m = boxOnly ? modelMatrix[13] : Number.POSITIVE_INFINITY;
+      let h = boxOnly ? modelMatrix[14] : Number.POSITIVE_INFINITY;
+      let f = boxOnly ? modelMatrix[12] : Number.NEGATIVE_INFINITY;
+      let u = boxOnly ? modelMatrix[13] : Number.NEGATIVE_INFINITY;
+      let v = boxOnly ? modelMatrix[14] : Number.NEGATIVE_INFINITY;
       for (let e = 0; e < verticesCount; e++) {
         const a = verticesX[e];
         const t = verticesY[e];
@@ -63939,8 +63943,8 @@ function MZ(e, a, t, n, s, r) {
       const p = (c + f) / 2;
       const k = (m + u) / 2;
       const S = (h + v) / 2;
-      const b = Math.max((f - c) / 2, zZ) + wZ;
-      const y = Math.max((u - m) / 2, zZ) + wZ;
+      const b = Math.max((f - c) / 2, zZ) + (boxOnly ? 0 : wZ);
+      const y = Math.max((u - m) / 2, zZ) + (boxOnly ? 0 : wZ);
       const z = (v - h) / 2;
       const w = new Float64Array(16);
       for (let e = 0; e < 4; e++) {
@@ -63993,6 +63997,15 @@ function MZ(e, a, t, n, s, r) {
         return null;
       }
     })(e, a, t, n, s, r);
+  }
+  // A larger model: the game looks at its faces only when the pointer is over
+  // its box, and then takes each face's rectangle on screen, 5 pixels wider
+  // on each side (RuneLite's Perspective.getClickbox, which clips the faces'
+  // rectangles to that box). Without the box, the rectangles of the faces at
+  // a model's edge reached past it, onto tiles beside Vardorvis or Araxxor
+  // that the player should be able to click.
+  if (MZ(e, a, t, n, s, r, true) === null) {
+    return null;
   }
   const {
     verticesX: verticesX,
