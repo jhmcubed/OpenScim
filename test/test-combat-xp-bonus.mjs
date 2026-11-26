@@ -57,3 +57,8 @@ test("the encounter's combatXpBonusOverrides replace the table's bonus", async (
 test("a monster without a bonus gives the normal experience", async () => {
   close(await hitpointsXpPerDamage("phosanis-nightmare/kill"), 4 / 3);
 });
+
+test("the awakened Vardorvis gives his awakened bonus, 95%, though his NPC id is the post-quest one's", async () => {
+  close(await hitpointsXpPerDamage("vardorvis/awakened-fight"), (4 / 3) * 1.95);
+  close(await hitpointsXpPerDamage("vardorvis/kill"), (4 / 3) * 1.55);
+});
