@@ -8,15 +8,15 @@
 // lands on it.
 import { key, unkey } from "./ids.js";
 
-// OBS: the poison hitsplat as the player steps in (1 to 4, five times
-// recorded); WIKI: it poisons for 8 at first, and erodes poison immunity.
+// OBS 15 kills: the poison hitsplat as the player steps in (1 to 4, 15
+// times); WIKI: it poisons for 8 at first, and erodes poison immunity.
 const poisonContactDamage = [1, 4];
 const poisonSeverity = 40; // 8 a hit (ceil(40 / 5)), the engine's poison scale
 // inferred: how much immunity a step takes, in the poison counter's steps of
 // 30 ticks (tsps: 45 seconds).
 const immunityEroded = 2;
-// WIKI: minor damage, drained from Attack, Strength or Defence; OBS 3 and 4 (4, 3, 4, kill 690 too);
-// tsps 2 to 4.
+// WIKI: minor damage, drained from Attack, Strength or Defence; OBS 15 kills: 2 to 4
+// (20 times); tsps 2 to 4.
 const stickyDamage = [2, 4];
 const drainedStats = ["attack", "strength", "defence"];
 
@@ -44,7 +44,8 @@ export class Floor {
     return [...this.tiles].filter(([tile, what]) => what === "carrion" && unkey(tile)[1] === y).map(([tile]) => unkey(tile)[0]);
   }
   // After the player has moved: bile underfoot is used up, bile that lands
-  // under him too (inferred: the recordings' player always stepped away first).
+  // under him too (OBS, kill 694: sticky bile landed under a player who stood
+  // still, was gone the next tick and hit him for 4 as he stood).
   // Returns the damage it does.
   step(player, context) {
     const what = this.tiles.get(key(player.position));
@@ -68,8 +69,10 @@ export class Floor {
     const stat = drainedStats[Math.floor(random() * drainedStats.length)];
     const level = player.stats?.[stat];
     if (level) player.stats = { ...player.stats, [stat]: { ...level, current: Math.max(0, level.current - damage) } };
-    // OBS: the message. WIKI: the next attack comes a tick later. OBS: stepped
-    // in with the weapon ready, the player attacked on the next tick (kill 690).
+    // OBS: the message (19 of 19). WIKI: the next attack comes a tick later.
+    // OBS: stepped in with the weapon ready, the player attacked on the next
+    // tick (kill 690); the 15 kills cannot tell a tick's delay from the
+    // player's own timing (their clicks fall around the slams).
     message(context, "The sticky acid hampers your ability to attack!");
     context.delayNextAttack(player.id, 1);
     return [{ baseDamage: damage, attackType: "typeless", source: "Sticky bile", playerPosition: [...player.position] }];
