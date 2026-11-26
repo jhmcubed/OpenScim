@@ -5,6 +5,7 @@ import { projectileOverrideDefaults, readProjectileOverrideSettings } from "/plu
 import { getDefenceTrackerInfoboxes } from "/plugins/defenceTracker.js";
 import { pickLobbyObject } from "/lobby/gateways.js";
 import { replayMarkerStore, findUndoFrameIndex, addMarker, isOnTimeline, pickMarker, pickAutoMarker, nameNewAutoMarkers, describeMarker, isRollbackHeld, holdAfterRollback, releaseRollback, showReplayMessage } from "/replay/markers.js";
+import { createTickLogPanel } from "/replay/tickLogPanel.js";
 import {
   pako,
   requireJsxRuntime,
@@ -19945,14 +19946,28 @@ function useReplay({
             .map((marker) => ({
               frameIndex: marker.restoreFrameIndex,
               text: describeMarker(marker),
+              label: marker.label,
               own: marker.label === null,
             }))
         : bIe,
     [fq, markers, h2, frameCount],
   );
+  // The game cache's name of an item, for the tick log (client/replay/tickLog.js).
+  const tickLogItemName = (0, pn.useCallback)(
+    (itemId) => {
+      try {
+        const name = objTypeLoader?.load(itemId)?.name;
+        return name && name !== "null" ? name : null;
+      } catch {
+        return null;
+      }
+    },
+    [objTypeLoader],
+  );
   const hp = (0, pn.useMemo)(
     () => ({
       markers: hpMarkers,
+      itemName: tickLogItemName,
       capture: fl,
       isReplaying: fq,
       replayFrameIndex: fs,
@@ -19993,6 +20008,7 @@ function useReplay({
     [
       fq,
       hpMarkers,
+      tickLogItemName,
       fl,
       fs,
       frameCount,
@@ -46271,6 +46287,29 @@ var ReplayMarkers = (0, pn.memo)(function ({
     ),
   );
 });
+// The tick log beside the replay (client/replay/tickLogPanel.js): what happened
+// on each tick, following the playhead; a click on a tick moves the playhead there.
+function ReplayTickLog({ frames: frames = bIe, frameIndex: frameIndex, markers: markers, disabled: disabled, onSeek: onSeek, itemName: itemName }) {
+  const hostRef = (0, pn.useRef)(null);
+  const panelRef = (0, pn.useRef)(null);
+  const seekRef = (0, pn.useRef)(onSeek);
+  seekRef.current = onSeek;
+  (0, pn.useEffect)(() => {
+    const panel = createTickLogPanel(hostRef.current.ownerDocument, {
+      onSeek: (index) => seekRef.current(index),
+    });
+    hostRef.current.append(panel.element);
+    panelRef.current = panel;
+    return () => {
+      panel.destroy();
+      panelRef.current = null;
+    };
+  }, []);
+  (0, pn.useEffect)(() => {
+    panelRef.current?.update({ frames, frameIndex, markers, disabled, itemName });
+  }, [frames, frameIndex, markers, disabled, itemName, frames.length]);
+  return (0, wn.jsx)("div", { ref: hostRef, className: "replay-tick-log-host" });
+}
 var WaveGrid = (0, pn.memo)(function ({
   chapters: chapters,
   currentIndex: currentIndex,
@@ -46632,6 +46671,7 @@ var ReplayControls = ({
   lateTicks: eH = eze,
   chapters: eI = null,
   markers: markers = eze,
+  itemName: itemName,
   onExitReplay: onExitReplay,
   onStepBack: onStepBack,
   onStepForward: onStepForward,
@@ -48335,6 +48375,14 @@ var ReplayControls = ({
           role: "status",
           children: gH,
         }),
+      (0, wn.jsx)(ReplayTickLog, {
+        frames: frameTimeline,
+        frameIndex: replayFrameIndex,
+        markers: markers,
+        disabled: fz,
+        onSeek: onSeek,
+        itemName: itemName,
+      }),
     ],
   });
 };
