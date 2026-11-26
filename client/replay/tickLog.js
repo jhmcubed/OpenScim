@@ -166,7 +166,7 @@ export function describeFrame(frame, previous, names = createNames()) {
   if (previous) {
     const state = frame.state;
     const before = previous.state;
-    if (before.isAlive && state.isAlive === false) add("death", "You died");
+    if (before.isAlive && state.isAlive === false) add("death", "You died", { you: true });
     if (before.encounterOutcome?.phase !== "victory" && state.encounterOutcome?.phase === "victory") add("marker", "Fight won");
     describePrayers(before.prayerState?.activePrayers, state.prayerState?.activePrayers, add);
     describeGear(before.playerEquipment, state.playerEquipment, names, add);
@@ -247,6 +247,16 @@ export function createTickLog({ itemName } = {}) {
       return rows;
     },
   };
+}
+
+// One log for each way of naming items: the list and the strip over the slider (traceStrip.js) describe a frame once.
+const sharedLogs = new WeakMap();
+const sharedDefault = {};
+/** The log `createTickLog({ itemName })` makes, the same one for the same `itemName`. */
+export function sharedTickLog(itemName) {
+  const key = itemName ?? sharedDefault;
+  if (!sharedLogs.has(key)) sharedLogs.set(key, createTickLog({ itemName }));
+  return sharedLogs.get(key);
 }
 
 /** The row the playhead is on or last passed, by its index in `rows`; -1 before the first. */

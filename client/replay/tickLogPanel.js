@@ -13,10 +13,10 @@
 //
 // The panel holds no focus: the replay's keys (Space, the arrows) still play
 // and step it after a click.
-import { createTickLog, rowAtFrame, sentence, tickLogKinds, tickLogStore } from "./tickLog.js";
+import { rowAtFrame, sentence, sharedTickLog, tickLogKinds, tickLogStore } from "./tickLog.js";
 
-// The colour of a kind's mark, and of a hitsplat's number.
-const kindColors = {
+// The colour of a kind's mark (here and on the strip over the slider, traceStrip.js), and of a hitsplat's number.
+export const kindColors = {
   marker: "#5fb8ff",
   death: "#ff5c7a",
   attack: "#f0a04b",
@@ -132,8 +132,6 @@ export function createTickLogPanel(doc, { onSeek }) {
   element.append(head, kinds, list, empty);
 
   let props = { frames: [], frameIndex: 0, markers: [], disabled: false, itemName: undefined };
-  let log = createTickLog();
-  let logItemName;
   let rows = [];
   let built = null;
   let rowElements = [];
@@ -177,15 +175,11 @@ export function createTickLogPanel(doc, { onSeek }) {
     follow.hidden = !open;
     kinds.hidden = !open;
     for (const button of kindButtons) button.setAttribute("aria-pressed", String(shownKinds[button.dataset.kind] !== false));
-    const key = [props.frames, props.frames.length, props.markers, open, ...Object.values(shownKinds)];
+    const key = [props.frames, props.frames.length, props.markers, props.itemName, open, ...Object.values(shownKinds)];
     if (built && key.length === built.length && key.every((part, index) => part === built[index])) return;
     built = key;
-    if (props.itemName !== logItemName) {
-      logItemName = props.itemName;
-      log = createTickLog({ itemName: logItemName });
-    }
     const shown = (kind) => shownKinds[kind] !== false;
-    rows = open ? log.rows(props.frames, props.markers).filter((row) => row.entries.some((entry) => shown(entry.kind))) : [];
+    rows = open ? sharedTickLog(props.itemName).rows(props.frames, props.markers).filter((row) => row.entries.some((entry) => shown(entry.kind))) : [];
     rowElements = rows.map((row) => renderRow(row, shown));
     list.replaceChildren(...rowElements);
     list.hidden = !open || rows.length === 0;
