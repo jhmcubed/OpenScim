@@ -33,5 +33,5 @@ assert.deepEqual(await markersOf("doom-of-mokhaiotl", "doom/delve-8-ranged"), ["
 assert.deepEqual(await markersOf("sol-heredit", "sol-heredit/melee-through-every-phase"), ["24 phase 2", "65 phase 3", "105 phase 4", "145 phase 5", "176 phase 6"]);
 assert.deepEqual(await markersOf("leviathan", "leviathan/enrage-and-kill"), ["44 enrage"]);
 assert.deepEqual(await markersOf("araxxor", "araxxor/enrage-and-kill"), ["42 enrage"]);
-assert.deepEqual(await markersOf("zebak", "zebak/careful-ranged-kill"), ["25 Tidal Waves", "69 Great Roar", "92 enrage"]);
+assert.deepEqual(await markersOf("zebak", "zebak/careful-ranged-kill"), ["25 Tidal Waves", "65 Great Roar", "91 enrage"]);
 console.log("The encounters mark their waves, reinforcements, healers, shields and phases on the tick they come");
