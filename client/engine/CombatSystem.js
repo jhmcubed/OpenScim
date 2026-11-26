@@ -326,6 +326,17 @@ var CombatSystem = class {
             }),
       };
       combatContext.events.emit(attackStartedEvent);
+      // An enchanted bolt's effect shows on the target as the bolt is fired,
+      // two to three ticks before it lands (OBS: ruby and diamond bolts in
+      // recorded Nex kills, the graphic on the shot's tick).
+      if (attack.procSpotAnimId !== undefined && attack.accuracySucceeded && this.isNpc(target)) {
+        combatContext.events.emit({
+          type: "npc_graphic_applied",
+          targetId: target.id,
+          spotAnimId: attack.procSpotAnimId,
+          height: 0,
+        });
+      }
       combatContext.onAttackStarted?.();
     } else if ("player" === attacker.kind && undefined !== attack.spellId) {
       const spellTargetedEvent = {
@@ -381,7 +392,6 @@ var CombatSystem = class {
         postHitEffects: attack.postHitEffects,
         expectedHit: attack.expectedHit,
         sourceSelfDamageRatio: attack.sourceSelfDamageRatio,
-        ...(attack.procSpotAnimId === undefined ? {} : { procSpotAnimId: attack.procSpotAnimId }),
         launchDamageMultipliers: {
           incomingDamageMultiplier: hitContext.incomingDamageMultiplier,
           outgoingDamageMultiplier: combatContext.outgoingDamageMultiplier,
@@ -514,7 +524,6 @@ var CombatSystem = class {
                 postHitEffects: pendingHit.postHitEffects,
                 expectedHit: pendingHit.expectedHit,
                 sourceSelfDamageRatio: pendingHit.sourceSelfDamageRatio,
-                procSpotAnimId: pendingHit.procSpotAnimId,
                 equipmentHitEffects: pendingHit.equipmentHitEffects,
                 prayerCheckAt: pendingHit.prayerCheckAt,
                 weaponId: pendingHit.weaponId,
@@ -825,15 +834,6 @@ var CombatSystem = class {
         attack.hitsplatType ?? (appliedDamage.effectiveDamage > 0 ? "damage" : "block"),
     };
     combatContext.events.emit(hitsplatEvent);
-    // An enchanted bolt's effect shows on the target as the bolt lands.
-    if (attack.procSpotAnimId !== undefined && attack.accuracySucceeded && this.isNpc(target)) {
-      combatContext.events.emit({
-        type: "npc_graphic_applied",
-        targetId: target.id,
-        spotAnimId: attack.procSpotAnimId,
-        height: 0,
-      });
-    }
     combatContext.onDamageApplied?.(appliedDamage);
     if (
       appliedDamage.effectiveDamage > 0 &&
