@@ -30340,7 +30340,7 @@ function cLe(ez, eA, eB, eC, eD, eE = false, actorId) {
     }
     const jugAction = actorId?.startsWith("zebak-jug-") && ["Push", "Pull", "Hit", "Attack"].includes(eN);
     const minimusAction = actorId === colosseumMinimusActorId && eN === "Start-wave";
-    const eO = jugAction ? () => interactWithZebakJug(actorId, eN) : minimusAction ? talkToColosseumMinimus : "Attack" === eN ? (eD ?? eC) : undefined;
+    const eO = jugAction ? () => interactWithZebakJug(actorId, eN) : minimusAction ? talkToColosseumMinimus : isNpcAttackOption(eN) ? (eD ?? eC) : undefined;
     eH.push({
       action: eN,
       target: eM,
@@ -30356,7 +30356,7 @@ function cLe(ez, eA, eB, eC, eD, eE = false, actorId) {
   });
   // The plugin Attack Ranges' drag protection: the NPC is out of the
   // player's reach, so Examine takes Attack's place at the top.
-  const attackIndex = eH.findIndex((eN) => eN.action === "Attack");
+  const attackIndex = eH.findIndex((eN) => isNpcAttackOption(eN.action));
   if (attackIndex !== -1 && isAttackDragProtected(actorId)) {
     [eH[attackIndex], eH[eH.length - 1]] = [eH[eH.length - 1], eH[attackIndex]];
   }
@@ -48612,7 +48612,12 @@ var MobileToolWindow = (ez) => {
   });
 };
 function sze(ez) {
-  return ez.actions.some((eA) => eA === "Attack");
+  return ez.actions.some(isNpcAttackOption);
+}
+// The options of an NPC that attack it: Attack, and Charge, the only option of
+// the Nightmare's totems (CACHE: 9435 and the other totems), where a hit charges one.
+function isNpcAttackOption(action) {
+  return action === "Attack" || action === "Charge";
 }
 function lze(ez) {
   return ez.actions.some((eA) => eA != null);
