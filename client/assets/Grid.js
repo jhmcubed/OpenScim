@@ -6,6 +6,7 @@ import { getDefenceTrackerInfoboxes } from "/plugins/defenceTracker.js";
 import { pickLobbyObject } from "/lobby/gateways.js";
 import { replayMarkerStore, findUndoFrameIndex, addMarker, isOnTimeline, pickMarker, pickAutoMarker, nameNewAutoMarkers, describeMarker, isRollbackHeld, holdAfterRollback, releaseRollback, showReplayMessage } from "/replay/markers.js";
 import { createTickLogPanel } from "/replay/tickLogPanel.js";
+import { createTraceStrip } from "/replay/traceStrip.js";
 import {
   pako,
   requireJsxRuntime,
@@ -46310,6 +46311,29 @@ function ReplayTickLog({ frames: frames = bIe, frameIndex: frameIndex, markers: 
   }, [frames, frameIndex, markers, disabled, itemName, frames.length]);
   return (0, wn.jsx)("div", { ref: hostRef, className: "replay-tick-log-host" });
 }
+// The strip over the slider (client/replay/traceStrip.js): the fight at a
+// glance, tick by tick, where the slider has each tick; a click goes there.
+function ReplayTrace({ frames: frames = bIe, frameIndex: frameIndex, disabled: disabled, onSeek: onSeek, itemName: itemName }) {
+  const hostRef = (0, pn.useRef)(null);
+  const stripRef = (0, pn.useRef)(null);
+  const seekRef = (0, pn.useRef)(onSeek);
+  seekRef.current = onSeek;
+  (0, pn.useEffect)(() => {
+    const strip = createTraceStrip(hostRef.current.ownerDocument, {
+      onSeek: (index) => seekRef.current(index),
+    });
+    hostRef.current.append(strip.element);
+    stripRef.current = strip;
+    return () => {
+      strip.destroy();
+      stripRef.current = null;
+    };
+  }, []);
+  (0, pn.useEffect)(() => {
+    stripRef.current?.update({ frames, frameIndex, disabled, itemName });
+  }, [frames, frameIndex, disabled, itemName, frames.length]);
+  return (0, wn.jsx)("div", { ref: hostRef, className: "replay-trace-host" });
+}
 var WaveGrid = (0, pn.memo)(function ({
   chapters: chapters,
   currentIndex: currentIndex,
@@ -47760,6 +47784,13 @@ var ReplayControls = ({
   const gI = (0, wn.jsxs)("div", {
     className: "replay-seek-row",
     children: [
+      (0, wn.jsx)(ReplayTrace, {
+        frames: frameTimeline,
+        frameIndex: replayFrameIndex,
+        disabled: fz,
+        onSeek: onSeek,
+        itemName: itemName,
+      }),
       (0, wn.jsxs)("div", {
         className: "replay-seek-track",
         children: [
