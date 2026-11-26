@@ -128,6 +128,11 @@ function fight(tick, api) {
   if (target && me.attackTarget !== target.id) attack(api, target.id);
 }
 
+// Standing where he starts, the player attacks her whenever her shield is up and he is not at it.
+function hitShield(tick, api) {
+  if (state(api).stage === "shield" && api.player().attackTarget !== BOSS) attack(api, BOSS);
+}
+
 export const scenarios = [
   {
     // The whole fight with the guide's melee set, praying against each hit,
@@ -164,6 +169,27 @@ export const scenarios = [
     script(tick, api) {
       if (tick === awake) attack(api, BOSS);
     },
+  },
+  {
+    // The player stands, attacks her while her shield is up and prays nothing; his hit breaks it on the tick she
+    // lands at her surge's lane (131 her leave, 133 the landing), which nulls the surge (Don Danz's recording).
+    name: "phosanis-nightmare/surge-nulled",
+    kind: KIND,
+    seed: 718,
+    ticks: 160,
+    mechanics: health,
+    ...gear,
+    script: hitShield,
+  },
+  {
+    // The same, his hit breaking her shield on the tick she crosses (131 her leave, 137 the crossing): she crosses.
+    name: "phosanis-nightmare/surge-crosses",
+    kind: KIND,
+    seed: 296,
+    ticks: 160,
+    mechanics: health,
+    ...gear,
+    script: hitShield,
   },
   {
     // Her 9418 form first (parasite, flowers, curse): the player stands, attacks her and drinks nothing, so her
