@@ -41,9 +41,9 @@
 // (kill counts 2,766 to 2,789, one player, in ranged gear: 23 stuns, each
 // broken from behind; 11 lightnings, 12 smokes; 23 enrages; 168 roars that
 // are not a stun's; 9 bites, 8 of them in the one fight spent beside the pool).
-// OBS 11/26 is two more of the same player's, of 26 November 2026: a post-quest
-// kill with three stuns, roar rocks, thrown rocks and lightning on the player;
-// an awakened fight of 15 stuns, the player dying enraged.
+// OBS 11/26 is three more of the same player's, of 26 November 2026: a
+// post-quest kill with three stuns, roar rocks, thrown rocks and lightning on
+// the player; two awakened fights of 15 and 16 stuns, the player dying enraged.
 // Plain OBS is rsprox recordings 1703 (an ordinary
 // world's quest fight), 1751, 3285 and six more of Leagues V and Grid Master
 // worlds (the 900-hitpoint Leviathan), as RSPSApp/tsps reads them
@@ -324,7 +324,7 @@ export const versions = {
     // WIKI: 86 at most; OBS 11/26: 84 (1). The least inferred: the post-quest bite's share of its most.
     biteHit: [58, 86],
     // OBS 11/26: 6 orbs 2 ticks apart flying 5 before the first stun, as the
-    // post-quest second volley (1 fight; the four of 11/25 were stunned sooner).
+    // post-quest second volley (2 fights; the four of 11/25 were stunned sooner).
     firstVolley: 1,
     earlyBites: 0, // OBS 11/25: no bite in 26 turns with the player beside the pool, before any roar
     roarHit: [4, 7], // OBS 11/25: 7, 7 and 4; the least as post-quest (OBS kills)
