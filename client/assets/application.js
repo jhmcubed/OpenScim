@@ -7519,6 +7519,7 @@ var cce =
   "docs/packets/weapon-attacks-zamorakian-hasta-abyssal-bludgeon-sarachnis-cudgel-packet-data.txt";
 var dce = "docs/packets/blowpipe-spec-bowfa-attacks-packet-data.txt";
 var CRYSTAL_BOW_OBSERVATION = "docs/research/crystal-bow.md#shot";
+var ZARYTE_CROSSBOW_OBSERVATION = "OBS: 12 recorded Nex kills, 2026-11-26";
 var hce = "docs/packets/inferno-waves-69-zuk-packet-data.txt";
 var pce = "docs/packets/abyssal-bludgeon-special-attack-packet-data.txt";
 var mce = "docs/packets/colosseum-no-sol-packet-data.txt";
@@ -7777,6 +7778,16 @@ var VERIFIED_WEAPONS = {
     projectile: [mce, gce, "src/data/weaponCombatVisuals.ts"],
     special: "none",
   },
+  // Compared with 12 recorded Nex kills (two players, 2026-11-26): ordinary
+  // shots and Evokes, their animation, bolts, sounds and the ruby and diamond
+  // bolt effects; the Evoke's rules and the passive from the wiki.
+  26374: {
+    name: "Zaryte crossbow",
+    animation: [ZARYTE_CROSSBOW_OBSERVATION],
+    sound: [ZARYTE_CROSSBOW_OBSERVATION],
+    projectile: [ZARYTE_CROSSBOW_OBSERVATION],
+    special: [ZARYTE_CROSSBOW_OBSERVATION, "WIKI: Zaryte crossbow"],
+  },
 };
 function Mce(h2) {
   return VERIFIED_WEAPONS[h2];
@@ -7799,6 +7810,8 @@ var WEAPON_VERIFICATION_LIMITATIONS = {
   ],
   // Seercull: its special (Soulshot) is the engine's, drawn with the weapon table's graphics; no recording of it was compared.
   6724: ["Special attack graphics and sounds unverified."],
+  // Only ruby and diamond bolt effects were recorded (BOLT_EFFECT_SOUNDS).
+  26374: ["Opal, pearl, sapphire, emerald, dragonstone and onyx bolt effects have no sound yet."],
   12899: ["Venom not simulated."],
   22292: ["Venom not simulated."],
   11959: [CHINCHOMPA_SOUNDS_UNMODELLED],

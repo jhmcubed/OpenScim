@@ -1,6 +1,7 @@
 // Zaryte crossbow in the browser: an Evoke with ruby dragon bolts (e) is
 // heard as the game plays it (5306, not the ordinary crossbow's 2695), its
-// Blood Forfeit as ruby's 2911.
+// Blood Forfeit as ruby's 2911; the equipment picker counts the crossbow as
+// checked, with only the bolt sounds nobody recorded left to say.
 import assert from "node:assert/strict";
 import {chromium} from "playwright-core";
 
@@ -24,9 +25,12 @@ try {
   await page.route("**/application.js*", async route => {
     const response = await route.fetch();
     const body = await response.text();
-    const marker = "this.bufferCache.set(h2, h8);";
-    assert.ok(body.includes(marker));
-    await route.fulfill({response, body: body.replace(marker, marker + "soundIds.set(h8,h2);")});
+    const soundMarker = "this.bufferCache.set(h2, h8);";
+    const pickerMarker = "function Bce(h2) {";
+    assert.ok(body.includes(soundMarker) && body.includes(pickerMarker));
+    await route.fulfill({response, body: body
+      .replace(soundMarker, soundMarker + "soundIds.set(h8,h2);")
+      .replace(pickerMarker, "window.weaponGaps = describeWeaponVerificationGaps;" + pickerMarker)});
   });
   await page.route("**/engine/SimulationEngine.js*", async route => {
     const response = await route.fetch();
@@ -43,6 +47,9 @@ try {
   await page.mouse.click(640, 425);
   const clickTick = await page.evaluate(() => engine.currentTick);
   await page.waitForFunction((tick) => engine.currentTick > tick + 1, clickTick);
+
+  assert.deepEqual(await page.evaluate(() => weaponGaps(26374)),
+    ["Opal, pearl, sapphire, emerald, dragonstone and onyx bolt effects have no sound yet."]);
 
   await page.evaluate(() => {
     const p = engine.player();
