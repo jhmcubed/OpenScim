@@ -16988,7 +16988,11 @@ function yy(e, a) {
 // width: what the game's server sends, 1 + floor(29 * hp / max) thirtieths,
 // none at 0 hp (RuneLite, OpponentInfoOverlay). It is taken when a hit comes
 // (`state.healthBarVisibleUntilTick` changes) and kept until the next one: in
-// the game a heal does not move the bar.
+// the game a heal does not move the bar. It is kept only once the state drawn
+// has the hit (`hasHit`): live, a frame can take the engine's new events
+// with the application's state of the tick before, and the bar then kept the
+// hitpoints from before the hit until the next one, or for good after a
+// killing hit. A replay hands both from one frame and never had it.
 // The player's health bar sits 15 above his model as it is posed in the
 // frame drawn: the game's logical height (the observer's "healthbars"
 // lines, 2026-11-23: 199 to 201 standing, 192 to 288 attacking; the bar's
@@ -17065,9 +17069,9 @@ function scaleOverlayLayers(roots, k = 1) {
     }
   }
 }
-function shownHealthRatio(state, hp, maxHp) {
+function shownHealthRatio(state, hp, maxHp, hasHit = true) {
   if (state.shownRatioUntilTick !== state.healthBarVisibleUntilTick) {
-    state.shownRatioUntilTick = state.healthBarVisibleUntilTick;
+    state.shownRatioUntilTick = hasHit ? state.healthBarVisibleUntilTick : undefined;
     state.shownRatio = !(maxHp > 0) ? 1 : hp <= 0 ? 0 : Math.min(30, 1 + Math.floor((29 * hp) / maxHp)) / 30;
   }
   return state.shownRatio;
@@ -43641,7 +43645,7 @@ var UIOverlayRenderer = class e {
     }
     const d = r - (i.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS);
     const g = Math.min(d / e.HEALTHBAR_DURATION_TICKS, 1);
-    const c = shownHealthRatio(i, n.playerHP, n.maxHP);
+    const c = shownHealthRatio(i, n.playerHP, n.maxHP, n.currentTick >= i.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS);
     a.healthBars ||= [];
     a.healthBars.push({
       screenX: o.x,
@@ -43982,7 +43986,7 @@ var UIOverlayRenderer = class e {
           s - (d.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS);
         c = Math.min(a / e.HEALTHBAR_DURATION_TICKS, 1);
       }
-      const m = d ? shownHealthRatio(d, o.hp, o.maxHp) : 1;
+      const m = d ? shownHealthRatio(d, o.hp, o.maxHp, l >= d.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS) : 1;
       a.healthBars ||= [];
       a.healthBars.push({
         screenX: g.x,
