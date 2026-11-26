@@ -108,13 +108,20 @@ const fragmentsPerPile = 4;
 const slamMaxHit = 55; // WIKI
 const slamPrayed = 0.64; // WIKI: 35 of 55 through Protect from Melee
 const slamTicks = 2; // OBS 15 kills: graphic 2953 on the twelve tiles and the biles land 2 ticks after the slam (152 of 152)
-const slamBiles = 3; // OBS, WIKI
+const slamBiles = 3; // OBS 15 kills (152 of 152), WIKI
 const drainsRestored = 9; // WIKI: drained Defence is restored after a screech (inferred: as it ends)
-const deathTicks = 8; // OBS: the corpse 8 ticks after his death
-const farReach = 4; // OBS: far, he walks till the player is within 4 columns of his middle
+const deathTicks = 8; // OBS 15 kills: the corpse 8 ticks after the killing hit (his death sequence 1 after it, 13 of 15)
+const farReach = 4; // OBS 15 kills: far, he walks till the player is within 4 columns of his middle (2295 of 2295 ticks)
 const burnDefence = 20; // WIKI: his Magic defence per stack of burn
 const burnPulses = 5; // WIKI: 5 burn damage a fire spell
-const punishBonus = 1.5; // WIKI: the first hitsplat of a punish
+// WIKI: the first hitsplat of a punish. OBS 15 kills, Dharok's greataxe on
+// crush: the largest punish 1.50 times the largest other hit, the mean 1.53
+// times, each scaled by the hitpoints the player was missing.
+const punishBonus = 1.5;
+// WIKI: a crush punish rolls against an 85% lower defence roll. OBS 15 kills:
+// 7 of 148 crush punishes missed, 29 of 97 other crush hits; that miss rate
+// gives a punish 4.4% to miss.
+const crushPunishDefence = 0.15;
 // WIKI (Elemental weakness): the standard spellbook's strikes to surges of the element.
 const fireSpells = new Map(combatSpells.filter((spell) => spell.element === "fire" && spell.spellbook === "standard").map((spell) => [spell.name, spell]));
 const fireSpell = (name) => fireSpells.get(name) ?? null;
@@ -299,6 +306,8 @@ class MaggotKingEncounter {
     // no weakness: here a fire spell's accuracy roll against him is that much
     // likelier to win, as a lower defence roll for the tick it is cast in.
     if (fireSpell(playerSpellName(player))) stats.defensive.magic = Math.floor((stats.defensive.magic + 64) / (1 + weaknessPercent[version] / 100)) - 64;
+    // The crush punish's lower defence roll, as a lower crush bonus for the tick the slam lands.
+    if (this.isSlamTick(this.now) && playerFormulaStyle(player) === "melee_crush") stats.defensive.crush = Math.floor((stats.defensive.crush + 64) * crushPunishDefence) - 64;
     boss.formulaStats = stats;
   }
 
@@ -547,12 +556,12 @@ class MaggotKingEncounter {
   isPunish(target, tick) {
     return target.id === bossActorId && this.isSlamTick(tick) && playerFormulaStyle(this.world?.getPlayer()).startsWith("melee");
   }
-  // A standard ranged hit on a larva in the air never misses (WIKI: it dies of it).
-  // inferred: a crush punish never misses either (WIKI: crush gets "a
-  // significant accuracy boost"; others an unnamed one, not modelled).
+  // A standard ranged hit on a larva in the air never misses (WIKI: it dies of
+  // it). A crush punish can miss (updateStats); the wiki's unnamed boost to
+  // the other styles is not modelled (OBS: 3 slash punishes, too few).
   alwaysAccurate(context, attack) {
     if (this.larvae.isLarva(attack.target)) return this.shootsLarva(attack.target, context.tick, playerFormulaStyle(context.player), context.player?.equipment?.weapon);
-    return attack.target.id === bossActorId && attack.style === "melee" && this.isSlamTick(context.tick) && playerFormulaStyle(context.player) === "melee_crush";
+    return false;
   }
   onPlayerAttackStarted(attack) {
     this.lastTargetId = attack.targetId;
