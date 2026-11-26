@@ -561,17 +561,26 @@ class MaggotKingEncounter {
     return this.slam !== null && this.slam.landsAt === tick;
   }
   // A larva in the air shot with standard ranged (a bow: WIKI, "standard
-  // ranged"; OBS: the player switched to a bow for them) dies at once and costs
-  // the weapon no time (WIKI): it may be shot while the weapon cools down, the
-  // timer kept, unless it was what was attacked last (as the Doom of
-  // Mokhaiotl's larvae). A punish costs a melee weapon no time either.
+  // ranged"; OBS: the player switched to a bow for them) dies at once. It may
+  // be shot while the weapon cools down, unless it was what was attacked last,
+  // and the shot starts the weapon's delay again from its tick: larvae can be
+  // shot a tick apart, and the King waits out the delay of the last one.
+  // WIKI (Strategies): the shot "will incur its normal attack cooldown and
+  // will completely overwrite the cooldown of the previous attack". OBS, a
+  // second player's 5 kills, 17 larvae shot in the air with a bow of
+  // Faerdhinen on rapid (4 ticks), two of them while it cooled down (a tick
+  // after a shot at the King; a tick after another larva of a fill): the next
+  // attack on the King came 4 or more ticks after the larva (17 of 17), 4
+  // after the second of the fill's two. (The larva's own page says the hit
+  // costs no delay: the recordings say otherwise.) A punish costs a melee
+  // weapon no time.
   shootsLarva(target, tick, style, weaponId) {
     return this.larvae.isLarva(target) && this.larvae.flying(target, tick) && style === "ranged" && getRangedDefenceType(weaponId) === "standard";
   }
   attackOnCooldown(target, tick) {
     const player = this.world?.getPlayer();
     const style = playerFormulaStyle(player);
-    if (target.id !== this.lastTargetId && this.shootsLarva(target, tick, style, player?.equipment?.weapon)) return { keepCooldown: true };
+    if (target.id !== this.lastTargetId && this.shootsLarva(target, tick, style, player?.equipment?.weapon)) return { keepCooldown: false };
     if (this.isPunish(target, tick)) return { keepCooldown: true };
     return undefined;
   }
