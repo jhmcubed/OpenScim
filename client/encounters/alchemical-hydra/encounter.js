@@ -553,6 +553,9 @@ class AlchemicalHydraEncounter {
     return {
       // WIKI: 75% less damage while shielded.
       playerDamageOnNpc: (damage, { target, attack }) => (target.id === bossActorId && this.shielded ? this.shieldHit(damage, target, attack) : damage),
+      // The same at launch, which the experience and the XP drop's hit are given from: the game gives them for what the
+      // shield lets through (the play-test of 2026-11-26: the drops' hits were four times the hitsplats).
+      predictPlayerDamageOnNpc: (damage, { target }) => (target.id === bossActorId && this.shielded ? Math.floor(damage * shieldedShare) : damage),
     };
   }
   // A hit on its shield: what is left of it. WIKI: the "BGS spec applies before Hydra's 75% damage reduction": the engine

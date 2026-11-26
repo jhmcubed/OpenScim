@@ -36,6 +36,8 @@ async function ticksOf(name) {
         maxHit: engine.encounter.maxHitOf("range").maxHit,
         drain: boss.debuffs?.defenceDrain ?? 0,
         outcome: engine.getEncounterOutcome().phase,
+        xpDrops: events.filter((event) => event.type === "xp_drop").map((event) => event.predictedHit),
+        hitOnBoss: engine.damageHistory.filter((hit) => hit.tick === tick && hit.targetId === BOSS).map((hit) => hit.effectiveDamage),
       };
     },
   });
@@ -81,6 +83,12 @@ const gap = ([px, py], [x, y]) => Math.max(x - px, 0, px - (x + 5), y - py, py -
   const missing = ticks.flatMap((tick, n) => (tick?.playerAttacked && !tick.playerLands ? [n] : []));
   assert.ok(landing.length >= 5 && missing.length >= 1, landing.length + " land, " + missing.length + " miss");
   assert.deepEqual(messageTicks(ticks, "partially absorb"), landing);
+  // The experience is given for what the shield lets through: each XP drop's hit is the hitsplat it makes (the
+  // play-test of 2026-11-26: they were four times it).
+  const drops = ticks.flatMap((tick) => tick?.xpDrops ?? []);
+  const hitsplats = ticks.flatMap((tick) => (tick?.hitOnBoss ?? []).filter((damage) => damage > 0));
+  assert.ok(drops.length >= 5);
+  assert.deepEqual(drops, hitsplats.slice(0, drops.length));
 
   // The poison: five blobs, the first on the player's tile, landing 3 ticks later; the 3 x 3 splash hurts (up to 7),
   // and the aimed blob's pool under the player hurts 2 to 7 on each of the 13 ticks from the one after the landing.
