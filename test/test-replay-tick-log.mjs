@@ -62,15 +62,25 @@ const [prayedRight, wrongPrayer] = tick([
 assert.deepEqual([prayedRight.tone, wrongPrayer.tone], ["good", "bad"]);
 assert.deepEqual([prayedRight.text, prayedRight.amount, prayedRight.splat], ["on you", 0, "block"]);
 
-// The monsters' attacks on the player, by the last word of their name; any but melee, magic and ranged is a special.
-const attacks = tick([
-  { type: "zuk_attack", attack: "araxxor_melee", sourceId: "araxxor", targetId: "player" },
-  { type: "zuk_attack", attack: "araxxor_drip", sourceId: "araxxor", targetId: "player" },
-  { type: "zuk_attack", attack: "alchemical_hydra_range", sourceId: "araxxor", targetId: "player" },
-  { type: "zuk_attack", attack: "nibbler_melee", sourceId: "araxxor", targetId: "inferno_pillar_west" },
-]);
-assert.deepEqual(said(attacks), ["Araxxor: melee", "Araxxor: drip", "Araxxor: ranged"]);
-assert.deepEqual(attacks.map(({ special }) => special === true), [false, true, false]);
+// The monsters' attacks on the player, by the last word of their name; any but melee, magic and ranged is a special,
+// unless it is the monster's only attack, named after it.
+const attacks = describeFrame(
+  {
+    state: state({ npcs: [npc("araxxor", 13668, "araxxor"), npc("araxyte-2", 13675, "araxyte-mirrorback")] }),
+    events: [
+      { type: "zuk_attack", attack: "araxxor_melee", sourceId: "araxxor", targetId: "player" },
+      { type: "zuk_attack", attack: "araxxor_drip", sourceId: "araxxor", targetId: "player" },
+      { type: "zuk_attack", attack: "alchemical_hydra_range", sourceId: "araxxor", targetId: "player" },
+      { type: "zuk_attack", attack: "araxyte_acidic", sourceId: "araxyte-2", targetId: "player" },
+      { type: "zuk_attack", attack: "nibbler_melee", sourceId: "araxxor", targetId: "inferno_pillar_west" },
+    ],
+    actions: [],
+  },
+  before,
+  names(),
+);
+assert.deepEqual(said(attacks), ["Araxxor: melee", "Araxxor: drip", "Araxxor: ranged", "Acidic Araxyte attacks"]);
+assert.deepEqual(attacks.map(({ special }) => special === true), [false, true, false, false]);
 
 // XP drops, the player's special attacks (not the others), deaths, the end of the fight, messages.
 assert.deepEqual(

@@ -146,7 +146,10 @@ export function describeFrame(frame, previous, names = createNames()) {
       case "zuk_attack":
         if (event.targetId === "player") {
           const style = attackStyle(event.attack);
-          add("attack", `${capitalize(actor(event.sourceId))}: ${style}`, plainStyles.has(style) ? {} : { special: true });
+          const source = capitalize(actor(event.sourceId));
+          // A monster whose attack has its own name has no other ("araxyte_mirrorback" of the Mirrorback Araxyte).
+          if (source.toLowerCase().includes(style)) add("attack", `${source} attacks`);
+          else add("attack", `${source}: ${style}`, plainStyles.has(style) ? {} : { special: true });
         }
         break;
       case "actor_died":
