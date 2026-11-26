@@ -58483,6 +58483,11 @@ function widgetModelView({ canvas, width, height, dpr, npcModelLoader, animation
   const camera = ne(view);
   const clear = { r: 0, g: 0, b: 0, a: 0 };
   const queue = Ty(clear);
+  // The pose last drawn. A pose is made once per client cycle (20 ms), and
+  // the canvas shows what was last drawn on it until it is drawn again, so
+  // a frame within the same cycle draws nothing: at 60 frames a second about
+  // one in six, at 144 more than half.
+  let drawn = null;
   return {
     get cycleMs() {
       return pose.cycleMs;
@@ -58494,7 +58499,16 @@ function widgetModelView({ canvas, width, height, dpr, npcModelLoader, animation
       if (disposed) {
         return;
       }
-      const parts = Pb(pose.poseAt(elapsedMs));
+      const posed = pose.poseAt(elapsedMs);
+      // Forgotten while the context is lost: restored, its canvas is clear.
+      if (Ny(renderer) && renderer.getContextStatus().kind !== "ok") {
+        drawn = null;
+      } else if (posed === drawn) {
+        return;
+      } else {
+        drawn = posed;
+      }
+      const parts = Pb(posed);
       if (parts.transparent && parts.transparentModelFaceIndices && model.faceRenderPriorities) {
         parts.transparent = inFacePriorityOrder(parts.transparent, parts.transparentModelFaceIndices, model.faceRenderPriorities);
       }
