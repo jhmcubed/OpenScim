@@ -75,7 +75,11 @@ export class Floor {
     // player's own timing (their clicks fall around the slams).
     message(context, "The sticky acid hampers your ability to attack!");
     context.delayNextAttack(player.id, 1);
-    return [{ baseDamage: damage, attackType: "typeless", source: "Sticky bile", playerPosition: [...player.position] }];
+    // OBS 15 kills: the game's disease hitsplat (hitsplat 4, 20 of 20), and
+    // the same off hitpoints. WIKI (Disease): "a unique variant of disease";
+    // OBS: it is once, not every 30 ticks (the disease value, varp 456, never
+    // changed, so the hitpoints orb stays red).
+    return [{ baseDamage: damage, attackType: "typeless", source: "Sticky bile", playerPosition: [...player.position], hitsplatType: "disease" }];
   }
   // What the scene draws (presentation.js).
   snapshot() {
