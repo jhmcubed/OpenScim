@@ -93,14 +93,17 @@ const screechSource = "Screech";
 const throwTick = 3; // OBS: shadows, piles thrown, larvae launched, the roar's graphic
 const pileTicks = 4; // OBS: projectile 3796 flies 120 cycles
 const fragmentTicks = 2; // OBS: projectile 3797 flies 60 cycles
-const pileMaxHit = 25; // WIKI; OBS: 10 on a pile
-const fragmentMaxHit = 10; // WIKI; OBS: 1 to 10, nine hits
+const pileMaxHit = 25; // WIKI; OBS 15 kills: 10, 11 and 20, without a protection prayer
+// OBS 15 kills: 3 to 6, all 32 fragments that hit (WIKI: up to 10), with
+// Protect from Missiles or Magic up too (3 of them).
+const fragmentDamage = [3, 6];
 // OBS: five piles to each half of the floor, as the server lists them: the
-// east's x 31 to 38, the west's 24 to 32 (23 of 23 screeches).
+// east's x 31 to 38, the west's 24 to 32 (79 screeches of 15 kills).
 const halves = [[31, 38], [24, 32]];
 const pilesPerHalf = 5;
-// OBS: a pile breaks into at most 4 fragments on the tiles around it, fewer
-// at the floor's edge (inferred: 4 of its 8 neighbours, those off the floor lost).
+// OBS 15 kills: a pile breaks into 4 fragments on the floor's tiles around
+// it that no fragment of an earlier pile has taken, fewer where fewer are
+// left (778 of 786 piles); never off the floor, never two on a tile (2919 fragments).
 const fragmentsPerPile = 4;
 const slamMaxHit = 55; // WIKI
 const slamPrayed = 0.64; // WIKI: 35 of 55 through Protect from Melee
@@ -456,7 +459,7 @@ class MaggotKingEncounter {
   }
   // Ten piles, five to a half: a shadow on each as it is thrown from the
   // north; 4 ticks later it lands (up to 25 on its tile) and breaks into
-  // fragments, which land 2 ticks after that (up to 10 each) as carrion.
+  // fragments, which land 2 ticks after that (3 to 6 each) as carrion.
   throwCarrion(context) {
     const taken = new Set();
     const piles = [];
@@ -482,11 +485,12 @@ class MaggotKingEncounter {
     }
     const fragments = [];
     const projectiles = [];
+    const taken = new Set();
     for (const pile of piles) {
-      const around = neighbours(pile);
-      for (let n = 0; n < fragmentsPerPile; n++) {
+      const around = neighbours(pile).filter((tile) => onFloor(tile) && !taken.has(tile.join()));
+      for (let n = 0; n < fragmentsPerPile && around.length; n++) {
         const tile = around.splice(Math.floor(this.random() * around.length), 1)[0];
-        if (!onFloor(tile)) continue;
+        taken.add(tile.join());
         fragments.push(tile);
         projectiles.push(tileProjectile(spotAnims.fragment, pile, tile, 0, fragmentTicks * 30, 0, 0, 35));
       }
@@ -498,7 +502,7 @@ class MaggotKingEncounter {
       for (const tile of fragments) {
         this.floor.place(tile, "carrion");
         if (you.alive && tile[0] === you.position[0] && tile[1] === you.position[1]) {
-          this.pending.push({ baseDamage: [0, fragmentMaxHit], attackType: "typeless", source: "Carrion fragment", playerPosition: [...you.position] });
+          this.pending.push({ baseDamage: fragmentDamage, attackType: "typeless", source: "Carrion fragment", playerPosition: [...you.position] });
         }
       }
     });
