@@ -52922,7 +52922,10 @@ var ViewportEntityBridge = ({
           );
           return;
         }
-        if (sze(npcType)) {
+        // An NPC without "Attack" its encounter marks (npcHoverShowsOption) shows its first option too, and
+        // its name read as the right-click menu reads it (lLe): the jug's cache name is "<col=00ffff>Jug</col>".
+        const showsOption = !sze(npcType) && !!entityContext.npcHoverShowsOption?.(picked.actorId);
+        if (sze(npcType) || showsOption) {
           const fa = entityContext.npcMenuColor?.(
             picked.npcTypeId,
             picked.actorId,
@@ -52930,7 +52933,8 @@ var ViewportEntityBridge = ({
           eW(
             "npc:" + picked.actorId + ":" + eK.TyQge(fa, ""),
             (function (fb, fc) {
-              const fd = fb.name || "NPC";
+              let fd = fb.name || "NPC";
+              if (showsOption) ({ name: fd, color: fc } = lLe(fd, fc ?? TOOLTIP_COLORS.npc));
               const fe = fb.actions.find((fg) => fg != null);
               if (!fe) {
                 return null;
@@ -54654,6 +54658,9 @@ var Grid = (ez) => {
       pickGroundItems: lX,
       objTypeLoader: objTypeLoader,
       npcMenuColor: m1,
+      // An NPC its encounter marks (SimulationEngine.js, hoverShowsOption) shows its first option on hover
+      // even without "Attack".
+      npcHoverShowsOption: (actorId) => m0.current.some((npc) => npc.id === actorId && npc.hoverShowsOption),
     }),
     [
       lS,

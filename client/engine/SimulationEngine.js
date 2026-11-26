@@ -682,6 +682,9 @@ function buildEngineState(worldState, engine) {
         ...(npc.overheadPrayers?.length ? { overheadPrayers: [...npc.overheadPrayers] } : {}),
         // The colour of the NPC's name in the right-click menu, when its encounter sets one (Grid.js, npcMenuColor).
         ...(npc.menuColor ? { menuColor: npc.menuColor } : {}),
+        // Set by its encounter: hovered, the NPC shows its first option even without "Attack" (Grid.js,
+        // npcHoverShowsOption), as the game shows "Push Jug" over Zebak's jugs.
+        ...(npc.hoverShowsOption ? { hoverShowsOption: true } : {}),
         ...(npc.chargeBar ? { chargeBar: { ...npc.chargeBar } } : {}),
         ...(npc.shieldBar ? { shieldBar: { ...npc.shieldBar } } : {}),
         ...(npc.alwaysShowHealthBar
