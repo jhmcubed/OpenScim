@@ -19,10 +19,14 @@ import {
 // gets none under him (WIKI). The pattern (tsps, "captured: about 40 a set
 // (24-55), some 10 of them within two tiles of the player (826 sets)"): each
 // tile within two of the player a portal 2 times in 5, any other tile of the
-// floor 9 times in 100. OBS (Outside, 35 sets, 29 to 50 portals): one under
-// the player in all 34 sets but the one her husks held him in (where he stood
-// as the tick began); within two tiles of him 312 of 812 (38%), further out
-// 955 of 10,878 (9%). The logs of runelogs carry no graphics.
+// floor 9 times in 100. OBS (Outside, five recordings of 2026-11-25 and 26,
+// 142 sets, 27 to 54 portals, 39 on average): one under the player (where he
+// stood as the tick began) in 138, the 4 others while her husks held him (2),
+// while he stood under her (1), and once beside her; within two tiles of him
+// 1,382 of 3,340 (41%), further out 4,081 of 44,088 (9%); no form, kind of set
+// or her desperation stands apart (near 27% to 53%, far 8% to 10%, on small
+// counts). None on her body but its four corners (34 of 34 portals that
+// fell on her body). The logs of runelogs carry no graphics.
 const clawHitTicks = 4; // tsps
 const clawDamage = [50, 65]; // WIKI, tsps
 const clawNear = 2; // tsps
@@ -130,8 +134,10 @@ export class Specials {
     const player = context.world.getPlayer();
     const held = e.minions.frozen ? key(player.position) : null;
     const mine = key(player.position);
+    const boss = e.boss(context.world);
+    const inner = (tile) => boss && gapTo(tile, boss.position) === 0 && !this.isBodyCorner(tile, boss.position);
     const tiles = floorTiles.filter((tile) => {
-      if (isTotemTile(tile) || key(tile) === held) return false;
+      if (isTotemTile(tile) || key(tile) === held || inner(tile)) return false; // OBS (Outside): none under her but her corners
       if (key(tile) === mine) return true; // OBS (Outside)
       return e.random() < (chebyshev(tile, player.position) <= clawNear ? clawNearChance : clawFarChance);
     });
