@@ -258,5 +258,13 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
     assert.ok(by(source).every((tick) => tick.envenomed), source + " envenoms");
   }
 }
+{
+  // The guide's extended anti-venom+ in every default loadout (the client had no anti-venom, and an antidote++ stood in).
+  const { araxxorLoadouts } = await import("../client/encounters/araxxor/loadouts.js");
+  for (const [name, loadout] of Object.entries(araxxorLoadouts)) {
+    assert.ok(loadout.inventory.includes(29824), name);
+    assert.ok(!loadout.inventory.includes(5952), name);
+  }
+}
 console.log("Araxxor's rules are as recorded");
 process.exit(0);

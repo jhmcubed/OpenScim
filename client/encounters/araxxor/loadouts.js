@@ -1,8 +1,8 @@
 // Araxxor's default loadouts (the descriptor's `loadouts`, encounters/registry.js), from the wiki's strategy guide
 // (Araxxor/Strategies): the best of each slot of its Melee and Ranged tables that the client has, and its
 // inventory. The Obligator, its first melee weapon, does not exist here: the scythe, its second, takes its place.
-// The client has no anti-venom and no dark crabs: an antidote++ (which keeps venom off here too) stands in for the
-// extended anti-venom+, anglerfish for the food. Its rune pouch holds the guide's blood, fire, aether and death runes
+// The client has no dark crabs: anglerfish stand in for the food. The guide's extended anti-venom+ keeps venom off for
+// 6.3 minutes once pre-potted (WIKI, OBS: -59, client/engine/consumables.js). Its rune pouch holds the guide's blood, fire, aether and death runes
 // for thralls, with the Book of the Dead.
 const runePouch = { kind: "divine", slots: [{ id: 565 }, { id: 554 }, { id: 30843 }, { id: 560 }] }; // Blood, fire, aether, death
 const meleeArmour = {
@@ -22,7 +22,7 @@ export const araxxorLoadouts = {
     equipment: { ...meleeArmour, weapon: 22325 }, // Scythe of Vitur (crush, in Inquisitor's)
     inventory: [
       21003, 29796, 23685, 2434, // Elder maul (the guide's special), noxious halberd (for the araxytes), divine super combat, prayer potion
-      2434, 2434, 2434, 5952, // Prayer potions, antidote++
+      2434, 2434, 2434, 29824, // Prayer potions, extended anti-venom+
       30875, 13441, 13441, 13441, // Surge potion, anglerfish
       13441, 13441, 13441, 13441,
       13441, 13441, 13441, 13441,
@@ -36,7 +36,7 @@ export const araxxorLoadouts = {
     equipment: { ...meleeArmour, weapon: 24417, shield: 22322 }, // Inquisitor's mace, Avernic defender
     inventory: [
       21003, 29796, 23685, 2434, // As above
-      2434, 2434, 2434, 5952,
+      2434, 2434, 2434, 29824,
       30875, 13441, 13441, 13441,
       13441, 13441, 13441, 13441,
       13441, 13441, 13441, 13441,
@@ -60,7 +60,7 @@ export const araxxorLoadouts = {
     },
     inventory: [
       21003, 26374, 23733, 2434, // Elder maul, Zaryte crossbow (the guide's other special), divine ranging potion, prayer potion
-      2434, 2434, 5952, 30875, // Prayer potions, antidote++, surge potion
+      2434, 2434, 29824, 30875, // Prayer potions, extended anti-venom+, surge potion
       13441, 13441, 13441, 13441, // Anglerfish
       13441, 13441, 13441, 13441,
       13441, 13441, 13441, 13441,
