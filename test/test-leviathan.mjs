@@ -56,9 +56,11 @@ try {
   });
   await page.waitForFunction(() => document.body.innerText.includes("Your spell stuns the Leviathan!"), null, { timeout: 60000 });
   await page.waitForFunction(() => engine.getEncounterSnapshot().state.stunnedUntil === null, null, { timeout: 60000 });
-  // To the first roar's rocks: one on the player's tile, two that tell the
-  // first special. Each is drawn as the loc it leaves, and none can be walked on.
+  // To the first roar's rocks: one on the player's tile, which puts them a tile
+  // off it, two that tell the first special. Each is drawn as the loc it leaves,
+  // and none can be walked on.
   const rocks = await page.evaluate(() => {
+    const stood = [...engine.player().position];
     for (let tick = 0; tick < 60 && engine.getEncounterSnapshot().state.rubble.length < 3; tick++) engine.advanceTick(engine.player().position);
     const encounter = engine.getEncounterSnapshot();
     const drawn = scene.sceneObjectController.update({ state: { encounter }, interpolatedTick: engine.worldState.tick });
@@ -67,17 +69,19 @@ try {
       rubble: rubble.length,
       drawn: drawn.map((object) => object.data.locId),
       tiles: drawn.every((object, n) => object.data.localX === rubble[n][0] && object.data.localY === rubble[n][1]),
-      onPlayer: rubble.some(([x, y]) => x === engine.player().position[0] && y === engine.player().position[1]),
+      onStood: rubble.some(([x, y]) => x === stood[0] && y === stood[1]),
+      pushed: Math.max(...engine.player().position.map((v, n) => Math.abs(v - stood[n]))) === 1,
+      stood,
     };
   });
-  assert.deepEqual(rocks, { rubble: 3, drawn: [47590, 47590, 47590], tiles: true, onPlayer: true });
-  // A step east, onto the tile beside the rock that fell on the player, and back is refused.
-  const blocked = await page.evaluate(() => {
-    const [x, y] = engine.player().position;
-    for (let tick = 0; tick < 3; tick++) engine.advanceTick([x + 1, y]);
-    for (let tick = 0; tick < 3; tick++) engine.advanceTick([x, y]);
-    return engine.player().position.join() !== [x, y].join();
-  });
+  const { stood } = rocks;
+  delete rocks.stood;
+  assert.deepEqual(rocks, { rubble: 3, drawn: [47590, 47590, 47590], tiles: true, onStood: true, pushed: true });
+  // A step back onto the rock that fell on the player is refused.
+  const blocked = await page.evaluate((stood) => {
+    for (let tick = 0; tick < 3; tick++) engine.advanceTick(stood);
+    return engine.player().position.join() !== stood.join();
+  }, stood);
   assert.equal(blocked, true);
 
   // Enraged: the pathfinder comes 3 ticks later, in the north-west corner (or the next clockwise one clear of rocks).

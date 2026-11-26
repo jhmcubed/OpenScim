@@ -343,8 +343,12 @@ test("awakened: the tornado at half its hitpoints, where it goes and what it doe
     const step = heading(player[0] - from[0], player[1] - from[1]);
     assert.deepEqual(to, held ? from : [from[0] + step[0], from[1] + step[1]], `tick ${tick}`);
   }
-  const orbTicks = new Set(run.ticksOf((entry) => entry.orb).flatMap((tick) => [tick + 4, tick + 5]));
-  const damage = run.hitsOn("player").filter(({ tick }) => hits.includes(tick) && !orbTicks.has(tick));
+  const orbTicks = new Set(run.ticksOf((entry) => entry.orb).flatMap((tick) => [tick + 3, tick + 4, tick + 5]));
+  const rockTicks = new Set([
+    ...run.ticksOf((entry) => entry.graphic >= 2477 && entry.graphic <= 2480).map((tick) => tick + 7),
+    ...run.ticksOf((entry) => entry.graphic === 2475 || entry.graphic === 2476).flatMap((tick) => [tick + 6, tick + 7, tick + 8]),
+  ]);
+  const damage = run.hitsOn("player").filter(({ tick }) => hits.includes(tick) && !orbTicks.has(tick) && !rockTicks.has(tick));
   assert.ok(damage.length > 0 && damage.every(({ amount }) => amount >= 42 && amount <= 48), damage.map(({ amount }) => amount).join());
   const none = await fight({ kind: BOSS, ticks: 20, script: (tick, api) => tick === 1 && setBossHp(api, 300) });
   assert.ok([...none.at.values()].every(({ npcs }) => !npcs.has("leviathan-tornado")));
@@ -449,4 +453,38 @@ test("post-quest: enraged, a rock on the player 8 ticks after the enrage's, then
   const waves = unique(run.ticksOf((entry) => entry.graphic >= 2477 && entry.graphic <= 2480));
   assert.deepEqual(waves.map((tick) => tick - waves[0]), [0, 8, 18, 28, 38].slice(0, waves.length));
   assert.ok(waves.length >= 4, waves.join());
+});
+
+test("post-quest: a rock that lands on the player puts them a tile south-west, or north-west where that is shut", { skip }, async () => {
+  // OBS 11/25, OBS 11/26: from 25,36 to 24,35; from 28,26, where south-west, west and south are no floor, to 27,27.
+  for (const [from, to] of [[[25, 36], [24, 35]], [[28, 26], [27, 27]]]) {
+    const run = await fight({ kind: BOSS, ticks: 34, script(tick, api) {
+      if (tick === 1) {
+        api.engine.encounter.nextSpecial = "smoke"; // its tells far from these tiles
+        api.engine.player().position = [...from]; // standing, with nowhere to walk back to
+      }
+      prayAgainstOrbs(api, tick);
+    } });
+    const roar = run.first(clip("roar"));
+    const lands = roar + 7;
+    assert.deepEqual([run.at.get(lands - 1).player, run.at.get(lands).player, run.at.get(lands + 1).player], [from, to, to]);
+    const hit = run.hitsOn("player").filter(({ tick, amount }) => tick === lands && amount > 0);
+    assert.ok(hit.length === 1 && hit[0].amount >= 19 && hit[0].amount <= 25, hit.map(({ amount }) => amount).join());
+  }
+});
+
+test("post-quest: after the third stun the volleys start again from the third, not the fourth", { skip }, async () => {
+  const wake = wakeWith("smoke");
+  let after = null;
+  await fight({ kind: BOSS, ticks: 50, script(tick, api) {
+    if (tick === 1) api.engine.encounter.stuns = 2;
+    if (wake(tick, api) && state(api).special) after = state(api).volley;
+  } });
+  assert.equal(after, 3); // OBS 11/26: the second, the third, the third
+});
+
+test("awakened: its first volley is the post-quest second, 2 ticks apart", { skip }, async () => {
+  const run = await fight({ kind: AWAKENED, ticks: 16, script: (tick, api) => prayAgainstOrbs(api, tick) });
+  const orbs = run.ticksOf((entry) => entry.orb);
+  assert.deepEqual(orbs.slice(1, 5).map((tick, n) => tick - orbs[n]), [2, 2, 2, 2]); // OBS 11/26
 });

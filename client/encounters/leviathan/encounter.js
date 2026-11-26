@@ -41,6 +41,9 @@
 // (kill counts 2,766 to 2,789, one player, in ranged gear: 23 stuns, each
 // broken from behind; 11 lightnings, 12 smokes; 23 enrages; 168 roars that
 // are not a stun's; 9 bites, 8 of them in the one fight spent beside the pool).
+// OBS 11/26 is two more of the same player's, of 26 November 2026: a post-quest
+// kill with three stuns, roar rocks, thrown rocks and lightning on the player;
+// an awakened fight of 15 stuns, the player dying enraged.
 // Plain OBS is rsprox recordings 1703 (an ordinary
 // world's quest fight), 1751, 3285 and six more of Leagues V and Grid Master
 // worlds (the 900-hitpoint Leviathan), as RSPSApp/tsps reads them
@@ -83,6 +86,8 @@ export const bossSize = 7; // CACHE, WIKI
 // The tile the handholds (CACHE: 22,32) lead to. OBS 11/25: 4 of 4, 5 ticks before
 // it surfaces; awakened, but both fights are climbed into there.
 const climbedTo = [23, 32];
+// Where a rock that lands on the player puts them, the first open one (pushAside).
+const pushOrder = [[-1, -1], [-1, 0], [0, -1], [-1, 1], [1, -1], [0, 1], [1, 0], [1, 1]];
 // Where the sandbox's player starts on the Scar (sandbox/arenas.js) without it as
 // the host: RSPSApp's tile beside the handholds (inferred).
 export const playerStart = [24, 34];
@@ -282,7 +287,8 @@ export const versions = {
     biteHit: [34, 50],
     earlyBites: 1, // OBS (video), above
     roarHit: [4, 7], // OBS kills: 168 chips, 4 to 7, none 0; WIKI: "up to 7 chip damage"
-    rockHit: [0, 25], // WIKI: the falling rocks; OBS kills: none hit the player
+    firstVolley: 0,
+    rockHit: [19, 25], // OBS 11/26: a roar's 20 and 21, thrown 22 and 23; as awakened (OBS 11/25); WIKI: 25 at most
     lightningHit: [18, 22], // OBS kills: 18, 19, 20 and 22
     // OBS kills: none of the lightning's orbs, the smoke's rocks or its blast hit the player.
     // inferred: the side orbs as the rocks (RSPSApp's).
@@ -291,8 +297,9 @@ export const versions = {
     smokeHit: [0, 60],
     stunTicks: 15, // WIKI
     // WIKI: the stun resets it to the second volley, and each later one a volley
-    // further down. OBS kills: the second after the first stun (23 of 23).
-    volleyAfterStun: (stuns) => Math.min(volleys.length - 1, Math.max(1, stuns)),
+    // further down. OBS kills: the second after the first stun (23 of 23). OBS
+    // 11/26: the second, the third, then the third again.
+    volleyAfterStun: (stuns) => Math.min(2, Math.max(1, stuns)),
     // Enraged (WIKI): every 2 ticks, magic and ranged only. OBS, OBS kills: the
     // first orb 5 ticks after the enrage's rocks (21 of 23), flying 5 ticks, every
     // 2 (318 of 318); one rock on the player 8 ticks after those, then every 10
@@ -314,8 +321,11 @@ export const versions = {
     enrageHp: 540, // WIKI; OBS 11/25: enraged at 491, 491 and 499, not yet at 557, 565 and 567
     // WIKI. OBS 11/25: unprotected magic 14 to 54 (8 hits), ranged 9 and 11, melee none.
     orbMaxHit: { magic: 55, range: 41, melee: 86 },
-    // WIKI: 86 at most. The least inferred: the post-quest bite's share of its most.
+    // WIKI: 86 at most; OBS 11/26: 84 (1). The least inferred: the post-quest bite's share of its most.
     biteHit: [58, 86],
+    // OBS 11/26: 6 orbs 2 ticks apart flying 5 before the first stun, as the
+    // post-quest second volley (1 fight; the four of 11/25 were stunned sooner).
+    firstVolley: 1,
     earlyBites: 0, // OBS 11/25: no bite in 26 turns with the player beside the pool, before any roar
     roarHit: [4, 7], // OBS 11/25: 7, 7 and 4; the least as post-quest (OBS kills)
     rockHit: [19, 25], // OBS 11/25: 19, 19, 20 and 25; WIKI: 25 at most
@@ -449,7 +459,7 @@ class LeviathanEncounter {
     this.tick = 0;
     this.surfaced = false;
     // The volleys: which, how many orbs of it so far; the bites so far.
-    this.volley = 0;
+    this.volley = this.version.firstVolley;
     this.orbs = 0;
     this.bites = 0;
     this.stuns = 0;
@@ -473,6 +483,7 @@ class LeviathanEncounter {
     this.warnings = []; // { tile, from, until }: the tiles of this tick's lightning, for the scene
     this.inFlight = []; // { style, lands }: the orbs on their way, for the scene
     this.falling = []; // { tile, lands }: the rocks on their way down
+    this.pushed = null; // { tick, to }: where the last rock on the player put them
     // The awakened fight's own state; the post-quest one has none of it.
     if (this.version === versions.awakened) this.awakened = { enrageTick: null, tornado: null };
     if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
@@ -724,7 +735,7 @@ class LeviathanEncounter {
       const spotAnimId = spots.debris[Math.floor(this.random() * spots.debris.length)];
       emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId, target: tileTarget(tile), height: 0, delayCycles: fall.delay }] });
       this.falling.push({ tile: [...tile], lands: this.tick + fall.ticks });
-      this.later(fall.ticks, (ctx, hits) => this.rockHits(ctx, hits, tile, "A falling rock", true));
+      this.later(fall.ticks, (ctx, hits) => this.rockHits(ctx, hits, tile, "A falling rock", true, false));
     }
   }
   isOpen(tile) {
@@ -732,10 +743,31 @@ class LeviathanEncounter {
   }
   // A rock lands: it hurts a player still on its tile. `heard`: with the sound
   // recorded for it (audio.js).
-  rockHits(context, hits, tile, source, heard) {
+  // `push`: a rock that stays puts the player off its tile (pushAside).
+  rockHits(context, hits, tile, source, heard, push) {
     if (!context.world.getPlayer()?.alive || key(context.playerPos) !== key(tile)) return;
     hits.push({ source, attackType: "typeless", baseDamage: [...this.version.rockHit], playerPosition: [...context.playerPos] });
     if (heard) emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [], rockHit: true });
+    if (push) this.pushAside(context, tile);
+  }
+  // OBS 11/25, OBS 11/26: a rock that lands on the player puts them one tile
+  // south-west (5 of 5 where it was open); where it was not, nor west nor south,
+  // north-west (2 of 2). The rest of the order is inferred. They are put there
+  // as they would step (moveDisplacedPlayer), and stand the tick after (7 of 7).
+  pushAside(context, [x, y]) {
+    const to = pushOrder.map(([dx, dy]) => [x + dx, y + dy]).find((tile) => this.isOpen(tile));
+    if (to) this.pushed = { tick: context.tick, to };
+  }
+  moveDisplacedPlayer(player, targetTile, place) {
+    if (this.pushed?.tick === this.tick) {
+      place(this.pushed.to, player.facing);
+      return true;
+    }
+    if (this.pushed?.tick !== this.tick - 1) return undefined;
+    player.previousPosition = [...player.position];
+    player.isMoving = false;
+    player.isRunning = false;
+    return false;
   }
   // A rock that falls for 7 ticks, hurts a player still on its tile and stays.
   dropRock(context, at) {
@@ -744,7 +776,7 @@ class LeviathanEncounter {
     emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.falling[rotation], target: tileTarget(tile), height: 0, delayCycles: fallingDelayCycles }] });
     this.falling.push({ tile, lands: this.tick + rockTicks });
     this.later(rockTicks, (ctx, hits) => {
-      this.rockHits(ctx, hits, tile, "A falling rock", false);
+      this.rockHits(ctx, hits, tile, "A falling rock", false, true);
       this.placeRubble(tile, rotation);
     });
   }
@@ -891,7 +923,7 @@ class LeviathanEncounter {
         this.falling.push({ tile, lands: ctx.tick + smoke.rockFlight });
         this.later(smoke.rockFlight, (later, hits) => {
           if (this.outcome.phase !== "active") return;
-          this.rockHits(later, hits, tile, "A thrown rock", true);
+          this.rockHits(later, hits, tile, "A thrown rock", true, true);
           // OBS 11/25: a second rock on a tile leaves nothing more, and is not drawn landing.
           if (this.placeRubble(tile, 0))
             emitInfernoVisual(later.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spots.boulderLands, target: tileTarget(tile), height: 0, delayCycles: 0 }] });
