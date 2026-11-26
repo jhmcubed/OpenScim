@@ -70,6 +70,26 @@ export const sporeClickSound = 7104; // OBS: on every click on a spore
 // How long a clicked spore waits for the fight to take the click: two ticks and a little.
 const clickConfirmMs = 1400;
 
+// How far into its sequence a spore is at `now`, for a sequence `cycleMs`
+// long: the idle loops, the spawn and the despawn play once and hold their
+// last frame. `cycleMs` must be the length of the spore's own sequence.
+function sporeElapsed(spore, now, cycleMs) {
+  const since = now - spore.startMs;
+  return spore.seq === "idle" ? since : Math.min(since, cycleMs - 20);
+}
+// A spore's opacity at `now`: it fades in as it comes, and one that goes
+// fades out from the opacity it had when it went (`fadeFrom`): one clicked
+// while it was still coming in does not first flash up to full.
+function sporeOpacity(spore, now) {
+  if (spore.goneMs !== null) return spore.fadeFrom * Math.max(0, 1 - (now - spore.goneMs) / sporeFadeMs);
+  if (spore.seq === "spawn") return Math.min(1, (now - spore.startMs) / sporeFadeInMs);
+  return 1;
+}
+// The spore goes at `now`: its despawn plays and it fades out.
+function sporeGoes(spore, now) {
+  Object.assign(spore, { fadeFrom: sporeOpacity(spore, now), seq: "despawn", startMs: now, goneMs: now });
+}
+
 
 let tools = null; // { widgetModelView, npcModelLoader, animationSystem, playSound }
 let shown = null;
@@ -225,12 +245,13 @@ function open(strangle) {
       const spore = shown?.spores[index];
       if (!spore || spore.goneMs !== null) return;
       const now = performance.now();
-      Object.assign(spore, { seq: "despawn", startMs: now, goneMs: now, clickedMs: now });
+      sporeGoes(spore, now);
+      spore.clickedMs = now;
       tools.playSound?.(sporeClickSound);
       window.dispatchEvent(new CustomEvent(vardorvisCommandEvent, { detail: { encounter: "vardorvis", type: "destroy-spore", spore: index } }));
     });
     boxElement.append(target);
-    return { target, canvas, seq: "spawn", startMs: performance.now(), goneMs: null, clickedMs: null };
+    return { target, canvas, seq: "spawn", startMs: performance.now(), goneMs: null, clickedMs: null, fadeFrom: 1 };
   });
   mountOnView(element, overlayZIndex);
   const state = { element, layers, sporeView, spores, closing: false, frame: 0 };
@@ -246,18 +267,22 @@ function open(strangle) {
         spore.target.style.display = "none";
         continue;
       }
-      if (spore.seq === "spawn") spore.target.style.opacity = String(Math.min(1, (now - spore.startMs) / sporeFadeInMs));
       if (spore.seq === "spawn" && now - spore.startMs >= sporeFadeInMs) Object.assign(spore, { seq: "idle", startMs: now });
-      const elapsed = spore.seq === "idle" ? now - spore.startMs : Math.min(now - spore.startMs, sporeView.cycleMs - 20);
+      // The view takes this spore's sequence before its length is read: the
+      // length of the last spore's (an idle beside a clicked one) let the
+      // despawn run past its end and start again, so that a spore fading
+      // out showed whole for a moment.
+      sporeView.setSequence(interfaceModels.spore.seqs[spore.seq]);
+      const elapsed = sporeElapsed(spore, now, sporeView.cycleMs);
       if (spore.seq + ":" + Math.round(elapsed) !== drawn) {
-        sporeView.setSequence(interfaceModels.spore.seqs[spore.seq]);
         sporeView.draw(elapsed);
         drawn = spore.seq + ":" + Math.round(elapsed);
       }
       const context = spore.canvas.getContext("2d");
       context.clearRect(0, 0, spore.canvas.width, spore.canvas.height);
       context.drawImage(sporeGl, 0, 0, spore.canvas.width, spore.canvas.height);
-      if (spore.goneMs !== null) spore.target.style.opacity = String(Math.max(0, 1 - (now - spore.goneMs) / sporeFadeMs));
+      const opacity = String(sporeOpacity(spore, now));
+      if (spore.target.style.opacity !== opacity) spore.target.style.opacity = opacity;
     }
     state.frame = requestAnimationFrame(tick);
   };
@@ -302,7 +327,7 @@ export function syncStrangle(strangle, tick) {
   strangle.spores.forEach((spore, index) => {
     const mine = shown.spores[index];
     if (spore.destroyedTick !== null) {
-      if (mine.goneMs === null) Object.assign(mine, { seq: "despawn", startMs: now, goneMs: now });
+      if (mine.goneMs === null) sporeGoes(mine, now);
       mine.clickedMs = null;
     } else if (mine.clickedMs !== null && now - mine.clickedMs > clickConfirmMs) {
       // Not taken: the spore is back, to be clicked again.
