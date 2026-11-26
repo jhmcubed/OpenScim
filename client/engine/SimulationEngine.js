@@ -185,6 +185,14 @@ var softBodyNameKeywords = [
   "d'hide",
 ];
 var VENOM_VARP_THRESHOLD = 1000000;
+// OBS (Araxxor, 20 kills): an anti-venom's immunity counts up from -59 by one
+// a pulse; at -39 "Your venom resistance is about to wear off.", at -38 "Your
+// venom resistance has worn off, but you are still resistant to poison.", and
+// in each of the 6 kills where it wore off before the end, an attack
+// envenomed the player at -38 to -36, within 7 ticks. WIKI (Venom): an
+// antidote++ keeps venom off for 18 to 36 seconds and an anti-venom+ for 216:
+// their values (-40 and -50) up to -39.
+var VENOM_IMMUNITY_THRESHOLD = -38;
 function decaySoulreaperStacks(soulreaper, tick) {
   if (undefined === soulreaper || tick < soulreaper.decayTick) {
     return soulreaper;
@@ -533,8 +541,9 @@ function addItemToInventory(inventory, itemId, quantity, stackable) {
   }
 }
 // The player's poison is one number, poisonState.poisonVarp. 0: none. Below
-// 0: immune, counting up to 0 by one a pulse. From 1: poison, with the damage
-// getPoisonDamage gives, one less a pulse. From 1,000,000
+// 0: immune to poison, counting up to 0 by one a pulse; below -38
+// (VENOM_IMMUNITY_THRESHOLD) immune to venom too. From 1: poison, with the
+// damage getPoisonDamage gives, one less a pulse. From 1,000,000
 // (VENOM_VARP_THRESHOLD): venom, one more a pulse, dealing 6, 8, ... up to 20.
 // tickPoison allows a pulse when poisonTickCounter has run down and sets it
 // to 30 again.
@@ -4586,10 +4595,20 @@ var SimulationEngine = class {
       },
     };
   }
+  // `poisonSeverity` is the poisonVarp it brings: a poison's severity, or
+  // VENOM_VARP_THRESHOLD for venom. Venom takes the place of poison; nothing
+  // takes the place of venom. An antipoison's immunity keeps poison off, not
+  // venom (OBS: see VENOM_IMMUNITY_THRESHOLD). On a player who is immune, the
+  // pulses go on where they were (OBS, Araxxor: envenomed at -37, the first
+  // venom hit came 6 ticks later, on the immunity's 30-tick beat).
   applyPoisonToPlayer(poisonSeverity) {
     const player = this.player();
     const poisonVarp = player.poisonState.poisonVarp;
-    if (poisonVarp < 0 || poisonVarp >= VENOM_VARP_THRESHOLD) {
+    if (poisonVarp >= VENOM_VARP_THRESHOLD) {
+      return;
+    }
+    const immuneBelow = poisonSeverity >= VENOM_VARP_THRESHOLD ? VENOM_IMMUNITY_THRESHOLD : 0;
+    if (poisonVarp < immuneBelow) {
       return;
     }
     const wasUnpoisoned = poisonVarp === 0;
