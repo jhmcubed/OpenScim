@@ -209,7 +209,7 @@ function foldRepeats(entries) {
 /** An entry in full words: "Araxxor took 24 (venom)", "You took 0 (prayed right)", "+106 xp (Strength 80, Hitpoints 26)". */
 export function sentence(entry) {
   const what = entry.amount === undefined ? entry.text : `${entry.target} ${entry.splat === "heal" ? "healed" : "took"} ${entry.amount}`;
-  return what + (entry.note ? ` (${entry.note})` : "") + (entry.count > 1 ? ` x${entry.count}` : "");
+  return what + (entry.special ? " (special)" : "") + (entry.note ? ` (${entry.note})` : "") + (entry.count > 1 ? ` x${entry.count}` : "");
 }
 
 // --- a recording --------------------------------------------------------------

@@ -79,7 +79,7 @@ const attacks = describeFrame(
   before,
   names(),
 );
-assert.deepEqual(said(attacks), ["Araxxor: melee", "Araxxor: drip", "Araxxor: ranged", "Acidic Araxyte attacks"]);
+assert.deepEqual(said(attacks), ["Araxxor: melee", "Araxxor: drip (special)", "Araxxor: ranged", "Acidic Araxyte attacks"]);
 assert.deepEqual(attacks.map(({ special }) => special === true), [false, true, false, false]);
 
 // XP drops, the player's special attacks (not the others), deaths, the end of the fight, messages.
