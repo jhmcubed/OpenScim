@@ -722,10 +722,11 @@ export class ZebakPhases {
     place([x + Math.sign(targetX - x), lane], player.facing);
     return true;
   }
-  clearSpecial(context) {
-    this.waveFronts = [];
+  // keepWaves: the crests already in the water run on to the far shore (advanceWaveFronts removes them).
+  clearSpecial(context, {keepWaves = false} = {}) {
+    if (!keepWaves) this.waveFronts = [];
     this.pendingJug = null;
-    for (const obj of [...this.of("rock"), ...this.of("wave"), ...this.of("jug"), ...this.of("broken-jug")])
+    for (const obj of [...this.of("rock"), ...(keepWaves ? [] : this.of("wave")), ...this.of("jug"), ...this.of("broken-jug")])
       this.remove(context, obj);
     this.active = null;
   }
@@ -749,7 +750,12 @@ export class ZebakPhases {
       player = context.world.actors.get("player");
     if (!player?.alive || !boss?.alive) return hits;
     if (this.observe(boss)) {
-      this.clearSpecial(context);
+      // Enraged, he starts no more specials and no new crest rises (WIKI, Tombs of Amascut/Strategies: no
+      // roar or wave special once enraged). OBS (Outside recording g5CHq9-iXLG5du59tsp0rg, a full raid of
+      // 2026-11-25, ticks 1970-1971): the boulders were gone the tick after he enraged. inferred, from a
+      // player's report of the game (no recording has a crest in the water as he enrages): the crests
+      // already risen do not vanish but run on to the far shore.
+      this.clearSpecial(context, {keepWaves: true});
       // The first enraged spit already plays its own growl. The Great Roar
       // sequence would override the opening of its jaw.
     }
