@@ -134,7 +134,7 @@ export const scenarios = [
     // Fire Surge from the Harmonised Nightmare staff in ancestral: each
     // landing surge burns him and takes 20 off his Magic defence a stack. The
     // player keeps Protect from Missiles up through the first screech and is
-    // hurt for it every tick of it.
+    // hurt for it 3 and 4 ticks into it, losing prayer too.
     name: "maggot-king/fire-surge",
     kind: KIND,
     seed: 11,

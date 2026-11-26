@@ -79,10 +79,17 @@ const fillHp = 299;
 const spitMaxHit = 46; // WIKI
 const spitTicks = 2; // OBS: the hit lands 2 ticks after the spit (the projectile flies from 45 to 60 cycles)
 const bileTicks = 3; // OBS: the bile lies 3 ticks after the spit lands (its drops fall 90 cycles)
-// OBS: protection prayers were down from at most 3 ticks into a screech to at
-// least 8 (23 screeches, no damage taken); WIKI: 15 to 25 a tick when one is up.
-const screechWindow = [3, 8];
-const screechDamage = [15, 25];
+// His Defence is halved (TABLE "Roaring") from 3 to 8 ticks into a screech
+// (inferred: the time the player's protection prayer was down in the first 23).
+const roarWindow = [3, 8];
+// OBS 15 kills: a protection prayer up hurts 3 and 4 ticks into a screech,
+// not 2 (up then in 7 screeches, never hurt) nor 5 to 9 (kill 692, up from 4
+// to 9, hurt once); hurt at 4 in both screeches it was up then (kills 692,
+// 694). WIKI: 15 to 25, "up to three times". OBS: 2 and 18, the prayer kept
+// up, the points drained by half the damage (9 of 18).
+const screechHurts = [3, 4];
+const screechDamage = [2, 25];
+const screechSource = "Screech";
 const throwTick = 3; // OBS: shadows, piles thrown, larvae launched, the roar's graphic
 const pileTicks = 4; // OBS: projectile 3796 flies 120 cycles
 const fragmentTicks = 2; // OBS: projectile 3797 flies 60 cycles
@@ -249,8 +256,10 @@ class MaggotKingEncounter {
     if (boss?.alive) this.updateStats(boss, context.world.getPlayer());
     const damages = [...this.larvae.leech(context), ...this.drainPending()];
     const player = context.world.getPlayer();
-    if (boss?.alive && player.alive && this.screeching() && protectionPrayers.has(player.activePrayer)) {
-      damages.push({ baseDamage: screechDamage, attackType: "typeless", source: "Screech", playerPosition: [...player.position] });
+    if (boss?.alive && player.alive && this.screeching(screechHurts) && protectionPrayers.has(player.activePrayer)) {
+      damages.push({ baseDamage: screechDamage, attackType: "typeless", source: screechSource, playerPosition: [...player.position] });
+      // OBS: the message as it hurts (2 of 2).
+      context.tickEvents.emit({ type: "game_message", kind: "game", segments: [{ text: "The Maggot King's screech disrupts your concentration!" }] });
     }
     return damages;
   }
@@ -271,8 +280,8 @@ class MaggotKingEncounter {
     this.pending = [];
     return damages;
   }
-  screeching(tick = this.now) {
-    return this.screechAt !== null && tick >= this.screechAt + screechWindow[0] && tick <= this.screechAt + screechWindow[1];
+  screeching(window = roarWindow, tick = this.now) {
+    return this.screechAt !== null && tick >= this.screechAt + window[0] && tick <= this.screechAt + window[1];
   }
   // Which of his three sets of stats, with his burn's Magic defence off it.
   version(boss) {
@@ -502,6 +511,8 @@ class MaggotKingEncounter {
       playerAttackOnCooldown: (target, tick) => this.attackOnCooldown(target, tick),
       playerAttackKeepsReady: (target, tick) => this.isPunish(target, tick),
       playerAlwaysAccurate: (context, attack) => this.alwaysAccurate(context, attack),
+      // OBS: the screech drains prayer by half its damage (kill 694: 9 of 18).
+      onPlayerDamageTaken: (hit) => (hit.source === screechSource ? { prayerPointsDelta: -Math.floor(hit.effectiveDamage / 2) } : undefined),
     };
   }
   // OBS: a punish is on the tick a slam lands, 2 after it starts (a greataxe's
