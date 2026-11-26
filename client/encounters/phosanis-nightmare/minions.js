@@ -307,7 +307,6 @@ export class Minions {
       animations: [{ actorId: husk.id, clipId: style }],
       projectiles: [this.e.projectileFrom(husk, player, projectile)],
       graphics: style === "magic" ? [{ spotAnimId: spotAnims.huskMagicImpact, target: this.e.playerTarget(player), height: 104, delayCycles: 67 }] : [],
-      sounds: [{ id: sounds.huskAttack, range: 6, position: [...husk.position] }],
     });
     return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
   }

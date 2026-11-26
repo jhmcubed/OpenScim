@@ -184,7 +184,7 @@ export const sounds = {
   totems: 4254,
   flowersOpen: 4321,
   huskRise: 4312,
-  huskAttack: 4278,
+  huskDies: 4278, // OBS (Outside): as one dies (6 of 6), not as it attacks (tsps)
   parasiteBurst: 4314,
 };
 
