@@ -20748,8 +20748,12 @@ function useSimulationWiring({
   }, []);
   const gOHeld = fj.encounter?.isPaused?.() === true;
   // An encounter that counts down itself, in ticks of its run (the sandbox:
-  // its monsters wait while the player acts), has no start-of-fight countdown.
-  const gOOwnCountdown = fj.encounter?.ownsCountdown?.() === true;
+  // its monsters wait while the player acts), has no start-of-fight countdown;
+  // nor has one whose descriptor says `fightStartCountdown: false` (a boss
+  // that waits for the player: there is nothing to count down to).
+  const gOOwnCountdown =
+    fj.encounter?.ownsCountdown?.() === true ||
+    encounterRegistry.getDescriptorOfKindOrVariant(fj.getEncounterKind())?.fightStartCountdown === false;
   const gP = (function ({
     countdownTicks: countdownTicks,
     speedMultiplier: hF,
