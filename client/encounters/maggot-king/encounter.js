@@ -11,20 +11,22 @@
 //   slams every 4 ticks on a 3 x 4 in front of him, up to 55 (35 through
 //   Protect from Melee), each with three biles. Far and near take turns from
 //   then on; below a fifth he stays near for good.
-// A rotation is 4 to 7 attacks. A screech: a protection prayer up is hurt
-// every tick of it, his Defence is halved meanwhile, and ten piles of
-// carrion are thrown onto the floor, each breaking into fragments, which
-// stay as carrion; from 85% of his hitpoints, larvae too (larvae.js).
+// A rotation is 4 to 7 attacks. A screech: a protection prayer up on its
+// fourth and fifth ticks is hurt, his Defence is halved meanwhile, and ten
+// piles of carrion are thrown onto the floor, each breaking into fragments,
+// which stay as carrion; from 85% of his hitpoints, larvae too (larvae.js).
 //
 // Fire spells burn him and lower his Magic defence; he is weak to fire far
 // away, hardly near. A melee hit as a slam lands is a punish: it costs the
-// weapon no time and does half as much again.
+// weapon no time and does half as much again, and a crush one rarely misses.
 //
-// Sources: OBS is four kills (kill counts 686 to 689) of one player's
-// Outside recordings, 23 screeches and 26 larvae among them, and a fifth (690)
-// where it says so; WIKI the Maggot King and its Strategies page; CACHE and
-// tsps RSPSApp/tsps docs/maggot-king.md, which read the cache and the wiki.
-// Numbers no source gives are marked inferred.
+// Sources: OBS is 15 kills (kill counts 686 to 700) of one player's Outside
+// recordings, 80 screeches, 152 slams, 324 spits and 59 larvae among them;
+// WIKI the Maggot King and its Strategies page; CACHE and tsps RSPSApp/tsps
+// docs/maggot-king.md, which read the cache and the wiki. Numbers no source
+// gives are marked inferred. His hitpoints at a screech are those after the
+// hits of its tick (OBS: a larva at 1255 after a tick that began at 1294, none
+// at 1290).
 //
 // ponytail: not yet: sounds of the encounter's own (those of the sequences'
 // frames play). The engine applies no elemental weakness: the fire weakness is
@@ -53,21 +55,27 @@ export const maggotKingKind = "maggot_king";
 export const maggotKingMapSquare = { x: 45, y: 125 };
 export const bossActorId = "maggot-king";
 
-const firstAttackTick = 4; // OBS: his first spit 3 to 5 ticks into the four recordings
-const firstSpeed = 6; // OBS: before the first screech (every gap of the four)
-const distantSpeed = 5; // OBS, WIKI: a tick faster after it
-const slamSpeed = 4; // OBS
-// OBS: 4 to 7 attacks to a rotation, all 23 complete ones (WIKI, tsps: 4 to 8).
+const firstAttackTick = 4; // OBS: his first spit 3 to 5 ticks into the first four recordings
+const firstSpeed = 6; // OBS 15 kills: before the first screech (67 gaps of 67)
+const distantSpeed = 5; // OBS 15 kills, WIKI: a tick faster after it (198 of 198)
+const slamSpeed = 4; // OBS 15 kills (117 of 117)
+// OBS 15 kills: 4 to 7 attacks to a rotation, all 80 complete ones, no 8 (WIKI, tsps: 4 to 8).
 const rotation = [4, 7];
-// OBS: from a screech to the next rotation's first attack: 13 when he stays
-// far (8 of 8), 11 when he comes near, goes back or stays near (14 of 14).
-const afterScreech = { stay: 13, move: 11 };
-// His hitpoints as a screech starts. OBS: a larva after one at 1274, none at
-// 1302 and up (WIKI: about 1250); near after one at 983, not at 1042 and up
-// (kill 690; WIKI: about 980); for good after one at 291, not at 309 and up (kill 690; WIKI 305).
+// OBS 15 kills: from a screech to the next rotation's first attack, 13 ticks
+// while his hitpoints are high, 11 below: 13 after every screech at 1053 and
+// up (29 of 29, all far), 11 after those at 1042 and below (2 far, 47 near or
+// leaving it; once 12). inferred: the line at 1050 (70%).
+const afterScreech = { high: 13, low: 11 };
+const slowScreechHp = 1050;
+// His hitpoints at a screech, OBS 15 kills: a larva at 1274 and below, none
+// at 1290 and up (WIKI: about 1250); near at 983 and below, far at 1017 and up
+// (WIKI: about 980); near for good at 303 and below, back far at 350 and up
+// (WIKI: about 305). Below the line of the fill (larvae.js), four larvae.
 const larvaHp = 1275;
 const meleeHp = 1000;
 const finalHp = 305;
+// OBS 15 kills: the fill at 296 and below (7 screeches), one larva at 303 and 305; WIKI: about 299.
+const fillHp = 299;
 const spitMaxHit = 46; // WIKI
 const spitTicks = 2; // OBS: the hit lands 2 ticks after the spit (the projectile flies from 45 to 60 cycles)
 const bileTicks = 3; // OBS: the bile lies 3 ticks after the spit lands (its drops fall 90 cycles)
@@ -161,6 +169,7 @@ class MaggotKingEncounter {
     this.attacksLeft = this.randomInt(...rotation);
     this.nextAt = firstAttackTick;
     this.final = false;
+    this.filled = false;
     this.movement = "far"; // "far" | "near" | "hold" | "ascend"
     this.screechAt = null;
     this.slam = null; // { tiles, landsAt }
@@ -402,20 +411,21 @@ class MaggotKingEncounter {
     const hp = boss.vitals.hp;
     const wasMelee = this.phase === "melee";
     let next = "distant";
-    let fill = false;
     // inferred: once below a fifth he stays near, whatever larvae heal him (WIKI: he "stops retreating").
     if (this.final || hp <= finalHp) {
       next = "melee";
-      fill = !this.final;
       this.final = true;
     } else if (hp <= meleeHp && !wasMelee) next = "melee";
+    // The fill comes once, at the first screech below its line.
+    const fill = !this.filled && hp <= fillHp;
+    if (fill) this.filled = true;
     // OBS: the far rotations take turns, ranged and magic, whatever near ones come between.
     if (next === "distant") this.style = this.style === "range" ? "magic" : "range";
     this.screechAt = tick;
     this.phase = next;
     this.speed = next === "melee" ? slamSpeed : distantSpeed;
     this.attacksLeft = this.randomInt(...rotation);
-    this.nextAt = tick + (next === "distant" && !wasMelee ? afterScreech.stay : afterScreech.move);
+    this.nextAt = tick + (hp >= slowScreechHp ? afterScreech.high : afterScreech.low);
     this.slam = null;
     // Near, he goes on following the player's column until he moves off.
     if (wasMelee) this.movement = "near";
