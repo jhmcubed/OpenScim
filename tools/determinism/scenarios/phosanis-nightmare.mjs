@@ -5,7 +5,8 @@
 // snapshot tells what a player watches for: the stage and the shield, her
 // melee coming, the claws' tiles, the flowers, the spores, the surge, the
 // husks' trance, the parasite and the totems' charge. Each script decides
-// from it and the tick alone.
+// from it and the tick alone. She sleeps as the run starts and takes her
+// first form on tick 27 (encounter.js, wakeTimes).
 import { attack, boss, equip, item, meleeGear, protect, use } from "./common.mjs";
 import { floorTiles, gapTo, isTotemTile, chebyshev, same, bossSize } from "../../../client/encounters/phosanis-nightmare/ids.js";
 
@@ -16,6 +17,7 @@ const prayers = { magic: "ProtectMagic", range: "ProtectRange", melee: "ProtectM
 const sanfews = [10925, 10927, 10929, 10931];
 
 const state = (api) => api.engine.getEncounterSnapshot().state;
+const awake = 28; // the tick after she takes her first form
 const has = (tiles, tile) => tiles.some((other) => same(other, tile));
 
 // Inquisitor's, the guide's melee set (loadouts.js), with Tumeken's shadow for the totems, sanfew serums and food.
@@ -155,12 +157,12 @@ export const scenarios = [
     // standard attacks, her specials in their order, the claws and her surge as they come.
     name: "phosanis-nightmare/standing",
     kind: KIND,
-    seed: 5,
-    ticks: 260,
+    seed: 46,
+    ticks: 300,
     mechanics: health,
     ...gear,
     script(tick, api) {
-      if (tick === 1) attack(api, BOSS);
+      if (tick === awake) attack(api, BOSS);
     },
   },
   {
@@ -169,11 +171,11 @@ export const scenarios = [
     name: "phosanis-nightmare/parasite",
     kind: KIND,
     seed: 6,
-    ticks: 300,
+    ticks: 330,
     mechanics: health,
     ...gear,
     script(tick, api) {
-      if (tick === 1) attack(api, BOSS);
+      if (tick === awake) attack(api, BOSS);
     },
   },
   {
@@ -182,7 +184,7 @@ export const scenarios = [
     name: "phosanis-nightmare/spores",
     kind: KIND,
     seed: 5,
-    ticks: 300,
+    ticks: 330,
     mechanics: health,
     ...gear,
     script(tick, api) {
@@ -195,7 +197,7 @@ export const scenarios = [
         api.moveTo(...beside);
         return;
       }
-      if (me.attackTarget !== BOSS && !s.away) attack(api, BOSS);
+      if (me.attackTarget !== BOSS && !s.away && s.stage !== "asleep") attack(api, BOSS);
     },
   },
   {
