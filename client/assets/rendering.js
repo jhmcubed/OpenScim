@@ -32142,8 +32142,10 @@ var AD = {
     projectileStartHeight: 250,
     castSpotanimHeight: 0,
   },
+  // Zaryte crossbow: its bolt leaves higher than the other crossbows' (OBS:
+  // 177 -> 146 on every shot in 12 recorded Nex kills; theirs 155 -> 146).
   26374: {
-    projectileStartHeight: 155,
+    projectileStartHeight: 177,
     projectileEndHeight: 146,
   },
   29577: {
@@ -32302,14 +32304,15 @@ var RD = {
   28688: WD(10656, 2599),
 };
 // Zaryte crossbow, Evoke: its own bolt, zcb_specialattack (OBS, rsprox
-// transcript 227/01752 via tsps: spotanim 1995, start 41, slope 5, heights
-// 44 -> 36.5 in quarters of these units).
+// transcript 227/01752 via tsps: spotanim 1995, start 41, slope 5). The
+// animation and the start height as 18 recorded Evokes in Nex kills show
+// them (OBS): the ordinary shot's 9168, and 177 -> 146.
 var zaryteEvokeVisuals = {
-  attackAnimation: 9166,
+  attackAnimation: 9168,
   castSpotanim: -1,
   castSpotanimHeight: 92,
   projectileId: 1995,
-  projectileStartHeight: 176,
+  projectileStartHeight: 177,
   projectileEndHeight: 146,
   projectileSlope: 5,
   projectileStartDelay: 41,
@@ -32380,9 +32383,14 @@ function FD(e, a, t = false) {
     const i = r && n?.category === "Thrown" && / dart(?:\(|$)/i.test(n.name);
     const l = (t === "bow" || t === "crossbow") && isAmmoCompatibleWithWeapon(s, a);
     if (i || l) {
+      // Enchanted dragon bolts fly as dragon bolts, 1468 (OBS: ruby dragon
+      // bolts (e) from a Zaryte crossbow in recorded Nex kills); enchanted gem
+      // bolts as plain bolts, 27 (OBS: ruby bolts (e) from an Armadyl crossbow).
+      const dragonBoltsE = t === "crossbow" && / dragon bolts \(e\)$/i.test(getEquipmentDefinition(a)?.name ?? "");
       const n =
         qL[a] ??
         qL[getCanonicalEquipmentId(variantArrowsByItemId[a]?.baseArrowId ?? a)] ??
+        (dragonBoltsE ? qL[21905] : undefined) ??
         (t === "crossbow" ? qL[9144] : undefined);
       if (!n) {
         return;
