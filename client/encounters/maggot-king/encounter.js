@@ -107,7 +107,7 @@ const pilesPerHalf = 5;
 const fragmentsPerPile = 4;
 const slamMaxHit = 55; // WIKI
 const slamPrayed = 0.64; // WIKI: 35 of 55 through Protect from Melee
-const slamTicks = 2; // OBS: graphic 2953 on the twelve tiles and the biles land 2 ticks after the slam
+const slamTicks = 2; // OBS 15 kills: graphic 2953 on the twelve tiles and the biles land 2 ticks after the slam (152 of 152)
 const slamBiles = 3; // OBS, WIKI
 const drainsRestored = 9; // WIKI: drained Defence is restored after a screech (inferred: as it ends)
 const deathTicks = 8; // OBS: the corpse 8 ticks after his death
@@ -389,7 +389,7 @@ class MaggotKingEncounter {
   }
 
   // The 3 x 4 in front of his middle: debris shows on it at once, it lands 2
-  // ticks later with three biles of either kind (OBS: 50 slams, both kinds).
+  // ticks later with three biles of one kind (OBS 15 kills: 152 slams).
   headSlam(boss, context) {
     if (this.movement === "near") this.movement = "hold";
     const middle = centreX(boss);
@@ -400,7 +400,10 @@ class MaggotKingEncounter {
     const biles = [...tiles];
     const chosen = [];
     while (chosen.length < slamBiles && biles.length) chosen.push(biles.splice(Math.floor(this.random() * biles.length), 1)[0]);
-    const kinds = chosen.map(() => (this.random() < 0.5 ? "poison" : "sticky"));
+    // OBS 15 kills: the three of a slam are of one kind (152 of 152), poisonous
+    // or sticky as it falls (83 and 69).
+    const kind = this.random() < 0.5 ? "poison" : "sticky";
+    const kinds = chosen.map(() => kind);
     // OBS: the biles fly from him, 50 high to the floor in 60 cycles, slope 10.
     const source = [middle, boss.position[1] + (bossSize >> 1)];
     const projectiles = chosen.map((tile, i) => tileProjectile(kinds[i] === "poison" ? spotAnims.rangedSpit : spotAnims.magicSpit, source, tile, 0, 60, 50, 0, 10));
