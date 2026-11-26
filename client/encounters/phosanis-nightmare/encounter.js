@@ -323,16 +323,18 @@ class PhosanisNightmareEncounter {
     if (!context.world.getPlayer().alive) return [];
     return getNpcPursuitMoves(boss, { ...context, random: this.random });
   }
-  // She leaves (her flowers and her surge start so): out of reach until she is back.
+  // She leaves (her flowers and her surge start so): still until she is back, but not out of reach. OBS (Outside, five
+  // recordings, 17 leaves for her flowers or surge): 4 times the player began an attack 1 or 2 ticks into her animation
+  // (a thrall once more) and it landed on her shield; Don Danz's broke it so 2 ticks in (her surge, 2026-11-26, 329).
   leave(context) {
     const boss = this.boss(context.world);
     if (!boss) return;
     this.away = true;
-    boss.untargetable = true;
     this.visual(context, { animations: [{ clipId: "leave" }] });
   }
-  // Back: at the centre, or at a lane's start facing along it.
-  comeBack(context, at = bossStart, facing = null) {
+  // Back: at the centre, or at a lane's start facing along it (her surge: still until she crosses), or there with her
+  // surge nulled (`free`: she goes for the player at once).
+  comeBack(context, at = bossStart, facing = null, free = false) {
     const boss = this.boss(context.world);
     if (!boss) return;
     boss.position = [...at];
@@ -340,7 +342,7 @@ class PhosanisNightmareEncounter {
     boss.movementPath = [];
     boss.untargetable = false;
     if (facing) faceActorToward(boss, { position: facing, size: bossSize });
-    this.away = facing !== null; // her surge: still until she crosses
+    this.away = facing !== null && !free;
     if (!facing) this.stillUntil = Math.max(this.stillUntil, context.tick + 4); // tsps: still until the segment animation
     this.visual(context, { animations: [{ clipId: "back" }] });
   }
@@ -495,6 +497,7 @@ class PhosanisNightmareEncounter {
     this.minions.wakeTotems(context.world);
     this.message(context, messages.shieldFails);
     this.sound(context, sounds.shieldFails);
+    this.specials.shieldFailed(context);
   }
   totemsCharged(context) {
     if (this.stage !== "totems") return;

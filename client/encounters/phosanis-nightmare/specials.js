@@ -87,6 +87,12 @@ export const curseStops = { magic: "range", range: "melee", melee: "magic" };
 const surgeJump = 2;
 const surgeCross = 6;
 const surgeMax = 85;
+// Her shield broken before she stands at the lane's start, or on that tick, nulls the surge (OBS (Outside): Don Danz,
+// 2026-11-26, tick 327: her leave; 329: his hit breaks her shield as she appears there in her weakened form, she walks
+// at him from that tick and never crosses; her next attack 336, 9 ticks after her leave). Broken on the tick she
+// crosses, she crosses (the same recording, tick 507). Broken while she waits at the start: no recording, so she
+// crosses. Here a shield broken on the landing tick frees her from the next tick (the hit lands after her move).
+const nulledSurgeAttack = 9;
 
 export const messages = {
   flowers: { text: "The Nightmare splits the area into segments!", color: "#a53fff" },
@@ -375,12 +381,16 @@ export class Specials {
     const e = this.e;
     const lane = surgeLanes[Math.floor(e.random() * surgeLanes.length)];
     const [from, to] = e.random() < 0.5 ? lane : [lane[1], lane[0]];
-    this.surge = { from, to };
+    this.surge = { from, to, start: context.tick, landsAt: context.tick + surgeJump, nulled: false };
     e.leave(context);
     const epoch = e.epoch;
     const state = this.surge;
     const live = () => e.epoch === epoch && this.surge === state;
-    e.later(surgeJump, (ctx) => live() && e.comeBack(ctx, from, to));
+    e.later(surgeJump, (ctx) => {
+      if (!live()) return;
+      e.comeBack(ctx, from, to, state.nulled);
+      if (state.nulled) this.surge = null;
+    });
     e.later(surgeCross, (ctx) => {
       if (!live()) return;
       this.surge = null;
@@ -397,6 +407,21 @@ export class Specials {
       e.hurt({ baseDamage: [Math.ceil(surgeMax / 2), surgeMax], attackType: "typeless", source: "Surge" });
     });
     return surgeCross + 5; // tsps: her next attack 5 ticks after the surge (83 of 83)
+  }
+  // Her shield has failed: a surge she has not yet landed for is nulled.
+  shieldFailed(context) {
+    const surge = this.surge;
+    if (!surge || context.tick > surge.landsAt) return;
+    const e = this.e;
+    surge.nulled = true;
+    if (context.tick === surge.landsAt) {
+      // Already at the lane's start: free from here.
+      this.surge = null;
+      e.away = false;
+    }
+    e.nextAttackAt = surge.start + nulledSurgeAttack;
+    const boss = e.boss(context.world);
+    if (boss) boss.combat.nextActionTick = e.nextAttackAt;
   }
 
   // Her blast, or her death: what is going on ends. The spores stay to the
