@@ -44,6 +44,9 @@
 // OBS 11/26 is three more of the same player's, of 26 November 2026: a
 // post-quest kill with three stuns, roar rocks, thrown rocks and lightning on
 // the player; two awakened fights of 15 and 16 stuns, the player dying enraged.
+// OBS 11/26 kills is 22 more Outside recordings of 26 November 2026: 20
+// post-quest kills of the same player's (kill counts 2,893 to 2,912), and two
+// awakened fights of another's, a kill and a death enraged at 89 left.
 // Plain OBS is rsprox recordings 1703 (an ordinary
 // world's quest fight), 1751, 3285 and six more of Leagues V and Grid Master
 // worlds (the 900-hitpoint Leviathan), as RSPSApp/tsps reads them
@@ -146,6 +149,7 @@ export const spots = {
   falling: [2477, 2478, 2479, 2480],
   boulder: 2472, // CACHE projanim_brain_01: the smoke's thrown rocks (OBS 11/25)
   boulderLands: 2473, // CACHE projanim_brain_01_impact_01; OBS 11/25: where one lands and stays
+  crumble: 2474, // OBS 11/26 kills: on each fallen rock as it goes after the kill (290 of 290)
   blastCharge: 2494, // CACHE spotanim_leviathan_explode; OBS 11/25: on it as the smoke gathers
   blast: 2505, // CACHE spotanim_leviathan_explode_02; OBS 11/25: on it as the smoke blows
   // OBS 11/25: the smoke's wave, one to a tile, by the way out from its middle:
@@ -261,7 +265,7 @@ const smoke = { spit: 3, firstRock: 4, rocks: 10, rockFlight: 2, charge: 13, bla
 // OBS 11/25: the wave is drawn on the floor and the pool's rim between these
 // distances from its middle, 3 cycles later for each tile further out.
 const wave = { inner: 4, reach: 9, cycles: 3, first: -6 };
-const deathTicks = 6; // OBS: from the kill to its removal (24 deaths)
+const deathTicks = 6; // OBS: from the kill to its removal (24 deaths); OBS 11/26 kills: 21 of 21, the awakened kill too
 
 // Projectiles. OBS, OBS 11/25: from 30 cycles to the impact tick, from height 550
 // to 100, slope 30, 124 out from the mouth. OBS kills: an orb of one tick from 30
@@ -352,7 +356,7 @@ export const versions = {
     // tiles. At its other roars too (WIKI: "cause debris to fall around the arena").
     debrisChance: 1 / 17,
     tornadoHp: 1350, // WIKI; OBS 11/25: it comes at 1,345, 1,317 and 1,284, not yet at 1,359
-    tornadoHit: [42, 48], // OBS 11/25: 9 hits, 42 to 48; WIKI: "40+"
+    tornadoHit: [40, 48], // OBS 11/25: 9 hits, 42 to 48; OBS 11/26 kills: 40, 41, 43 and 44; WIKI: "40+"
   },
 };
 // OBS 11/25: loose rocks land 6, 7 or 8 ticks after they are sent, drawn 20, 50 or
@@ -795,6 +799,13 @@ class LeviathanEncounter {
     if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
     return true;
   }
+  crumbleRubble(context) {
+    if (this.rubble.size === 0) return;
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [],
+      graphics: [...this.rubble.values()].map(([x, y]) => ({ spotAnimId: spots.crumble, target: tileTarget([x, y]), height: 0, delayCycles: 0 })) });
+    this.rubble.clear();
+    if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
+  }
 
   // --- the stun and the specials -----------------------------------------
   // What it does to a hit of the player's on it, as the hit lands. OBS kills: a
@@ -1132,10 +1143,12 @@ class LeviathanEncounter {
     this.falling = [];
     this.stun = null;
     this.special = null;
-    // WIKI: "Once the Leviathan is slain, all debris on the field will be removed."
-    this.rubble.clear();
     this.cover.clear();
-    if (this.arenaBase) setArenaConfig(this.arenaWithRubble(), getArenaDefaultWalkable());
+    // WIKI: "Once the Leviathan is slain, all debris on the field will be removed."
+    // OBS 11/26 kills (21 of 21, 290 rocks): not at the kill; every rock stays
+    // through its death and crumbles the tick after it is gone (kill + 7). The
+    // fight stops as it goes (deathTicks), so here they crumble then, a tick early.
+    this.queue.push({ tick: defeat.tick + deathTicks, run: (ctx) => this.crumbleRubble(ctx) });
     for (const id of [pathfinderActorId, tornadoActorId]) if (context.world.getNpc(id)) context.despawnNpc(id);
     this.pathfinder = null;
     if (completionOwnership !== "encounter-owned") return;
