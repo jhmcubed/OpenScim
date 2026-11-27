@@ -117,6 +117,14 @@ const messages = {
   awoken: { text: "The Nightmare has awoken!", color: "#ff3045" },
 }; // tsps, as captured
 const protectionPrayers = { magic: "ProtectMagic", range: "ProtectRange", melee: "ProtectMelee" };
+// WIKI (Phosani's Nightmare, Curse): "A pink glow fills the player's screen" while cursed. Its colour and strength here
+// are inferred (the recordings carry no screen effect).
+const curseTint = "rgba(255, 70, 200, 0.14)";
+// A practice aid (off unless chosen): while cursed, each protection prayer outlined in the colour of the style it stops
+// now, green ranged, blue magic, red melee, as players mark them with RuneLite's Screen Markers.
+const curseMarkersKey = "phosaniCurseMarkers";
+const styleColours = { range: "#20e020", magic: "#2f8fff", melee: "#ff3030" };
+const curseMarkers = () => Object.fromEntries(Object.entries(curseStops).map(([prayer, stops]) => [protectionPrayers[prayer], styleColours[stops]]));
 
 const bossDefinition = defineNpc({
   id: "phosanis-nightmare",
@@ -200,7 +208,7 @@ class PhosanisNightmareEncounter {
     return { encounterSeed: this.seed };
   }
   getDefaultMechanicsConfig() {
-    return {};
+    return { [curseMarkersKey]: false };
   }
   getDefaultPlayerStart() {
     return [...playerStart];
@@ -254,10 +262,11 @@ class PhosanisNightmareEncounter {
   // Before the NPCs: what is due, the claws coming up, the spores, the
   // parasite, the sleepwalkers beside her (tsps: taken in before they would
   // step), the yawns and the curse.
-  resolveHazards(context) {
+  resolveHazards(context, mechanics) {
     this.now = context.tick;
     this.world = context.world;
     this.context = context;
+    this.mechanics = mechanics;
     this.runTasks(context);
     this.minions.refuseCharged(context);
     if (this.stage !== "dead") {
@@ -739,7 +748,8 @@ class PhosanisNightmareEncounter {
         melee: this.melee.filter((swing) => swing.at >= now).map((swing) => ({ ...swing, stoppedBy: this.specials.protectionFor("melee") })),
         ...this.specials.snapshot(now),
         ...this.minions.snapshot(now),
-        ...(this.specials.curse ? { playerOverheadPrayer: this.cursedOverhead() } : {}),
+        ...(this.specials.curse ? { playerOverheadPrayer: this.cursedOverhead(), screenTint: curseTint } : {}),
+        ...(this.specials.curse && (this.mechanics?.[curseMarkersKey] ?? false) ? { prayerMarkers: curseMarkers() } : {}),
       },
       visuals: {},
     };
@@ -829,8 +839,11 @@ export const phosanisNightmareDefinition = {
     }],
   },
   controls: {
-    defaultMechanicsConfig: {},
-    mechanicsToggles: [],
+    defaultMechanicsConfig: { [curseMarkersKey]: false },
+    mechanicsToggles: [{
+      key: curseMarkersKey, label: "Curse Prayer Markers", group: "aid", default: false,
+      info: "While she has cursed you, each protection prayer is outlined in the colour of the attack it now stops: green ranged, blue magic, red melee (as players set up RuneLite's Screen Markers).",
+    }],
     bossHpPresets: phasePresets,
     debugActions: [],
   },

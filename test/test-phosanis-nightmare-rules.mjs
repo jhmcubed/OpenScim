@@ -160,6 +160,9 @@ for (const name of ["kill", "kill-other-forms"]) {
   const cursed = ticks.filter((tick) => tick?.state.cursed);
   assert.ok(cursed.some((tick) => tick.prayer), name);
   for (const tick of cursed) assert.equal(tick.state.playerOverheadPrayer, tick.prayer ? shuffled[tick.prayer] : null);
+  // Cursed, a pink glow over the scene (the wiki); the prayer markers only with their practice aid (off here).
+  for (const tick of ticks) if (tick) assert.equal(tick.state.screenTint !== undefined, tick.state.cursed, name);
+  assert.ok(ticks.every((tick) => !tick || tick.state.prayerMarkers === undefined));
   assert.ok(ticks.every((tick) => !tick || tick.state.cursed || tick.state.playerOverheadPrayer === undefined));
 
   // Asleep she faces south and does not turn to the player (the Outside recordings).
