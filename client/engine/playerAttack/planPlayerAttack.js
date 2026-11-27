@@ -1,5 +1,6 @@
 import { getPoweredStaffBaseMaxHit } from "../weapons.js";
-import { getSpecialAttackDefinition } from "../../data/specialAttackDefinitions.js";
+import { getSpecialAttackDefinition, getEquippedSpecialAttackItemId } from "../../data/specialAttackDefinitions.js";
+import { RONDACHE_ID, getRondacheCharges } from "../rondache.js";
 import { getWeaponCategoryDefinition } from "../../data/weaponCategories.js";
 import { isSoulreaperAxe, getSoulreaperStackCount } from "../specialAttacks.js";
 import { projectPlayerAttack } from "./projection.js";
@@ -36,9 +37,15 @@ function planPlayerAttack(attackInput, consumeGuaranteedMaximum, forceGuaranteed
     markOfDarknessActive: attackInput.player.combatTimers.markOfDarknessActiveTicks > 0,
     demonbaneVulnerability: attackInput.target.formulaStats?.demonbaneVulnerability,
     soulreaperStacks: getSoulreaperStackCount(attackInput.player.soulreaper),
+    zoryasFlowAttacks: attackInput.player.zoryasFlow?.attacks ?? 0,
+    ...(attackInput.isSpecialAttack && getEquippedSpecialAttackItemId(attackInput.player.equipment) === RONDACHE_ID
+      ? { shieldSlamCharges: getRondacheCharges(attackInput.player) }
+      : {}),
     combatStyle: getSelectedCombatStyle(attackInput.player),
+    attackStyleIndex: attackInput.player.selectedAttackStyleIndex,
+    targetDefensive: attackInput.target.formulaStats?.defensive,
     targetDistance: attackInput.targetDistance,
-    // The Ranged strength of the ammunition alone, for a hit that takes no other (Seercull's Soulshot).
+    // The Ranged strength of the ammunition alone, for a hit that takes no other (Seercull's Soulshot, the magic shortbow's Snapshot).
     ...(attackInput.resources?.kind === "ammo"
       ? { ammoRangedStrength: attackInput.lookupItemStats?.(attackInput.resources.ammoId)?.rangedStrength }
       : {}),
@@ -67,6 +74,10 @@ function planPlayerAttack(attackInput, consumeGuaranteedMaximum, forceGuaranteed
     manualCast: attackInput.manualCast,
     standardAccuracyMode: attackInput.standardAccuracyMode,
     ...getSpecialDefenceStyleOverride(attackInput),
+    // Shield Slam: "crush accuracy is +6 per charge, plus equipment bonuses" (WIKI: Rondache).
+    ...(attackInput.isSpecialAttack && getEquippedSpecialAttackItemId(attackInput.player.equipment) === RONDACHE_ID
+      ? { addedAttackCrush: 6 * getRondacheCharges(attackInput.player) }
+      : {}),
     ...(attackInput.isSpecialAttack &&
     undefined !== attackInput.player.equipment.weapon &&
     getSpecialAttackDefinition(attackInput.player.equipment.weapon)?.poweredSpellWeaponId !== undefined
@@ -187,11 +198,11 @@ function getSelectedCombatStyle(player) {
   return (styles[player.selectedAttackStyleIndex] ?? styles[0])?.combatStyle;
 }
 function getSpecialDefenceStyleOverride(attackInput) {
-  const weapon = attackInput.player.equipment.weapon;
-  if (!attackInput.isSpecialAttack || undefined === weapon) {
+  const specialAttackItemId = getEquippedSpecialAttackItemId(attackInput.player.equipment);
+  if (!attackInput.isSpecialAttack || undefined === specialAttackItemId) {
     return {};
   }
-  const defenceStyle = getSpecialAttackDefinition(weapon)?.defenceStyle;
+  const defenceStyle = getSpecialAttackDefinition(specialAttackItemId)?.defenceStyle;
   if (undefined === defenceStyle) {
     return {};
   } else {

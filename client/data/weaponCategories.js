@@ -1,6 +1,7 @@
 import { defaultSpellbook } from "../engine/playerState.js";
 import { getBaseItemId } from "./itemVariants.js";
 import { getSpellDefinition } from "./combatSpells.js";
+import { getEquipmentDefinition } from "./equipment.js";
 var weaponCategoryDefinitions = {
   "2h_sword": {
     name: "2h Sword",
@@ -132,6 +133,44 @@ var weaponCategoryDefinitions = {
         attackType: "Crush",
         combatStyle: "Aggressive",
         icon: "bludgeon_smash.png",
+      },
+    ],
+  },
+  // The Obligator's own styles (WIKI: Obligator): two Thrusts at 5 ticks and a Smash at 3, all crush. A style's
+  // `attackSpeed` replaces the weapon's (CACHE: 5 ticks, param 14) and its `attackAnimationId` the weapon's attack
+  // animation; no other style sets either. The animations are TFA_HUMAN_OBLIGATOR_MULTIHIT (15123) for the Thrust,
+  // which hits through to the tiles behind, and TFA_HUMAN_OBLIGATOR_ATTACK (15122) for the Smash (CACHE: sequence
+  // names; which is which is inferred from them). The icons are the polearm's Jab and the bludgeon's Smash (inferred).
+  // The Thrust's chain, which the animation hides, is a graphic of its own, by weapon (`attackGraphicIdByWeaponId`):
+  // VFX_OBLIGATOR_CHARGED_THRUST_MALE (4423) and VFX_OBLIGATOR_UNCHARGED_THRUST_MALE (4424), the mace's head on the
+  // animation VFX_OBLIGATOR_CHARGED_THRUST_MALE (CACHE: spot animations 4423 and 4424, sequence 15125). The player
+  // is always drawn male here.
+  obligator: {
+    name: "Obligator",
+    styles: [
+      {
+        name: "Thrust",
+        attackType: "Crush",
+        combatStyle: "Accurate",
+        icon: "polearm_jab.png",
+        attackAnimationId: 15123,
+        attackGraphicIdByWeaponId: { 34715: 4423, 34717: 4424 },
+      },
+      {
+        name: "Thrust",
+        attackType: "Crush",
+        combatStyle: "Aggressive",
+        icon: "polearm_jab.png",
+        attackAnimationId: 15123,
+        attackGraphicIdByWeaponId: { 34715: 4423, 34717: 4424 },
+      },
+      {
+        name: "Smash",
+        attackType: "Crush",
+        combatStyle: "Aggressive",
+        icon: "bludgeon_smash.png",
+        attackSpeed: 3,
+        attackAnimationId: 15122,
       },
     ],
   },
@@ -599,6 +638,7 @@ var weaponCategoryDefinitions = {
   },
 };
 var weaponCategoryByItemId = {
+  34715: "obligator", 34717: "obligator", // Obligator, charged and uncharged (WIKI: Obligator)
   23849: "polearm", 23850: "polearm", 23851: "polearm", // TABLE: corrupted halberds, basic to perfected
   23852: "powered_staff", 23853: "powered_staff", 23854: "powered_staff", // TABLE: corrupted staves
   23855: "bow", 23856: "bow", 23857: "bow", // TABLE: corrupted bows
@@ -825,12 +865,33 @@ function getActiveSpell({
   }
   return getDefaultStaffSpell(weaponId, spellbook);
 }
+// A weapon the table above does not name takes the category the equipment
+// list gives it (equipment.js, generated from the wiki: "Stab Sword",
+// "Crossbow", ...), as the key of weaponCategoryDefinitions it names. A
+// category with no definition here (Flail, Gun, Multi-Melee, Multi-Style,
+// Polestaff, Salamander) and "Unarmed" give none: such a weapon stays
+// unarmed, as before. The table wins where it names a weapon. Bladed staves
+// (Toxic staff of the dead, Staff of light, ...) are staves, as the table
+// already has the Staff of the dead (11791).
+var weaponCategoryKeyBySyncedName = { Chinchompas: "chinchompa", "Bladed Staff": "staff" };
+function getSyncedWeaponCategory(itemId) {
+  const definition = getEquipmentDefinition(itemId);
+  if ((definition?.slot !== "weapon" && definition?.slot !== "2h") || !definition.category || definition.category === "Unarmed") {
+    return undefined;
+  }
+  const key = weaponCategoryKeyBySyncedName[definition.category] ?? definition.category.toLowerCase().replace(/ /g, "_");
+  return weaponCategoryDefinitions[key] ? key : undefined;
+}
+// Whether the table above names the weapon (its category is not the equipment list's).
+function hasListedWeaponCategory(weaponId) {
+  return weaponId !== undefined && weaponCategoryByItemId[getBaseItemId(weaponId)] !== undefined;
+}
 function getWeaponCategory(weaponId) {
   if (weaponId === undefined) {
     return undefined;
-  } else {
-    return weaponCategoryByItemId[getBaseItemId(weaponId)];
   }
+  const baseWeaponId = getBaseItemId(weaponId);
+  return weaponCategoryByItemId[baseWeaponId] ?? getSyncedWeaponCategory(baseWeaponId) ?? getSyncedWeaponCategory(weaponId);
 }
 function getWeaponCategoryOrUnarmed(weaponId) {
   return getWeaponCategory(weaponId) ?? "unarmed";
@@ -851,6 +912,7 @@ export {
   getDefaultAttackStyleIndex,
   getActiveSpell,
   getWeaponCategory,
+  hasListedWeaponCategory,
   getWeaponCategoryOrUnarmed,
   getWeaponCategoryDefinition,
 };

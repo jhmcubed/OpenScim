@@ -198,6 +198,31 @@ var specialAttackDefinitionByWeaponId = {
       },
     ],
   },
+  // The Rondache, Shield Slam (WIKI: Rondache): the shield's own special, "barehanded or with any one-handed
+  // weapon", from melee range, needing 10 charges and using "no special attack energy". It rolls against crush.
+  // Its damage and accuracy are the profile's (profiles.js), its charges engine/rondache.js's.
+  // TFA_HUMAN_RONDACHE_SPECIAL and VFX_TFA_RONDACHE_SPECIAL (CACHE: sequence and spot animation names).
+  34719: {
+    energyCost: 0,
+    formulaStyleOverride: "melee_crush",
+    defenceStyle: "melee_crush",
+    styleOverride: "melee",
+    attackKindOverride: "melee_crush",
+    attackRange: 1,
+    minimumRondacheCharges: 10,
+    excludedTargetAttribute: "flying", // "Cannot be used against flying enemies" (WIKI: Rondache)
+    animationId: 15108,
+    graphicId: 4422,
+  },
+  // Zorya's tome, Zorya's flow (WIKI: Zorya's tome): 50%. Its accuracy and damage, and the attacks it speeds up
+  // after it, are the profile's and launch.js's. It does not get Longrange's 2 more tiles (WIKI, "Known bugs"): 7.
+  // TFA_HUMAN_ZORYA_TOME_SPECIAL_ATTACK and VFX_ZORYA_TOME_SPEC_SPOTANIM (CACHE: sequence and spot animation names).
+  34725: {
+    energyCost: 50,
+    attackRange: 7,
+    animationId: 15140,
+    graphicId: 4432,
+  },
   31113: {
     energyCost: 50,
     animationId: 12394,
@@ -326,12 +351,16 @@ var specialAttackDefinitionByWeaponId = {
     defenceStyle: "melee_slash",
     animationId: 3300,
   },
+  // Dragon longsword, Cleave: 25%, against slash (WIKI)
   1305: {
     defenceStyle: "melee_slash",
+    energyCost: 25,
     animationId: 1058,
   },
+  // Dragon sword (the wiki's Dragon shortsword), Wild Stab: 40% (WIKI). Protect from Melee is not ignored here.
   21009: {
     defenceStyle: "melee_stab",
+    energyCost: 40,
     animationId: 7515,
   },
   4587: {
@@ -391,8 +420,10 @@ var specialAttackDefinitionByWeaponId = {
       },
     ],
   },
+  // Dragon mace, Shatter: 25% (WIKI)
   1434: {
     defenceStyle: "melee_crush",
+    energyCost: 25,
     animationId: 1060,
   },
   11061: {
@@ -408,12 +439,15 @@ var specialAttackDefinitionByWeaponId = {
   1377: {
     animationId: 1056,
   },
+  // Dragon and crystal halberd, Sweep: 30% (WIKI: Special attacks)
   3204: {
     defenceStyle: "melee_slash",
+    energyCost: 30,
     animationId: 1203,
   },
   23987: {
     defenceStyle: "melee_slash",
+    energyCost: 30,
     animationId: 1203,
   },
   23986: {
@@ -484,7 +518,10 @@ var specialAttackDefinitionByWeaponId = {
       height: 96,
     },
   },
+  // Saradomin sword, Saradomin's Lightning: 100%, against slash (WIKI)
   11838: {
+    defenceStyle: "melee_slash",
+    energyCost: 100,
     animationId: 1132,
   },
   12809: {
@@ -504,22 +541,30 @@ var specialAttackDefinitionByWeaponId = {
     defenceStyle: "melee_crush",
     animationId: 7511,
   },
+  // Dark bow and its painted versions, Descent of Darkness / Dragons: 55% (WIKI: Dark bow)
   11235: {
+    energyCost: 55,
     animationId: 426,
   },
   12765: {
+    energyCost: 55,
     animationId: 426,
   },
   12766: {
+    energyCost: 55,
     animationId: 426,
   },
   12767: {
+    energyCost: 55,
     animationId: 426,
   },
   12768: {
+    energyCost: 55,
     animationId: 426,
   },
+  // Magic shortbow, Snapshot: 55%; the (i), 50% (WIKI: Magic shortbow, Magic shortbow (i))
   861: {
+    energyCost: 55,
     animationId: 426,
   },
   // Seercull, Soulshot. WIKI: "consumes 100% of the player's special attack
@@ -541,15 +586,21 @@ var specialAttackDefinitionByWeaponId = {
     ],
   },
   12788: {
+    energyCost: 50,
     animationId: 426,
   },
+  // Light and heavy ballista, Concentrated Shot: 65% (WIKI: Heavy ballista)
   19478: {
+    energyCost: 65,
     animationId: 7555,
   },
   19481: {
+    energyCost: 65,
     animationId: 7555,
   },
+  // Dragon crossbow, Annihilate: 60% (WIKI: Dragon crossbow)
   21902: {
+    energyCost: 60,
     animationId: 4230,
   },
   26219: {
@@ -569,33 +620,8 @@ var specialAttackDefinitionByWeaponId = {
     animationId: 10173,
     graphicId: 2430,
   },
-  23995: {
-    animationId: 390,
-  },
-  24551: {
-    animationId: 390,
-  },
-  25870: {
-    animationId: 390,
-  },
-  25872: {
-    animationId: 390,
-  },
-  25874: {
-    animationId: 390,
-  },
-  25876: {
-    animationId: 390,
-  },
-  25878: {
-    animationId: 390,
-  },
-  25880: {
-    animationId: 390,
-  },
-  25882: {
-    animationId: 390,
-  },
+  // No entry for the Blade of Saeldor (23995) or its (c) versions: it has no special attack (WIKI: Blade of
+  // Saeldor; one was polled and did not pass). An entry gave it a special button that did nothing.
   22613: {
     defenceStyle: "melee_stab",
     animationId: 7515,
@@ -663,4 +689,15 @@ function getSpecialAttackDefinition(weaponId) {
 function hasSpecialAttack(weaponId) {
   return getSpecialAttackDefinition(weaponId) !== undefined;
 }
-export { getSpecialAttackDefinition, hasSpecialAttack };
+// The item whose special attack the player's spec bar uses: the weapon's, or else the Rondache's, the one shield
+// with a special of its own (CACHE: of the shields in enum 906, the table of special attacks, only the Rondache has
+// a value above 0). A weapon with a special of its own keeps it (inferred). A two-handed weapon leaves no shield.
+var RONDACHE_SPECIAL_ID = 34719;
+function getEquippedSpecialAttackItemId(equipment) {
+  const weapon = equipment?.weapon;
+  if (weapon !== undefined && hasSpecialAttack(weapon)) {
+    return weapon;
+  }
+  return equipment?.shield === RONDACHE_SPECIAL_ID ? RONDACHE_SPECIAL_ID : undefined;
+}
+export { getSpecialAttackDefinition, hasSpecialAttack, getEquippedSpecialAttackItemId };

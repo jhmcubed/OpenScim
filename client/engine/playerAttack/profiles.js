@@ -1,5 +1,6 @@
 import { getCanonicalEquipmentId, getEquipmentDefinition } from "../../data/equipment.js";
 import { getBaseItemId } from "../../data/itemVariants.js";
+import { variantArrowsByItemId } from "../ammunition.js";
 import { hasSpecialAttack, getSpecialAttackDefinition } from "../../data/specialAttackDefinitions.js";
 import {
   ECLIPSE_SPECIAL_FORMULA_GAP,
@@ -26,6 +27,7 @@ var zaryteCrossbowIdSet = new Set([26374, 27186]); // Zaryte crossbow, and its L
 // `ignoresAccuracy`: the effect is rolled on a miss too. `spotAnimId`: the
 // graphic on the target (CACHE, as tsps server/plugins/combat/data/enchanted-bolts.json).
 // Jade and topaz work on players only (WIKI), so they have no entry.
+var ascensionCrossbowIdSet = new Set([34681]);
 var enchantedBoltByGem = {
   opal: { chancePercent: 5, ignoresAccuracy: true, spotAnimId: 749 },
   pearl: { chancePercent: 6, ignoresAccuracy: true, spotAnimId: 750 },
@@ -38,7 +40,7 @@ var enchantedBoltByGem = {
 };
 function getEnchantedBoltGem(ammoId) {
   const name = getEquipmentDefinition(ammoId)?.name ?? getEquipmentDefinition(getCanonicalEquipmentId(ammoId))?.name;
-  return /^(\w+) (?:dragon )?bolts \(e\)$/i.exec(name ?? "")?.[1]?.toLowerCase();
+  return /^(\w+) (?:dragon |ascension )?bolts \(e\)$/i.exec(name ?? "")?.[1]?.toLowerCase();
 }
 var RATIO_ONE = {
   numerator: 1,
@@ -495,7 +497,22 @@ var dragonClawsAllMissOutcomes = [
     damages: [0, 1, 0, 1],
   },
 ];
+// Saradomin's Lightning, the Saradomin sword's special (WIKI: Saradomin sword):
+// "10% more melee damage" and "1-16 extra Magic damage"; "If the melee attack
+// misses, then the Magic attack will also fail." Rolled against slash
+// (specialAttackDefinitions.js). The extra hit is not a magic attack to the
+// engine here (protection prayers and magic immunities do not see it).
+var saradominSwordSpecialProfile = {
+  kind: "secondHitIfFirstAccurate",
+  maxHit: { kind: "staged", stages: [{ numerator: 11, denominator: 10 }] },
+  first: { accuracy: { kind: "standard" }, damage: { kind: "uniformToMaxHit" } },
+  second: { accuracy: { kind: "guaranteed" }, damage: { kind: "uniform", minimumInclusive: 1, maximumInclusive: 16 } },
+};
 var specialAttackProfileByWeaponId = new Map([
+  [1434, buildBoostedSingleHitProfile(RATIO_5_OVER_4, RATIO_3_OVER_2)], // Dragon mace, Shatter: +25% accuracy, +50% damage (WIKI)
+  [1305, buildBoostedSingleHitProfile(RATIO_ONE, RATIO_5_OVER_4)], // Dragon longsword, Cleave: "raises the player's maximum hit by 25% for one hit" (WIKI)
+  [21009, buildBoostedSingleHitProfile(RATIO_5_OVER_4, RATIO_5_OVER_4)], // Dragon sword (the wiki's Dragon shortsword), Wild Stab: +25%, +25% (WIKI)
+  [11838, saradominSwordSpecialProfile], // Saradomin sword
   [27665, accursedSceptreSpecialProfile], // Accursed sceptre
   [27679, accursedSceptreSpecialProfile], // Accursed sceptre (a)
   [27676, accursedSceptreSpecialProfile], // Accursed sceptre (au)
@@ -635,6 +652,9 @@ function buildOsmumtensFangProfile(canonicalInput) {
 }
 function selectBaseProfile(canonicalInput) {
   if (canonicalInput.isSpecialAttack) {
+    if (canonicalInput.shieldSlamCharges !== undefined) {
+      return buildShieldSlamProfile(canonicalInput);
+    }
     if (canonicalInput.weaponId === undefined) {
       return null;
     }
@@ -646,6 +666,9 @@ function selectBaseProfile(canonicalInput) {
         kind: "unsupported",
         gaps: [ECLIPSE_SPECIAL_FORMULA_GAP],
       };
+    }
+    if (canonicalInput.weaponId === ZORYAS_TOME_PROFILE_ID) {
+      return buildZoryasFlowProfile(canonicalInput, true);
     }
     if (canonicalInput.weaponId === 29589) { // Emberlight
       return buildStandardSingleHitProfile(canonicalInput);
@@ -694,6 +717,24 @@ function selectBaseProfile(canonicalInput) {
     if (canonicalInput.weaponId === SEERCULL_ID) {
       return buildSeercullSoulshotProfile(canonicalInput);
     }
+    if (darkBowIdSet.has(canonicalInput.weaponId)) {
+      return buildDescentProfile(canonicalInput);
+    }
+    if (magicShortbowIdSet.has(canonicalInput.weaponId)) {
+      return buildSnapshotProfile(canonicalInput);
+    }
+    if (halberdSweepIdSet.has(canonicalInput.weaponId)) {
+      return buildHalberdSweepProfile(canonicalInput);
+    }
+    if (armadylCrossbowIdSet.has(canonicalInput.weaponId)) {
+      return buildArmadylEyeProfile(canonicalInput);
+    }
+    if (dragonCrossbowIdSet.has(canonicalInput.weaponId)) {
+      return buildAnnihilateProfile(canonicalInput);
+    }
+    if (ballistaIdSet.has(canonicalInput.weaponId)) {
+      return buildConcentratedShotProfile(canonicalInput);
+    }
     const specialAttackProfile = specialAttackProfileByWeaponId.get(canonicalInput.weaponId);
     if (undefined !== specialAttackProfile) {
       return specialAttackProfile;
@@ -733,6 +774,12 @@ function selectBaseProfile(canonicalInput) {
     } else {
       return defaultSingleHitProfile;
     }
+  } else if (darkBowIdSet.has(canonicalInput.weaponId)) {
+    return buildDarkBowProfile(canonicalInput);
+  } else if (canonicalInput.weaponId === ZORYAS_TOME_PROFILE_ID && (canonicalInput.zoryasFlowAttacks ?? 0) > 0) {
+    return buildZoryasFlowProfile(canonicalInput, false);
+  } else if (canonicalInput.weaponId === CHARGED_OBLIGATOR_ID && OBLIGATOR_THRUST_STYLE_INDICES.has(canonicalInput.attackStyleIndex ?? 0)) {
+    return buildObligatorThrustProfile(canonicalInput);
   } else {
     return buildStandardSingleHitProfile(canonicalInput);
   }
@@ -1087,10 +1134,14 @@ function getEnchantedBoltProc(profileInput, guaranteed = false) {
     return {};
   }
   const zaryte = profileInput.weaponId !== undefined && zaryteCrossbowIdSet.has(profileInput.weaponId);
+  // The Ascension crossbows: "enchanted bolt effect trigger chance is reduced by 50%" (WIKI: Ascension crossbows);
+  // the bolts' own pages give the result, 5% for Armour Piercing and 5.5% for Life Leech (WIKI: Diamond ascension
+  // bolts (e), Onyx ascension bolts (e)). Their effects are those of the diamond and onyx bolts (e).
+  const ascension = profileInput.weaponId !== undefined && ascensionCrossbowIdSet.has(getBaseItemId(profileInput.weaponId));
   const attributes = profileInput.targetAttributes ?? [];
   const rangedLevel = profileInput.playerRangedLevel ?? 0;
   const common = {
-    chancePercent: bolt.chancePercent,
+    chancePercent: ascension ? bolt.chancePercent / 2 : bolt.chancePercent,
     ignoresAccuracy: bolt.ignoresAccuracy,
     guaranteed: guaranteed,
     spotAnimId: bolt.spotAnimId,
@@ -1188,6 +1239,204 @@ function buildZaryteEvokeProfile(profileInput) {
       },
       ...getEnchantedBoltProc(profileInput, true),
     },
+  };
+}
+// The charged Obligator's Thrust (WIKI: Obligator): "multiple damage rolls per hitsplat, and the highest roll is
+// used", at least 2, and one more for each of the target's stab and slash defence that is higher than its crush
+// defence. On a target that fills 2 tiles of the 3x1 line the Thrust strikes it does 20% more damage, 3 tiles 40%:
+// a target in front of the player fills as many of those tiles as its size, up to 3 (inferred; a diagonal approach
+// is not told apart). The extra targets behind the first that the Thrust also hits are not modelled, nor its charges
+// (one an attack), as no weapon's are. The Smash (the third style) and the uncharged Obligator attack as usual.
+var CHARGED_OBLIGATOR_ID = 34715;
+var OBLIGATOR_THRUST_STYLE_INDICES = new Set([0, 1]);
+var OBLIGATOR_LARGE_TARGET_RATIOS = [RATIO_ONE, RATIO_ONE, { numerator: 6, denominator: 5 }, { numerator: 7, denominator: 5 }];
+function getObligatorDamageRolls(targetDefensive) {
+  if (targetDefensive === undefined) {
+    return 2;
+  }
+  return 2 + (targetDefensive.stab > targetDefensive.crush ? 1 : 0) + (targetDefensive.slash > targetDefensive.crush ? 1 : 0);
+}
+function buildObligatorThrustProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  const largeTargetRatio = OBLIGATOR_LARGE_TARGET_RATIOS[Math.min(3, Math.max(1, profileInput.targetSize ?? 1))];
+  return {
+    kind: "singleHit",
+    maxHit: maxHitSpecFromStages(largeTargetRatio === RATIO_ONE ? formulaStages.maxHitStages : [...formulaStages.maxHitStages, largeTargetRatio]),
+    hit: {
+      accuracy: standardAccuracyFromStages(formulaStages.attackRollStages),
+      damage: { kind: "highestOfUniformToMaxHit", rolls: getObligatorDamageRolls(profileInput.targetDefensive) },
+    },
+  };
+}
+// Shield Slam, the Rondache's special (WIKI: Rondache): "x + x%" damage, x the charges it uses (20 give 24), and
+// no roll of the damage ("Damage is flat"). It "scales with damage modifiers" (the hallowed flail's 24 against
+// Venators is 30): a Slayer helmet's first, as on any melee hit, then the formula's own stages (salve amulet,
+// demonbane, ...). The helmet's accuracy is put on after, as on every profile. Its accuracy, a roll against crush
+// with 6 more crush bonus a charge, is the plan's (planPlayerAttack.js).
+function buildShieldSlamProfile(profileInput) {
+  const charges = profileInput.shieldSlamCharges;
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  const slayerHelmRatio = getSlayerHelmRatio(profileInput.headId, "melee_crush", profileInput.weaponId);
+  const damage = [...(slayerHelmRatio === null ? [] : [slayerHelmRatio]), ...formulaStages.maxHitStages].reduce(
+    (amount, ratio) => Math.floor((amount * ratio.numerator) / ratio.denominator),
+    charges + Math.floor((charges * charges) / 100),
+  );
+  return {
+    kind: "singleHit",
+    maxHit: { kind: "fixed", maxHit: damage },
+    hit: {
+      accuracy: standardAccuracyFromStages(formulaStages.attackRollStages),
+      damage: { kind: "fixed", damage },
+    },
+  };
+}
+// Zorya's tome (WIKI: Zorya's tome, zoryasFlow.js): Zorya's flow, and each attack it buffs, has "150% increased
+// accuracy and 60% increased damage", on top of the tome's own spell. A Flow while buffs remain "stacks with Zorya's
+// flow first hit, resulting in a total 300% increased accuracy, and 120% increased damage": four times the accuracy
+// and 2.2 times the damage.
+var ZORYAS_TOME_PROFILE_ID = 34725;
+var ZORYAS_FLOW_ACCURACY_RATIO = { numerator: 5, denominator: 2 };
+var ZORYAS_FLOW_DAMAGE_RATIO = { numerator: 8, denominator: 5 };
+var ZORYAS_FLOW_STACKED_ACCURACY_RATIO = { numerator: 4, denominator: 1 };
+var ZORYAS_FLOW_STACKED_DAMAGE_RATIO = { numerator: 11, denominator: 5 };
+function buildZoryasFlowProfile(profileInput, isFlow) {
+  const stacked = isFlow && (profileInput.zoryasFlowAttacks ?? 0) > 0;
+  const profile = buildStandardSingleHitProfile(profileInput);
+  return {
+    ...profile,
+    maxHit: appendMaxHitStage(profile.maxHit, stacked ? ZORYAS_FLOW_STACKED_DAMAGE_RATIO : ZORYAS_FLOW_DAMAGE_RATIO),
+    hit: {
+      ...profile.hit,
+      accuracy: appendAttackRollStage(profile.hit.accuracy, stacked ? ZORYAS_FLOW_STACKED_ACCURACY_RATIO : ZORYAS_FLOW_ACCURACY_RATIO),
+    },
+  };
+}
+// Sweep, the dragon and crystal halberds' special (WIKI: Dragon halberd,
+// Crystal halberd, Special attacks): "Damage in all cases is increased by 10%
+// of your max hit"; against a target larger than 1x1 it hits twice, each hit
+// rolled separately, "the second hit has -25% accuracy". Against a 1x1 target
+// it is one hit; the multi-combat sweep onto up to 10 nearby NPCs (a 3x1 line
+// on the target) is not modelled. Rolls against slash (specialAttackDefinitions.js).
+var halberdSweepIdSet = new Set([3204, 23987]); // Dragon halberd, Crystal halberd (24125 is a variant of 23987)
+var SWEEP_MAX_HIT_RATIO = { numerator: 11, denominator: 10 };
+var SWEEP_SECOND_HIT_ACCURACY_RATIO = { numerator: 3, denominator: 4 };
+function buildHalberdSweepProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  const maxHit = { kind: "staged", stages: [...formulaStages.maxHitStages, SWEEP_MAX_HIT_RATIO] };
+  const accuracy = standardAccuracyFromStages(formulaStages.attackRollStages);
+  if ((profileInput.targetSize ?? 1) <= 1) {
+    return { kind: "singleHit", maxHit, hit: { accuracy, damage: { kind: "uniformToMaxHit" } } };
+  }
+  return {
+    kind: "independentMultiHit",
+    maxHit,
+    accuracy,
+    maximumFractions: [RATIO_ONE, RATIO_ONE],
+    hitAttackRollStages: [[], [SWEEP_SECOND_HIT_ACCURACY_RATIO]],
+  };
+}
+// Armadyl Eye, the Armadyl crossbow's special (WIKI: Armadyl crossbow): one
+// shot at double accuracy, and the enchanted bolt's chance doubled ("diamond
+// bolts (e) ... from 10% to 20%"). The Hard Kandarin Diary's bonus is not modelled.
+var armadylCrossbowIdSet = new Set([11785]);
+function buildArmadylEyeProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  const bolt = getEnchantedBoltProc(profileInput);
+  return {
+    kind: "singleHit",
+    maxHit: maxHitSpecFromStages(formulaStages.maxHitStages),
+    hit: {
+      accuracy: standardAccuracyFromStages([...formulaStages.attackRollStages, RATIO_DOUBLE]),
+      damage: { kind: "uniformToMaxHit" },
+      ...(bolt.proc === undefined ? {} : { proc: { ...bolt.proc, chancePercent: bolt.proc.chancePercent * 2 } }),
+    },
+  };
+}
+// Annihilate, the dragon crossbow's special (WIKI: Dragon crossbow): 20% more
+// damage on the target; enchanted bolts "cannot activate their effects". The
+// multi-combat 3x3 splash (each further target 80% of the one before) is not
+// modelled: in single-way combat it "only hit[s] one target with 20% extra damage".
+var dragonCrossbowIdSet = new Set([21902]);
+var ANNIHILATE_MAX_HIT_RATIO = { numerator: 6, denominator: 5 };
+function buildAnnihilateProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  return {
+    kind: "singleHit",
+    maxHit: { kind: "staged", stages: [...formulaStages.maxHitStages, ANNIHILATE_MAX_HIT_RATIO] },
+    hit: {
+      accuracy: standardAccuracyFromStages(formulaStages.attackRollStages),
+      damage: { kind: "uniformToMaxHit" },
+    },
+  };
+}
+// Concentrated Shot, the light and heavy ballistas' special (WIKI: Heavy
+// ballista): "25% increased accuracy" and 25% more damage, one shot, no extra delay.
+var ballistaIdSet = new Set([19478, 19481]); // Light ballista, Heavy ballista
+function buildConcentratedShotProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  return {
+    kind: "singleHit",
+    maxHit: { kind: "staged", stages: [...formulaStages.maxHitStages, RATIO_5_OVER_4] },
+    hit: {
+      accuracy: standardAccuracyFromStages([...formulaStages.attackRollStages, RATIO_5_OVER_4]),
+      damage: { kind: "uniformToMaxHit" },
+    },
+  };
+}
+// The dark bow (WIKI: Dark bow): every attack "fires two arrows per attack,
+// which roll independent accuracy checks", each to the full max hit. Whether
+// the second hitsplat lands a tick later is not stated; both land together here.
+var darkBowIdSet = new Set([11235, 12765, 12766, 12767, 12768]); // Dark bow and its four painted versions
+function buildDarkBowProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  return {
+    kind: "independentMultiHit",
+    maxHit: maxHitSpecFromStages(formulaStages.maxHitStages),
+    accuracy: standardAccuracyFromStages(formulaStages.attackRollStages),
+    maximumFractions: [RATIO_ONE, RATIO_ONE],
+  };
+}
+// Descent of Darkness and Descent of Dragons, the dark bow's special (WIKI:
+// Dark bow): two arrows; with dragon arrows (seeking dragon arrows too) "up
+// to 50% more damage with a minimum of 8 damage per arrow, while capping the
+// max hit at 48 damage per arrow", otherwise "up to 30% more damage with a
+// minimum of 5 damage per arrow". The minimum is dealt on a failed accuracy
+// roll too: the specials "have to pass regular accuracy check to be able to
+// deal more damage than their minimum guaranteed hit".
+var DESCENT_OF_DRAGONS_RATIO = RATIO_3_OVER_2;
+var DESCENT_OF_DARKNESS_RATIO = { numerator: 13, denominator: 10 };
+function isDragonArrow(ammoId) {
+  const baseArrowId = variantArrowsByItemId[ammoId]?.baseArrowId ?? ammoId;
+  return /^dragon (?:fire )?arrows?/i.test(getEquipmentDefinition(baseArrowId)?.name ?? "");
+}
+function buildDescentProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  const dragons = "ammo" === profileInput.resources?.kind && isDragonArrow(profileInput.resources.ammoId);
+  return {
+    kind: "independentMultiHit",
+    maxHit: { kind: "staged", stages: [...formulaStages.maxHitStages, dragons ? DESCENT_OF_DRAGONS_RATIO : DESCENT_OF_DARKNESS_RATIO] },
+    accuracy: standardAccuracyFromStages(formulaStages.attackRollStages),
+    maximumFractions: [RATIO_ONE, RATIO_ONE],
+    minimumOnMiss: dragons ? 8 : 5,
+    ...(dragons ? { damageCap: 48 } : {}),
+  };
+}
+// Snapshot, the magic shortbow's special (WIKI: Magic shortbow (i)): two
+// arrows "in rapid succession", with the max hit the Seercull's Soulshot has:
+// floor(0.5 + (visible Ranged level + 10) * (ammo ranged strength + 64) / 640),
+// in which only the arrow's ranged strength counts and prayers, Void and the
+// Slayer helmet or salve do not. Accuracy: the wiki's "accuracy boost of 107
+// or about 43%", here 10/7 of the attack roll (inferred from that). The two
+// hits roll separately and land together here (the wiki does not say).
+var magicShortbowIdSet = new Set([861, 12788]); // Magic shortbow, Magic shortbow (i)
+var SNAPSHOT_ACCURACY_RATIO = { numerator: 10, denominator: 7 };
+function buildSnapshotProfile(profileInput) {
+  const formulaStages = computeFormulaStages(toFormulaStageInput(profileInput));
+  return {
+    kind: "independentMultiHit",
+    maxHit: { kind: "fixed", maxHit: getSeercullSoulshotMaxHit(profileInput.playerRangedLevel ?? 1, profileInput.ammoRangedStrength ?? 0) },
+    accuracy: standardAccuracyFromStages([...formulaStages.attackRollStages, SNAPSHOT_ACCURACY_RATIO]),
+    maximumFractions: [RATIO_ONE, RATIO_ONE],
   };
 }
 function maxHitSpecFromStages(maxHitStages) {

@@ -819,6 +819,163 @@ export const scenarios = [
     },
   },
   {
+    // The crystal halberd's Sweep (WIKI: Crystal halberd): on Yama, a large target, two hits, the second at 25% less
+    // accuracy, with 10% more damage. 30% of the bar each time: three specials, then plain single hits.
+    name: "engine/halberd-sweep",
+    kind: "yama_p3",
+    seed: 49,
+    ticks: 32,
+    mechanics: { ...dummy, infiniteHealth: true },
+    ...meleeGear,
+    equipment: { ...meleeGear.equipment, weapon: 23987 /* Crystal halberd */, shield: undefined },
+    script(tick, api) {
+      if (tick === 1) (offensive(api, "Piety"), attack(api, boss(api).id));
+      if (!api.player().isSpecialAttackActive) special(api);
+    },
+  },
+  {
+    // The dragon halberd's Sweep on Inferno nibblers, 1x1 targets: one hit each time (the multi-combat sweep onto the
+    // nibblers beside the target is not modelled).
+    name: "engine/halberd-sweep-small-target",
+    kind: "inferno",
+    seed: 51,
+    ticks: 50,
+    mechanics: { infiniteHealth: true, infiniteSpecialAttack: true, infernoStartWave: "20" },
+    ...meleeGear,
+    equipment: { ...meleeGear.equipment, weapon: 3204 /* Dragon halberd */, shield: undefined },
+    script(tick, api) {
+      const nibbler = api.npcs().find((npc) => npc.archetypeId === "inferno_nibbler" && npc.death === undefined);
+      if (nibbler && api.player().attackTarget !== nibbler.id) attack(api, nibbler.id);
+      if (!api.player().isSpecialAttackActive) special(api);
+    },
+  },
+  {
+    // Three ranged specials (WIKI: each weapon's page): the Armadyl crossbow's Armadyl Eye (double accuracy, the bolt's
+    // effect twice as likely), the dragon crossbow's Annihilate (20% more damage, no bolt effect) and the heavy
+    // ballista's Concentrated Shot (25% more accuracy and damage).
+    name: "engine/ranged-specials",
+    kind: "yama_p3",
+    seed: 50,
+    ticks: 25 * 3 + 8,
+    mechanics: { ...dummy, infiniteSpecialAttack: true },
+    ...rangedGear,
+    equipment: { ...rangedGear.equipment, weapon: undefined },
+    supplies: { equippedAmmo: { id: 9243 /* Diamond bolts (e) */ } },
+    inventory: [11785 /* Armadyl crossbow */, 21902 /* Dragon crossbow */, 19481 /* Heavy ballista */],
+    script(tick, api) {
+      eachPeriod(tick, 1, 25, 3, (index) => (equip(api, index, "weapon"), attack(api, boss(api).id)));
+      if (!api.player().isSpecialAttackActive) special(api);
+    },
+  },
+  {
+    // Two-arrow bows (WIKI: Dark bow, Magic shortbow (i)). The dark bow fires two arrows on every attack; its Descent of
+    // Dragons with dragon arrows is two arrows of at least 8 each, even on a miss, at most 48. The magic shortbow (i)'s
+    // Snapshot is two arrows with a max hit of its own formula, from the Ranged level and the arrow's strength alone.
+    name: "engine/two-arrow-bows",
+    kind: "yama_p3",
+    seed: 52,
+    ticks: 90,
+    mechanics: { ...dummy, infiniteSpecialAttack: true },
+    ...rangedGear,
+    equipment: { ...rangedGear.equipment, weapon: undefined },
+    supplies: { equippedAmmo: { id: 11212 /* Dragon arrow */ } },
+    inventory: [11235 /* Dark bow */, 12788 /* Magic shortbow (i) */, 21326 /* Amethyst arrow */],
+    script(tick, api) {
+      if (tick === 1) (offensive(api, "Rigour"), equip(api, 0, "weapon"), attack(api, boss(api).id));
+      if (tick === 60) (equip(api, 1, "weapon"), equip(api, 2, "ammo"), attack(api, boss(api).id));
+      // Specials from the dark bow until tick 45, plain dark bow shots until 60, then Snapshots.
+      const wantSpecial = tick < 45 || tick >= 60;
+      if (api.player().isSpecialAttackActive !== wantSpecial) special(api);
+    },
+  },
+  {
+    // Four melee specials (WIKI: each weapon's page): the dragon mace's Shatter (+25% accuracy, +50% damage, 25%), the
+    // dragon sword's Wild Stab (+25% and +25%, 40%), the Saradomin sword's Saradomin's Lightning (+10% damage and
+    // 1-16 more when the hit lands, 100%) and the dragon longsword's Cleave (+25% max hit, 25%). Sixty ticks each:
+    // this Yama cannot be hit for a stretch of every minute, whatever the weapon.
+    name: "engine/melee-specials",
+    kind: "yama_p3",
+    seed: 53,
+    ticks: 60 * 4,
+    mechanics: { ...dummy, infiniteSpecialAttack: true },
+    ...meleeGear,
+    equipment: { ...meleeGear.equipment, weapon: undefined },
+    inventory: [1434 /* Dragon mace */, 21009 /* Dragon sword */, 11838 /* Saradomin sword */, 1305 /* Dragon longsword */],
+    script(tick, api) {
+      if (tick === 1) offensive(api, "Piety");
+      eachPeriod(tick, 1, 60, 4, (index) => (equip(api, index, "weapon"), attack(api, boss(api).id)));
+      if (!api.player().isSpecialAttackActive) special(api);
+    },
+  },
+  {
+    // The Ascension crossbows (WIKI: Ascension crossbows): 3 ticks, 2 on rapid; only ascension bolts, and the bolt's
+    // effect half as likely. Diamond ascension bolts (e) on accurate, then onyx (e) on rapid, then dragon bolts
+    // (refused: they are not ascension bolts).
+    name: "engine/ascension-crossbows",
+    kind: "yama_p3",
+    seed: 54,
+    ticks: 75,
+    mechanics: dummy,
+    ...rangedGear,
+    equipment: { ...rangedGear.equipment, weapon: 34681 /* Ascension crossbows */ },
+    supplies: { equippedAmmo: { id: 34696 /* Diamond ascension bolts (e) */ } },
+    inventory: [34708 /* Onyx ascension bolts (e) */, 21905 /* Dragon bolts */],
+    script(tick, api) {
+      if (tick === 1) (offensive(api, "Rigour"), api.act({ type: "attackStyleChange", index: 0 }), attack(api, boss(api).id));
+      if (tick === 30) (api.act({ type: "equipAmmoFromInventory", inventoryIndex: 0, itemId: 34708 }), api.act({ type: "attackStyleChange", index: 1 }));
+      if (tick === 31) attack(api, boss(api).id);
+      if (tick === 60) api.act({ type: "equipAmmoFromInventory", inventoryIndex: 1, itemId: 21905 });
+      if (tick === 61) attack(api, boss(api).id);
+    },
+  },
+  {
+    // The Obligator (WIKI: Obligator): the charged Thrust is the highest of 2 or more damage rolls, more damage on a
+    // big target; the Smash attacks every 3 ticks; the uncharged Obligator's Thrust is an ordinary hit.
+    name: "engine/obligator",
+    kind: "yama_p3",
+    seed: 55,
+    ticks: 60 * 3,
+    mechanics: dummy,
+    ...meleeGear,
+    equipment: { ...meleeGear.equipment, weapon: 34715 /* Obligator */, shield: undefined },
+    inventory: [34717 /* Obligator (uncharged) */],
+    script(tick, api) {
+      if (tick === 1) (offensive(api, "Piety"), attack(api, boss(api).id));
+      if (tick === 60) (api.act({ type: "attackStyleChange", index: 2 }), attack(api, boss(api).id));
+      if (tick === 120) (api.act({ type: "attackStyleChange", index: 0 }), equip(api, 0, "weapon"), attack(api, boss(api).id));
+    },
+  },
+  {
+    // Zorya's tome (WIKI: Zorya's tome): its spell, floor(Magic / 3) - 10. Zorya's flow, and the three attacks after
+    // a Flow that hits, with 150% more accuracy and 60% more damage, every 2 ticks; two Flows in a row store five.
+    name: "engine/zoryas-tome",
+    kind: "yama_p3",
+    seed: 56,
+    ticks: 90,
+    mechanics: { ...dummy, infiniteSpecialAttack: true },
+    ...magicGear,
+    equipment: { ...magicGear.equipment, weapon: 34725 /* Zorya's tome */ },
+    script(tick, api) {
+      if (tick === 1) (offensive(api, "Augury"), attack(api, boss(api).id));
+      if (tick === 20 || tick === 50 || tick === 53) special(api);
+    },
+  },
+  {
+    // The Rondache (WIKI: Rondache): 2 less damage from each of Yama's melee hits, and charges from it once the player
+    // has attacked, at most every 2 ticks; Shield Slam at 10 charges or more, x + x% damage against crush.
+    name: "engine/rondache",
+    kind: "yama_p3",
+    seed: 57,
+    ticks: 200,
+    mechanics: { ...dummy, yamaMelee: true, infiniteHealth: true },
+    ...meleeGear,
+    equipment: { ...meleeGear.equipment, weapon: 22324 /* Ghrazi rapier */, shield: 34719 /* Rondache */ },
+    script(tick, api) {
+      if (tick === 1) (offensive(api, "Piety"), attack(api, boss(api).id));
+      if (tick % 20 === 0 && !api.player().isSpecialAttackActive) special(api);
+    },
+  },
+  {
     // An accurate hit that does no damage. In the Glyphic Attenuation contract damage is multiplied by 1 + 0.0155 per
     // point of prayer bonus; the Ruinous powers book has -1, and a hit of 1 (all a player of 1 Strength rolls, half
     // the time) is floored to 0. The warhammer's Defence drain needs damage, so the engine sorts the special's effects

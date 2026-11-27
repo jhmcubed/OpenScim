@@ -85,6 +85,14 @@ function lowerDamageSpecMaximum(damageSpec, ratio) {
         ...damageSpec,
         base: lowerDamageSpecMaximum(damageSpec.base, ratio),
       };
+    case "weighted":
+      return {
+        ...damageSpec,
+        outcomes: damageSpec.outcomes.map((outcome) => ({
+          ...outcome,
+          damage: Math.floor((outcome.damage * ratio.numerator) / ratio.denominator),
+        })),
+      };
     default:
       throw new RangeError(
         "Cannot lower the maximum of a " + damageSpec.kind + " damage roll",

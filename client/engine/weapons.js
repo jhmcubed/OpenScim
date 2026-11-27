@@ -1,6 +1,6 @@
 import { projectileTimings } from "./projectiles.js";
 import { getBaseItemId } from "../data/itemVariants.js";
-import { getSpecialAttackDefinition } from "../data/specialAttackDefinitions.js";
+import { getSpecialAttackDefinition, getEquippedSpecialAttackItemId } from "../data/specialAttackDefinitions.js";
 import { weaponCategoryDefinitions, getActiveSpell, getWeaponCategory } from "../data/weaponCategories.js";
 function getPoweredStaffBaseMaxHit(weaponId, magicLevel) {
   switch (weaponId === undefined ? undefined : getBaseItemId(weaponId)) {
@@ -35,6 +35,8 @@ function getPoweredStaffBaseMaxHit(weaponId, magicLevel) {
       return 39;
     case 31113: // Eye of Ayak
       return Math.max(1, Math.floor(magicLevel / 3) - 6);
+    case 34725: // Zorya's tome: floor(Magic / 3) - 10 (WIKI: Zorya's tome)
+      return Math.max(1, Math.floor(magicLevel / 3) - 10);
     case 24425: // Eldritch nightmare staff: its special attack, Invocate, and nothing else of it
       return Math.min(44, Math.floor((44 * magicLevel) / 99 + 1));
     default:
@@ -56,6 +58,7 @@ var hitDelayKindByWeaponCategory = {
   bulwark: "melee",
   claw: "melee",
   partisan: "melee",
+  obligator: "melee",
   pickaxe: "melee",
   polearm: "melee",
   scythe: "melee",
@@ -139,7 +142,9 @@ function computeStyleCombatParams(baseAttackSpeed, baseAttackRange, weaponId, se
   }
   let attackSpeed = baseAttackSpeed;
   let attackRange = baseAttackRange;
-  if (style.attackType === "Ranged" && style.combatStyle === "Rapid") {
+  if (style.attackSpeed !== undefined) { // a style with a speed of its own (the Obligator's Smash)
+    attackSpeed = style.attackSpeed;
+  } else if (style.attackType === "Ranged" && style.combatStyle === "Rapid") {
     attackSpeed -= 1;
   } else if (castingCombatStyles.has(style.combatStyle)) {
     attackSpeed = 5;
@@ -172,7 +177,8 @@ function computePlayerCombatParams(player) {
   }
   // A special attack with a reach of its own is made from that far while
   // it is switched on, whatever the weapon's attack style is.
-  const specialAttackRange = player.isSpecialAttackActive ? getSpecialAttackDefinition(player.equipment.weapon)?.attackRange : undefined;
+  const specialAttackItemId = player.isSpecialAttackActive ? getEquippedSpecialAttackItemId(player.equipment) : undefined;
+  const specialAttackRange = specialAttackItemId === undefined ? undefined : getSpecialAttackDefinition(specialAttackItemId)?.attackRange;
   if (specialAttackRange !== undefined) {
     combatParams.attackRange = specialAttackRange;
   }
@@ -226,6 +232,7 @@ var projectileTimingByWeaponId = {
   },
   27275: projectileTimings.tumekens_shadow, // Tumeken's shadow
   31113: projectileTimings.eye_of_ayak, // Eye of Ayak
+  34725: projectileTimings.magic_spell, // Zorya's tome (inferred: a spell's)
   30070: projectileTimings.magic_spell, // Dragon hunter wand
   27665: { // Accursed sceptre
     delay: 46,

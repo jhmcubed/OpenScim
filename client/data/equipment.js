@@ -32150,6 +32150,65 @@ var equipmentEntries = equipmentEntriesSchema.parse([
     name: "Agility cape (t)",
     slot: "cape",
   },
+  // The Fractured Archive's rewards (WIKI: The Fractured Archive, released 20 October 2026), newer than the last
+  // sync. Bonuses, attack speed and range come from the game cache (CACHE: item params of 34681 to 34725), as for
+  // every item here; only this metadata is needed.
+  {
+    ids: [34681],
+    name: "Ascension crossbows",
+    slot: "2h",
+    category: "Crossbow",
+  },
+  {
+    ids: [34684],
+    name: "Ascension bolts",
+    slot: "ammo",
+  },
+  {
+    ids: [34690],
+    name: "Diamond ascension bolts",
+    slot: "ammo",
+  },
+  {
+    ids: [34696],
+    name: "Diamond ascension bolts (e)",
+    slot: "ammo",
+  },
+  {
+    ids: [34702],
+    name: "Onyx ascension bolts",
+    slot: "ammo",
+  },
+  {
+    ids: [34708],
+    name: "Onyx ascension bolts (e)",
+    slot: "ammo",
+  },
+  {
+    ids: [34715],
+    name: "Obligator",
+    version: "Charged",
+    slot: "2h",
+  },
+  {
+    ids: [34717],
+    name: "Obligator (uncharged)",
+    version: "Uncharged",
+    slot: "2h",
+  },
+  {
+    ids: [34719],
+    name: "Rondache",
+    slot: "shield",
+  },
+  {
+    _why: "Only the charged tome: an uncharged powered staff has no spell to cast, and the client has none of them (no uncharged trident either).",
+    ids: [34725],
+    name: "Zorya's tome",
+    version: "Charged",
+    slot: "2h",
+    category: "Powered Staff",
+  },
 ]);
 var canonicalEquipmentIdByVariantId = canonicalIdByVariantIdSchema.parse({
   89: 88,

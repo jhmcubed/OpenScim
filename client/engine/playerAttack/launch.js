@@ -9,7 +9,9 @@ import {
 import { getCanonicalEquipmentId } from "../../data/equipment.js";
 import { getSpellDefinition } from "../../data/combatSpells.js";
 import { getBaseItemId } from "../../data/itemVariants.js";
-import { getSpecialAttackDefinition } from "../../data/specialAttackDefinitions.js";
+import { getSpecialAttackDefinition, getEquippedSpecialAttackItemId } from "../../data/specialAttackDefinitions.js";
+import { RONDACHE_ID, getRondacheCharges, noteRondacheAttack } from "../rondache.js";
+var ASCENSION_CROSSBOWS_ID = 34681;
 import { getActiveSpell, getWeaponCategoryDefinition } from "../../data/weaponCategories.js";
 import { scheduleNpcRetaliation } from "../npcRetaliation.js";
 import { isTileInsideFootprint, getDistanceToFootprint, hasLineOfSight, isTileInAttackRange } from "../attackRange.js";
@@ -24,6 +26,7 @@ import {
 } from "../specialAttacks.js";
 import { NO_ATTACK_RESOURCES, resolveAttackResources } from "../attackResources.js";
 import { getAmmoRefusalMessage } from "../ammunition.js";
+import { ZORYAS_FLOW_ATTACK_SPEED, isZoryasTome, getZoryasFlowAttacks, getZoryasFlowAfterAttack } from "../zoryasFlow.js";
 import { isConflictionGauntletsAttack, isSameConflictionAttack } from "./projection.js";
 import { getChinchompaAreaConfig } from "./formula.js";
 import { planPlayerAttack, summarizePrimaryHitAccuracy, rollAttackPlanOutcome } from "./planPlayerAttack.js";
@@ -427,6 +430,12 @@ function launchPlayerAttack(attack) {
       procSpotAnimId: primaryLanded ? primaryHit.procSpotAnimId : undefined,
       equipmentHitEffects: equipmentHitEffects,
       weaponId: attack.player.equipment.weapon,
+      // The item whose special this is, where it is not the weapon (the Rondache's Shield Slam), for its animation.
+      ...(attack.attackAnimationId === undefined ? {} : { attackAnimationId: attack.attackAnimationId }),
+      ...(attack.hitGraphicId === undefined ? {} : { hitGraphicId: attack.hitGraphicId }),
+      ...(attack.isSpecialAttack && getEquippedSpecialAttackItemId(attack.player.equipment) !== attack.player.equipment.weapon
+        ? { specialAttackItemId: getEquippedSpecialAttackItemId(attack.player.equipment) }
+        : {}),
       ...(primaryHit.protectedByNpcPrayer === undefined ? {} : { protectedByNpcPrayer: primaryHit.protectedByNpcPrayer }),
       ammoId: attack.resources.kind === "ammo" ? attack.resources.ammoId : undefined,
       ammoSource: attack.resources.source,
@@ -870,12 +879,24 @@ function performPlayerAutoAttack(player, deps) {
   let specialAttackDef;
   let specialAttackAfterSpend = null;
   if (isSpecialAttackActive) {
-    if (player.equipment.weapon !== undefined) {
-      specialAttackDef = getSpecialAttackDefinition(player.equipment.weapon);
+    const specialAttackItemId = getEquippedSpecialAttackItemId(player.equipment);
+    if (specialAttackItemId !== undefined) {
+      specialAttackDef = getSpecialAttackDefinition(specialAttackItemId);
+    }
+    // Shield Slam needs its charges (rondache.js).
+    if (specialAttackDef?.minimumRondacheCharges !== undefined && getRondacheCharges(player) < specialAttackDef.minimumRondacheCharges) {
+      specialAttackDef = undefined;
     }
     if (
       specialAttackDef?.targetAttribute !== undefined &&
       !target.formulaStats?.attributes?.includes(specialAttackDef.targetAttribute)
+    ) {
+      specialAttackDef = undefined;
+    }
+    // A special that cannot be used on such a target (Shield Slam on a flying one).
+    if (
+      specialAttackDef?.excludedTargetAttribute !== undefined &&
+      target.formulaStats?.attributes?.includes(specialAttackDef.excludedTargetAttribute)
     ) {
       specialAttackDef = undefined;
     }
@@ -906,7 +927,12 @@ function performPlayerAutoAttack(player, deps) {
         spellbook: player.combatSupplies.spellbook,
       });
   const weaponFormulaStyle = getWeaponFormulaStyle(player.equipment.weapon, selectedAttackStyleIndex);
-  const formulaStyle = isPoweredSpellSpecial || manualCastSpell ? "magic" : weaponFormulaStyle;
+  const formulaStyle =
+    isPoweredSpellSpecial || manualCastSpell
+      ? "magic"
+      : isSpecialAttack && specialAttackDef?.formulaStyleOverride !== undefined
+        ? specialAttackDef.formulaStyleOverride // a special that rolls one way whatever the weapon (Shield Slam)
+        : weaponFormulaStyle;
   const resources = isPoweredSpellSpecial
     ? NO_ATTACK_RESOURCES
     : resolveAttackResources({
@@ -944,8 +970,13 @@ function performPlayerAutoAttack(player, deps) {
     pendingConflictionAttack !== null && conflictionAttack !== null && isSameConflictionAttack(pendingConflictionAttack, conflictionAttack) ? "double_roll" : "single_roll";
   const finalStyle = isSpecialAttack && specialAttackDef?.styleOverride ? specialAttackDef.styleOverride : baseStyle;
   const attackKind = isSpecialAttack && specialAttackDef?.attackKindOverride ? specialAttackDef.attackKindOverride : baseAttackKind;
+  const zoryasFlowAttack = !manualCastSpell && isZoryasTome(player.equipment.weapon);
   const finalSpeed =
-    isSpecialAttack && specialAttackDef?.attackSpeedOverride ? specialAttackDef.attackSpeedOverride : attackSpeed;
+    isSpecialAttack && specialAttackDef?.attackSpeedOverride
+      ? specialAttackDef.attackSpeedOverride
+      : zoryasFlowAttack && !isSpecialAttack && getZoryasFlowAttacks(player.zoryasFlow) > 0
+        ? ZORYAS_FLOW_ATTACK_SPEED // a tome attack that Zorya's flow buffed (zoryasFlow.js)
+        : attackSpeed;
   const targetDistance = getDistanceToFootprint(
     player.position[0],
     player.position[1],
@@ -1151,11 +1182,34 @@ function performPlayerAutoAttack(player, deps) {
   if (!manualCastSpell && isSoulreaperAxe(player.equipment.weapon)) {
     player.soulreaper = getSoulreaperAfterAttack(player.soulreaper, deps.world.tick, isSpecialAttack);
   }
+  // The Ascension crossbows fire from the left and the right in turn (CACHE: sequences
+  // TFA_HUMAN_ASCENSION_CROSSBOW_FIRE_LEFT_PVN, 15114, and _RIGHT_PVN, 15116); left first (inferred).
+  const ascensionShotAnimationId =
+    !manualCastSpell && getBaseItemId(player.equipment.weapon ?? -1) === ASCENSION_CROSSBOWS_ID
+      ? (player.ascensionCrossbowsRightNext ? 15116 : 15114)
+      : undefined;
+  if (ascensionShotAnimationId !== undefined) {
+    player.ascensionCrossbowsRightNext = !player.ascensionCrossbowsRightNext;
+  }
+  // A tome attack that Zorya's flow buffed lands with VFX_ZORYA_TOME_SPECIAL_FOLLOW_UP_IMPACT (CACHE: spot animation
+  // 4431; that it is these attacks' is inferred from its name).
+  const zoryasFlowHitGraphicId =
+    zoryasFlowAttack && !isSpecialAttack && getZoryasFlowAttacks(player.zoryasFlow) > 0 ? 4431 : undefined;
+  noteRondacheAttack(player, deps.world.tick, isSpecialAttack && getEquippedSpecialAttackItemId(player.equipment) === RONDACHE_ID);
+  if (zoryasFlowAttack && (isSpecialAttack || player.zoryasFlow !== undefined)) {
+    player.zoryasFlow = getZoryasFlowAfterAttack(player.zoryasFlow, {
+      tick: deps.world.tick,
+      isSpecialAttack,
+      landed: primaryOutcome.hits[0]?.accurate === true,
+    });
+  }
   const onLaunchEffects = isSpecialAttack ? specialAttackDef?.onFireEffects : undefined;
   launchPlayerAttack({
     player: player,
     target: target,
     deps: deps,
+    ...(ascensionShotAnimationId === undefined ? {} : { attackAnimationId: ascensionShotAnimationId }),
+    ...(zoryasFlowHitGraphicId === undefined ? {} : { hitGraphicId: zoryasFlowHitGraphicId }),
     ...(attackOnCooldown ? { attackOnCooldown: attackOnCooldown } : {}),
     ...(keepsReady ? { keepsReady: true } : {}),
     hits: primaryOutcome.hits,

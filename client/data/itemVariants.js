@@ -10,6 +10,12 @@ for (const { baseId: baseId, variantIds: variantIds } of [
     variantIds: [23230],
   },
   {
+    // Crystal halberd: 24125 is listed with 23987 on its wiki page (WIKI: Crystal halberd); the same weapon to the
+    // rules, Sweep special included.
+    baseId: 23987,
+    variantIds: [24125],
+  },
+  {
     baseId: 12954,
     variantIds: [19722],
   },

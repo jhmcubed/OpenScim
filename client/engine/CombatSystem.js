@@ -24,6 +24,23 @@ import {
   applyOnHitSpecialEffects,
   isDamageIndependentSpecialEffect,
 } from "./specialAttacks.js";
+import { getWeaponCategoryDefinition } from "../data/weaponCategories.js";
+import { mitigateRondacheHit } from "./rondache.js";
+// The attack animation and graphic of a player's attack that has its own: the attack's (the Ascension crossbows'
+// left and right shots, launch.js), else its weapon style's (the Obligator's Thrust and Smash, weaponCategories.js).
+// None for a special attack, whose animation is the special's.
+function getPlayerAttackStyle(attacker, attack) {
+  if (attacker.kind !== "player" || attack.usingSpecialAttack || attack.weaponId === undefined) {
+    return undefined;
+  }
+  return getWeaponCategoryDefinition(attack.weaponId).styles[attacker.selectedAttackStyleIndex ?? 0];
+}
+function getStyleAttackAnimationId(attacker, attack) {
+  return attack.attackAnimationId ?? getPlayerAttackStyle(attacker, attack)?.attackAnimationId;
+}
+function getStyleAttackGraphicId(attacker, attack) {
+  return getPlayerAttackStyle(attacker, attack)?.attackGraphicIdByWeaponId?.[attack.weaponId];
+}
 var NO_LAUNCH_DAMAGE_MULTIPLIERS = {
   incomingDamageMultiplier: undefined,
   outgoingDamageMultiplier: undefined,
@@ -319,6 +336,10 @@ var CombatSystem = class {
         weaponId: attack.weaponId,
         ammoId: attack.ammoId,
         ammoSource: attack.ammoSource,
+        ...(attack.specialAttackItemId === undefined ? {} : { specialAttackItemId: attack.specialAttackItemId }),
+        ...(getStyleAttackAnimationId(attacker, attack) === undefined ? {} : { attackAnimationId: getStyleAttackAnimationId(attacker, attack) }),
+        ...(getStyleAttackGraphicId(attacker, attack) === undefined ? {} : { attackGraphicId: getStyleAttackGraphicId(attacker, attack) }),
+        ...(attack.hitGraphicId === undefined ? {} : { hitGraphicId: attack.hitGraphicId }),
         ...(attack.ricochets === undefined
           ? {}
           : {
@@ -747,6 +768,9 @@ var CombatSystem = class {
         onKillEffect: resolvedAttack.onKillEffect,
         postHitEffects: resolvedAttack.postHitEffects,
         weaponId: resolvedAttack.weaponId,
+        ...(resolvedAttack.specialAttackItemId === undefined ? {} : { specialAttackItemId: resolvedAttack.specialAttackItemId }),
+        ...(resolvedAttack.attackAnimationId === undefined ? {} : { attackAnimationId: resolvedAttack.attackAnimationId }),
+        ...(resolvedAttack.hitGraphicId === undefined ? {} : { hitGraphicId: resolvedAttack.hitGraphicId }),
         ...(resolvedAttack.protectedByNpcPrayer === undefined ? {} : { protectedByNpcPrayer: resolvedAttack.protectedByNpcPrayer }),
         ammoId: resolvedAttack.ammoId,
         ammoSource: resolvedAttack.ammoSource,
@@ -1053,7 +1077,10 @@ var CombatSystem = class {
           ? Math.floor(cappedDamage * 0.75)
           : cappedDamage
         : cappedDamage;
-    const effectiveDamage = this.isNpc(target) ? Math.min(shieldReducedDamage, Math.max(0, hpBefore)) : shieldReducedDamage;
+    // The Rondache's flat armour, and the charges it gives (rondache.js).
+    const rondacheReducedDamage =
+      this.isNpc(attacker) && this.isPlayer(target) && attackType !== "typeless" ? mitigateRondacheHit(target, shieldReducedDamage, tick) : shieldReducedDamage;
+    const effectiveDamage = this.isNpc(target) ? Math.min(rondacheReducedDamage, Math.max(0, hpBefore)) : rondacheReducedDamage;
     const targetHasInfiniteHealth = combatContext.infiniteHealth && "player" === target.kind;
     if (!targetHasInfiniteHealth && this.isPlayer(target)) {
       clearPowerOfDeathIfWeaponRemoved(target, effectiveDamage);
