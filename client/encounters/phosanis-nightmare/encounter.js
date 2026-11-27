@@ -117,9 +117,12 @@ const messages = {
   awoken: { text: "The Nightmare has awoken!", color: "#ff3045" },
 }; // tsps, as captured
 const protectionPrayers = { magic: "ProtectMagic", range: "ProtectRange", melee: "ProtectMelee" };
-// WIKI (Phosani's Nightmare, Curse): "A pink glow fills the player's screen" while cursed. Its colour and strength here
-// are inferred (the recordings carry no screen effect).
-const curseTint = "rgba(255, 70, 200, 0.14)";
+// WIKI (Phosani's Nightmare, Curse): "A pink glow fills the player's screen". OBS (a player's video of the game, fixed
+// mode, 2026-11-27, 30 frames a second): the game view alone turns pink, evenly, from nothing to its strongest over
+// about 1.15 seconds, and is gone the next frame; at its strongest about rgb(243, 0, 98) over the scene at 53%
+// (worked out from the view's mean colour before and at the peak). Here 2 ticks from the curse's message (inferred:
+// the video shows no message), fading in over them. The recordings carry no screen effect.
+const curseTint = { color: "rgba(243, 0, 98, 0.53)", fadeInMs: 1150, ticks: 2 };
 // A practice aid (off unless chosen): while cursed, each protection prayer outlined in the colour of the style it stops
 // now, green ranged, blue magic, red melee, as players mark them with RuneLite's Screen Markers.
 const curseMarkersKey = "phosaniCurseMarkers";
@@ -748,7 +751,10 @@ class PhosanisNightmareEncounter {
         melee: this.melee.filter((swing) => swing.at >= now).map((swing) => ({ ...swing, stoppedBy: this.specials.protectionFor("melee") })),
         ...this.specials.snapshot(now),
         ...this.minions.snapshot(now),
-        ...(this.specials.curse ? { playerOverheadPrayer: this.cursedOverhead(), screenTint: curseTint } : {}),
+        ...(this.specials.curse ? { playerOverheadPrayer: this.cursedOverhead() } : {}),
+        ...(this.specials.curse?.since !== undefined && now < this.specials.curse.since + curseTint.ticks
+          ? { screenTint: { color: curseTint.color, fadeInMs: curseTint.fadeInMs, since: this.specials.curse.since } }
+          : {}),
         ...(this.specials.curse && (this.mechanics?.[curseMarkersKey] ?? false) ? { prayerMarkers: curseMarkers() } : {}),
       },
       visuals: {},

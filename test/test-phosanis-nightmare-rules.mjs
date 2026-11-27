@@ -160,8 +160,15 @@ for (const name of ["kill", "kill-other-forms"]) {
   const cursed = ticks.filter((tick) => tick?.state.cursed);
   assert.ok(cursed.some((tick) => tick.prayer), name);
   for (const tick of cursed) assert.equal(tick.state.playerOverheadPrayer, tick.prayer ? shuffled[tick.prayer] : null);
-  // Cursed, a pink glow over the scene (the wiki); the prayer markers only with their practice aid (off here).
-  for (const tick of ticks) if (tick) assert.equal(tick.state.screenTint !== undefined, tick.state.cursed, name);
+  // As the curse lands, a pink glow over the scene for 2 ticks (the wiki; a player's video), not the whole curse; the
+  // prayer markers only with their practice aid (off here).
+  const cursings = messageTicks(ticks, "has cursed you");
+  assert.ok(cursings.length > 0, name);
+  for (const [n, tick] of ticks.entries()) {
+    if (!tick) continue;
+    const from = cursings.find((at) => n === at || n === at + 1);
+    assert.equal(tick.state.screenTint?.since, from, name + " glow at " + n);
+  }
   assert.ok(ticks.every((tick) => !tick || tick.state.prayerMarkers === undefined));
   assert.ok(ticks.every((tick) => !tick || tick.state.cursed || tick.state.playerOverheadPrayer === undefined));
 

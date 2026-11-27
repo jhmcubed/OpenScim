@@ -381,7 +381,7 @@ export class Specials {
       if (e.epoch !== epoch) return;
       e.message(ctx, messages.cursed);
       e.sound(ctx, sounds.cursed);
-      this.curse = { turns: curseTurns, endsAt: null };
+      this.curse = { turns: curseTurns, endsAt: null, since: ctx.tick };
     });
     return null;
   }

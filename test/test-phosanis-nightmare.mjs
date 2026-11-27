@@ -140,27 +140,36 @@ try {
   // from Magic shows the missiles icon; the curse gone, the magic one again.
   const overhead = (name) => page.waitForFunction((name) => [...document.querySelectorAll("img")].some((img) => img.getAttribute("src")?.endsWith("/overhead_" + name + ".png")), name, { timeout: 15000 });
   await page.evaluate(() => {
-    engine.encounter.specials.curse = { turns: 5, endsAt: null };
+    engine.encounter.specials.curse = { turns: 5, endsAt: null, since: engine.worldState.tick };
     engine.player().activePrayer = "ProtectMagic";
   });
   await overhead("missiles");
-  // Cursed, a pink glow over the scene (the wiki); with the practice aid Curse Prayer Markers, each protection prayer
-  // outlined in the colour of what it stops now: Protect from Magic green (ranged), Protect from Missiles red (melee),
-  // Protect from Melee blue (magic).
+  // As the curse lands, a pink glow over the scene (the wiki; a player's video): hot pink, fading in, gone 2 ticks on
+  // though the curse goes on. With the practice aid Curse Prayer Markers, each protection prayer outlined in the colour
+  // of what it stops now: Protect from Magic green (ranged), Protect from Missiles red (melee), Protect from Melee blue
+  // (magic).
   await page.getByRole("button", { name: "Prayer (F5)" }).click();
-  await page.locator(".encounter-screen-tint").waitFor({ timeout: 15000 });
+  await page.locator(".encounter-screen-tint").waitFor({ state: "attached", timeout: 15000 });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".encounter-screen-tint")).backgroundColor), "rgba(243, 0, 98, 0.53)");
+  // On request, a picture of the glow at its strongest: the last taken while it is still there.
+  while (process.env.PHOSANI_CURSE_SHOT) {
+    const shot = await page.screenshot();
+    if (!(await page.locator(".encounter-screen-tint").count())) break;
+    (await import("node:fs")).writeFileSync(process.env.PHOSANI_CURSE_SHOT, shot);
+  }
+  await page.locator(".encounter-screen-tint").waitFor({ state: "detached", timeout: 15000 });
+  assert.ok(await page.evaluate(() => engine.encounter.specials.curse !== null), "still cursed");
   assert.equal(await page.locator(".prayer-marker").count(), 0, "markers only with the aid");
   await page.evaluate(() => engine.setMechanicsConfig({ ...engine.mechanicsConfig, phosaniCurseMarkers: true }));
   await page.waitForFunction(() => document.querySelectorAll(".prayer-marker").length === 3, null, { timeout: 15000 });
   const markers = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".prayer-marker")].map((marker) => [marker.dataset.prayer, getComputedStyle(marker).borderTopColor])));
   assert.deepEqual(markers, { ProtectMagic: "rgb(32, 224, 32)", ProtectRange: "rgb(255, 48, 48)", ProtectMelee: "rgb(47, 143, 255)" });
-  if (process.env.PHOSANI_CURSE_SHOT) await page.screenshot({ path: process.env.PHOSANI_CURSE_SHOT });
   await page.evaluate(() => {
     engine.encounter.specials.curse = null;
     engine.player().activePrayer = "ProtectMagic";
   });
   await overhead("magic");
-  await page.waitForFunction(() => !document.querySelector(".prayer-marker") && !document.querySelector(".encounter-screen-tint"), null, { timeout: 15000 });
+  await page.waitForFunction(() => !document.querySelector(".prayer-marker"), null, { timeout: 15000 });
 
   // Her desperation, then her death; the application's own loop plays it and ends the fight.
   await page.evaluate(() => {
