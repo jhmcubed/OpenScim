@@ -322,8 +322,13 @@ members are optional: `onTickStart`, `playerInputLocked`,
 `incomingDamageMultiplier`, `outgoingDamageMultiplier`, `specialAttacks`,
 `playerMinimumHit`, `playerAlwaysAccurate`, `consumePlayerGuaranteedMaxHit`, `playerMaxHpReduction`,
 `prayerDrain`, `prayerRestrictions`, `itemRestrictions`,
-`monsterStatOverrides`, `onPlayerDamageTaken`, `isTombsOfAmascut`,
-`playerDamageOnNpc`. The last, `(damage, { attacker, target, attack }) =>
+`monsterStatOverrides`, `combatXpBonusOverrides`, `onPlayerDamageTaken`,
+`isTombsOfAmascut`, `playerDamageOnNpc`. `combatXpBonusOverrides`,
+`{ [npcTypeId]: percent }`, gives the combat experience bonus of the
+encounter's version of a monster (the awakened Vardorvis) where it is not
+the one `client/data/combatXpBonus.js` keeps for the NPC id; a player's
+combat experience from a hit is multiplied by 1 + bonus / 100.
+`playerDamageOnNpc`, `(damage, { attacker, target, attack }) =>
 damage`, decides a player's hit on one of the encounter's NPCs as it lands
 (the Doom of Mokhaiotl's larvae and shield). `predictPlayerDamageOnNpc`, of
 the same form, says what such a hit will do as the attack is launched,
