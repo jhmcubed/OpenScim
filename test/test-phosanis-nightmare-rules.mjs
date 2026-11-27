@@ -120,15 +120,18 @@ for (const name of ["kill", "kill-other-forms"]) {
     const hit = damageOf(ticks, "The Nightmare's blast").find((entry) => entry.tick > form);
     const absorbed = ticks.slice(form, hit.tick).flatMap((tick) => tick.others.filter(([, clip]) => clip === "absorb")).length;
     assert.equal(hit.baseDamage, 5 + Math.floor((144 * absorbed) / (n + 2)), name);
-    // They walk from their fourth tick, after her last phase their seventh; her blast an even number of ticks after
-    // they rose (the Outside recording).
+    // They walk from their fourth tick, after her last phase their seventh; her blast 2 ticks after the last is gone,
+    // killed or taken in (the Outside recordings).
+    const gone = [];
     for (const id of risen) {
       const from = ticks[form + 2].npcs.find((npc) => npc.id === id).position;
       const moved = ticks.findIndex((tick, t) => t > form + 2 && tick?.npcs.some((npc) => npc.id === id && !same(npc.position, from)));
       if (moved > 0) assert.equal(moved - (form + 2), n === 2 ? 7 : 4, name + " " + id);
+      const takenIn = ticks.findIndex((tick, t) => t > form && tick?.others.some(([actor, clip]) => actor === id && clip === "absorb"));
+      gone.push(takenIn > 0 ? takenIn : ticks.findIndex((tick, t) => t > form + 2 && !tick?.npcs.some((npc) => npc.id === id)));
     }
     const blastClip = clipTicks(ticks, "blast").find((tick) => tick > form);
-    assert.equal((blastClip - (form + 2)) % 2, 0, name + " blast at " + blastClip);
+    assert.equal(blastClip, Math.max(...gone) + 2, name + " blast at " + blastClip + ", gone " + gone);
   }
 
   // Her claws: 50 to 65 a time; her flowers' flies 1 to 20; a surge 43 to 85.

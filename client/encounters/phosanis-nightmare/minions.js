@@ -87,9 +87,10 @@ export const parasiteMessages = {
 // one of three).
 // OBS (Outside, one kill): they rose 2 ticks after her blast form, and walked
 // from their fourth tick after her first two phases but their seventh after
-// her last. Her blast came 2 or 3 ticks after the last one's death (254 after
-// 251, 481 after 478, 717 after 715): an even number of ticks after they rose,
-// at least 2 after the death.
+// her last. OBS (Outside, five recordings of 2026-11-25 and 26, 15 blasts): her
+// blast animation 2 ticks after the last one's death in 12 (3 in the other 3),
+// and 2 after the last was taken in (1 of 1, tsps: 3). The rule that it came an
+// even number of ticks after they rose, from the first recording, holds for 7.
 //
 // Her desperation (WIKI, tsps): one at a time, each that reaches her a hit of
 // 15, the next ones 8 apart. OBS (Outside): the first rises 2 ticks after her
@@ -102,9 +103,8 @@ const riseTicks = 2;
 const walkAfter = { early: 4, last: 7 };
 const latestBlast = 16;
 const absorbGoneTicks = 2;
-const blastAfterAbsorb = 3;
+const blastAfterAbsorb = 2;
 const blastAfterDeath = 2;
-const blastEvery = 2;
 const blastImpactTicks = 4;
 const blastHitTicks = 2;
 const nextFormTicks = 9;
@@ -541,7 +541,6 @@ export class Minions {
   blastWhenClear(context) {
     const state = this.walk;
     if (!state || !state.risen || state.blasted || this.walkers.size > 0 || context.tick < state.readyAt) return;
-    if ((context.tick - state.risenAt) % blastEvery !== 0) return;
     state.blasted = true;
     const e = this.e;
     const epoch = e.epoch;
