@@ -10,8 +10,9 @@
 // (outside.wiki), post-quest and awakened. Not recorded, so without a sound
 // here: the bite's hit, a roar's rock on the player.
 // Recorded but not here: as the rubble crumbles, 8 ticks after the kill, 7035
-// (range 10) from each rock the tick after its graphic, 2474; the fight clears
-// the rubble at the kill and draws nothing.
+// (range 10) from each rock the tick after its graphic, 2474. The fight draws
+// 2474 as the Leviathan is removed (encounter.js, crumbleRubble) and stops then,
+// before the sound's tick.
 import { bossActorId, bossSize, bossStart, spots } from "./encounter.js";
 
 // With no place: as loud wherever the player stands. Delays in cycles.
