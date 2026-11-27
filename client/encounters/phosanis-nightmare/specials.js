@@ -19,8 +19,14 @@ import {
 // gets none under him (WIKI). The pattern (tsps, "captured: about 40 a set
 // (24-55), some 10 of them within two tiles of the player (826 sets)"): each
 // tile within two of the player a portal 2 times in 5, any other tile of the
-// floor 9 times in 100. The logs of runelogs carry no graphics, so they add
-// nothing here.
+// floor 9 times in 100. OBS (Outside, five recordings of 2026-11-25 and 26,
+// 142 sets, 27 to 54 portals, 39 on average): one under the player (where he
+// stood as the tick began) in 138, the 4 others while her husks held him (2),
+// while he stood under her (1), and once beside her; within two tiles of him
+// 1,382 of 3,340 (41%), further out 4,081 of 44,088 (9%); no form, kind of set
+// or her desperation stands apart (near 27% to 53%, far 8% to 10%, on small
+// counts). None on her body but its four corners (34 of 34 portals that
+// fell on her body). The logs of runelogs carry no graphics.
 const clawHitTicks = 4; // tsps
 const clawDamage = [50, 65]; // WIKI, tsps
 const clawNear = 2; // tsps
@@ -54,7 +60,8 @@ const flowerQuadrants = { ne: ["north", "east"], nw: ["north", "west"], se: ["so
 const sporeTimes = { planted: 1, message: 2, armed: 5, end: 30 };
 const sporeClawsAfter = 6;
 // Drowsy (tsps): 25 ticks; a yawn 2 ticks in and every 6 after; no running.
-// WIKI: her attacks come 2 ticks slower, "doubled when using magic".
+// WIKI: her attacks come 2 ticks slower, "doubled when using magic" (OBS
+// (Outside): drowsy, the Eye of Ayak, a 3-tick staff, cast 7 ticks apart twice).
 // Each yawn drains 5 + one per 20 of the prayer left: tsps's estimate from
 // three yawns, which five yawns of one runelogs log bear out (OBS (runelogs):
 // 8 to 2, 29 to 22, 21 to 15, 13 to 8 and 31 to 25, a point of the ordinary
@@ -84,6 +91,12 @@ export const curseStops = { magic: "range", range: "melee", melee: "magic" };
 const surgeJump = 2;
 const surgeCross = 6;
 const surgeMax = 85;
+// Her shield broken before she stands at the lane's start, or on that tick, nulls the surge (OBS (Outside): Don Danz,
+// 2026-11-26, tick 327: her leave; 329: his hit breaks her shield as she appears there in her weakened form, she walks
+// at him from that tick and never crosses; her next attack 336, 9 ticks after her leave). Broken on the tick she
+// crosses, she crosses (the same recording, tick 507). Broken while she waits at the start: no recording, so she
+// crosses. Here a shield broken on the landing tick frees her from the next tick (the hit lands after her move).
+const nulledSurgeAttack = 9;
 
 export const messages = {
   flowers: { text: "The Nightmare splits the area into segments!", color: "#a53fff" },
@@ -120,8 +133,12 @@ export class Specials {
     const e = this.e;
     const player = context.world.getPlayer();
     const held = e.minions.frozen ? key(player.position) : null;
+    const mine = key(player.position);
+    const boss = e.boss(context.world);
+    const inner = (tile) => boss && gapTo(tile, boss.position) === 0 && !this.isBodyCorner(tile, boss.position);
     const tiles = floorTiles.filter((tile) => {
-      if (isTotemTile(tile) || key(tile) === held) return false;
+      if (isTotemTile(tile) || key(tile) === held || inner(tile)) return false; // OBS (Outside): none under her but her corners
+      if (key(tile) === mine) return true; // OBS (Outside)
       return e.random() < (chebyshev(tile, player.position) <= clawNear ? clawNearChance : clawFarChance);
     });
     this.clawSets.push({ at: context.tick + clawHitTicks, tiles: new Set(tiles.map(key)) });
@@ -370,12 +387,16 @@ export class Specials {
     const e = this.e;
     const lane = surgeLanes[Math.floor(e.random() * surgeLanes.length)];
     const [from, to] = e.random() < 0.5 ? lane : [lane[1], lane[0]];
-    this.surge = { from, to };
+    this.surge = { from, to, start: context.tick, landsAt: context.tick + surgeJump, nulled: false };
     e.leave(context);
     const epoch = e.epoch;
     const state = this.surge;
     const live = () => e.epoch === epoch && this.surge === state;
-    e.later(surgeJump, (ctx) => live() && e.comeBack(ctx, from, to));
+    e.later(surgeJump, (ctx) => {
+      if (!live()) return;
+      e.comeBack(ctx, from, to, state.nulled);
+      if (state.nulled) this.surge = null;
+    });
     e.later(surgeCross, (ctx) => {
       if (!live()) return;
       this.surge = null;
@@ -392,6 +413,21 @@ export class Specials {
       e.hurt({ baseDamage: [Math.ceil(surgeMax / 2), surgeMax], attackType: "typeless", source: "Surge" });
     });
     return surgeCross + 5; // tsps: her next attack 5 ticks after the surge (83 of 83)
+  }
+  // Her shield has failed: a surge she has not yet landed for is nulled.
+  shieldFailed(context) {
+    const surge = this.surge;
+    if (!surge || context.tick > surge.landsAt) return;
+    const e = this.e;
+    surge.nulled = true;
+    if (context.tick === surge.landsAt) {
+      // Already at the lane's start: free from here.
+      this.surge = null;
+      e.away = false;
+    }
+    e.nextAttackAt = surge.start + nulledSurgeAttack;
+    const boss = e.boss(context.world);
+    if (boss) boss.combat.nextActionTick = e.nextAttackAt;
   }
 
   // Her blast, or her death: what is going on ends. The spores stay to the

@@ -88,6 +88,20 @@ try {
     { timeout: 30000 },
   );
 
+  // Cursed, the icon over the player is that of the style his protection stops now (the Outside recordings): Protect
+  // from Magic shows the missiles icon; the curse gone, the magic one again.
+  const overhead = (name) => page.waitForFunction((name) => [...document.querySelectorAll("img")].some((img) => img.getAttribute("src")?.endsWith("/overhead_" + name + ".png")), name, { timeout: 15000 });
+  await page.evaluate(() => {
+    engine.encounter.specials.curse = { turns: 5, endsAt: null };
+    engine.player().activePrayer = "ProtectMagic";
+  });
+  await overhead("missiles");
+  await page.evaluate(() => {
+    engine.encounter.specials.curse = null;
+    engine.player().activePrayer = "ProtectMagic";
+  });
+  await overhead("magic");
+
   // Her desperation, then her death; the application's own loop plays it and ends the fight.
   await page.evaluate(() => {
     engine.applyBossHpPreset(150);

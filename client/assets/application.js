@@ -39,19 +39,19 @@ import {
 import {
   wB as x,
   sn as y,
-  statLevelBounds as z,
+  statLevelBounds,
   Ew as A,
-  isIntroEnabledForKind as B,
+  isIntroEnabledForKind,
   qB as C,
   II as D,
   Vk as E,
-  getCanonicalEquipmentId as F,
+  getCanonicalEquipmentId,
   tf as G,
   sg as H,
   QV as I,
-  Prayer as J,
+  Prayer,
   isAppleTouchDevice,
-  logger as L,
+  logger,
   AC as M,
   AS as N,
   YV as O,
@@ -66,65 +66,65 @@ import {
   Nw as Y,
   nC as Z,
   iV as a0,
-  createStatsFromLevels as a1,
+  createStatsFromLevels,
   Th as a2,
   NB as a3,
-  clampStatLevel as a4,
+  clampStatLevel,
   qh as a5,
-  registerArenaConfig as a7,
+  registerArenaConfig,
   VB as a8,
   jw as a9,
   Yk as aa,
-  yamaSpawnFireballCommand as ab,
-  statNames as ac,
-  getDistanceToFootprint as ad,
-  getWeaponProjectileTiming as ae,
+  yamaSpawnFireballCommand,
+  statNames,
+  getDistanceToFootprint,
+  getWeaponProjectileTiming,
   $w as ag,
   iS as ah,
   sq as ai,
   cS as aj,
-  resolveKindOrRetiredEntry as ak,
+  resolveKindOrRetiredEntry,
   dq as al,
   SS as am,
   ZV as an,
   eS as ao,
-  getSpellDefinition as ap,
+  getSpellDefinition,
   FF as aq,
   ce as ar,
   ZB as as,
-  getInfernoSetup as at,
+  getInfernoSetup,
   Kk as au,
-  yamaSpawnVoidFlareCommand as av,
-  getEquipmentDefinition as aw,
+  yamaSpawnVoidFlareCommand,
+  getEquipmentDefinition,
   af as ax,
-  ReplaySafetyError as ay,
+  ReplaySafetyError,
   aK as az,
   hq as aB,
-  getEquipmentDefinitions as aC,
-  LogLevel as aD,
+  getEquipmentDefinitions,
+  LogLevel,
   Yw as aE,
   kC as aF,
   LS as aG,
   KV as aH,
-  getBaseItemId as aJ,
+  getBaseItemId,
   $B as aL,
-  spotAnimIds as aM,
+  spotAnimIds,
   NI as aN,
   Yz as aO,
   TI as aP,
-  createDefaultStats as aQ,
+  createDefaultStats,
   qz as aR,
   xB as aT,
   bz as aU,
-  spellbookLabels as aV,
+  spellbookLabels,
   CB as aW,
   GF as aX,
-  getCombatSpellsOfSpellbook as aY,
+  getCombatSpellsOfSpellbook,
   EF as aZ,
-  getWeaponCategory as b0,
+  getWeaponCategory,
   Sx as b1,
   fK as b2,
-  infernoDefaultStartTile as b3,
+  infernoDefaultStartTile,
   wm as b4,
   V_ as b5,
   BA as b6,
@@ -140,42 +140,42 @@ import {
   tb as bi,
   jK as bj,
   tZ as bk,
-  isArrowOrBolt as bl,
+  isArrowOrBolt,
   N_ as bm,
   CA as bn,
   zB as bo,
-  getSpellIconName as bp,
+  getSpellIconName,
   AB as bq,
   NK as br,
   _q as bs,
   O_ as bt,
-  weaponCategoryDefinitions as bu,
-  getProjectileFlightCycles as bv,
+  weaponCategoryDefinitions,
+  getProjectileFlightCycles,
   pA as bw,
-  EventAudioPlayer as by,
+  EventAudioPlayer,
   GS as bC,
   Mq as bD,
   lD as bE,
   RS as bF,
-  getMonsterName as bG,
+  getMonsterName,
   HB as bI,
   Sy as bK,
-  statLabels as bL,
-  buildMechanicsConfig as bM,
+  statLabels,
+  buildMechanicsConfig,
   sC as bN,
   gS as bO,
   rC as bP,
   mS as bQ,
-  getEncounterControls as bR,
+  getEncounterControls,
   lZ as bS,
   FD as bT,
   U_ as bU,
   lA as bV,
   bB as bW,
-  ReplayRecorder as bX,
+  ReplayRecorder,
   ZL as bY,
   Kp as bZ,
-  projectileTimings as c0,
+  projectileTimings,
   he as c1,
   lF as c2,
   GA as c3,
@@ -184,10 +184,10 @@ import {
   kB as c7,
   H_ as c8,
   mB as c9,
-  isValidStatLevel as ca,
+  isValidStatLevel,
   GB as cb,
-  infernoEncounterKind as cc,
-  canChooseInfernoStartTile as cd,
+  infernoEncounterKind,
+  canChooseInfernoStartTile,
   TB as cf,
   $_ as cg,
   Pb as ch,
@@ -202,14 +202,14 @@ import {
   qS as cq,
   px as cr,
   US as cs,
-  getEquipmentVariantIds as ct,
+  getEquipmentVariantIds,
   nf as cu,
   eA as cv,
   XV as cw,
   ef as cx,
   pg as cy,
   dK as cz,
-  commonMechanicsDefaults as cA,
+  commonMechanicsDefaults,
   aA as cB,
   kx as cC,
   _S as cD,
@@ -222,15 +222,15 @@ import { toLocPlacement, CacheManager, defaultPlayerModelConfig } from "./player
 import {
   eae as cM,
   tae as cN,
-  nae as cO,
+  DisclosureChevron,
   aae as cP,
-  iae as cQ,
+  DEFAULT_NPC_HIGHLIGHT_COLOR,
   oae as cR,
   rae as cT,
-  sae as cU,
+  COMPACT_ORBS_LAYOUT_LABELS,
   lae as cV,
   cae as cW,
-  dae as cX,
+  OutcomePracticeActions,
   uae as cZ,
   hae as d0,
   pae as d1,
@@ -241,8 +241,8 @@ import {
   bae as d6,
   vae as d7,
   wae as d8,
-  kae as d9,
-  Sae as da,
+  getSpellIconPath,
+  PRAYER,
   Cae as db,
   Nae as dd,
   xae as de,
@@ -250,19 +250,19 @@ import {
   Mae as dg,
   Pae as dh,
   Iae as di,
-  Aae as dj,
+  handleOverlayClose,
   Rae as dk,
   Lae as dl,
   Eae as dm,
-  Dae as dn,
+  sheet,
   Oae as dp,
   Fae as ds,
   $ae as dt,
   _ae as du,
   Hae as dv,
   qae as dw,
-  Bae as dx,
-  zae as dy,
+  TUTORIAL_CLOSE_PANE_EVENT,
+  LauncherIcon,
   Wae as dz,
   Gae as dA,
   Kae as dB,
@@ -278,19 +278,19 @@ import {
   iie as dM,
   oie as dN,
   rie as dO,
-  sie as dP,
+  OsrsNumberInput,
   lie as dQ,
   cie as dR,
   die as dS,
   uie as dT,
-  hie as dU,
-  pie as dV,
+  usePersistedSettings,
+  replayCaptureNotice,
   mie as dW,
-  gie as dX,
+  InfoHint,
   fie as dY,
   yie as dZ,
-  bie as e0,
-  vie as e1,
+  CLIENT_LAYOUT_LABELS,
+  SystemNotice,
   wie as e2,
   kie as e3,
   Sie as e4,
@@ -299,10 +299,10 @@ import {
   xie as e8,
   Tie as e9,
   Mie as ea,
-  Pie as eb,
-  un as ec,
-  Iie as ed,
-  Aie as ee,
+  infoboxPinTargetUnavailableReason,
+  PanelSnapRegistryProvider,
+  SPELLBOOKS,
+  MOBILE,
   Rie as eg,
   Lie as eh,
   Eie as ei,
@@ -314,50 +314,50 @@ import {
   Hie as ep,
   qie as eq,
   Bie as er,
-  zie as es,
+  ESC_PRIORITY,
   Wie as et,
   Gie as eu,
-  Kie as ev,
-  jie as ew,
-  Uie as ex,
+  TUTORIAL_QUICK_SEARCH_OPENED_EVENT,
+  useHoverCard,
+  MechanicsSettings,
   Vie as ey,
-  Yie as ez,
+  TUTORIAL_HUD_OPENED_EVENT,
   Jie as eB,
-  Zie as eC,
+  FpsOverlay,
   Xie as eD,
-  Qie as eE,
+  TUTORIAL_REPLAY_ENTERED_EVENT,
   eoe as eF,
   toe as eG,
   noe as eH,
   aoe as eI,
-  ioe as eK,
+  ResetToDefaultsControl,
   ooe as eL,
-  roe as eM,
+  projectActiveClicks,
   soe as eN,
   loe as eO,
   coe as eP,
   doe as eQ,
   uoe as eR,
   hoe as eT,
-  poe as eU,
+  RESOLUTION_PRESETS,
   moe as eV,
   goe as eW,
-  foe as eX,
+  OSM_TAB_SLOTS,
   yoe as eY,
-  boe as f0,
+  INFOBOX_ITEM_IDS,
   voe as f1,
   woe as f2,
   koe as f3,
-  Soe as f4,
-  Coe as f5,
+  NO_WEBGL2_BODY,
+  SettingRow,
   ln as f6,
   Noe as f7,
-  xoe as f8,
+  SIDE_BACKGROUND_SPRITES,
   Toe as f9,
   Moe as fa,
   Poe as fb,
-  Ioe as fc,
-  Aoe as fd,
+  GAMEPANEL_KEYBINDS_ID,
+  OsrsCheckbox,
   Roe as fe,
   Loe as ff,
   Eoe as fg,
@@ -372,16 +372,16 @@ import {
   zoe as fp,
   Woe as fq,
   Goe as fr,
-  Koe as fs,
+  advanceZukSetTimer,
   joe as ft,
   Uoe as fv,
   Voe as fw,
-  Yoe as fx,
+  EDIT_LAYOUT_HELP,
   Joe as fz,
   Zoe as fA,
   Xoe as fB,
   Qoe as fC,
-  ese as fD,
+  GAMEPANEL_AUDIO_LABELS,
   tse as fE,
   Kn as fF,
   nse as fG,
@@ -389,16 +389,16 @@ import {
   ise as fI,
   ose as fJ,
   rse as fL,
-  sse as fM,
+  REPLAY_CLICK_SHEET_URLS,
   lse as fN,
   cse as fO,
   dse as fP,
-  use as fQ,
+  STATUS_BAR_PRAYER_ICON,
   hse as fR,
   pse as fS,
-  mse as fT,
+  useSimulationWiring,
   gse as fU,
-  fse as fV,
+  CloseButton,
   yse as fW,
   bse as fX,
   vse as fY,
@@ -408,31 +408,31 @@ import {
   Cse as g2,
   Nse as g3,
   xse as g4,
-  mn as g5,
-  Tse as g6,
-  Mse as g7,
+  Grid,
+  NO_WEBGL2_TITLE,
+  KeybindingsContent,
   Pse as g8,
   Ise as g9,
   CommunityLinks,
   Rse as gb,
   Lse as gc,
   Ese as gd,
-  Dse as ge,
+  TouchControls,
   Ose as gf,
   Fse as gg,
-  $se as gh,
-  _se as gi,
+  GAME_RESOLUTION_MAX,
+  TooltipCard,
   Hse as gj,
-  qse as gk,
-  Bse as gl,
+  MINIMAP,
+  parseStoredPosition,
   zse as gm,
   Wse as go,
-  Gse as gp,
+  TOOLTIP_COLORS,
   Kse as gq,
   jse as gr,
   Use as gs,
   Vse as gt,
-  Yse as gu,
+  PERSISTED_SETTINGS_DEFAULTS,
   Jse as gv,
   Zse as gx,
   Xse as gy,
@@ -440,23 +440,23 @@ import {
 } from "./Grid.js";
 import { OsrsButton } from "./packThemes.js";
 import {
-  isItemStackable as gB,
-  createEmptyCombatSupplies as gC,
-  areCombatSuppliesEqual as gD,
-  parseCombatSupplies as gE,
-  createEmptyInventory as gF,
-  cloneCombatSupplies as gG,
-  retiredEncounterKindEntries as gH,
-  consolidateRetiredEncounterKinds as gI,
-  COMBINATION_RUNE_ITEM_IDS as gL,
-  encounterDefinitions as gM,
-  withRunePouchSlot as gN,
-  RUNE_ITEM_IDS as gO,
-  createSimulationEngine as gP,
-  consumableDefinitionByItemId as gQ,
-  resolveBaseEncounterKind as gR,
-  normalizeInventory as gT,
-  resolveRetiredEncounterKind as gU,
+  isItemStackable,
+  createEmptyCombatSupplies,
+  areCombatSuppliesEqual,
+  parseCombatSupplies,
+  createEmptyInventory,
+  cloneCombatSupplies,
+  retiredEncounterKindEntries,
+  consolidateRetiredEncounterKinds,
+  COMBINATION_RUNE_ITEM_IDS,
+  encounterDefinitions,
+  withRunePouchSlot,
+  RUNE_ITEM_IDS,
+  createSimulationEngine,
+  consumableDefinitionByItemId,
+  resolveBaseEncounterKind,
+  normalizeInventory,
+  resolveRetiredEncounterKind,
 } from "./simulationEngineFactory.js";
 import { legalDocuments } from "../seo/legalDocuments.js";
 import { buildSeoRoutes, findSeoRoute, withTrailingSlash, canonicalUrl } from "../seo/routes.js";
@@ -473,7 +473,7 @@ var React = toEsModule(requireReact(), 1);
 var gn = requireReactDom();
 var ReactDOMClient = toEsModule(requireReactDomClient(), 1);
 var jsxRuntime = requireJsxRuntime();
-var ele = ({ diagnostics: diagnostics }) =>
+var BrowserSupportScreen = ({ diagnostics: diagnostics }) =>
   (0, jsxRuntime.jsx)("div", {
     className: "app-container webgl2-gate browser-support",
     children: (0, jsxRuntime.jsxs)("div", {
@@ -492,12 +492,12 @@ var ele = ({ diagnostics: diagnostics }) =>
             }),
           ],
         }),
-        (0, jsxRuntime.jsx)(e1, {
+        (0, jsxRuntime.jsx)(SystemNotice, {
           role: "alert",
           tone: "blocked",
           className: "browser-support__notice",
-          title: g6,
-          body: f4,
+          title: NO_WEBGL2_TITLE,
+          body: NO_WEBGL2_BODY,
           steps: fX(),
           links: (0, jsxRuntime.jsx)(fk, {}),
           note: fH(),
@@ -508,7 +508,7 @@ var ele = ({ diagnostics: diagnostics }) =>
                     (0, jsxRuntime.jsxs)("summary", {
                       tabIndex: -1,
                       children: [
-                        (0, jsxRuntime.jsx)(cO, {}),
+                        (0, jsxRuntime.jsx)(DisclosureChevron, {}),
                         "Troubleshooting info",
                       ],
                     }),
@@ -965,7 +965,7 @@ var cle = class {
     };
   }
 };
-var dle = ({
+var ModelPreview = ({
   modelId: modelId,
   modelLoader: modelLoader,
   className: className,
@@ -1309,7 +1309,7 @@ var dle = ({
     ],
   });
 };
-var ule = {
+var SOUND_NAMES = {
   ...zebakSoundNames,
   2500: "Melee Slash (Scimitar)",
   2517: "Melee Stab (Dagger)",
@@ -1347,6 +1347,9 @@ var ule = {
   9320: "Emberlight Spec (Layer 2)",
   9321: "Emberlight Spec (Layer 3)",
   3892: "Armadyl Crossbow Spec",
+  5306: "Zaryte Crossbow Spec",
+  2911: "Ruby Bolt Effect",
+  2913: "Diamond Bolt Effect",
   9325: "Scorching Bow Spec Impact (Layer 1)",
   9326: "Scorching Bow Spec Impact (Layer 2)",
   9327: "Scorching Bow Spec (Layer 1)",
@@ -1507,7 +1510,7 @@ var hle = [
   10268, 10269, 10272, 10275, 10277, 10311, 10313, 10318, 10319, 10322, 10325,
   10326, 10327, 10329, 10330, 12645,
 ];
-function ple({
+function SeqRow({
   label: label,
   seqId: seqId,
   animationSystem: animationSystem,
@@ -1568,7 +1571,7 @@ function ple({
     ],
   });
 }
-function mle({
+function NpcAnimationBrowser({
   npc: h2,
   animationSystem: animationSystem,
   onJumpToSeq: onJumpToSeq,
@@ -1687,7 +1690,7 @@ function mle({
         children: [
           hb.map((hg) =>
             (0, jsxRuntime.jsx)(
-              ple,
+              SeqRow,
               {
                 label: hg.label,
                 seqId: hg.id,
@@ -1700,7 +1703,7 @@ function mle({
           ),
           hc.map((hg) =>
             (0, jsxRuntime.jsx)(
-              ple,
+              SeqRow,
               {
                 label: hg.label,
                 seqId: hg.id,
@@ -1740,7 +1743,7 @@ function mle({
     ],
   });
 }
-function gle({
+function CacheExplorer({
   isOpen: isOpen,
   onClose: onClose,
   spotAnimLoader: spotAnimLoader,
@@ -2069,7 +2072,7 @@ function gle({
   const hP = (0, React.useCallback)(
     (i4) => ({
       id: i4,
-      name: ule[i4] || "Sound " + i4,
+      name: SOUND_NAMES[i4] || "Sound " + i4,
       data: {
         id: i4,
       },
@@ -2207,7 +2210,7 @@ function gle({
           });
         }
       } catch (ia) {
-        L.error("UI", "Failed to load seq " + i4 + ":", ia);
+        logger.error("UI", "Failed to load seq " + i4 + ":", ia);
       }
       return;
     }
@@ -2225,7 +2228,7 @@ function gle({
           });
         }
       } catch (id) {
-        L.error("UI", "Failed to load " + hb + " " + i4 + ":", id);
+        logger.error("UI", "Failed to load " + hb + " " + i4 + ":", id);
       }
     }
   }, [hg, hb, spotAnimLoader, npcTypeLoader, animationSystem, hN, hL, hO, hP]);
@@ -2244,7 +2247,7 @@ function gle({
         }
         hR(Math.max(0, i4.idleSeqId - 10), 50, "seq");
       } catch (i5) {
-        L.error("UI", "Failed to load Yama NPC for seqs:", i5);
+        logger.error("UI", "Failed to load Yama NPC for seqs:", i5);
       }
     }
   }, [hb, hR, npcTypeLoader]);
@@ -2330,7 +2333,7 @@ function gle({
                 "spotanim_" + i7 + "." + ih,
               );
             } catch (ii) {
-              L.error(
+              logger.error(
                 "CacheExplorer",
                 "Failed to export SpotAnim " + i7 + " as " + ia + ":",
                 ii,
@@ -2339,7 +2342,7 @@ function gle({
             }
           })(i4, spotAnimLoader, modelLoader, i5);
         } catch (i7) {
-          L.error("UI", "Failed to export SpotAnim " + i4 + ":", i7);
+          logger.error("UI", "Failed to export SpotAnim " + i4 + ":", i7);
         }
       }
     },
@@ -2400,7 +2403,7 @@ function gle({
                   : "npc_" + i9 + "." + il,
               );
             } catch (ir) {
-              L.error(
+              logger.error(
                 "CacheExplorer",
                 "Failed to export NPC " + i9 + " as " + id + ":",
                 ir,
@@ -2409,7 +2412,7 @@ function gle({
             }
           })(i4, i5, npcTypeLoader, modelLoader, i7);
         } catch (i9) {
-          L.error("UI", "Failed to export NPC " + i4 + ":", i9);
+          logger.error("UI", "Failed to export NPC " + i4 + ":", i9);
         }
       }
     },
@@ -2559,7 +2562,7 @@ function gle({
       if (hb === "sound") {
         for (const ij of hle) {
           if (
-            (ule[ij] || "Sound " + ij).toLowerCase().includes(i5) ||
+            (SOUND_NAMES[ij] || "Sound " + ij).toLowerCase().includes(i5) ||
             ij.toString().includes(i5)
           ) {
             i8.push(hP(ij));
@@ -2694,7 +2697,7 @@ function gle({
                         ? "Jump to Yama Seqs"
                         : "Jump to Yama Assets",
                     }),
-                  (0, jsxRuntime.jsx)(fV, {
+                  (0, jsxRuntime.jsx)(CloseButton, {
                     className: "close-btn",
                     onClick: onClose,
                     "aria-label": "Close",
@@ -2927,7 +2930,7 @@ function gle({
                                           }),
                                           (0, jsxRuntime.jsx)("div", {
                                             className: "detail-val",
-                                            children: ule[i3] || "Unknown",
+                                            children: SOUND_NAMES[i3] || "Unknown",
                                           }),
                                         ],
                                       }),
@@ -3042,7 +3045,7 @@ function gle({
                                     : "npc" === hb &&
                                         hm.data.modelIds &&
                                         hm.data.modelIds.length > 0
-                                      ? (0, jsxRuntime.jsx)(dle, {
+                                      ? (0, jsxRuntime.jsx)(ModelPreview, {
                                           modelId: hm.data.modelIds[0],
                                           modelLoader: modelLoader,
                                           className: "cache-model-preview",
@@ -3418,7 +3421,7 @@ function gle({
                                                   }),
                                                 ],
                                               }),
-                                              (0, jsxRuntime.jsx)(mle, {
+                                              (0, jsxRuntime.jsx)(NpcAnimationBrowser, {
                                                 npc: i1,
                                                 animationSystem:
                                                   animationSystem,
@@ -3759,7 +3762,7 @@ var fle = [
     name: "visage814",
   },
 ];
-function yle(h2, h3 = true) {
+function useCenteredModalSnap(h2, h3 = true) {
   const h5 = b6(Infinity);
   (0, React.useLayoutEffect)(() => {
     const current5 = h2.current;
@@ -3828,14 +3831,14 @@ function yle(h2, h3 = true) {
     };
   }, [h2, h3, h5]);
 }
-var ble = ({ isOpen: isOpen, onClose: onClose }) => {
+var CreditsModal = ({ isOpen: isOpen, onClose: onClose }) => {
   const h5 = (0, React.useRef)(null);
-  yle(h5, isOpen);
+  useCenteredModalSnap(h5, isOpen);
   dC(1300, isOpen, onClose);
   if (isOpen) {
     return (0, jsxRuntime.jsx)("div", {
       className: "credits-modal-overlay",
-      ...dn.overlay,
+      ...sheet.overlay,
       onClick: onClose,
       role: "dialog",
       "aria-modal": "true",
@@ -3843,7 +3846,7 @@ var ble = ({ isOpen: isOpen, onClose: onClose }) => {
       children: (0, jsxRuntime.jsxs)("div", {
         ref: h5,
         className: "credits-modal-card centered-modal-snap",
-        ...dn.card,
+        ...sheet.card,
         onClick: (h6) => h6.stopPropagation(),
         onMouseDown: (h6) => {
           if (h6.target.closest("button")) {
@@ -3851,9 +3854,9 @@ var ble = ({ isOpen: isOpen, onClose: onClose }) => {
           }
         },
         children: [
-          (0, jsxRuntime.jsx)(fV, {
+          (0, jsxRuntime.jsx)(CloseButton, {
             className: "credits-modal-close",
-            ...dn.close,
+            ...sheet.close,
             onClick: onClose,
             "aria-label": "Close",
           }),
@@ -3900,7 +3903,7 @@ var ble = ({ isOpen: isOpen, onClose: onClose }) => {
     return null;
   }
 };
-var vle = {
+var FAIL_MESSAGES = {
   Death: "Slain in combat",
   YamaAttack: "Killed by Yama's attack",
   WaveDamage: "Consumed by the wave",
@@ -3909,7 +3912,7 @@ var vle = {
   FireballDamage: "Engulfed in flames",
   GroundDamage: "Crushed by falling debris",
 };
-var wle = {
+var SOURCE_NAMES = {
   YamaAttack: "Yama",
   WaveDamage: "Wave",
   VoidFlare: "Void flare",
@@ -3921,8 +3924,8 @@ var wle = {
 };
 var kle = (h2) => {
   return (
-    (h2.sourceNpcTypeId === undefined ? undefined : bG(h2.sourceNpcTypeId)) ??
-    ((h3 = h2.source), wle[h3] ?? h3.replace(/([A-Z])/g, " $1").trim())
+    (h2.sourceNpcTypeId === undefined ? undefined : getMonsterName(h2.sourceNpcTypeId)) ??
+    ((h3 = h2.source), SOURCE_NAMES[h3] ?? h3.replace(/([A-Z])/g, " $1").trim())
   );
   var h3;
 };
@@ -3931,12 +3934,12 @@ var Sle = {
   range: "ranged",
   magic: "magic",
 };
-var Cle = {
+var PRAYER_SHORT = {
   ProtectMagic: "Mage",
   ProtectRange: "Range",
   ProtectMelee: "Melee",
 };
-var Nle = ({
+var DeathModal = ({
   failedCondition: failedCondition,
   damageHistory: damageHistory,
   onRestart: onRestart,
@@ -3990,7 +3993,7 @@ var Nle = ({
     return null;
   }
   const hc = (hd = failedCondition)
-    ? (vle[hd] ?? hd.replace(/([A-Z])/g, " $1").trim())
+    ? (FAIL_MESSAGES[hd] ?? hd.replace(/([A-Z])/g, " $1").trim())
     : "Slain in combat";
   var hd;
   const hf = [...damageHistory]
@@ -4073,7 +4076,7 @@ var Nle = ({
                         const hk = ((ho) => {
                           const hp = "typeless" === ho.attackType;
                           const hr = ho.activePrayer
-                            ? (Cle[ho.activePrayer] ?? null)
+                            ? (PRAYER_SHORT[ho.activePrayer] ?? null)
                             : null;
                           return hr || (hp ? "—" : "None");
                         })(hg);
@@ -4133,7 +4136,7 @@ var Nle = ({
             }),
           (0, jsxRuntime.jsx)("div", {
             className: "death-modal-actions",
-            children: (0, jsxRuntime.jsx)(cX, {
+            children: (0, jsxRuntime.jsx)(OutcomePracticeActions, {
               controls: replayPractice,
               encounterSession: encounterSession,
               onRestart: onRestart,
@@ -4151,7 +4154,7 @@ function xle(h2, h3) {
   // routeVariants: variants that have a route and presets but no place in the menus (the sandbox's arenas).
   return (h3 ?? cE.getDescriptorOfKindOrVariant(h2)?.routeVariants)?.find((h4) => h4.encounterKind === h2)?.presetsKey ?? h2;
 }
-var Tle = {
+var ITEM_WIELD_REQUIREMENTS = {
   27291: {attack: 80},
   22325: {
     attack: 80,
@@ -4489,9 +4492,9 @@ var Tle = {
 function Mle(h2, h3) {
   const h5 = {};
   const h6 = (h7) => {
-    const h8 = Tle[h7];
+    const h8 = ITEM_WIELD_REQUIREMENTS[h7];
     if (h8) {
-      for (const h9 of ac) {
+      for (const h9 of statNames) {
         const ha = h8[h9];
         if (undefined !== ha && ha > (h5[h9] ?? 0)) {
           h5[h9] = ha;
@@ -4514,23 +4517,23 @@ function Mle(h2, h3) {
 var Ple = {
   name: "No Equipment",
   equipment: {},
-  inventory: gF(),
+  inventory: createEmptyInventory(),
   isFallback: true,
 };
 var Ile = {
   kind: "divine",
   slots: [
     {
-      id: gO.death,
+      id: RUNE_ITEM_IDS.death,
     },
     {
-      id: gO.fire,
+      id: RUNE_ITEM_IDS.fire,
     },
     {
-      id: gO.blood,
+      id: RUNE_ITEM_IDS.blood,
     },
     {
-      id: gL.aether,
+      id: COMBINATION_RUNE_ITEM_IDS.aether,
     },
   ],
 };
@@ -4617,16 +4620,16 @@ var Ele = {
   kind: "divine",
   slots: [
     {
-      id: gO.soul,
+      id: RUNE_ITEM_IDS.soul,
     },
     {
-      id: gO.blood,
+      id: RUNE_ITEM_IDS.blood,
     },
     {
-      id: gO.death,
+      id: RUNE_ITEM_IDS.death,
     },
     {
-      id: gO.water,
+      id: RUNE_ITEM_IDS.water,
     },
   ],
 };
@@ -4634,13 +4637,13 @@ var Dle = {
   kind: "standard",
   slots: [
     {
-      id: gO.water,
+      id: RUNE_ITEM_IDS.water,
     },
     {
-      id: gO.chaos,
+      id: RUNE_ITEM_IDS.chaos,
     },
     {
-      id: gO.death,
+      id: RUNE_ITEM_IDS.death,
     },
   ],
 };
@@ -4659,20 +4662,20 @@ var Fle = {
   kind: "divine",
   slots: [
     {
-      id: gO.death,
+      id: RUNE_ITEM_IDS.death,
     },
     {
-      id: gO.blood,
+      id: RUNE_ITEM_IDS.blood,
     },
     {
-      id: gO.soul,
+      id: RUNE_ITEM_IDS.soul,
     },
     {
-      id: gO.water,
+      id: RUNE_ITEM_IDS.water,
     },
   ],
 };
-var $le = {
+var INFERNO_PRESETS = {
   max_tbow: {
     name: "Max Tbow",
     equipment: {
@@ -4686,7 +4689,7 @@ var $le = {
       boots: 31097,
       ring: 28310,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 21006,
       },
@@ -4738,7 +4741,7 @@ var $le = {
       boots: 22954,
       ring: 26764,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 27624,
       },
@@ -4789,7 +4792,7 @@ var $le = {
       boots: 29806,
       ring: 26764,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 6914,
       },
@@ -4900,7 +4903,7 @@ var $le = {
       boots: 19921,
       ring: 26764,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 6914,
       },
@@ -5010,7 +5013,7 @@ var $le = {
       boots: 31097,
       ring: 28313,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 31113,
       },
@@ -5121,7 +5124,7 @@ var $le = {
       boots: 31097,
       ring: 26764,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 21006,
       },
@@ -5229,7 +5232,7 @@ var $le = {
       boots: 31097,
       ring: 26764,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 10925,
       },
@@ -5336,7 +5339,7 @@ var $le = {
       boots: 31097,
       ring: 28310,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 10925,
       },
@@ -5359,7 +5362,7 @@ var $le = {
         id: 25818,
       },
       {
-        id: gO.soul,
+        id: RUNE_ITEM_IDS.soul,
       },
       {
         id: 22325,
@@ -5428,16 +5431,16 @@ var $le = {
         kind: "divine",
         slots: [
           {
-            id: gO.blood,
+            id: RUNE_ITEM_IDS.blood,
           },
           {
-            id: gO.death,
+            id: RUNE_ITEM_IDS.death,
           },
           {
-            id: gL.smoke,
+            id: COMBINATION_RUNE_ITEM_IDS.smoke,
           },
           {
-            id: gO.cosmic,
+            id: RUNE_ITEM_IDS.cosmic,
           },
         ],
       },
@@ -5460,7 +5463,7 @@ var $le = {
       boots: 22954,
       ring: 26764,
     },
-    inventory: gT([
+    inventory: normalizeInventory([
       {
         id: 12926,
       },
@@ -5555,16 +5558,16 @@ var $le = {
         kind: "divine",
         slots: [
           {
-            id: gO.death,
+            id: RUNE_ITEM_IDS.death,
           },
           {
-            id: gO.water,
+            id: RUNE_ITEM_IDS.water,
           },
           {
-            id: gO.blood,
+            id: RUNE_ITEM_IDS.blood,
           },
           {
-            id: gO.soul,
+            id: RUNE_ITEM_IDS.soul,
           },
         ],
       },
@@ -5577,7 +5580,7 @@ var $le = {
   },
   naked: Ple,
 };
-var _le = {
+var EQUIPMENT_PRESETS = {
   zebak: {
     max_mage: {
       name: "Max Mage",
@@ -5592,7 +5595,7 @@ var _le = {
         boots: 31097,
         ring: 28313,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         27235, 27238, 27241, 20997, // Fortified Masori and twisted bow
         28951, 33639, 26235, 12926, // Quiver, rupture, vambraces and blowpipe
         27291, 27665, 27641, 22461, // Sun keris, charged sceptre, heart and bastion
@@ -5607,7 +5610,7 @@ var _le = {
         spellbook: "standard",
       },
     },
-    ...$le,
+    ...INFERNO_PRESETS,
   },
   lobby: {
     naked: Ple,
@@ -5633,7 +5636,7 @@ var _le = {
         boots: 31097, // Avernic treads (max)
         ring: 25975, // Lightbearer
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         26374, 29796, 6746, 21255, // Zaryte crossbow, noxious halberd, Darklight, Slayer's staff (e)
         29591, 22325, 23733, 2444, // Scorching bow, Scythe of Vitur, divine ranging, ranging
         2444, 6685, 6685, 6685,
@@ -5645,15 +5648,15 @@ var _le = {
       supplies: {
         equippedAmmo: { id: 33595 }, // Seeking dragon arrow
         quiverAmmo: { id: 9242 }, // Ruby bolts (e), for the Zaryte crossbow
-        runePouch: { kind: "divine", slots: [{ id: gO.death }, { id: 30843 }, { id: gO.blood }, { id: gO.fire }] }, // Death Charge, demonbane
+        runePouch: { kind: "divine", slots: [{ id: RUNE_ITEM_IDS.death }, { id: 30843 }, { id: RUNE_ITEM_IDS.blood }, { id: RUNE_ITEM_IDS.fire }] }, // Death Charge, demonbane
         selectedSpell: "Dark Demonbane",
         spellbook: "arceuus",
       },
     },
     naked: Ple,
   },
-  zuk: $le,
-  inferno: $le,
+  zuk: INFERNO_PRESETS,
+  inferno: INFERNO_PRESETS,
   // The waves of the Fortis Colosseum (client/encounters/colosseum/). Worn: fortified Masori, Dizana's quiver
   // holding seeking dragon arrows, Rada's blessing 4, Avernic treads (max), a venator ring, Zaryte vambraces, the
   // Eldritch nightmare staff, the Book of the Dead and the necklace of rupture. The Arceuus spellbook with Sol
@@ -5674,7 +5677,7 @@ var _le = {
         boots: 31097,
         ring: 28310,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         30434, 30779, 28254, 22325, // Echo venator bow, radiant oathplate chest, sanguine Torva full helm, scythe of Vitur
         30781, 29801, 21295, 28307, // Radiant oathplate legs, amulet of rancour, infernal cape, ultor ring
         20997, 30955, 22981, 21003, // Twisted bow, Arkan blade, ferocious gloves, elder maul
@@ -5710,7 +5713,7 @@ var _le = {
         boots: 31097, // Avernic treads (max)
         ring: 28316, // Bellator ring
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         13652, 12695, 3024, 3024, // Dragon claws, a super combat potion, two super restores
         3024, 29143, 29143, 29143, // A super restore, cooked moonlight antelope
         29143, 29143, 29143, 29143, // Cooked moonlight antelope
@@ -5743,7 +5746,7 @@ var _le = {
         boots: 31097,
         ring: 28307,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 20997,
         },
@@ -5855,7 +5858,7 @@ var _le = {
         boots: 13239,
         ring: 28307,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 25865,
         },
@@ -5968,7 +5971,7 @@ var _le = {
         boots: 11840,
         ring: 11773,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 25865,
         },
@@ -6079,7 +6082,7 @@ var _le = {
         boots: 11840,
         ring: 11773,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 25865,
         },
@@ -6172,13 +6175,13 @@ var _le = {
           kind: "standard",
           slots: [
             {
-              id: gO.blood,
+              id: RUNE_ITEM_IDS.blood,
             },
             {
-              id: gO.soul,
+              id: RUNE_ITEM_IDS.soul,
             },
             {
-              id: gO.death,
+              id: RUNE_ITEM_IDS.death,
             },
           ],
         },
@@ -6206,7 +6209,7 @@ var _le = {
         boots: 31097,
         ring: 28313,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 27275,
         },
@@ -6306,7 +6309,7 @@ var _le = {
         boots: 31097,
         ring: 28307,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 29594,
         },
@@ -6406,7 +6409,7 @@ var _le = {
         boots: 31097,
         ring: 28307,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 29594,
         },
@@ -6506,7 +6509,7 @@ var _le = {
         boots: 6920,
         ring: 11770,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 6685,
         },
@@ -6611,7 +6614,7 @@ var _le = {
         boots: 31097,
         ring: 24736,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 11806,
         },
@@ -6714,7 +6717,7 @@ var _le = {
         boots: 22954,
         ring: 13202,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 21003,
         },
@@ -6817,7 +6820,7 @@ var _le = {
         boots: 31097,
         ring: 25975,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 11806,
         },
@@ -6920,7 +6923,7 @@ var _le = {
         boots: 31097,
         ring: 28313,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 11806,
         },
@@ -7023,7 +7026,7 @@ var _le = {
         boots: 31097,
         ring: 28313,
       },
-      inventory: gT([
+      inventory: normalizeInventory([
         {
           id: 11806,
         },
@@ -7118,13 +7121,13 @@ var _le = {
 for (const kind of cE.getRegisteredKinds()) {
   const loadouts = cE.getDescriptor(kind)?.loadouts;
   if (loadouts) {
-    _le[kind] = {
-      ...Object.fromEntries(Object.entries(loadouts).map(([key, preset]) => [key, { ...preset, inventory: gT((preset.inventory ?? []).map((id) => (id === null ? null : { id }))) }])),
+    EQUIPMENT_PRESETS[kind] = {
+      ...Object.fromEntries(Object.entries(loadouts).map(([key, preset]) => [key, { ...preset, inventory: normalizeInventory((preset.inventory ?? []).map((id) => (id === null ? null : { id }))) }])),
       naked: Ple,
     };
   }
 }
-for (const e of new Set(Object.values(_le))) {
+for (const e of new Set(Object.values(EQUIPMENT_PRESETS))) {
   for (const [t, n] of Object.entries(e)) {
     if (!n.isFallback) {
       e[t] = {
@@ -7135,15 +7138,15 @@ for (const e of new Set(Object.values(_le))) {
   }
 }
 // The sandbox (client/encounters/sandbox/) offers the presets of every fight.
-_le.sandbox = Object.fromEntries(
-  Object.entries(_le)
+EQUIPMENT_PRESETS.sandbox = Object.fromEntries(
+  Object.entries(EQUIPMENT_PRESETS)
     .filter(([kind]) => !/^yama_p3_/.test(kind))
     .flatMap(([kind, presets]) => Object.entries(presets).filter(([key]) => key !== "naked").map(([key, preset]) => [kind + "__" + key, { ...preset, name: preset.name + " (" + (cE.getDescriptor(kind)?.displayName ?? kind) + ")" }])),
 );
-_le.sandbox.naked = Ple;
+EQUIPMENT_PRESETS.sandbox.naked = Ple;
 var Hle = "yama_p3";
 var qle = "learner-mage";
-var Ble = gT([
+var Ble = normalizeInventory([
   {
     id: 28810,
   },
@@ -7220,7 +7223,7 @@ function Kle(h2) {
   }
 }
 function jle(h2) {
-  const h4 = gF();
+  const h4 = createEmptyInventory();
   if (!Array.isArray(h2)) {
     return h4;
   }
@@ -7234,30 +7237,30 @@ function Ule(h2) {
   return {
     equipment: df(h2.equipment),
     inventory: du(h2.inventory),
-    supplies: gG(h2.supplies),
+    supplies: cloneCombatSupplies(h2.supplies),
   };
 }
 function Vle(h2) {
-  const h4 = _le[gU(h2)];
+  const h4 = EQUIPMENT_PRESETS[resolveRetiredEncounterKind(h2)];
   const h5 = h4 ? Object.values(h4)[0] : undefined;
   return {
     equipment: df(h5?.equipment ?? {}),
-    inventory: h5 ? du(h5.inventory) : gF(),
-    supplies: h5?.supplies ? gG(h5.supplies) : gC(),
+    inventory: h5 ? du(h5.inventory) : createEmptyInventory(),
+    supplies: h5?.supplies ? cloneCombatSupplies(h5.supplies) : createEmptyCombatSupplies(),
   };
 }
 function Yle(h2, h3) {
-  return Object.values(_le[gU(h2)] ?? {}).some(
+  return Object.values(EQUIPMENT_PRESETS[resolveRetiredEncounterKind(h2)] ?? {}).some(
     (h5) =>
       dG(h5.equipment, h3.equipment) &&
-      (h5.supplies === undefined || gD(h5.supplies, h3.supplies)),
+      (h5.supplies === undefined || areCombatSuppliesEqual(h5.supplies, h3.supplies)),
   );
 }
 function Jle(h2, h3) {
   if (h2 !== Hle) {
     return false;
   }
-  const h5 = _le[Hle][qle];
+  const h5 = EQUIPMENT_PRESETS[Hle][qle];
   return dG(h5.equipment, h3.equipment) && e5(h3.inventory, Ble);
 }
 function Zle(h2) {
@@ -7265,27 +7268,27 @@ function Zle(h2) {
   if (!parseResult3.success) {
     return {
       equipment: {},
-      inventory: gF(),
-      supplies: gC(),
+      inventory: createEmptyInventory(),
+      supplies: createEmptyCombatSupplies(),
     };
   }
   const data2 = parseResult3.data;
   const h6 = "equipment" in data2 && "inventory" in data2;
   return {
     equipment: Gle(h6 ? data2.equipment : data2),
-    inventory: h6 ? jle(data2.inventory) : gF(),
-    supplies: h6 ? gE(data2.supplies) : gC(),
+    inventory: h6 ? jle(data2.inventory) : createEmptyInventory(),
+    supplies: h6 ? parseCombatSupplies(data2.supplies) : createEmptyCombatSupplies(),
   };
 }
 function Xle(h2, h3) {
-  const h5 = Object.values(_le[gU(h2)] ?? {}).find(
+  const h5 = Object.values(EQUIPMENT_PRESETS[resolveRetiredEncounterKind(h2)] ?? {}).find(
     (h6) => dG(h6.equipment, h3.equipment) && e5(h6.inventory, h3.inventory),
   );
   if (h5) {
     return h5;
   }
   if (h2 === Hle) {
-    const h6 = _le[Hle][qle];
+    const h6 = EQUIPMENT_PRESETS[Hle][qle];
     if (Jle(h2, h3)) {
       return h6;
     } else {
@@ -7316,25 +7319,25 @@ function Qle(h2) {
         : {
             equipment: df(hc.equipment),
             inventory: du(hc.inventory),
-            supplies: gG(hc.supplies),
+            supplies: cloneCombatSupplies(hc.supplies),
           };
     if (undefined !== hc?.supplies) {
       h6 = true;
     }
     if (Yle(h8, hd) && Jle(h8, hd)) {
-      const hf = _le[h8][qle];
+      const hf = EQUIPMENT_PRESETS[h8][qle];
       h6 = true;
       h5[h8] = {
         ...Ule(hd),
         inventory: du(hf.inventory),
-        supplies: hf.supplies ? gG(hf.supplies) : gC(),
+        supplies: hf.supplies ? cloneCombatSupplies(hf.supplies) : createEmptyCombatSupplies(),
       };
     } else {
       h5[h8] = Ule(hd);
     }
   }
   const h7 = (function (hg) {
-    const hh = gI(hg, (hi, hj) => Ule(hj));
+    const hh = consolidateRetiredEncounterKinds(hg, (hi, hj) => Ule(hj));
     return {
       map: hh.map,
       repaired: hh.consolidated,
@@ -7495,13 +7498,13 @@ var oce = {
   ring: "ring",
 };
 function rce(h2) {
-  return h2 !== undefined && aw(h2)?.isTwoHanded === true;
+  return h2 !== undefined && getEquipmentDefinition(h2)?.isTwoHanded === true;
 }
 function sce(h2) {
   const h4 = {};
   for (const h5 of ice) {
     const h6 = h2[h5];
-    if (h6 !== undefined && (!(aw(h6)?.slot !== oce[h5]) || !!nce(h5, h6))) {
+    if (h6 !== undefined && (!(getEquipmentDefinition(h6)?.slot !== oce[h5]) || !!nce(h5, h6))) {
       h4[h5] = h6;
     }
   }
@@ -7510,12 +7513,13 @@ function sce(h2) {
   }
   return h4;
 }
-var lce =
+var SOUND_AUDIT =
   "docs/architecture/audio-sound-ids.md#2-player-weapon-and-spell-sounds";
 var cce =
   "docs/packets/weapon-attacks-zamorakian-hasta-abyssal-bludgeon-sarachnis-cudgel-packet-data.txt";
 var dce = "docs/packets/blowpipe-spec-bowfa-attacks-packet-data.txt";
-var uce = "docs/research/crystal-bow.md#shot";
+var CRYSTAL_BOW_OBSERVATION = "docs/research/crystal-bow.md#shot";
+var ZARYTE_CROSSBOW_OBSERVATION = "OBS: 12 recorded Nex kills, 2026-11-26";
 var hce = "docs/packets/inferno-waves-69-zuk-packet-data.txt";
 var pce = "docs/packets/abyssal-bludgeon-special-attack-packet-data.txt";
 var mce = "docs/packets/colosseum-no-sol-packet-data.txt";
@@ -7535,12 +7539,12 @@ function wce(h2) {
     special: "none",
   };
 }
-function kce(h2) {
+function crystalBow(h2) {
   return {
     name: h2,
-    animation: [uce],
-    sound: [uce, dce],
-    projectile: [uce, "src/data/weaponCombatVisuals.generated.ts"],
+    animation: [CRYSTAL_BOW_OBSERVATION],
+    sound: [CRYSTAL_BOW_OBSERVATION, dce],
+    projectile: [CRYSTAL_BOW_OBSERVATION, "src/data/weaponCombatVisuals.generated.ts"],
     special: "none",
   };
 }
@@ -7580,7 +7584,7 @@ function xce(h2) {
     special: [bce],
   };
 }
-var Tce = {
+var VERIFIED_WEAPONS = {
   13263: {
     name: "Abyssal bludgeon",
     animation: [cce],
@@ -7598,7 +7602,7 @@ var Tce = {
   12926: {
     name: "Toxic blowpipe",
     animation: [hce],
-    sound: [lce, dce],
+    sound: [SOUND_AUDIT, dce],
     projectile: [hce],
     special: [hce, dce],
   },
@@ -7609,8 +7613,8 @@ var Tce = {
     projectile: [yce],
     special: [dce],
   },
-  23983: kce("Crystal bow"),
-  24123: kce("Crystal bow (new)"),
+  23983: crystalBow("Crystal bow"),
+  24123: crystalBow("Crystal bow (new)"),
   25865: wce("Bow of Faerdhinen"),
   25867: wce("Bow of Faerdhinen (c)"),
   25884: wce("Bow of Faerdhinen (c), Ithell"),
@@ -7626,15 +7630,15 @@ var Tce = {
   24422: Sce("Nightmare staff"),
   25736: {
     name: "Holy scythe of vitur",
-    animation: [lce, mce, "docs/packets/tob-hmt-5-packet-data-3.txt", bce],
-    sound: [lce, bce],
+    animation: [SOUND_AUDIT, mce, "docs/packets/tob-hmt-5-packet-data-3.txt", bce],
+    sound: [SOUND_AUDIT, bce],
     projectile: "none",
     special: "none",
   },
   22325: {
     name: "Scythe of Vitur",
-    animation: [lce, "docs/packets/tob-normal-mage-packet-data-1.txt", bce],
-    sound: [lce, bce],
+    animation: [SOUND_AUDIT, "docs/packets/tob-normal-mage-packet-data-1.txt", bce],
+    sound: [SOUND_AUDIT, bce],
     projectile: "none",
     special: "none",
   },
@@ -7648,7 +7652,7 @@ var Tce = {
   31113: {
     name: "Eye of Ayak",
     animation: [fce],
-    sound: [lce, fce],
+    sound: [SOUND_AUDIT, fce],
     projectile: [fce],
     special: [gce, "src/core/combat/player/specialAttacks/registry.ts"],
   },
@@ -7662,9 +7666,9 @@ var Tce = {
   11806: {
     name: "Saradomin godsword",
     animation: [bce],
-    sound: [bce, lce],
+    sound: [bce, SOUND_AUDIT],
     projectile: "none",
-    special: [bce, lce],
+    special: [bce, SOUND_AUDIT],
   },
   11802: {
     name: "Armadyl godsword",
@@ -7678,7 +7682,7 @@ var Tce = {
     animation: [bce],
     sound: [bce],
     projectile: "none",
-    special: [lce],
+    special: [SOUND_AUDIT],
   },
   29577: {
     name: "Burning claws",
@@ -7692,7 +7696,7 @@ var Tce = {
     animation: [bce, mce],
     sound: [bce, mce],
     projectile: "none",
-    special: [lce],
+    special: [SOUND_AUDIT],
   },
   20997: {
     name: "Twisted bow",
@@ -7710,8 +7714,8 @@ var Tce = {
   },
   29589: {
     name: "Emberlight",
-    animation: [bce, lce],
-    sound: [bce, lce],
+    animation: [bce, SOUND_AUDIT],
+    sound: [bce, SOUND_AUDIT],
     projectile: "none",
     special: [bce],
   },
@@ -7724,14 +7728,14 @@ var Tce = {
   27690: {
     name: "Voidwaker",
     animation: [bce],
-    sound: [bce, lce],
+    sound: [bce, SOUND_AUDIT],
     projectile: "none",
-    special: [bce, lce],
+    special: [bce, SOUND_AUDIT],
   },
   29591: {
     name: "Scorching bow",
     animation: [bce],
-    sound: [lce],
+    sound: [SOUND_AUDIT],
     projectile: [bce, "src/data/weaponCombatVisuals.ts"],
     special: [
       "docs/packets/yama-contract-of-sensory-clouding-packet-data-1(incomplete).txt",
@@ -7769,18 +7773,28 @@ var Tce = {
   },
   27275: {
     name: "Tumeken's shadow",
-    animation: [lce],
-    sound: [lce, mce, gce],
+    animation: [SOUND_AUDIT],
+    sound: [SOUND_AUDIT, mce, gce],
     projectile: [mce, gce, "src/data/weaponCombatVisuals.ts"],
     special: "none",
   },
+  // Compared with 12 recorded Nex kills (two players, 2026-11-26): ordinary
+  // shots and Evokes, their animation, bolts, sounds and the ruby and diamond
+  // bolt effects; the Evoke's rules and the passive from the wiki.
+  26374: {
+    name: "Zaryte crossbow",
+    animation: [ZARYTE_CROSSBOW_OBSERVATION],
+    sound: [ZARYTE_CROSSBOW_OBSERVATION],
+    projectile: [ZARYTE_CROSSBOW_OBSERVATION],
+    special: [ZARYTE_CROSSBOW_OBSERVATION, "WIKI: Zaryte crossbow"],
+  },
 };
 function Mce(h2) {
-  return Tce[h2];
+  return VERIFIED_WEAPONS[h2];
 }
-var Pce = "Throw and explosion sounds not modeled.";
-var Ice = "Projectile graphic unverified.";
-var Ace = {
+var CHINCHOMPA_SOUNDS_UNMODELLED = "Throw and explosion sounds not modeled.";
+var CHINCHOMPA_GRAPHICS_UNVERIFIED = "Projectile graphic unverified.";
+var WEAPON_VERIFICATION_LIMITATIONS = {
   27665: ["The sceptre starts charged. Casts do not consume revenant ether."],
   29000: ["Special attack unavailable."],
   24424: ["Special attack unavailable."],
@@ -7796,41 +7810,43 @@ var Ace = {
   ],
   // Seercull: its special (Soulshot) is the engine's, drawn with the weapon table's graphics; no recording of it was compared.
   6724: ["Special attack graphics and sounds unverified."],
+  // Only ruby and diamond bolt effects were recorded (BOLT_EFFECT_SOUNDS).
+  26374: ["Opal, pearl, sapphire, emerald, dragonstone and onyx bolt effects have no sound yet."],
   12899: ["Venom not simulated."],
   22292: ["Venom not simulated."],
-  11959: [Pce],
-  10033: [Ice, Pce],
-  10034: [Ice, Pce],
+  11959: [CHINCHOMPA_SOUNDS_UNMODELLED],
+  10033: [CHINCHOMPA_GRAPHICS_UNVERIFIED, CHINCHOMPA_SOUNDS_UNMODELLED],
+  10034: [CHINCHOMPA_GRAPHICS_UNVERIFIED, CHINCHOMPA_SOUNDS_UNMODELLED],
 };
-var Rce = "Special attack not implemented.";
-var Lce = "Special attack graphics missing.";
-var Ece = "Dragon damage bonus not implemented.";
-var Dce = "Arrow graphics unverified.";
-var Oce = {
+var SPECIAL_NOT_IMPLEMENTED = "Special attack not implemented.";
+var SPECIAL_GRAPHICS_MISSING = "Special attack graphics missing.";
+var DRAGON_BONUS_NOT_IMPLEMENTED = "Dragon damage bonus not implemented.";
+var ARROW_GRAPHICS_UNVERIFIED = "Arrow graphics unverified.";
+var WEAPON_VERIFICATION_GAPS = {
   25739: ["Swing sound unverified."],
   4151: ["Normal attacks unverified."],
   24417: ["Spike attacks unverified."],
-  11824: [Rce],
-  11889: [Rce],
-  11920: [Rce],
-  11785: [Rce],
-  25894: [Dce],
-  33021: [Dce],
-  27662: [Rce],
-  22296: [Lce],
-  11791: [Lce],
+  11824: [SPECIAL_NOT_IMPLEMENTED],
+  11889: [SPECIAL_NOT_IMPLEMENTED],
+  11920: [SPECIAL_NOT_IMPLEMENTED],
+  11785: [SPECIAL_NOT_IMPLEMENTED],
+  25894: [ARROW_GRAPHICS_UNVERIFIED],
+  33021: [ARROW_GRAPHICS_UNVERIFIED],
+  27662: [SPECIAL_NOT_IMPLEMENTED],
+  22296: [SPECIAL_GRAPHICS_MISSING],
+  11791: [SPECIAL_GRAPHICS_MISSING],
   11808: ["Special attack freeze graphic missing."],
   4587: ["Special attack unverified."],
-  22978: [Ece],
-  30070: [Ece],
+  22978: [DRAGON_BONUS_NOT_IMPLEMENTED],
+  30070: [DRAGON_BONUS_NOT_IMPLEMENTED],
 };
 var Fce = new Set(["thrown", "chinchompa", "powered_staff"]);
 function $ce(h2) {
   if ("weapon" !== h2.slot) {
     return "verified";
-  } else if (Hce(h2.id).length !== 0) {
+  } else if (weaponCapabilityGaps(h2.id).length !== 0) {
     return "unverified";
-  } else if (Ace[h2.id] !== undefined) {
+  } else if (WEAPON_VERIFICATION_LIMITATIONS[h2.id] !== undefined) {
     return "verified-with-limitations";
   } else if (undefined !== Mce(h2.id)) {
     return "verified";
@@ -7841,9 +7857,9 @@ function $ce(h2) {
 function _ce(h2) {
   return "unverified" !== $ce(h2);
 }
-function Hce(h2) {
-  const h4 = aJ(h2);
-  const h5 = b0(h4);
+function weaponCapabilityGaps(h2) {
+  const h4 = getBaseItemId(h2);
+  const h5 = getWeaponCategory(h4);
   if (h5 === undefined) {
     return ["Attacks as if unarmed."];
   }
@@ -7873,8 +7889,8 @@ function Hce(h2) {
   }
   return h6;
 }
-function qce(h2) {
-  const h4 = [...Hce(h2), ...(Oce[h2] ?? []), ...(Ace[h2] ?? [])];
+function describeWeaponVerificationGaps(h2) {
+  const h4 = [...weaponCapabilityGaps(h2), ...(WEAPON_VERIFICATION_GAPS[h2] ?? []), ...(WEAPON_VERIFICATION_LIMITATIONS[h2] ?? [])];
   if (h4.length > 0 || Mce(h2) !== undefined) {
     return h4;
   } else {
@@ -7882,10 +7898,10 @@ function qce(h2) {
   }
 }
 function Bce(h2) {
-  return aC()
+  return getEquipmentDefinitions()
     .filter((h4) => h4.slot === h2)
     .map((h4) => {
-      const h5 = F(h4.id);
+      const h5 = getCanonicalEquipmentId(h4.id);
       return {
         id: h4.id,
         name: h4.name,
@@ -7978,7 +7994,7 @@ function ede(h2, h3) {
     }) === 0
   );
 }
-function tde(h2) {
+function normalizeCustomEquipmentPresetMap(h2) {
   const parseResult6 = Uce.safeParse(h2);
   if (!parseResult6.success) {
     return {
@@ -8026,7 +8042,7 @@ function tde(h2) {
       h5[h8] = ha;
     }
   }
-  const h7 = gI(h5, (hk, hl) =>
+  const h7 = consolidateRetiredEncounterKinds(h5, (hk, hl) =>
     (function (hm, ho) {
       const hp = new Map(ho.map((hw) => [hw.id, hw]));
       const hr = hm.filter((hw) => !hp.has(hw.id));
@@ -8083,7 +8099,7 @@ var nde = [
     kind: "divine",
   },
 ];
-var ade = [...Object.entries(gO), ...Object.entries(gL)]
+var toRuneCatalogItem = [...Object.entries(RUNE_ITEM_IDS), ...Object.entries(COMBINATION_RUNE_ITEM_IDS)]
   .map(function ([h2, h3]) {
     return {
       id: h3,
@@ -8092,7 +8108,7 @@ var ade = [...Object.entries(gO), ...Object.entries(gL)]
     };
   })
   .sort((h2, h3) => h2.name.localeCompare(h3.name));
-var ide = new Map(ade.map((h2) => [h2.id, h2]));
+var ide = new Map(toRuneCatalogItem.map((h2) => [h2.id, h2]));
 function ode(h2) {
   return ide.get(h2);
 }
@@ -8102,21 +8118,21 @@ function rde(h2, h3) {
     runes: h3.flatMap((h4) => ide.get(h4) ?? []),
   };
 }
-var sde = [
-  rde("elemental", [gO.air, gO.water, gO.earth, gO.fire]),
-  rde("combination", [gL.mist, gL.dust, gL.mud, gL.smoke, gL.steam, gL.lava]),
+var RUNE_GROUPS = [
+  rde("elemental", [RUNE_ITEM_IDS.air, RUNE_ITEM_IDS.water, RUNE_ITEM_IDS.earth, RUNE_ITEM_IDS.fire]),
+  rde("combination", [COMBINATION_RUNE_ITEM_IDS.mist, COMBINATION_RUNE_ITEM_IDS.dust, COMBINATION_RUNE_ITEM_IDS.mud, COMBINATION_RUNE_ITEM_IDS.smoke, COMBINATION_RUNE_ITEM_IDS.steam, COMBINATION_RUNE_ITEM_IDS.lava]),
   rde("catalytic", [
-    gO.mind,
-    gO.body,
-    gO.cosmic,
-    gO.chaos,
-    gO.nature,
-    gO.law,
-    gO.death,
-    gO.blood,
-    gO.soul,
-    gO.wrath,
-    gL.aether,
+    RUNE_ITEM_IDS.mind,
+    RUNE_ITEM_IDS.body,
+    RUNE_ITEM_IDS.cosmic,
+    RUNE_ITEM_IDS.chaos,
+    RUNE_ITEM_IDS.nature,
+    RUNE_ITEM_IDS.law,
+    RUNE_ITEM_IDS.death,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.wrath,
+    COMBINATION_RUNE_ITEM_IDS.aether,
   ]),
 ];
 function lde(h2) {
@@ -8149,7 +8165,7 @@ function dde(h2, h3) {
       })(h5);
   }
 }
-var ude = {
+var CONSUMABLE_ITEM_NAMES = {
   139: "Prayer potion(3)",
   141: "Prayer potion(2)",
   143: "Prayer potion(1)",
@@ -8240,7 +8256,7 @@ var hde = [
     verified: true,
     category: "runes",
   })),
-  ...ade.map(({ id: h2, name: name, verified: verified }) => ({
+  ...toRuneCatalogItem.map(({ id: h2, name: name, verified: verified }) => ({
     id: h2,
     name: name,
     verified: verified,
@@ -8248,14 +8264,14 @@ var hde = [
   })),
 ];
 var pde = null;
-function mde() {
+function buildCatalog() {
   pde ??= (function () {
     const h3 = new Map();
-    for (const h4 of Object.keys(gQ)) {
+    for (const h4 of Object.keys(consumableDefinitionByItemId)) {
       const h5 = Number(h4);
-      const h6 = ude[h5];
+      const h6 = CONSUMABLE_ITEM_NAMES[h5];
       if (undefined !== h6) {
-        const track2 = gQ[h5].track;
+        const track2 = consumableDefinitionByItemId[h5].track;
         const h8 =
           /\(\d+\)$/.test(h6) || track2 === "potion"
             ? "potions"
@@ -8275,9 +8291,9 @@ function mde() {
         h3.set(h9.id, h9);
       }
     }
-    for (const ha of aC()) {
+    for (const ha of getEquipmentDefinitions()) {
       if (!h3.has(ha.id)) {
-        const hb = F(ha.id);
+        const hb = getCanonicalEquipmentId(ha.id);
         h3.set(ha.id, {
           id: ha.id,
           name: ha.name,
@@ -8304,7 +8320,7 @@ function mde() {
   return pde;
 }
 function gde(h2) {
-  return mde().byId.get(h2);
+  return buildCatalog().byId.get(h2);
 }
 var fde = zObject({
   id: zNumber().int().positive(),
@@ -8348,7 +8364,7 @@ var kde = {
   arceuus: 3,
 };
 function Sde(h2) {
-  const h4 = gF();
+  const h4 = createEmptyInventory();
   for (let h5 = 0; h5 < h4.length; h5++) {
     const h6 = h2[h5];
     h4[h5] = h6
@@ -8384,7 +8400,7 @@ function Nde(h2, h3) {
     return null;
   }
 }
-function xde(h2) {
+function importInventorySetup(h2) {
   if (h2.length > 65536) {
     return {
       kind: "error",
@@ -8480,7 +8496,7 @@ function xde(h2) {
   if (rce(h6.weapon)) {
     delete h6.shield;
   }
-  const ha = gC();
+  const ha = createEmptyCombatSupplies();
   const hb = wde[parseResult8.data.setup.sb ?? 0] ?? "standard";
   const hc = (function (hl, hm) {
     if (hl?.length !== 3 && 4 !== hl?.length) {
@@ -8541,14 +8557,14 @@ function Tde(h2, h3, h4) {
             {
               id: h9,
             },
-            gB(h9, undefined, h4),
+            isItemStackable(h9, undefined, h4),
           );
   }
   h6[13] = Nde(h3.supplies.equippedAmmo, true);
   return JSON.stringify({
     setup: {
       inv: h3.inventory.map((ha) =>
-        Nde(ha, ha !== null && gB(ha.id, ha.quantity, h4)),
+        Nde(ha, ha !== null && isItemStackable(ha.id, ha.quantity, h4)),
       ),
       eq: h6,
       ...(h3.supplies.runePouch
@@ -8601,16 +8617,16 @@ var Rde = "data-active";
 var Lde = "data-menu-item";
 var Ede = (h2) => "[" + Ide + '="' + h2 + '"]';
 var Dde = (h2) => Ede(h2) + "[" + Rde + "]";
-function Ode(h2) {
+function pluginRow(h2) {
   return () =>
     [...document.querySelectorAll(".plugins-overlay .plugin-row")].find(
       (h3) => h3.querySelector(".plugin-name")?.textContent === h2,
     ) ?? null;
 }
-var Fde = () => !!document.querySelector(".plugins-overlay.open");
-function $de() {
+var pluginsPanelOpen = () => !!document.querySelector(".plugins-overlay.open");
+function pluginsButton() {
   return (
-    (Fde()
+    (pluginsPanelOpen()
       ? null
       : (document.querySelector(
           '.top-chrome__item:not([data-tucked="true"]) [data-tutorial="plugins-button"]',
@@ -8620,11 +8636,11 @@ function $de() {
         ))) ?? document.querySelector(".plugins-overlay")
   );
 }
-function _de(h2, h3) {
+function pluginsPanelSteps(h2, h3) {
   return [
     {
       kind: "spotlight",
-      element: $de,
+      element: pluginsButton,
       popover: {
         title: "Plugins",
         description: h3.open,
@@ -8638,7 +8654,7 @@ function _de(h2, h3) {
         waitingText: "Open <b>Plugins</b> to take a look",
         completedText: "Here they are.",
         autoAdvance: true,
-        validate: (h5) => h5 !== undefined || Fde(),
+        validate: (h5) => h5 !== undefined || pluginsPanelOpen(),
       },
     },
     {
@@ -8656,10 +8672,10 @@ function _de(h2, h3) {
         waitingText: "Close <b>Plugins</b> to continue",
         completedText: "Onward!",
         autoAdvance: true,
-        validate: (h5) => h5 !== undefined || !Fde(),
+        validate: (h5) => h5 !== undefined || !pluginsPanelOpen(),
       },
       resumeGuard: {
-        isReady: Fde,
+        isReady: pluginsPanelOpen,
         fallbackStep: h2,
       },
     },
@@ -8678,7 +8694,7 @@ function Hde(h2, h3) {
 function qde(h2, h3, h4) {
   const h6 = {
     kind: "spotlight",
-    element: Ode(h2),
+    element: pluginRow(h2),
     popover: {
       title: h2,
       description: h3,
@@ -8688,7 +8704,7 @@ function qde(h2, h3, h4) {
     category: "settings",
     skipIfMissing: true,
     resumeGuard: {
-      isReady: Fde,
+      isReady: pluginsPanelOpen,
       fallbackStep: 0,
     },
   };
@@ -8698,10 +8714,10 @@ function qde(h2, h3, h4) {
   }
   return h6;
 }
-var Bde = [
+var STEPS = [
   {
     kind: "spotlight",
-    element: $de,
+    element: pluginsButton,
     popover: {
       title: "Plugins",
       description:
@@ -8715,7 +8731,7 @@ var Bde = [
       waitingText: "Open <b>Plugins</b> to continue",
       completedText: "Let's take a look inside.",
       autoAdvance: true,
-      validate: (h2) => h2 !== undefined || Fde(),
+      validate: (h2) => h2 !== undefined || pluginsPanelOpen(),
     },
   },
   {
@@ -8730,7 +8746,7 @@ var Bde = [
     },
     category: "settings",
     resumeGuard: {
-      isReady: Fde,
+      isReady: pluginsPanelOpen,
       fallbackStep: 0,
     },
     skipIfMissing: true,
@@ -8955,7 +8971,7 @@ var Bde = [
       waitingText: "Close <b>Plugins</b> to continue",
       completedText: "All set.",
       autoAdvance: true,
-      validate: (h2) => h2 !== undefined || !Fde(),
+      validate: (h2) => h2 !== undefined || !pluginsPanelOpen(),
     },
   },
   {
@@ -8968,14 +8984,14 @@ var Bde = [
     category: "info",
   },
 ];
-var zde = Bde[Bde.length - 2];
+var zde = STEPS[STEPS.length - 2];
 if (zde) {
   zde.resumeGuard = {
-    isReady: Fde,
-    fallbackStep: Bde.length - 1,
+    isReady: pluginsPanelOpen,
+    fallbackStep: STEPS.length - 1,
   };
 }
-var Wde = {
+var pluginsTutorial = {
   id: "plugins",
   title: "Plugins",
   description:
@@ -8985,10 +9001,10 @@ var Wde = {
   difficulty: "beginner",
   estimatedDurationMin: 4,
   prerequisites: ["main"],
-  steps: Bde,
+  steps: STEPS,
 };
 var Gde = '[data-tutorial="practice-pane"], [data-tutorial="mobile-practice"]';
-var Kde = '[data-tutorial="replay-controls"]';
+var REPLAY_CONTROLS = '[data-tutorial="replay-controls"]';
 var jde = {
   id: "advanced",
   title: "Advanced",
@@ -9015,7 +9031,7 @@ var jde = {
       },
       category: "combat",
       action: {
-        event: eE,
+        event: TUTORIAL_REPLAY_ENTERED_EVENT,
         waitingText: "Select <b>Replay</b> to enter replay mode",
         completedText: "You're in replay mode!",
         autoAdvance: true,
@@ -9025,7 +9041,7 @@ var jde = {
     },
     {
       kind: "spotlight",
-      element: Kde,
+      element: REPLAY_CONTROLS,
       popover: {
         title: "Replay Controls",
         description:
@@ -9035,7 +9051,7 @@ var jde = {
       },
       category: "combat",
       resumeGuard: {
-        isReady: () => !!document.querySelector(Kde),
+        isReady: () => !!document.querySelector(REPLAY_CONTROLS),
         fallbackStep: 0,
       },
       action: {
@@ -9097,7 +9113,7 @@ var jde = {
       skipIfMissing: true,
       desktopOnly: true,
       action: {
-        event: ez,
+        event: TUTORIAL_HUD_OPENED_EVENT,
         waitingText: "Select <b>Practice</b> to open it",
         completedText: "Let's look at the setup.",
         autoAdvance: true,
@@ -9123,9 +9139,9 @@ var jde = {
         description:
           "In an encounter, <b>Practice</b> turns its mechanics on or off so you can practice one part of a fight at a time.<br><br>Tap <b>‹ Practice</b> at the top, then choose <b>Practice aids</b>. <b>Infinite Health</b> lets you learn the patterns without dying.",
       },
-      onExit: () => window.dispatchEvent(new CustomEvent(dx)),
+      onExit: () => window.dispatchEvent(new CustomEvent(TUTORIAL_CLOSE_PANE_EVENT)),
     },
-    ..._de(6, {
+    ...pluginsPanelSteps(6, {
       open: "Plugins are optional extras you turn on, each with its options in one place: tile markers, NPC highlights, XP drops, and more.",
       panel:
         "The <b>Plugins</b> tutorial in <b>Training</b> walks through each one.",
@@ -9155,9 +9171,9 @@ var jde = {
   ],
 };
 var Ude = '[data-tutorial="practice-pane"], [data-tutorial="mobile-practice"]';
-var Vde =
+var CLOSE_GLYPH =
   "<span style=\"font-size:1.8em; color:var(--color-primary); font-family:'RuneScape Bold 12', sans-serif; text-shadow:1px 1px 0 #000; vertical-align:-0.15em\">×</span>";
-var Yde =
+var SETTINGS_SCOPE =
   "Settings controls how the simulator runs and looks: simulation, graphics, layout, theme and device.";
 var Jde = {
   id: "main",
@@ -9278,7 +9294,7 @@ var Jde = {
       skipIfMissing: true,
       desktopOnly: true,
       action: {
-        event: ez,
+        event: TUTORIAL_HUD_OPENED_EVENT,
         waitingText: "Select the highlighted button to open it",
         completedText: "Nice! Let's take a look.",
         autoAdvance: true,
@@ -9304,7 +9320,7 @@ var Jde = {
         isReady: () => !!document.querySelector(Ude),
         fallbackStep: 5,
       },
-      onExit: () => window.dispatchEvent(new CustomEvent(dx)),
+      onExit: () => window.dispatchEvent(new CustomEvent(TUTORIAL_CLOSE_PANE_EVENT)),
     },
     {
       kind: "spotlight",
@@ -9380,7 +9396,7 @@ var Jde = {
       popover: {
         title: "Customize Your Interface",
         description:
-          Yde +
+          SETTINGS_SCOPE +
           "<br><br>Expand <b>Interface</b> for the <b>Resource Pack</b>, which re-themes the whole simulator; try a few. Under <b>Game window</b>, set the resolution to match your own game so the simulator looks like what you play on.",
         side: "left",
         align: "center",
@@ -9388,7 +9404,7 @@ var Jde = {
       category: "settings",
       touch: {
         description:
-          Yde +
+          SETTINGS_SCOPE +
           "<br><br>Expand <b>Interface</b> for the <b>Resource Pack</b>, which re-themes the whole simulator; try a few.",
       },
       resumeGuard: {
@@ -9403,7 +9419,7 @@ var Jde = {
         title: "Close Settings",
         description:
           "You can explore these options any time.<br><br>When you're ready, close the Settings panel with the " +
-          Vde +
+          CLOSE_GLYPH +
           ' at its top, or press <kbd class="kbd">Esc</kbd>.',
         side: "left",
         align: "center",
@@ -9413,7 +9429,7 @@ var Jde = {
       touch: {
         description:
           "You can explore these options any time.<br><br>When you're ready, close the Settings panel with the " +
-          Vde +
+          CLOSE_GLYPH +
           " at its top.",
       },
       action: {
@@ -9429,7 +9445,7 @@ var Jde = {
         fallbackStep: 13,
       },
     },
-    ..._de(13, {
+    ...pluginsPanelSteps(13, {
       open: "Plugins are optional extras you turn on, each with its options in one place: tile markers, NPC highlights, tick counters, and more.",
       panel:
         "Turn each one on or off here; its caret opens its options.<br><br>The <b>Plugins</b> tutorial in <b>Training</b> walks through each one.",
@@ -9444,7 +9460,7 @@ var Jde = {
       category: "navigation",
       desktopOnly: true,
       action: {
-        event: ev,
+        event: TUTORIAL_QUICK_SEARCH_OPENED_EVENT,
         waitingText: 'Press <kbd class="kbd">Ctrl + K</kbd> to try it',
         completedText: "Nice!",
         autoAdvance: true,
@@ -9736,10 +9752,10 @@ var iue = {
                 label: "Open the prayer book",
               },
             ),
-            Xde(J.ProtectMagic, 10, {
+            Xde(Prayer.ProtectMagic, 10, {
               label: "Fire attack\nProtect from Magic",
             }),
-            Xde(J.ProtectRange, 17, {
+            Xde(Prayer.ProtectRange, 17, {
               label: "Shadow attack\nProtect from Missiles",
             }),
           ],
@@ -9887,7 +9903,7 @@ var iue = {
   ],
 };
 var oue = "yama_p3";
-var rue = {
+var yamaFireballsTutorial = {
   id: "yama-fireballs",
   title: "Shadow Crash",
   description:
@@ -10095,7 +10111,7 @@ var uue = {
   ],
 };
 var hue = "yama_p3";
-var pue = {
+var yamaPerfectDodgeTutorial = {
   id: "yama-perfect-dodge",
   title: "Perfect Dodge",
   description:
@@ -10161,7 +10177,7 @@ var pue = {
   ],
 };
 var mue = "yama_p3";
-var gue = {
+var yamaRotationTutorial = {
   id: "yama-rotation",
   title: "Prayer Switching",
   description:
@@ -10230,7 +10246,7 @@ var yue = {
   voidFlares: true,
   infiniteHealth: true,
 };
-var bue = {
+var yamaVoidFlaresTutorial = {
   id: "yama-voidflares",
   title: "Void Flares",
   description:
@@ -10417,12 +10433,12 @@ var Sue = {
     },
   ],
 };
-var Cue = Object.freeze([Jde, jde, Wde, iue, Sue, rue, pue, bue, gue, uue]);
+var Cue = Object.freeze([Jde, jde, pluginsTutorial, iue, Sue, yamaFireballsTutorial, yamaPerfectDodgeTutorial, yamaVoidFlaresTutorial, yamaRotationTutorial, uue]);
 var Nue = new Map(Cue.map((h2) => [h2.id, h2]));
 function xue(h2) {
   return Nue.get(h2);
 }
-var Tue = Object.freeze([
+var TRAINING_COURSES = Object.freeze([
   {
     id: "app-getting-started",
     slug: "getting-started",
@@ -10483,19 +10499,19 @@ var Tue = Object.freeze([
   },
 ]);
 function Mue(h2) {
-  return Tue.find((h3) => h3.id === h2);
+  return TRAINING_COURSES.find((h3) => h3.id === h2);
 }
 function Pue(h2) {
   if (!h2) {
     return;
   }
-  const h4 = gR(h2);
-  return Tue.find(
+  const h4 = resolveBaseEncounterKind(h2);
+  return TRAINING_COURSES.find(
     (h5) => h5.surface === "encounter" && h5.encounterKind === h4,
   );
 }
 function Iue(h2) {
-  return Tue.find((h3) => h3.tracks.some((h4) => h4.tutorialIds.includes(h2)));
+  return TRAINING_COURSES.find((h3) => h3.tracks.some((h4) => h4.tutorialIds.includes(h2)));
 }
 function Aue(h2) {
   return h2.tracks.flatMap((h3) => h3.tutorialIds);
@@ -10828,7 +10844,7 @@ var $ue = "osrs-custom-equipment-presets";
 function _ue() {
   const h3 = (0, React.useRef)(false);
   const [h4, h5] = (0, React.useState)(() => {
-    const h9 = tde(bO($ue));
+    const h9 = normalizeCustomEquipmentPresetMap(bO($ue));
     h3.current = h9.repaired;
     return h9.presets;
   });
@@ -10853,7 +10869,7 @@ function _ue() {
       },
     };
     const ha = () => {
-      const hb = tde(h9.MiuSZ(bO, $ue));
+      const hb = normalizeCustomEquipmentPresetMap(h9.MiuSZ(bO, $ue));
       h3.current = hb.repaired;
       h6.current = true;
       h5(hb.presets);
@@ -10981,7 +10997,7 @@ function _ue() {
     ),
   };
 }
-var Hue = "osrs-tile-markers";
+var TILE_MARKER_STORAGE_KEY = "osrs-tile-markers";
 var que = {
   markersByEncounter: {},
   showMarkers: true,
@@ -11037,7 +11053,7 @@ function Gue(h2) {
     return [];
   }
 }
-async function Kue(h2) {
+async function copyToClipboard(h2) {
   try {
     await navigator.clipboard.writeText(h2);
     return true;
@@ -11116,7 +11132,7 @@ function Yue(h2, h3) {
   }));
   return JSON.stringify(h6);
 }
-async function Jue() {
+async function readFromClipboard() {
   try {
     return await navigator.clipboard.readText();
   } catch {
@@ -11125,7 +11141,7 @@ async function Jue() {
 }
 function Zue(h2, h3) {
   const h5 = {};
-  for (const h6 of ac) {
+  for (const h6 of statNames) {
     const h7 = h3.requirements?.[h6];
     if (undefined !== h7 && h2[h6].max < h7) {
       h5[h6] = h7;
@@ -11139,7 +11155,7 @@ function Que(h2, h3) {
     const h7 = {
       equipment: h6.equipment,
       inventory: h6.inventory,
-      supplies: h6.supplies ?? gC(),
+      supplies: h6.supplies ?? createEmptyCombatSupplies(),
     };
     if (gy(h7, h3)) {
       return h5;
@@ -11153,17 +11169,17 @@ function ehe(h2) {
 function the(h2) {
   return h2 !== undefined && Object.keys(h2).length > 0;
 }
-var nhe = {
+var VERIFIED_ITEM_FACTS = {
   12926: ["Always uses dragon darts."],
   28688: ["Always uses dragon darts."],
 };
 function ahe(h2) {
-  const h4 = aw(h2);
+  const h4 = getEquipmentDefinition(h2);
   const h5 = undefined === h4 ? undefined : $ce(h4);
   if ("verified-with-limitations" === h5) {
-    return qce(h2);
+    return describeWeaponVerificationGaps(h2);
   } else if ("verified" === h5) {
-    return nhe[h2];
+    return VERIFIED_ITEM_FACTS[h2];
   } else {
     return undefined;
   }
@@ -11225,7 +11241,7 @@ var rhe = ({ notice: notice }) =>
         ? (0, jsxRuntime.jsx)(ohe, {})
         : (0, jsxRuntime.jsx)(ihe, {}),
   });
-var she = ({
+var UnverifiedSlot = ({
   active: active,
   itemName: itemName,
   notice: h4 = "unverified",
@@ -11247,7 +11263,7 @@ var she = ({
   };
   const h8 = (0, React.useRef)(null);
   const h9 = (0, React.useId)();
-  const { card: card } = ew({
+  const { card: card } = useHoverCard({
     content: (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
       children: [
         (0, jsxRuntime.jsx)("span", {
@@ -11299,14 +11315,14 @@ var lhe = ({
   reasons: reasons,
   children: children,
 }) =>
-  (0, jsxRuntime.jsx)(she, {
+  (0, jsxRuntime.jsx)(UnverifiedSlot, {
     active: active,
     itemName: itemName,
     notice: notice,
     reasons: reasons,
     children: children,
   });
-var che = ({ notice: h2 = "unverified", children: children }) =>
+var LoadoutUnverifiedBadge = ({ notice: h2 = "unverified", children: children }) =>
   (0, jsxRuntime.jsxs)("span", {
     className: "loadout-unverified-item",
     children: [
@@ -11316,7 +11332,7 @@ var che = ({ notice: h2 = "unverified", children: children }) =>
       }),
     ],
   });
-var dhe = [
+var EQUIPMENT_SLOT_CELLS = [
   {
     id: "head",
     label: "Head",
@@ -11402,10 +11418,10 @@ var dhe = [
     section: "equipment",
   },
 ];
-var uhe = dhe.filter((h2) => h2.id !== "quiverAmmo");
+var uhe = EQUIPMENT_SLOT_CELLS.filter((h2) => h2.id !== "quiverAmmo");
 function hhe(h2) {
   if (h2) {
-    return dhe;
+    return EQUIPMENT_SLOT_CELLS;
   } else {
     return uhe;
   }
@@ -11417,7 +11433,7 @@ var phe = {
   position: "relative",
   left: 2,
 };
-var mhe = ({
+var EquipmentSettings = ({
   playerConfig: playerConfig,
   ammo: ammo,
   selectedSlot: selectedSlot,
@@ -11527,7 +11543,7 @@ var mhe = ({
               switch (hr.id) {
                 case "ammo":
                 case "quiverAmmo":
-                  return aw(hs)?.name;
+                  return getEquipmentDefinition(hs)?.name;
                 default:
                   return Jce(hr.id).find((ht) => ht.id === hs)?.name;
               }
@@ -11554,7 +11570,7 @@ var mhe = ({
           active: hj !== undefined,
           itemName: hm,
           notice: hj,
-          reasons: hg ? [ace(hg)] : hh && hb !== undefined ? qce(hb) : hi,
+          reasons: hg ? [ace(hg)] : hh && hb !== undefined ? describeWeaponVerificationGaps(hb) : hi,
           children: (0, jsxRuntime.jsxs)("button", {
             type: "button",
             className: hk,
@@ -11573,7 +11589,7 @@ var mhe = ({
                 children: h8.label,
               }),
               hj
-                ? (0, jsxRuntime.jsx)(che, {
+                ? (0, jsxRuntime.jsx)(LoadoutUnverifiedBadge, {
                     notice: hj,
                     children: hl,
                   })
@@ -11589,7 +11605,7 @@ var mhe = ({
       );
     }),
   });
-var ghe = "data-inventory-index";
+var SLOT_INDEX_ATTRIBUTE = "data-inventory-index";
 function fhe(h2, h3, h4) {
   if (!h2) {
     return null;
@@ -11605,19 +11621,19 @@ function fhe(h2, h3, h4) {
   }
   let h7 = null;
   let h8 = Number.POSITIVE_INFINITY;
-  for (const h9 of h2.querySelectorAll("[" + ghe + "]")) {
+  for (const h9 of h2.querySelectorAll("[" + SLOT_INDEX_ATTRIBUTE + "]")) {
     const boundingClientRect6 = h9.getBoundingClientRect();
     const hb = h3 - (boundingClientRect6.left + boundingClientRect6.width / 2);
     const hc = h4 - (boundingClientRect6.top + boundingClientRect6.height / 2);
     const hd = hb * hb + hc * hc;
     if (hd < h8) {
       h8 = hd;
-      h7 = Number(h9.getAttribute(ghe));
+      h7 = Number(h9.getAttribute(SLOT_INDEX_ATTRIBUTE));
     }
   }
   return h7;
 }
-var yhe = ({ requirements: requirements }) =>
+var RequirementChipList = ({ requirements: requirements }) =>
   (0, jsxRuntime.jsx)("span", {
     className: "loadout-req-chips",
     children: requirements.map((h3) =>
@@ -11646,7 +11662,7 @@ var bhe = {
   maxWidth: 36,
   maxHeight: 32,
 };
-var vhe = ({ itemIds: itemIds }) =>
+var LoadoutTileIcons = ({ itemIds: itemIds }) =>
   (0, jsxRuntime.jsx)("span", {
     className: "loadout-tile-icons",
     "aria-hidden": "true",
@@ -11668,7 +11684,7 @@ var vhe = ({ itemIds: itemIds }) =>
         ),
     ),
   });
-var whe = ({ kind: kind }) =>
+var LoadoutStatusIcon = ({ kind: kind }) =>
   (0, jsxRuntime.jsx)("svg", {
     className: "loadout-status-icon loadout-status-icon--" + kind,
     "aria-hidden": "true",
@@ -11692,7 +11708,7 @@ var whe = ({ kind: kind }) =>
             ],
           }),
   });
-var khe = ({
+var LoadoutPicker = ({
   label: label,
   selectedKey: selectedKey,
   selectedLabel: selectedLabel,
@@ -11866,7 +11882,7 @@ var khe = ({
         "aria-selected": false,
         className: "loadout-tile loadout-tile--blocked",
         children: [
-          (0, jsxRuntime.jsx)(vhe, {
+          (0, jsxRuntime.jsx)(LoadoutTileIcons, {
             itemIds: hS.iconItemIds,
           }),
           (0, jsxRuntime.jsxs)("span", {
@@ -11900,7 +11916,7 @@ var khe = ({
               hS.name,
             ],
           }),
-          (0, jsxRuntime.jsx)(yhe, {
+          (0, jsxRuntime.jsx)(RequirementChipList, {
             requirements: hS.requirements,
           }),
         ],
@@ -11921,7 +11937,7 @@ var khe = ({
           (hT ? " loadout-tile--selected" : ""),
         onClick: () => onSelect(hS.key),
         children: [
-          (0, jsxRuntime.jsx)(vhe, {
+          (0, jsxRuntime.jsx)(LoadoutTileIcons, {
             itemIds: hS.iconItemIds?.slice(0, 1),
           }),
           (0, jsxRuntime.jsx)("span", {
@@ -12091,7 +12107,7 @@ var khe = ({
               (status.kind === "error" ? " loadout-status--error" : ""),
             role: "status",
             children: [
-              (0, jsxRuntime.jsx)(whe, {
+              (0, jsxRuntime.jsx)(LoadoutStatusIcon, {
                 kind: status.kind,
               }),
               (0, jsxRuntime.jsx)("span", {
@@ -12146,7 +12162,7 @@ var khe = ({
                           [hT.name]: !hT.expanded,
                         })),
                       children: [
-                        (0, jsxRuntime.jsx)(cO, {
+                        (0, jsxRuntime.jsx)(DisclosureChevron, {
                           open: hT.expanded,
                         }),
                         hT.name,
@@ -12294,20 +12310,20 @@ var khe = ({
     ],
   });
 };
-var She = {
+var DIRECTION_BY_KEY = {
   ArrowUp: "up",
   ArrowDown: "down",
   ArrowLeft: "left",
   ArrowRight: "right",
 };
-function Che(h2) {
+function useGridRovingFocus(h2) {
   const h4 = (0, React.useRef)(null);
   const [h5, h6] = (0, React.useState)(null);
   const h7 = null === h5 ? 0 : Math.max(0, h2.indexOf(h5));
   return {
     containerRef: h4,
     onKeyDown: (h8) => {
-      const ha = She[h8.key];
+      const ha = DIRECTION_BY_KEY[h8.key];
       if (undefined === ha) {
         return;
       }
@@ -12399,7 +12415,7 @@ function Ihe() {
     return "";
   }
 }
-var Ahe = ({
+var PlayerSettings = ({
   stats: stats,
   onStatsChange: onStatsChange,
   requirements: h4 = {},
@@ -12450,8 +12466,8 @@ var Ahe = ({
           agility: hy.agility.max,
         };
       })(stats);
-      hx[hv] = a4(hv, hw);
-      onStatsChange(a1(hx));
+      hx[hv] = clampStatLevel(hv, hw);
+      onStatsChange(createStatsFromLevels(hx));
     },
     [stats, onStatsChange],
   );
@@ -12557,21 +12573,21 @@ var Ahe = ({
         }
         const { username: username, skills: skills } = parseResult11.data.data;
         const hH = {
-          attack: a4("attack", skills.attack.level),
-          strength: hv.fFqPh(a4, "strength", skills.strength.level),
-          defence: hv.esbPp(a4, "defence", skills.defence.level),
-          ranged: a4("ranged", skills.ranged.level),
-          magic: a4("magic", skills.magic.level),
-          prayer: a4("prayer", skills.prayer.level),
-          hitpoints: hv.esbPp(a4, "hitpoints", skills.hitpoints.level),
-          agility: a4("agility", skills.agility.level),
+          attack: clampStatLevel("attack", skills.attack.level),
+          strength: hv.fFqPh(clampStatLevel, "strength", skills.strength.level),
+          defence: hv.esbPp(clampStatLevel, "defence", skills.defence.level),
+          ranged: clampStatLevel("ranged", skills.ranged.level),
+          magic: clampStatLevel("magic", skills.magic.level),
+          prayer: clampStatLevel("prayer", skills.prayer.level),
+          hitpoints: hv.esbPp(clampStatLevel, "hitpoints", skills.hitpoints.level),
+          agility: clampStatLevel("agility", skills.agility.level),
         };
         return {
           kind: "success",
           data: {
             username: username,
             baseLevels: hH,
-            stats: hv.gPUrZ(a1, hH),
+            stats: hv.gPUrZ(createStatsFromLevels, hH),
           },
         };
       })(
@@ -12629,7 +12645,7 @@ var Ahe = ({
                 onMouseDown: (hv) => hv.preventDefault(),
                 onClick: () => {
                   hr();
-                  onStatsChange(aQ());
+                  onStatsChange(createDefaultStats());
                   hh({
                     kind: "idle",
                   });
@@ -12721,7 +12737,7 @@ var Ahe = ({
       (0, jsxRuntime.jsx)("div", {
         className: "combat-stats__grid",
         ref: hf,
-        children: ac.map((hv) => {
+        children: statNames.map((hv) => {
           const hw = {
             Ykzhc: function (hA, hB, hC) {
               return hA(hB, hC);
@@ -12740,7 +12756,7 @@ var Ahe = ({
                 (0, jsxRuntime.jsx)("label", {
                   className: "combat-stats__tile-name",
                   htmlFor: hz,
-                  children: bL[hv],
+                  children: statLabels[hv],
                 }),
                 (0, jsxRuntime.jsx)(gt, {
                   className:
@@ -12751,13 +12767,13 @@ var Ahe = ({
                   height: 20,
                   "aria-hidden": "true",
                 }),
-                (0, jsxRuntime.jsx)(dP, {
+                (0, jsxRuntime.jsx)(OsrsNumberInput, {
                   id: hz,
                   className: "combat-stats__input",
                   describedBy: undefined !== hx ? hy : undefined,
                   value: hi[hv] ?? String(stats[hv].max),
-                  min: z[hv].min,
-                  max: z[hv].max,
+                  min: statLevelBounds[hv].min,
+                  max: statLevelBounds[hv].max,
                   onChange: (hA) =>
                     ((hB, hC) => {
                       hj((hE) => ({
@@ -12786,7 +12802,7 @@ var Ahe = ({
           );
         }),
       }),
-      ac.some((hv) => h4[hv] !== undefined) &&
+      statNames.some((hv) => h4[hv] !== undefined) &&
         (0, jsxRuntime.jsxs)("div", {
           className: "combat-stats__requirements",
           children: [
@@ -12794,14 +12810,14 @@ var Ahe = ({
               className: "combat-stats__requirements-label",
               children: "Required for this loadout:",
             }),
-            ac.map((hv) =>
+            statNames.map((hv) =>
               h4[hv] !== undefined
                 ? (0, jsxRuntime.jsxs)(
                     "span",
                     {
                       className: "combat-stats__req",
                       id: "combat-stat-" + hv + "-req",
-                      children: [bL[hv], " ", h4[hv]],
+                      children: [statLabels[hv], " ", h4[hv]],
                     },
                     hv,
                   )
@@ -12822,13 +12838,13 @@ var Ahe = ({
     ],
   });
 };
-var Rhe = ["rune-slot-1", "rune-slot-2", "rune-slot-3", "rune-slot-4"];
+var RUNE_SLOT_KEYS = ["rune-slot-1", "rune-slot-2", "rune-slot-3", "rune-slot-4"];
 var Lhe = {
   maxWidth: 32,
   maxHeight: 32,
 };
-var Ehe = "No rune";
-var Dhe = [null, ...sde.flatMap((h2) => h2.runes)];
+var CLEAR_CHOICE_LABEL = "No rune";
+var Dhe = [null, ...RUNE_GROUPS.flatMap((h2) => h2.runes)];
 var Ohe = () =>
   (0, jsxRuntime.jsxs)("svg", {
     width: "16",
@@ -12853,7 +12869,7 @@ var Ohe = () =>
       }),
     ],
   });
-function Fhe(h2) {
+function runeFace(h2) {
   if (!h2) {
     return {
       name: "Empty",
@@ -12873,7 +12889,7 @@ function Fhe(h2) {
     };
   }
 }
-var $he = ({
+var RunePouchRow = ({
   runePouch: runePouch,
   openSlotIndex: openSlotIndex,
   onSelectSlot: onSelectSlot,
@@ -12977,7 +12993,7 @@ var $he = ({
   const hk = Dhe[hj] ?? null;
   const hl = hk ? hh.get(hk.id) : undefined;
   const hm = undefined !== hl && hl !== openSlotIndex;
-  const ho = null === hk ? Ehe : Fhe(hk).name;
+  const ho = null === hk ? CLEAR_CHOICE_LABEL : runeFace(hk).name;
   (0, React.useEffect)(() => {
     if (!h9) {
       return;
@@ -13031,9 +13047,9 @@ var $he = ({
             className: "rune-pouch-slots",
             role: "group",
             "aria-labelledby": h7,
-            children: Rhe.slice(0, runePouch.slots.length).map((hs, ht) => {
+            children: RUNE_SLOT_KEYS.slice(0, runePouch.slots.length).map((hs, ht) => {
               const hu = runePouch.slots[ht] ?? null;
-              const hv = Fhe(hu);
+              const hv = runeFace(hu);
               const hw = openSlotIndex === ht;
               const hx = "Rune pouch slot " + (ht + 1) + ": " + hv.name;
               const hy = [
@@ -13070,7 +13086,7 @@ var $he = ({
                       onSelectSlot(hw ? null : ht);
                     },
                     children: hv.unsupported
-                      ? (0, jsxRuntime.jsx)(che, {
+                      ? (0, jsxRuntime.jsx)(LoadoutUnverifiedBadge, {
                           children: hz,
                         })
                       : hz,
@@ -13188,7 +13204,7 @@ var $he = ({
                   const hu = hs ? hh.get(hs.id) : undefined;
                   const hv = hu !== undefined && hu === openSlotIndex;
                   const hw = hu !== undefined && hu !== openSlotIndex;
-                  const hx = hs === null ? Ehe : Fhe(hs).name;
+                  const hx = hs === null ? CLEAR_CHOICE_LABEL : runeFace(hs).name;
                   return (0, jsxRuntime.jsx)(
                     "button",
                     {
@@ -13246,7 +13262,7 @@ var _he = {
   maxWidth: 36,
   maxHeight: 32,
 };
-var Hhe = [
+var INVENTORY_FILTERS = [
   {
     key: "all",
     label: "All",
@@ -13269,7 +13285,7 @@ var Hhe = [
   },
 ];
 var qhe = [13441, 3144, 6685, 3024, 10925, 12695, 27641, 27281];
-var Bhe = ({ listRef: listRef, items: items }) => {
+var ResultSprites = ({ listRef: listRef, items: items }) => {
   const [h5, h6] = (0, React.useState)({
     height: 0,
     left: 0,
@@ -13335,8 +13351,8 @@ var Bhe = ({ listRef: listRef, items: items }) => {
     }),
   });
 };
-var zhe = "osrs-slot-picker-show-unverified";
-var Whe = ({
+var SHOW_UNVERIFIED_KEY = "osrs-slot-picker-show-unverified";
+var SlotPickerPopover = ({
   anchor: anchor,
   dialogLabel: dialogLabel,
   searchLabel: searchLabel,
@@ -13492,7 +13508,7 @@ var Whe = ({
   const [hf, hg] = (0, React.useState)("");
   const [hh, hi] = (0, React.useState)("all");
   const [hj, hk] = (0, React.useState)(null);
-  const [hl, hm] = (0, React.useState)(() => bO(zhe) ?? false);
+  const [hl, hm] = (0, React.useState)(() => bO(SHOW_UNVERIFIED_KEY) ?? false);
   const ho = (0, React.useId)();
   const hp = ho + "-list";
   const hr = (hN) => ho + "-option-" + hN;
@@ -13787,7 +13803,7 @@ var Whe = ({
     (0, jsxRuntime.jsxs)("div", {
       ref: hs,
       className: "slot-picker",
-      ...dn.popover,
+      ...sheet.popover,
       role: "dialog",
       "aria-label": dialogLabel,
       onKeyDown: (hN) => {
@@ -13938,7 +13954,7 @@ var Whe = ({
           (0, jsxRuntime.jsx)("fieldset", {
             className: "slot-picker__filters",
             "aria-label": "Item categories",
-            children: Hhe.map((hN) =>
+            children: INVENTORY_FILTERS.map((hN) =>
               (0, jsxRuntime.jsx)(
                 "button",
                 {
@@ -14019,7 +14035,7 @@ var Whe = ({
                 );
               }),
             }),
-            (0, jsxRuntime.jsx)(Bhe, {
+            (0, jsxRuntime.jsx)(ResultSprites, {
               listRef: hu,
               items: hE,
             }),
@@ -14067,15 +14083,15 @@ var Whe = ({
                   className: "slot-picker__scope info-hint-region",
                   ref: hw,
                   children: [
-                    (0, jsxRuntime.jsx)(fd, {
+                    (0, jsxRuntime.jsx)(OsrsCheckbox, {
                       checked: hl,
                       onChange: (hN) => {
                         hm(hN);
-                        aj(zhe, hN);
+                        aj(SHOW_UNVERIFIED_KEY, hN);
                       },
                       label: "Show unverified items",
                     }),
-                    (0, jsxRuntime.jsx)(dX, {
+                    (0, jsxRuntime.jsx)(InfoHint, {
                       label: "Show unverified items",
                       hoverRegionRef: hw,
                       placement: "above",
@@ -14090,7 +14106,7 @@ var Whe = ({
                   ref: hv,
                   children: [
                     "Item support",
-                    (0, jsxRuntime.jsx)(dX, {
+                    (0, jsxRuntime.jsx)(InfoHint, {
                       label: "Item support",
                       hoverRegionRef: hv,
                       placement: "above",
@@ -14121,7 +14137,7 @@ var jhe = Ghe.map((h2, h3) => ({
   col: (h3 % 4) + 3 + 1,
   section: "inventory",
 }));
-var Uhe = Gce().filter((h2) => bl(h2.id));
+var Uhe = Gce().filter((h2) => isArrowOrBolt(h2.id));
 var Vhe = {
   head: "Head",
   cape: "Cape",
@@ -14134,7 +14150,7 @@ var Vhe = {
   boots: "Boots",
   ring: "Ring",
 };
-var Yhe = ({
+var LoadoutIoButton = ({
   idleLabel: idleLabel,
   doneLabel: doneLabel,
   outcome: outcome,
@@ -14192,9 +14208,9 @@ var Yhe = ({
             children: [
               (0, jsxRuntime.jsx)("span", {
                 className: "loadout-io-label-face",
-                children: hg ? Xhe : hh ? doneLabel : idleLabel,
+                children: hg ? IO_FAILED_LABEL : hh ? doneLabel : idleLabel,
               }),
-              [idleLabel, doneLabel, Xhe].map((hi) =>
+              [idleLabel, doneLabel, IO_FAILED_LABEL].map((hi) =>
                 (0, jsxRuntime.jsx)(
                   "span",
                   {
@@ -14215,8 +14231,8 @@ var Yhe = ({
 };
 var Jhe = 1800;
 var Zhe = 6000;
-var Xhe = "Failed";
-function Qhe(h2) {
+var IO_FAILED_LABEL = "Failed";
+function slotKey(h2) {
   switch (h2.kind) {
     case "gear":
       return "gear:" + h2.slot;
@@ -14252,23 +14268,23 @@ function tpe(h2) {
 }
 function npe(h2) {
   const h4 = [];
-  for (const h5 of ac) {
+  for (const h5 of statNames) {
     const h6 = h2[h5];
     if (undefined !== h6) {
       h4.push({
         stat: h5,
         level: h6,
-        label: bL[h5],
+        label: statLabels[h5],
       });
     }
   }
   return h4;
 }
-var ape = {
-  ...aV,
+var SETUP_SPELLBOOK_LABELS = {
+  ...spellbookLabels,
   ancient: "Ancient",
 };
-var ipe = ({ spellbook: spellbook, onSelect: onSelect }) =>
+var SpellbookSelector = ({ spellbook: spellbook, onSelect: onSelect }) =>
   (0, jsxRuntime.jsxs)("div", {
     className: "spellbook-row",
     children: [
@@ -14296,7 +14312,7 @@ var ipe = ({ spellbook: spellbook, onSelect: onSelect }) =>
                   checked: h6,
                   onChange: () => onSelect(h4),
                 }),
-                ape[h4],
+                SETUP_SPELLBOOK_LABELS[h4],
               ],
             },
             h4,
@@ -14305,7 +14321,7 @@ var ipe = ({ spellbook: spellbook, onSelect: onSelect }) =>
       }),
     ],
   });
-var ope = ({
+var EncounterLoadoutSection = ({
   presetsKey: presetsKey,
   appearance: appearance,
   stats: stats,
@@ -14629,11 +14645,11 @@ var ope = ({
     aYgGI: "Account unlocks",
   };
   const [hk, hl] = (0, React.useState)(false);
-  const hm = inventory ?? gF();
+  const hm = inventory ?? createEmptyInventory();
   const ho = er(encounterEquipment.cape) || hm.some((iX) => er(iX?.id));
   const hp = hhe(ho);
   const length2 = hp.length;
-  const hs = Che([...hp, ...jhe]);
+  const hs = useGridRovingFocus([...hp, ...jhe]);
   const {
     deletePreset: deletePreset,
     getPresets: getPresets,
@@ -14673,7 +14689,7 @@ var ope = ({
   const hY = (iX, iY) => {
     hL(false);
     hO((iZ) => {
-      if (iZ && ((j0 = iZ.target), (j1 = iX), Qhe(j0) === Qhe(j1))) {
+      if (iZ && ((j0 = iZ.target), (j1 = iX), slotKey(j0) === slotKey(j1))) {
         return null;
       } else {
         return {
@@ -14724,13 +14740,13 @@ var ope = ({
       i2({
         equipment: iX.equipment,
         inventory: iX.inventory,
-        supplies: iX.supplies ?? gC(),
+        supplies: iX.supplies ?? createEmptyCombatSupplies(),
       });
     },
     [i2],
   );
   const i4 = (0, React.useMemo)(
-    () => Object.entries(_le[presetsKey] ?? {}),
+    () => Object.entries(EQUIPMENT_PRESETS[presetsKey] ?? {}),
     [presetsKey],
   );
   const i5 = (0, React.useMemo)(
@@ -14752,7 +14768,7 @@ var ope = ({
     () => ({
       equipment: encounterEquipment,
       inventory: hm,
-      supplies: supplies ?? gC(),
+      supplies: supplies ?? createEmptyCombatSupplies(),
     }),
     [encounterEquipment, hm, supplies],
   );
@@ -14842,7 +14858,7 @@ var ope = ({
       blockedOptions: iY,
     };
   }, [hx, i9, unmetByKey]);
-  const iu = _le[presetsKey]?.[ic];
+  const iu = EQUIPMENT_PRESETS[presetsKey]?.[ic];
   const iv = i8 && true === iu?.isFallback;
   const iw =
     hC !== null
@@ -14864,7 +14880,7 @@ var ope = ({
   const iz =
     null === iy || the(unmetByKey.get(iy))
       ? null
-      : (ix(iy)?.name ?? _le[presetsKey]?.[iy]?.name ?? null);
+      : (ix(iy)?.name ?? EQUIPMENT_PRESETS[presetsKey]?.[iy]?.name ?? null);
   const iA = (iX) => {
     const iY = {
       FHHPq: function (j0, j1) {
@@ -14893,7 +14909,7 @@ var ope = ({
       return;
     }
     ((j0) => {
-      const j1 = _le[presetsKey]?.[j0];
+      const j1 = EQUIPMENT_PRESETS[presetsKey]?.[j0];
       if (j1 && !iY.FHHPq(the, unmetByKey.get(j0))) {
         iY.ZPPzB(i3, j1);
         hX(null);
@@ -14903,7 +14919,7 @@ var ope = ({
   const iB = hC?.suggestedName ?? ik?.name ?? iu?.name ?? "Custom loadout";
   const iC = "import" === hE?.button ? hE : null;
   const iD = "export" === hE?.button ? hE : null;
-  const iE = ew({
+  const iE = useHoverCard({
     content: iC?.note ?? "Import Inventory Setup string from clipboard.",
     anchorRef: hR,
     regionRef: hR,
@@ -14918,7 +14934,7 @@ var ope = ({
           (iC.failed ? " hover-card--outcome-failed" : ""),
     onDismiss: () => hF(null),
   });
-  const iG = ew({
+  const iG = useHoverCard({
     content: iD?.note ?? "Export Inventory Setup string to clipboard.",
     anchorRef: hS,
     regionRef: hS,
@@ -14961,7 +14977,7 @@ var ope = ({
     };
     const iY = hT.current + 1;
     hT.current = iY;
-    const iZ = await Jue();
+    const iZ = await readFromClipboard();
     if (hT.current !== iY) {
       return;
     }
@@ -14973,7 +14989,7 @@ var ope = ({
       );
       return;
     }
-    const j0 = xde(iZ);
+    const j0 = importInventorySetup(iZ);
     if (j0.kind !== "error") {
       hG(
         "import",
@@ -14984,7 +15000,7 @@ var ope = ({
           const j4 = Que(i4, j2);
           const j5 =
             iX.rjqzS(Zce, hx, j2)?.name ??
-            (j4 === "__custom__" ? undefined : _le[presetsKey]?.[j4]?.name);
+            (j4 === "__custom__" ? undefined : EQUIPMENT_PRESETS[presetsKey]?.[j4]?.name);
           const j6 = Zce(hx, j2);
           if (j5 !== undefined) {
             ig({
@@ -15086,7 +15102,7 @@ var ope = ({
     if (null === iX) {
       return;
     }
-    const iY = _le[presetsKey]?.[iX];
+    const iY = EQUIPMENT_PRESETS[presetsKey]?.[iX];
     if (!iY) {
       return;
     }
@@ -15345,7 +15361,7 @@ var ope = ({
       ghostRef: j3,
       slotProps: (0, React.useCallback)(
         (jn) => ({
-          [ghe]: jn,
+          [SLOT_INDEX_ATTRIBUTE]: jn,
           onMouseDown: (jo) => {
             if (j9.current) {
               j9.current = false;
@@ -15502,7 +15518,7 @@ var ope = ({
                 className: io ? "loadout-phone-unsaved" : undefined,
                 children: io
                   ? "This loadout is not saved as a preset. Starting the encounter will not save it."
-                  : ape[supplies?.spellbook ?? "standard"] + " spellbook",
+                  : SETUP_SPELLBOOK_LABELS[supplies?.spellbook ?? "standard"] + " spellbook",
               }),
             ],
           }),
@@ -15524,7 +15540,7 @@ var ope = ({
           }),
         ],
       }),
-      (0, jsxRuntime.jsx)(khe, {
+      (0, jsxRuntime.jsx)(LoadoutPicker, {
         label: "Loadout",
         presetsExpanded: hk,
         selectedKey: ip,
@@ -15532,7 +15548,7 @@ var ope = ({
         labelActions: (0, jsxRuntime.jsxs)("span", {
           className: "loadout-io",
           children: [
-            (0, jsxRuntime.jsx)(Yhe, {
+            (0, jsxRuntime.jsx)(LoadoutIoButton, {
               idleLabel: "Import",
               doneLabel: "Imported",
               outcome: iC,
@@ -15551,7 +15567,7 @@ var ope = ({
                 iJ();
               },
             }),
-            (0, jsxRuntime.jsx)(Yhe, {
+            (0, jsxRuntime.jsx)(LoadoutIoButton, {
               idleLabel: "Export",
               doneLabel: "Copied",
               outcome: iD,
@@ -15579,7 +15595,7 @@ var ope = ({
                   },
                 };
                 (async () => {
-                  const iY = await Kue(iX.YLLSb(Tde, iB, ib, objTypeLoader));
+                  const iY = await copyToClipboard(iX.YLLSb(Tde, iB, ib, objTypeLoader));
                   hG(
                     "export",
                     !iY,
@@ -15753,7 +15769,7 @@ var ope = ({
                 (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
                   children: [
                     " ",
-                    (0, jsxRuntime.jsx)(yhe, {
+                    (0, jsxRuntime.jsx)(RequirementChipList, {
                       requirements: npe(iP),
                     }),
                   ],
@@ -15767,7 +15783,7 @@ var ope = ({
             children: [
               hW.note,
               " ",
-              (0, jsxRuntime.jsx)(yhe, {
+              (0, jsxRuntime.jsx)(RequirementChipList, {
                 requirements: npe(iP),
               }),
             ],
@@ -15795,7 +15811,7 @@ var ope = ({
                     className: "section-label loadout-grid-heading",
                     children: "Equipment",
                   }),
-                  (0, jsxRuntime.jsx)(mhe, {
+                  (0, jsxRuntime.jsx)(EquipmentSettings, {
                     playerConfig: ia,
                     ammo: {
                       worn: supplies?.equippedAmmo?.id,
@@ -15909,7 +15925,7 @@ var ope = ({
                             active: j5 !== undefined,
                             itemName: iW(iZ?.id),
                             notice: j5,
-                            reasons: iZ && j1 === false ? qce(iZ.id) : j4,
+                            reasons: iZ && j1 === false ? describeWeaponVerificationGaps(iZ.id) : j4,
                             children: (0, jsxRuntime.jsx)("button", {
                               type: "button",
                               className: j7,
@@ -15927,7 +15943,7 @@ var ope = ({
                                   jc.currentTarget,
                                 ),
                               children: j5
-                                ? (0, jsxRuntime.jsx)(che, {
+                                ? (0, jsxRuntime.jsx)(LoadoutUnverifiedBadge, {
                                     notice: j5,
                                     children: j8,
                                   })
@@ -15966,7 +15982,7 @@ var ope = ({
             (0, jsxRuntime.jsxs)("div", {
               className: "loadout-supplies",
               children: [
-                (0, jsxRuntime.jsx)(ipe, {
+                (0, jsxRuntime.jsx)(SpellbookSelector, {
                   spellbook: supplies.spellbook,
                   onSelect: (iX) => {
                     if (
@@ -15979,7 +15995,7 @@ var ope = ({
                     hU();
                     i0();
                     const iY = supplies.selectedSpell
-                      ? ap(supplies.selectedSpell)?.spellbook
+                      ? getSpellDefinition(supplies.selectedSpell)?.spellbook
                       : undefined;
                     onLoadoutChange({
                       equipment: encounterEquipment,
@@ -15994,7 +16010,7 @@ var ope = ({
                   },
                 }),
                 supplies.runePouch &&
-                  (0, jsxRuntime.jsx)($he, {
+                  (0, jsxRuntime.jsx)(RunePouchRow, {
                     runePouch: supplies.runePouch,
                     openSlotIndex: hP,
                     onSelectSlot: (iX) => {
@@ -16022,7 +16038,7 @@ var ope = ({
                             supplies: {
                               ...ib.supplies,
                               runePouch: iZ.ycUbz(
-                                gN,
+                                withRunePouchSlot,
                                 runePouch2,
                                 j0,
                                 j1 === undefined
@@ -16051,7 +16067,7 @@ var ope = ({
           case "gear": {
             const iZ = Vhe[target.slot];
             return (0, jsxRuntime.jsx)(
-              Whe,
+              SlotPickerPopover,
               {
                 anchor: anchor,
                 dialogLabel: "Edit " + iZ.toLowerCase() + " slot",
@@ -16093,12 +16109,12 @@ var ope = ({
                   })(target.slot, j0),
                 onDismiss: hZ,
               },
-              Qhe(target),
+              slotKey(target),
             );
           }
           case "ammo":
             return (0, jsxRuntime.jsx)(
-              Whe,
+              SlotPickerPopover,
               {
                 anchor: anchor,
                 dialogLabel: "Edit ammunition slot",
@@ -16115,11 +16131,11 @@ var ope = ({
                 onChoose: iT,
                 onDismiss: hZ,
               },
-              Qhe(target),
+              slotKey(target),
             );
           case "quiverAmmo":
             return (0, jsxRuntime.jsx)(
-              Whe,
+              SlotPickerPopover,
               {
                 anchor: anchor,
                 dialogLabel: "Edit quiver ammunition",
@@ -16136,18 +16152,18 @@ var ope = ({
                 onChoose: iU,
                 onDismiss: hZ,
               },
-              Qhe(target),
+              slotKey(target),
             );
           case "inventory":
             return (0, jsxRuntime.jsx)(
-              Whe,
+              SlotPickerPopover,
               {
                 anchor: anchor,
                 dialogLabel: "Edit inventory slot " + (target.index + 1),
                 searchLabel: "Search supported inventory items",
                 listLabel: "Inventory items",
                 catalogNoun: "inventory item",
-                catalog: mde().items,
+                catalog: buildCatalog().items,
                 currentItemId: hm[target.index]?.id,
                 onChoose: (j0) =>
                   ((j1, j2) => {
@@ -16177,7 +16193,7 @@ var ope = ({
                   })(target.index, j0),
                 onDismiss: hZ,
               },
-              Qhe(target),
+              slotKey(target),
             );
         }
       })(),
@@ -16188,7 +16204,7 @@ var ope = ({
             (0, jsxRuntime.jsxs)("summary", {
               tabIndex: -1,
               children: [
-                (0, jsxRuntime.jsx)(cO, {}),
+                (0, jsxRuntime.jsx)(DisclosureChevron, {}),
                 "Combat stats",
                 " ",
                 (0, jsxRuntime.jsx)("span", {
@@ -16198,7 +16214,7 @@ var ope = ({
                 }),
               ],
             }),
-            (0, jsxRuntime.jsx)(Ahe, {
+            (0, jsxRuntime.jsx)(PlayerSettings, {
               stats: stats,
               onStatsChange: onStatsChange,
               requirements: iP,
@@ -16211,7 +16227,7 @@ var ope = ({
           children: [
             (0, jsxRuntime.jsxs)("summary", {
               tabIndex: -1,
-              children: [(0, jsxRuntime.jsx)(cO, {}), "Account unlocks"],
+              children: [(0, jsxRuntime.jsx)(DisclosureChevron, {}), "Account unlocks"],
             }),
             accountUnlocks,
           ],
@@ -16219,7 +16235,7 @@ var ope = ({
     ],
   });
 };
-var rpe = ({ notes: notes }) =>
+var EncounterSetupNotes = ({ notes: notes }) =>
   (0, jsxRuntime.jsx)("div", {
     className: notes.length > 0 ? "setup-notes" : undefined,
     role: "status",
@@ -16242,7 +16258,7 @@ var rpe = ({ notes: notes }) =>
       ),
     ),
   });
-var spe = ({ href: href, subject: subject, label: h4 = "OSRS Wiki" }) =>
+var WikiLink = ({ href: href, subject: subject, label: h4 = "OSRS Wiki" }) =>
   (0, jsxRuntime.jsxs)("a", {
     className: "wiki-link",
     href: href,
@@ -16272,7 +16288,7 @@ var lpe = {
   maxWidth: 20,
   maxHeight: 20,
 };
-function cpe({
+function EncounterSetupSelection({
   variants: variants,
   variantLabel: variantLabel = "Contract",
   selectedKind: selectedKind,
@@ -16371,7 +16387,7 @@ function cpe({
                   (0, jsxRuntime.jsxs)("summary", {
                     tabIndex: -1,
                     children: [
-                      (0, jsxRuntime.jsx)(cO, {}),
+                      (0, jsxRuntime.jsx)(DisclosureChevron, {}),
                       (0, jsxRuntime.jsx)("span", {
                         children: variantLabel === "Contract" ? "Contract terms" : "About this " + variantLabel.toLowerCase(),
                       }),
@@ -16407,7 +16423,7 @@ function cpe({
                       ],
                     }),
                   hg.wikiUrl &&
-                    (0, jsxRuntime.jsx)(spe, {
+                    (0, jsxRuntime.jsx)(WikiLink, {
                       href: hg.wikiUrl,
                       subject: hg.name,
                     }),
@@ -16494,7 +16510,7 @@ var dpe = {
   maxWidth: 38,
   maxHeight: 38,
 };
-var upe = [
+var TIERS = [
   {
     tier: 0,
     label: "Off",
@@ -16512,7 +16528,7 @@ var upe = [
     label: "III",
   },
 ];
-var hpe = ({ modifiers: modifiers, value: value, onChange: onChange }) =>
+var ModifierGrid = ({ modifiers: modifiers, value: value, onChange: onChange }) =>
   (0, jsxRuntime.jsx)("div", {
     className: "modifier-grid",
     style: {
@@ -16547,7 +16563,7 @@ var hpe = ({ modifiers: modifiers, value: value, onChange: onChange }) =>
               style: {
                 "--modifier-tier-count": h5.tiers.length + 1,
               },
-              children: upe
+              children: TIERS
                 .filter((h8) => h8.tier <= h5.tiers.length)
                 .map((h8) =>
                   (0, jsxRuntime.jsx)(
@@ -16602,7 +16618,7 @@ var hpe = ({ modifiers: modifiers, value: value, onChange: onChange }) =>
       );
     }),
   });
-var ppe = ({ value: value, max: h3, onChange: onChange }) => {
+var StartingHitpointsField = ({ value: value, max: h3, onChange: onChange }) => {
   const [h6, h7] = (0, React.useState)(null);
   const h8 = (0, React.useId)();
   const h9 = (0, React.useRef)(null);
@@ -16617,14 +16633,14 @@ var ppe = ({ value: value, max: h3, onChange: onChange }) => {
             htmlFor: h8,
             children: "Starting Hitpoints",
           }),
-          (0, jsxRuntime.jsx)(dX, {
+          (0, jsxRuntime.jsx)(InfoHint, {
             label: "Starting Hitpoints",
             text: "Wretched Strength: your minimum hit rises as health falls.",
             hoverRegionRef: h9,
           }),
         ],
       }),
-      (0, jsxRuntime.jsx)(dP, {
+      (0, jsxRuntime.jsx)(OsrsNumberInput, {
         id: h8,
         className: "starthp-input",
         value: h6 ?? String(value),
@@ -16652,7 +16668,7 @@ var mpe = () =>
     rel: "noopener noreferrer",
     children: "the issues tab on GitHub",
   });
-var gpe = ({
+var EncounterPanel = ({
   mobile: h2 = false,
   npcModelLoader: h3 = null,
   animationSystem: h4 = null,
@@ -16783,12 +16799,12 @@ var gpe = ({
     NYBFt: "Start Encounter",
   };
   const hE = (0, React.useRef)(null);
-  yle(hE);
+  useCenteredModalSnap(hE);
   const hF = Pde();
   const hG = cw();
   const hH = hD.Sfjxw(h2, hF) || hG;
   const [hI, hK] = (0, React.useState)("setup");
-  dC(es.ENCOUNTER_PICKER - 1, hI !== "setup", () => hK("setup"));
+  dC(ESC_PRIORITY.ENCOUNTER_PICKER - 1, hI !== "setup", () => hK("setup"));
   const [hL, hN] = (0, React.useState)(false);
   const [hO, hP] = (0, React.useState)("");
   const hQ = {
@@ -16850,7 +16866,7 @@ var gpe = ({
   );
   const i8 =
     i7.length > 0
-      ? (0, jsxRuntime.jsx)(ex, {
+      ? (0, jsxRuntime.jsx)(MechanicsSettings, {
           config: mechanicsConfig,
           onConfigChange: onMechanicsConfigChange,
           mechanicsToggles: i7,
@@ -16878,7 +16894,7 @@ var gpe = ({
         (hV?.title ?? displayName);
   return (0, jsxRuntime.jsxs)("div", {
     className: "encounter-panel-overlay",
-    ...dn.overlay,
+    ...sheet.overlay,
     role: "dialog",
     "aria-modal": "true",
     "aria-label": displayName,
@@ -16894,7 +16910,7 @@ var gpe = ({
         className:
           "encounter-panel-card centered-modal-snap" +
           (hI === "loadout" ? " encounter-panel-card--loadout" : ""),
-        ...dn.card,
+        ...sheet.card,
         onPointerDownCapture: () => hN(true),
         onPointerUpCapture: () =>
           hN(document.activeElement instanceof HTMLInputElement),
@@ -16904,7 +16920,7 @@ var gpe = ({
         children: [
           (0, jsxRuntime.jsxs)("header", {
             className: "encounter-panel-header",
-            ...dn.head,
+            ...sheet.head,
             children: [
               hV &&
                 (0, jsxRuntime.jsx)(Fue, {
@@ -16948,7 +16964,7 @@ var gpe = ({
                         ],
                       }),
                       hW &&
-                        (0, jsxRuntime.jsx)(spe, {
+                        (0, jsxRuntime.jsx)(WikiLink, {
                           href: hW,
                           subject: hX,
                         }),
@@ -16971,14 +16987,14 @@ var gpe = ({
                     }),
                 ],
               }),
-              (0, jsxRuntime.jsx)(fV, {
-                ...dn.close,
+              (0, jsxRuntime.jsx)(CloseButton, {
+                ...sheet.close,
                 onClick: onClose,
                 "aria-label": "Close",
               }),
             ],
           }),
-          (0, jsxRuntime.jsx)(rpe, {
+          (0, jsxRuntime.jsx)(EncounterSetupNotes, {
             notes: hY,
           }),
           "modifiers" === hI &&
@@ -17000,8 +17016,8 @@ var gpe = ({
                 }),
                 (0, jsxRuntime.jsx)("div", {
                   className: "configurer-modifier-editor",
-                  ...dn.body,
-                  children: (0, jsxRuntime.jsx)(hpe, {
+                  ...sheet.body,
+                  children: (0, jsxRuntime.jsx)(ModifierGrid, {
                     modifiers: modifiers,
                     value: modifierSelection ?? {},
                     onChange: onModifierSelectionChange,
@@ -17019,11 +17035,11 @@ var gpe = ({
           (0, jsxRuntime.jsxs)("div", {
             className: "encounter-panel-body",
             hidden: "modifiers" === hI,
-            ...dn.body,
+            ...sheet.body,
             children: [
               (0, jsxRuntime.jsx)("div", {
                 className: "encounter-panel-main",
-                children: (0, jsxRuntime.jsx)(ope, {
+                children: (0, jsxRuntime.jsx)(EncounterLoadoutSection, {
                   encounterKind: encounterKind,
                   presetsKey: hT,
                   appearance: playerConfig.appearance,
@@ -17053,14 +17069,14 @@ var gpe = ({
                         className: "section-label configurer-rail-heading",
                         children: hZ?.railSection ?? "Fight setup",
                       }),
-                      (0, jsxRuntime.jsx)(eK, {
+                      (0, jsxRuntime.jsx)(ResetToDefaultsControl, {
                         control: id,
                         variant: "rail",
                       }),
                     ],
                   }),
                   (0, jsxRuntime.jsx)(
-                    cpe,
+                    EncounterSetupSelection,
                     {
                       variants: variants,
                       variantLabel: variantLabel,
@@ -17091,7 +17107,7 @@ var gpe = ({
                                 {
                                   equipment: encounterEquipment,
                                   inventory: inventory,
-                                  supplies: supplies ?? gC(),
+                                  supplies: supplies ?? createEmptyCombatSupplies(),
                                 },
                                 objTypeLoader,
                               )
@@ -17105,7 +17121,7 @@ var gpe = ({
                         className: "section-label",
                         children: "Preparation",
                       }),
-                      (0, jsxRuntime.jsx)(ex, {
+                      (0, jsxRuntime.jsx)(MechanicsSettings, {
                         config: mechanicsConfig,
                         onConfigChange: onMechanicsConfigChange,
                         mechanicsToggles: i3,
@@ -17115,7 +17131,7 @@ var gpe = ({
                         setupField:
                           undefined !== startingHitpoints &&
                           onStartingHitpointsChange
-                            ? (0, jsxRuntime.jsx)(ppe, {
+                            ? (0, jsxRuntime.jsx)(StartingHitpointsField, {
                                 value: Math.min(
                                   startingHitpoints,
                                   playerConfig.stats.hitpoints.max,
@@ -17133,7 +17149,7 @@ var gpe = ({
                               className: "section-label",
                               children: "Mechanics",
                             }),
-                            (0, jsxRuntime.jsx)(ex, {
+                            (0, jsxRuntime.jsx)(MechanicsSettings, {
                               config: mechanicsConfig,
                               onConfigChange: onMechanicsConfigChange,
                               mechanicsToggles: mechanics,
@@ -17164,7 +17180,7 @@ var gpe = ({
                                     }),
                                 ],
                               }),
-                              (0, jsxRuntime.jsx)(ex, {
+                              (0, jsxRuntime.jsx)(MechanicsSettings, {
                                 config: mechanicsConfig,
                                 onConfigChange: onMechanicsConfigChange,
                                 mechanicsToggles: ij.toggles,
@@ -17186,7 +17202,7 @@ var gpe = ({
                               className: "section-label",
                               children: "Practice aids",
                             }),
-                            (0, jsxRuntime.jsx)(ex, {
+                            (0, jsxRuntime.jsx)(MechanicsSettings, {
                               config: mechanicsConfig,
                               onConfigChange: onMechanicsConfigChange,
                               mechanicsToggles: assists,
@@ -17202,7 +17218,7 @@ var gpe = ({
           }),
           (0, jsxRuntime.jsx)("footer", {
             className: "encounter-panel-footer",
-            ...dn.foot,
+            ...sheet.foot,
             children:
               hI === "modifiers"
                 ? (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
@@ -17306,7 +17322,7 @@ function bpe(h2, h3) {
   };
 }
 var vpe = "lobby";
-function wpe() {
+function RewardGlyph() {
   return (0, jsxRuntime.jsx)("svg", {
     viewBox: "0 0 20 20",
     fill: "none",
@@ -17351,15 +17367,15 @@ function Spe({
   animationSystem: animationSystem,
 }) {
   const cardRef = (0, React.useRef)(null);
-  yle(cardRef, isOpen);
+  useCenteredModalSnap(cardRef, isOpen);
   const outsideClick = bpe(cardRef, onClose);
-  dC(es.ENCOUNTER_PICKER, isOpen, onClose);
+  dC(ESC_PRIORITY.ENCOUNTER_PICKER, isOpen, onClose);
   if (!isOpen) {
     return null;
   }
   return (0, jsxRuntime.jsx)(EncounterPicker, {
-    overlayProps: { ...dn.overlay, ...outsideClick },
-    cardProps: dn.card,
+    overlayProps: { ...sheet.overlay, ...outsideClick },
+    cardProps: sheet.card,
     cardRef: cardRef,
     onClose: onClose,
     onEnter: onEnter,
@@ -17379,7 +17395,7 @@ function Spe({
     hiddenKinds: [nexusKind],
   });
 }
-function Cpe({ from: from, activeIndex: activeIndex, className: className }) {
+function CountdownBeats({ from: from, activeIndex: activeIndex, className: className }) {
   const h6 = (function (h7) {
     const h8 = [];
     for (let h9 = h7; h9 >= 1; h9--) {
@@ -17419,7 +17435,7 @@ function Cpe({ from: from, activeIndex: activeIndex, className: className }) {
     ),
   });
 }
-function Npe({
+function FightStartCountdown({
   startsAtMs: startsAtMs,
   endsAtMs: endsAtMs,
   releasedAtMs: releasedAtMs,
@@ -17527,7 +17543,7 @@ function Npe({
           ),
           (0, jsxRuntime.jsx)("div", {
             className: "fight-start-countdown-beats",
-            children: (0, jsxRuntime.jsx)(Cpe, {
+            children: (0, jsxRuntime.jsx)(CountdownBeats, {
               from: tickCount,
               activeIndex: hi,
             }),
@@ -17550,7 +17566,7 @@ function xpe(h2, h3) {
     subtitle: h9.length ? h9.join(" · ") : null,
   };
 }
-var Tpe = ({
+var EncounterTitleCard = ({
   encounterName: encounterName,
   subtitle: h3 = null,
   layoutName: h4 = encounterName,
@@ -17705,7 +17721,7 @@ var Tpe = ({
             ),
             countdown &&
               (0, jsxRuntime.jsx)(
-                Npe,
+                FightStartCountdown,
                 {
                   startsAtMs: countdown.startsAtMs,
                   endsAtMs: countdown.endsAtMs,
@@ -18388,7 +18404,7 @@ function Ppe({
     }),
   });
 }
-var Ipe = [
+var SOFTWARE_STEPS = [
   "Turn hardware acceleration back on in your browser settings.",
   "Lower 3D render scale under Graphics & Performance in Settings.",
 ];
@@ -18423,7 +18439,7 @@ function Rpe({ className: className }) {
     ],
   });
 }
-var Lpe = ({
+var HardwareAccelWarning = ({
   gpuStatus: gpuStatus,
   renderer: renderer,
   variant: variant,
@@ -18454,13 +18470,13 @@ var Lpe = ({
     return (0, jsxRuntime.jsxs)("div", {
       className: "hw-accel-warning variant-" + variant,
       children: [
-        (0, jsxRuntime.jsx)(e1, {
+        (0, jsxRuntime.jsx)(SystemNotice, {
           role: "alert",
           tone: "caution",
           title: "Software rendering",
           body: "Your browser isn't using your graphics card, so the simulator will run slowly.",
           detail: renderer ? "Detected: " + renderer : undefined,
-          steps: Ipe,
+          steps: SOFTWARE_STEPS,
           footer:
             h6.length > 0
               ? (0, jsxRuntime.jsxs)("details", {
@@ -18468,7 +18484,7 @@ var Lpe = ({
                     (0, jsxRuntime.jsxs)("summary", {
                       tabIndex: -1,
                       children: [
-                        (0, jsxRuntime.jsx)(cO, {}),
+                        (0, jsxRuntime.jsx)(DisclosureChevron, {}),
                         "Troubleshooting info",
                       ],
                     }),
@@ -18527,7 +18543,7 @@ function Ope({ className: className }) {
     }),
   });
 }
-function Fpe({
+function RevealLink({
   target: target,
   children: children,
   className: className,
@@ -18581,7 +18597,7 @@ function Fpe({
     ],
   });
 }
-function $pe({
+function SettingLinkRow({
   label: label,
   value: value,
   hint: hint,
@@ -18595,7 +18611,7 @@ function $pe({
     className: "setting-link",
     "data-search-id": searchId ?? undefined,
     children: [
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         searchId: null,
         isModified: false,
         onReset: () => {},
@@ -18646,7 +18662,7 @@ function $pe({
 }
 var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
   const h5 = (0, React.useRef)(null);
-  yle(h5, isOpen);
+  useCenteredModalSnap(h5, isOpen);
   dC(1300, isOpen, onClose);
   if (!isOpen) {
     return null;
@@ -18780,14 +18796,14 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
   })();
   return (0, jsxRuntime.jsx)("div", {
     className: "shortcuts-modal-overlay",
-    ...dn.overlay,
+    ...sheet.overlay,
     onClick: onClose,
     role: "dialog",
     "aria-modal": "true",
     children: (0, jsxRuntime.jsxs)("div", {
       ref: h5,
       className: "shortcuts-modal-card centered-modal-snap",
-      ...dn.card,
+      ...sheet.card,
       onClick: (h7) => h7.stopPropagation(),
       onMouseDown: (h7) => {
         if (h7.target.closest("button")) {
@@ -18797,15 +18813,15 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
       children: [
         (0, jsxRuntime.jsxs)("div", {
           className: "shortcuts-modal-header",
-          ...dn.head,
+          ...sheet.head,
           children: [
             (0, jsxRuntime.jsx)("h2", {
               className: "shortcuts-modal-title",
               children: "Shortcuts",
             }),
-            (0, jsxRuntime.jsx)(fV, {
+            (0, jsxRuntime.jsx)(CloseButton, {
               className: "shortcuts-modal-close",
-              ...dn.close,
+              ...sheet.close,
               onClick: onClose,
               "aria-label": "Close shortcuts modal",
             }),
@@ -18816,8 +18832,8 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
           children: [
             "Change keybindings in the game panel.",
             " ",
-            (0, jsxRuntime.jsx)(Fpe, {
-              target: fc,
+            (0, jsxRuntime.jsx)(RevealLink, {
+              target: GAMEPANEL_KEYBINDS_ID,
               onNavigate: onClose,
               children: "Edit keybinds",
             }),
@@ -18825,7 +18841,7 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
         }),
         (0, jsxRuntime.jsx)("div", {
           className: "shortcuts-modal-content",
-          ...dn.body,
+          ...sheet.body,
           children: (0, jsxRuntime.jsx)("div", {
             className: "shortcuts-modal-grid",
             children: h6.map((h7) =>
@@ -18897,7 +18913,7 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
     }),
   });
 };
-var Hpe = [
+var TIPS = [
   {
     text: "Press Ctrl+K to search for anything.",
     device: "desktop",
@@ -18995,7 +19011,7 @@ var Hpe = [
     device: "desktop",
   },
 ];
-var qpe = {
+var STAGE_LABELS = {
   downloading: "Downloading Cache",
   extracting: "Extracting Archive",
   storing: "Saving to Browser",
@@ -19018,7 +19034,7 @@ function Bpe(h2) {
       : h4,
   );
 }
-var zpe = ({
+var LoadingScreen = ({
   cacheState: cacheState,
   isFullyLoaded: isFullyLoaded,
   isSceneReady: isSceneReady,
@@ -19039,7 +19055,7 @@ var zpe = ({
       };
     } else if (hz.status === "loading") {
       return {
-        status: ((hB = hz.stage), qpe[hB] ?? hB),
+        status: ((hB = hz.stage), STAGE_LABELS[hB] ?? hB),
         detail: hz.detail,
       };
     } else if ("success" === hz.status) {
@@ -19071,12 +19087,12 @@ var zpe = ({
     () =>
       (function (hz) {
         const hA = hz ? "touch" : "desktop";
-        return Hpe.filter((hB) => hB.device === undefined || hB.device === hA);
+        return TIPS.filter((hB) => hB.device === undefined || hB.device === hA);
       })(hp),
     [hp],
   );
   const [hs, ht] = (0, React.useState)(() =>
-    Math.floor(Math.random() * Hpe.length),
+    Math.floor(Math.random() * TIPS.length),
   );
   const [hu, hv] = (0, React.useState)(true);
   const hw = hr[hs % hr.length];
@@ -19283,7 +19299,7 @@ var zpe = ({
             }),
           }),
           "hardware" !== hf.status &&
-            (0, jsxRuntime.jsx)(Lpe, {
+            (0, jsxRuntime.jsx)(HardwareAccelWarning, {
               variant: "loading",
               gpuStatus: hf.status,
               renderer: hf.renderer,
@@ -19371,7 +19387,7 @@ function Gpe(h2, h3, h4) {
     };
   }, [h2, h3]);
 }
-var Kpe = [
+var STONE_TONES = [
   ["outline", 26, 0],
   ["body", 26, 20],
   ["lit", 26, 1],
@@ -19381,20 +19397,20 @@ var Kpe = [
   ["side", 1, 20],
   ["pressed", 2, 20],
 ];
-var jpe = Kpe.map(([, h2, h3]) => [h2, h3]);
+var jpe = STONE_TONES.map(([, h2, h3]) => [h2, h3]);
 function Upe() {
   return [
-    ee.railTopLeft,
-    ee.railTopRight,
-    ee.railBottomLeft,
-    ee.railBottomRight,
-    ee.railTop,
-    ee.railBottom,
-    ee.railLeft,
-    ee.railRight,
+    MOBILE.railTopLeft,
+    MOBILE.railTopRight,
+    MOBILE.railBottomLeft,
+    MOBILE.railBottomRight,
+    MOBILE.railTop,
+    MOBILE.railBottom,
+    MOBILE.railLeft,
+    MOBILE.railRight,
   ];
 }
-function Vpe(h2) {
+function landscapeReserves(h2) {
   if (!h2) {
     return {};
   }
@@ -19405,7 +19421,7 @@ function Vpe(h2) {
     "--mobile-entry-reserve-right": Math.max(0, h5 - h4.x) + "px",
   };
 }
-function Ype() {
+function ShareGlyph() {
   return (0, jsxRuntime.jsxs)("svg", {
     className: "mobile-entry-share-glyph",
     viewBox: "0 0 16 16",
@@ -19421,7 +19437,7 @@ function Ype() {
     ],
   });
 }
-function Jpe() {
+function RotateGlyph() {
   return (0, jsxRuntime.jsxs)("svg", {
     className: "mobile-entry-rotate-glyph",
     viewBox: "0 0 64 64",
@@ -19457,7 +19473,7 @@ function Jpe() {
     ],
   });
 }
-function Zpe({ className: className }) {
+function IosNote({ className: className }) {
   if (isAppleTouchDevice()) {
     return (0, jsxRuntime.jsx)("p", {
       className: className
@@ -19470,7 +19486,7 @@ function Zpe({ className: className }) {
     return null;
   }
 }
-function Xpe({
+function Sheet({
   labelledBy: labelledBy,
   kind: kind,
   leaving: leaving,
@@ -19480,8 +19496,8 @@ function Xpe({
 }) {
   const h9 = (function () {
     const ha = eQ(Upe());
-    const hb = gm(ee.railMiddle);
-    const hc = e8(ee.popoutStone, jpe);
+    const hb = gm(MOBILE.railMiddle);
+    const hc = e8(MOBILE.popoutStone, jpe);
     const hd = {
       backgroundImage: ha
         .map((hf) => (hf ? 'url("' + hf + '")' : "none"))
@@ -19490,7 +19506,7 @@ function Xpe({
     if (hb) {
       hd["--mobile-entry-fill"] = hb;
     }
-    Kpe.forEach(([hf], hg) => {
+    STONE_TONES.forEach(([hf], hg) => {
       const hh = hc[hg];
       if (hh) {
         hd["--mobile-entry-stone-" + hf] = hh;
@@ -19523,7 +19539,7 @@ function Xpe({
     ],
   });
 }
-function Qpe({
+function WelcomeSheet({
   variant: variant,
   frame: frame,
   leaving: leaving,
@@ -19539,12 +19555,12 @@ function Qpe({
       : variant === "home-screen"
         ? "Full screen on iPhone"
         : "Playing on touch";
-  return (0, jsxRuntime.jsxs)(Xpe, {
+  return (0, jsxRuntime.jsxs)(Sheet, {
     labelledBy: h9,
     kind: "welcome",
     leaving: leaving,
     sheetRef: h8,
-    layerStyle: Vpe(frame),
+    layerStyle: landscapeReserves(frame),
     children: [
       (0, jsxRuntime.jsx)("h2", {
         className: "mobile-entry-title",
@@ -19565,7 +19581,7 @@ function Qpe({
             " ",
             (0, jsxRuntime.jsxs)("span", {
               className: "mobile-entry-nowrap",
-              children: ["Share ", (0, jsxRuntime.jsx)(Ype, {}), ","],
+              children: ["Share ", (0, jsxRuntime.jsx)(ShareGlyph, {}), ","],
             }),
             " ",
             "then Add to Home Screen, and open OpenScim.dev from there.",
@@ -19575,7 +19591,7 @@ function Qpe({
         className: "mobile-entry-text mobile-entry-text--quiet",
         children: "Drag to turn, pinch to zoom, hold for menus.",
       }),
-      (0, jsxRuntime.jsx)(Zpe, {}),
+      (0, jsxRuntime.jsx)(IosNote, {}),
       (0, jsxRuntime.jsx)("div", {
         className: "mobile-entry-actions",
         children:
@@ -19588,7 +19604,7 @@ function Qpe({
                     onClick: onPlayFullscreen,
                     children: [
                       (0, jsxRuntime.jsx)(gt, {
-                        src: ee.fullscreenEnter,
+                        src: MOBILE.fullscreenEnter,
                         width: 33,
                         height: 36,
                         alt: "",
@@ -19615,7 +19631,7 @@ function Qpe({
     ],
   });
 }
-function eme({
+function RotateSheet({
   canLockLandscape: canLockLandscape,
   leaving: leaving,
   onGoFullscreen: onGoFullscreen,
@@ -19624,7 +19640,7 @@ function eme({
   const h7 = (0, React.useRef)(null);
   const h8 = (0, React.useId)();
   Gpe(h7, !leaving, onLookAround);
-  return (0, jsxRuntime.jsx)(Xpe, {
+  return (0, jsxRuntime.jsx)(Sheet, {
     labelledBy: h8,
     kind: "rotate",
     leaving: leaving,
@@ -19642,7 +19658,7 @@ function eme({
           children:
             "OpenScim.dev on mobile matches the OSRS mobile client, which is built for landscape. Turn your phone sideways for the best experience.",
         }),
-        (0, jsxRuntime.jsx)(Zpe, {
+        (0, jsxRuntime.jsx)(IosNote, {
           className: "mobile-entry-rotate__note",
         }),
         (0, jsxRuntime.jsxs)("div", {
@@ -19655,7 +19671,7 @@ function eme({
                 onClick: onGoFullscreen,
                 children: [
                   (0, jsxRuntime.jsx)(gt, {
-                    src: ee.fullscreenEnter,
+                    src: MOBILE.fullscreenEnter,
                     width: 33,
                     height: 36,
                     alt: "",
@@ -19674,18 +19690,18 @@ function eme({
             }),
           ],
         }),
-        (0, jsxRuntime.jsx)(Jpe, {}),
+        (0, jsxRuntime.jsx)(RotateGlyph, {}),
       ],
     }),
   });
 }
-var tme = ({ entry: entry, frame: frame }) => {
+var MobileEntry = ({ entry: entry, frame: frame }) => {
   const h4 = Wpe(entry.welcome);
   const h5 = Wpe(entry.rotateInvite);
   return (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
     children: [
       h4.shown &&
-        (0, jsxRuntime.jsx)(Qpe, {
+        (0, jsxRuntime.jsx)(WelcomeSheet, {
           variant: h4.shown,
           frame: frame,
           leaving: h4.leaving,
@@ -19693,7 +19709,7 @@ var tme = ({ entry: entry, frame: frame }) => {
           onDismiss: entry.dismissWelcome,
         }),
       h5.shown &&
-        (0, jsxRuntime.jsx)(eme, {
+        (0, jsxRuntime.jsx)(RotateSheet, {
           canLockLandscape: h5.shown.canLockLandscape,
           leaving: h5.leaving,
           onGoFullscreen: entry.playFullscreen,
@@ -19741,18 +19757,18 @@ function ame(h2, h3, h4) {
   });
   const h7 = h4;
   return [
-    h6(ee.railMiddle, h7, h7, h2 - h7 * 2, h3 - h7 * 2),
-    h6(ee.railTop, h7, 0, h2 - h7 * 2, h7),
-    h6(ee.railBottom, h7, h3 - h7, h2 - h7 * 2, h7),
-    h6(ee.railLeft, 0, h7, h7, h3 - h7 * 2),
-    h6(ee.railRight, h2 - h7, h7, h7, h3 - 2 * h7),
-    h6(ee.railTopLeft, 0, 0, h7, h7),
-    h6(ee.railTopRight, h2 - h7, 0, h7, h7),
-    h6(ee.railBottomLeft, 0, h3 - h7, h7, h7),
-    h6(ee.railBottomRight, h2 - h7, h3 - h7, h7, h7),
+    h6(MOBILE.railMiddle, h7, h7, h2 - h7 * 2, h3 - h7 * 2),
+    h6(MOBILE.railTop, h7, 0, h2 - h7 * 2, h7),
+    h6(MOBILE.railBottom, h7, h3 - h7, h2 - h7 * 2, h7),
+    h6(MOBILE.railLeft, 0, h7, h7, h3 - h7 * 2),
+    h6(MOBILE.railRight, h2 - h7, h7, h7, h3 - 2 * h7),
+    h6(MOBILE.railTopLeft, 0, 0, h7, h7),
+    h6(MOBILE.railTopRight, h2 - h7, 0, h7, h7),
+    h6(MOBILE.railBottomLeft, 0, h3 - h7, h7, h7),
+    h6(MOBILE.railBottomRight, h2 - h7, h3 - h7, h7, h7),
   ];
 }
-var ime = ({
+var MobileFullscreenStone = ({
   frame: frame,
   control: control,
   onToggle: onToggle,
@@ -19766,7 +19782,7 @@ var ime = ({
     ...eO,
   });
   const hb = "home-screen" === control;
-  const { card: card } = ew({
+  const { card: card } = useHoverCard({
     content: hb
       ? "On iPhone, full screen only works from the Home Screen. Tap Share, then Add to Home Screen, and open OpenScim.dev from there."
       : "exit" === control
@@ -19787,8 +19803,8 @@ var ime = ({
     frame,
     ha,
     Math.max(1, Math.round(frame.scale * 3)),
-    ee.popoutStone,
-    "exit" === control ? ee.fullscreenExit : ee.fullscreenEnter,
+    MOBILE.popoutStone,
+    "exit" === control ? MOBILE.fullscreenExit : MOBILE.fullscreenEnter,
   );
   return (0, jsxRuntime.jsxs)("div", {
     className: "osm-menu osm-fullscreen" + (tucked ? " osm-menu--tucked" : ""),
@@ -19839,7 +19855,7 @@ var ime = ({
     ],
   });
 };
-var ome = ({
+var MobileRestartStone = ({
   frame: frame,
   slot: slot,
   onRestart: onRestart,
@@ -19888,7 +19904,7 @@ var ome = ({
       hb(false);
     }
   }, [disabled, tucked]);
-  const { card: card } = ew({
+  const { card: card } = useHoverCard({
     content: hc ? "Tap again to restart" : "Restart",
     anchorRef: h8,
     placement: "inline",
@@ -19905,8 +19921,8 @@ var ome = ({
     frame,
     hf,
     Math.max(1, Math.round(frame.scale * 3)),
-    hc ? ee.popoutStoneSelected : ee.popoutStone,
-    ee.restart,
+    hc ? MOBILE.popoutStoneSelected : MOBILE.popoutStone,
+    MOBILE.restart,
   );
   if (disabled) {
     const hh = hg.length - 1;
@@ -19966,7 +19982,7 @@ var ome = ({
     ],
   });
 };
-var rme = [
+var ROWS = [
   {
     label: "Shift",
     key: "shift",
@@ -19985,13 +20001,13 @@ var rme = [
   },
 ];
 var sme = bN(bP.colors.primary, 0.35);
-var lme = {
+var MOUSE_BUTTON_PATH = {
   left: "M10 1.6C5.3 1.6 1.6 5.4 1.6 10v2.6H10z",
   right: "M10 1.6c4.7 0 8.4 3.8 8.4 8.4v2.6H10z",
   middle:
     "M10 4.4a1.4 1.4 0 0 1 1.4 1.4v3.4a1.4 1.4 0 0 1-2.8 0V5.8A1.4 1.4 0 0 1 10 4.4z",
 };
-var cme = (h2) =>
+var MouseGlyph = (h2) =>
   (0, jsxRuntime.jsxs)("svg", {
     width: 17,
     height: 25,
@@ -20002,11 +20018,11 @@ var cme = (h2) =>
       flexShrink: 0,
     },
     children: [
-      Object.keys(lme).map((h3) =>
+      Object.keys(MOUSE_BUTTON_PATH).map((h3) =>
         (0, jsxRuntime.jsx)(
           "path",
           {
-            d: lme[h3],
+            d: MOUSE_BUTTON_PATH[h3],
             "data-mouse-button": h3,
             "data-held": h2[h3] || undefined,
             fill: h2[h3] ? bP.colors.success : "none",
@@ -20034,7 +20050,7 @@ var cme = (h2) =>
       }),
     ],
   });
-var dme = ({
+var ModifierKeysOverlay = ({
   isReplaying: isReplaying,
   modifierTrack: modifierTrack,
   replayFrameStore: replayFrameStore,
@@ -20112,7 +20128,7 @@ var dme = ({
         },
         children: [
           hb &&
-            (0, jsxRuntime.jsx)(cme, {
+            (0, jsxRuntime.jsx)(MouseGlyph, {
               ...hb,
             }),
           (0, jsxRuntime.jsx)("div", {
@@ -20120,7 +20136,7 @@ var dme = ({
               display: "flex",
               gap: 4,
             },
-            children: rme.map(({ label: label, key: hd }) => {
+            children: ROWS.map(({ label: label, key: hd }) => {
               const hf = h9[hd];
               return (0, jsxRuntime.jsx)(
                 "span",
@@ -20149,7 +20165,7 @@ var ume = (h2) => {
     h2.preventDefault();
   }
 };
-var hme = ({
+var ModifiersModal = ({
   encounterName: encounterName,
   modifiers: modifiers,
   initialSelection: initialSelection,
@@ -20158,12 +20174,12 @@ var hme = ({
 }) => {
   const [h8, h9] = (0, React.useState)(initialSelection);
   const ha = (0, React.useRef)(null);
-  yle(ha);
+  useCenteredModalSnap(ha);
   const hb = bpe(ha, onClose);
-  dC(es.ENCOUNTER_PICKER, true, onClose);
+  dC(ESC_PRIORITY.ENCOUNTER_PICKER, true, onClose);
   return (0, jsxRuntime.jsxs)("div", {
     className: "modifiers-modal-overlay",
-    ...dn.overlay,
+    ...sheet.overlay,
     ...hb,
     role: "dialog",
     "aria-modal": "true",
@@ -20176,11 +20192,11 @@ var hme = ({
       (0, jsxRuntime.jsxs)("section", {
         ref: ha,
         className: "modifiers-modal-card centered-modal-snap",
-        ...dn.card,
+        ...sheet.card,
         children: [
           (0, jsxRuntime.jsxs)("header", {
             className: "modifiers-modal-header",
-            ...dn.head,
+            ...sheet.head,
             children: [
               (0, jsxRuntime.jsxs)("div", {
                 className: "modifiers-modal-heading",
@@ -20198,9 +20214,9 @@ var hme = ({
                   }),
                 ],
               }),
-              (0, jsxRuntime.jsx)(fV, {
+              (0, jsxRuntime.jsx)(CloseButton, {
                 className: "modifiers-modal-close",
-                ...dn.close,
+                ...sheet.close,
                 onClick: onClose,
                 "aria-label": "Close",
               }),
@@ -20208,8 +20224,8 @@ var hme = ({
           }),
           (0, jsxRuntime.jsx)("div", {
             className: "modifiers-modal-body",
-            ...dn.body,
-            children: (0, jsxRuntime.jsx)(hpe, {
+            ...sheet.body,
+            children: (0, jsxRuntime.jsx)(ModifierGrid, {
               modifiers: modifiers,
               value: h8,
               onChange: h9,
@@ -20217,7 +20233,7 @@ var hme = ({
           }),
           (0, jsxRuntime.jsxs)("footer", {
             className: "modifiers-modal-footer",
-            ...dn.foot,
+            ...sheet.foot,
             children: [
               (0, jsxRuntime.jsx)(OsrsButton, {
                 onClick: onClose,
@@ -20235,7 +20251,7 @@ var hme = ({
     ],
   });
 };
-var pme = {
+var ENCOUNTER_PLUGINS = {
   colosseumAdditions: {
     encounters: ["sol_heredit"],
     label: "Colosseum",
@@ -20253,12 +20269,12 @@ var pme = {
     label: "Inferno, Zuk wave",
   },
 };
-var mme = {
+var ENCOUNTER_PLUGIN_SECTION_NAMES = {
   inferno: "Inferno",
   sol_heredit: "Colosseum",
 };
 function gme(h2, h3) {
-  return !!h3 && pme[h2].encounters.includes(gR(h3));
+  return !!h3 && ENCOUNTER_PLUGINS[h2].encounters.includes(resolveBaseEncounterKind(h3));
 }
 function fme(h2, h3, h4, h5) {
   if (h4 && gme(h2, h3)) {
@@ -20313,7 +20329,7 @@ function Sme() {
         "boolean" == typeof h3.showPercentage
           ? h3.showPercentage
           : kme.showPercentage,
-      position: gl(h3.position) ?? kme.position,
+      position: parseStoredPosition(h3.position) ?? kme.position,
     };
   } else {
     return {
@@ -20346,13 +20362,13 @@ function Tme() {
       showIcons:
         "boolean" == typeof h3.showIcons ? h3.showIcons : Nme.showIcons,
       speed: typeof h3.speed == "number" ? xme(h3.speed) : Nme.speed,
-      position: gl(h3.position) ?? Nme.position,
+      position: parseStoredPosition(h3.position) ?? Nme.position,
     };
   } else {
     return Nme;
   }
 }
-function Mme(h2) {
+function fixedScaleLabel(h2) {
   const { width: width, height: height } = fZ(h2);
   return h2 + "× (" + width + " × " + height + ")";
 }
@@ -20363,7 +20379,7 @@ function Pme(h2) {
     return 1;
   }
 }
-function Ime({
+function FixedLayoutScaleField({
   fixedLayoutScale: fixedLayoutScale,
   onFixedLayoutScaleChange: onFixedLayoutScaleChange,
   integerScaling: integerScaling,
@@ -20415,9 +20431,9 @@ function Ime({
         className: "plugin-group-label",
         children: "Fixed layout scale",
       }),
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         searchId: null,
-        isModified: fixedLayoutScale !== gu.fixedLayoutScale,
+        isModified: fixedLayoutScale !== PERSISTED_SETTINGS_DEFAULTS.fixedLayoutScale,
         onReset: () => hc("fit"),
         children: (0, jsxRuntime.jsxs)("select", {
           value: hb,
@@ -20438,7 +20454,7 @@ function Ime({
                 "option",
                 {
                   value: String(hf),
-                  children: Mme(hf),
+                  children: fixedScaleLabel(hf),
                 },
                 hf,
               ),
@@ -20451,7 +20467,7 @@ function Ime({
         }),
       }),
       "custom" === hb &&
-        (0, jsxRuntime.jsx)(f5, {
+        (0, jsxRuntime.jsx)(SettingRow, {
           searchId: null,
           isModified: false,
           onReset: () => {},
@@ -20499,11 +20515,11 @@ function Ime({
           }),
         }),
       "number" != typeof fixedLayoutScale &&
-        (0, jsxRuntime.jsx)(f5, {
-          isModified: integerScaling !== gu.fixedLayoutIntegerScaling,
-          onReset: () => onIntegerScalingChange(gu.fixedLayoutIntegerScaling),
+        (0, jsxRuntime.jsx)(SettingRow, {
+          isModified: integerScaling !== PERSISTED_SETTINGS_DEFAULTS.fixedLayoutIntegerScaling,
+          onReset: () => onIntegerScalingChange(PERSISTED_SETTINGS_DEFAULTS.fixedLayoutIntegerScaling),
           searchId: gs("stretchedMode", "Integer scaling"),
-          children: (0, jsxRuntime.jsx)(fd, {
+          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
             label: "Integer scaling",
             checked: integerScaling,
             onChange: onIntegerScalingChange,
@@ -20522,7 +20538,7 @@ function Ime({
     ],
   });
 }
-function Ame(h2) {
+function isZoomKey(h2) {
   return (
     !!h2.ctrlKey &&
     (h2.key === "+" ||
@@ -20551,7 +20567,7 @@ function Dme(h2) {
   return h2.ctrlKey && h2.shiftKey && "f" === h2.key.toLowerCase();
 }
 function Ome(h2) {
-  return Rme(h2) || Ame(h2) || Lme(h2) || Eme(h2) || Dme(h2);
+  return Rme(h2) || isZoomKey(h2) || Lme(h2) || Eme(h2) || Dme(h2);
 }
 function Fme(h2, h3, h4) {
   return {
@@ -20563,7 +20579,7 @@ function Fme(h2, h3, h4) {
     ...h4,
   };
 }
-function $me(h2, h3, h4) {
+function plugin(h2, h3, h4) {
   return {
     id: gs(h2),
     title: h3,
@@ -20583,46 +20599,46 @@ function _me(h2, h3, h4, h5, h6) {
     ...h5,
   };
 }
-var Hme = {
+var TO_LAYOUT = {
   label: "Open Layout settings",
   target: eR("Interface", "Layout"),
 };
-var qme = {
+var TO_DEVICE_MODE = {
   label: "Open Device Mode settings",
   target: eR("Interface", "Device Mode"),
 };
-var Bme = {
+var NEEDS_RESIZABLE = {
   reason: "Requires a Resizable layout.",
-  route: Hme,
+  route: TO_LAYOUT,
 };
-var zme = {
+var NEEDS_FIXED = {
   reason: "Requires the Fixed layout.",
-  route: Hme,
+  route: TO_LAYOUT,
 };
-var Wme = {
+var NEEDS_MOBILE = {
   reason: "Requires the Mobile layout.",
-  route: qme,
+  route: TO_DEVICE_MODE,
 };
-var Gme = {
+var NEEDS_TOUCH = {
   reason: "Requires the Mobile layout or a touch device.",
-  route: qme,
+  route: TO_DEVICE_MODE,
 };
-var Kme = {
+var DESKTOP_ONLY = {
   reason: "Desktop devices only.",
 };
 var jme = {
   reason: "Available in the Inferno.",
 };
-var Ume = {
+var IN_INFERNO_OR_COLOSSEUM = {
   whenUnavailable: {
     reason: "Available in the Inferno and the Colosseum.",
   },
   availability: "In the Inferno and the Colosseum",
 };
-function Vme(h2, h3, h4) {
+function pillarAdditionsEntries(h2, h3, h4) {
   const { scope: scope, pillars: pillars } = h4;
   return [
-    $me(h2, h3, {
+    plugin(h2, h3, {
       ...scope,
       description:
         "Marks the tiles under " + pillars + ", and can stop drawing them.",
@@ -20699,7 +20715,7 @@ var Yme = [
       ],
     }),
     {
-      id: fc,
+      id: GAMEPANEL_KEYBINDS_ID,
       title: "Keybinds",
       panel: "gamepanel",
       breadcrumb: ["Game panel", "Settings"],
@@ -20785,7 +20801,7 @@ var Yme = [
     },
     {
       id: fR.masterVolume,
-      title: fD.masterVolume,
+      title: GAMEPANEL_AUDIO_LABELS.masterVolume,
       panel: "gamepanel",
       breadcrumb: ["Game panel", "Settings", "Audio"],
       kind: "setting",
@@ -20804,7 +20820,7 @@ var Yme = [
     },
     {
       id: fR.sfxVolume,
-      title: fD.sfxVolume,
+      title: GAMEPANEL_AUDIO_LABELS.sfxVolume,
       resultTitle: "Sound effects volume",
       panel: "gamepanel",
       breadcrumb: ["Game panel", "Settings", "Audio"],
@@ -20821,7 +20837,7 @@ var Yme = [
     },
     {
       id: fR.areaVolume,
-      title: fD.areaVolume,
+      title: GAMEPANEL_AUDIO_LABELS.areaVolume,
       resultTitle: "Area sounds volume",
       panel: "gamepanel",
       breadcrumb: ["Game panel", "Settings", "Audio"],
@@ -20839,7 +20855,7 @@ var Yme = [
     },
     {
       id: fR.muteWhenUnfocused,
-      title: fD.muteWhenUnfocused,
+      title: GAMEPANEL_AUDIO_LABELS.muteWhenUnfocused,
       panel: "gamepanel",
       breadcrumb: ["Game panel", "Settings", "Audio"],
       kind: "setting",
@@ -21178,7 +21194,7 @@ var Yme = [
         "panel background",
       ],
       layouts: ["resizable"],
-      whenUnavailable: Bme,
+      whenUnavailable: NEEDS_RESIZABLE,
     }),
     Fme("setting", ["Interface", "Hotkeys close side panel"], {
       description:
@@ -21194,12 +21210,12 @@ var Yme = [
       layouts: ["resizable"],
       whenUnavailable: {
         reason: "Requires the Resizable Modern layout.",
-        route: Hme,
+        route: TO_LAYOUT,
       },
       needsKeyboard: true,
     }),
     Fme("setting", ["Interface", "Transparent chatbox"], {
-      whenUnavailable: Bme,
+      whenUnavailable: NEEDS_RESIZABLE,
       description: "Shows the game through the chatbox background.",
       keywords: [
         "transparent chat",
@@ -21233,7 +21249,7 @@ var Yme = [
       layouts: ["resizable"],
     }),
     Fme("section", ["Interface", "Game window"], {
-      whenUnavailable: Kme,
+      whenUnavailable: DESKTOP_ONLY,
       description:
         "The size of the game view, and popping it out into its own window.",
       keywords: [
@@ -21250,7 +21266,7 @@ var Yme = [
       availability: "Desktop devices",
     }),
     Fme("setting", ["Interface", "Game window", "Resolution"], {
-      whenUnavailable: Bme,
+      whenUnavailable: NEEDS_RESIZABLE,
       description: "Fits the game to the window, or fixes it at a set size.",
       keywords: [
         "viewport",
@@ -21271,7 +21287,7 @@ var Yme = [
       layouts: ["resizable"],
     }),
     Fme("setting", ["Interface", "Game window", "Pop Out Game"], {
-      whenUnavailable: Kme,
+      whenUnavailable: DESKTOP_ONLY,
       description: "Opens the game in a separate window.",
       keywords: [
         "popout",
@@ -21377,7 +21393,7 @@ var Yme = [
       ],
     }),
     Fme("section", ["Mobile"], {
-      whenUnavailable: Gme,
+      whenUnavailable: NEEDS_TOUCH,
       description:
         "Touch controls and the Mobile layout's own options. Titled Touch outside Mobile.",
       keywords: [
@@ -21393,7 +21409,7 @@ var Yme = [
       availability: "Touch devices or the Mobile layout",
     }),
     Fme("setting", ["Mobile", "Long Tap Delay"], {
-      whenUnavailable: Gme,
+      whenUnavailable: NEEDS_TOUCH,
       description: "How long to hold before a tap opens the menu.",
       keywords: [
         "long press",
@@ -21406,7 +21422,7 @@ var Yme = [
       availability: "Touch devices or the Mobile layout",
     }),
     Fme("setting", ["Mobile", "Menu Row Height"], {
-      whenUnavailable: Gme,
+      whenUnavailable: NEEDS_TOUCH,
       description: "Height of each row in menus opened by a long tap.",
       keywords: [
         "menu size",
@@ -21419,7 +21435,7 @@ var Yme = [
       availability: "Touch devices or the Mobile layout",
     }),
     Fme("setting", ["Mobile", "Vibrate on long tap"], {
-      whenUnavailable: Gme,
+      whenUnavailable: NEEDS_TOUCH,
       description: "Buzzes when a long tap opens the menu.",
       keywords: [
         "vibration",
@@ -21434,7 +21450,7 @@ var Yme = [
     }),
     Fme("setting", ["Mobile", "Interface scaling"], {
       resultTitle: "Mobile interface scaling",
-      whenUnavailable: Wme,
+      whenUnavailable: NEEDS_MOBILE,
       description: "Sizes the Mobile layout's interface.",
       keywords: [
         "interface scaling",
@@ -21450,7 +21466,7 @@ var Yme = [
     }),
     Fme("setting", ["Mobile", "Hotkeys"], {
       resultTitle: "Mobile hotkeys",
-      whenUnavailable: Wme,
+      whenUnavailable: NEEDS_MOBILE,
       description: "Chooses what each Mobile hotkey slot opens.",
       keywords: [
         "hotkey",
@@ -21464,14 +21480,14 @@ var Yme = [
       layouts: ["mobile"],
     }),
     Fme("setting", ["Mobile", "Hotkeys open side panels on the left"], {
-      whenUnavailable: Wme,
+      whenUnavailable: NEEDS_MOBILE,
       description: "Opens panels from a hotkey on the left side of the screen.",
       keywords: ["left handed", "left side", "panel side"],
       availability: "Mobile layout",
       layouts: ["mobile"],
     }),
     Fme("setting", ["Mobile", "Edit layout"], {
-      whenUnavailable: Wme,
+      whenUnavailable: NEEDS_MOBILE,
       description:
         "Lets you move the overlays the Mobile layout locks in place.",
       keywords: [
@@ -21507,7 +21523,7 @@ var Yme = [
     }),
   ],
   ...[
-    ...Vme("colosseumAdditions", "Colosseum Additions", {
+    ...pillarAdditionsEntries("colosseumAdditions", "Colosseum Additions", {
       scope: {
         whenUnavailable: {
           reason: "Available in the Colosseum.",
@@ -21517,7 +21533,7 @@ var Yme = [
       pillars: "the Colosseum's four pillars",
       keywords: ["colosseum", "colosseum pillars", "sol heredit", "fortis"],
     }),
-    ...Vme("infernoAdditions", "Inferno Additions", {
+    ...pillarAdditionsEntries("infernoAdditions", "Inferno Additions", {
       scope: {
         whenUnavailable: {
           reason: "Available in the Inferno.",
@@ -21527,8 +21543,8 @@ var Yme = [
       pillars: "the Inferno's pillars",
       keywords: ["inferno", "inferno pillars", "rocky support", "zuk"],
     }),
-    $me("tzhaarHpTracker", "TzHaar HP Tracker", {
-      ...Ume,
+    plugin("tzhaarHpTracker", "TzHaar HP Tracker", {
+      ...IN_INFERNO_OR_COLOSSEUM,
       description:
         "Shows Inferno and Colosseum monsters' hitpoints over them, and marks them alive or dead.",
       keywords: [
@@ -21545,13 +21561,13 @@ var Yme = [
       ],
     }),
     _me("tzhaarHpTracker", "TzHaar HP Tracker", "Show HP", {
-      ...Ume,
+      ...IN_INFERNO_OR_COLOSSEUM,
       description:
         "Where each monster's hitpoints sit: above its health bar, at its center, at its feet, or off.",
       keywords: ["hp location", "hp text", "hitpoints number"],
     }),
     _me("tzhaarHpTracker", "TzHaar HP Tracker", "Highlight style", {
-      ...Ume,
+      ...IN_INFERNO_OR_COLOSSEUM,
       description:
         "Outlines each monster green while alive and red once dead: true tile, south-west tile or clickbox.",
       keywords: [
@@ -21564,7 +21580,7 @@ var Yme = [
       ],
     }),
     _me("tzhaarHpTracker", "TzHaar HP Tracker", "Dynamic HP color", {
-      ...Ume,
+      ...IN_INFERNO_OR_COLOSSEUM,
       description:
         "Shades the hitpoints, the highlight or both from red to green by how much HP a monster has left.",
       keywords: [
@@ -21579,7 +21595,7 @@ var Yme = [
       ],
     }),
     _me("tzhaarHpTracker", "TzHaar HP Tracker", "Recolor menu", {
-      ...Ume,
+      ...IN_INFERNO_OR_COLOSSEUM,
       description:
         "Colors a monster's name green or red in menus and hover text.",
       keywords: [
@@ -21593,12 +21609,12 @@ var Yme = [
       ],
     }),
     _me("tzhaarHpTracker", "TzHaar HP Tracker", "Hide dead NPCs", {
-      ...Ume,
+      ...IN_INFERNO_OR_COLOSSEUM,
       description:
         "Stops drawing dead monsters, except the bosses and their healers.",
       keywords: ["hide dead", "hide corpses", "dead monsters"],
     }),
-    $me("setTimer", "Zuk Set Timer", {
+    plugin("setTimer", "Zuk Set Timer", {
       whenUnavailable: jme,
       description: "Times Zuk's sets by hand.",
       keywords: [
@@ -21627,7 +21643,7 @@ var Yme = [
       ],
       availability: "During Zuk",
     }),
-    $me("antiDrag", "Anti Drag", {
+    plugin("antiDrag", "Anti Drag", {
       description:
         "Holds an inventory item for a moment before it starts dragging, so a click does not become a drag.",
       keywords: [
@@ -21653,7 +21669,7 @@ var Yme = [
       description: "How long to hold an item before it drags, in milliseconds.",
       keywords: ["drag time", "ms"],
     }),
-    $me("attackTimerMetronome", "Attack Timer Metronome", {
+    plugin("attackTimerMetronome", "Attack Timer Metronome", {
       description:
         "Counts down the ticks until your next attack, as a bar and optionally a number above your head.",
       keywords: [
@@ -21691,7 +21707,7 @@ var Yme = [
         ],
       },
     ),
-    $me("bossHealthBar", "Boss Health Bar", {
+    plugin("bossHealthBar", "Boss Health Bar", {
       description: "A movable OSRS-style boss health bar.",
       keywords: [
         "hp bar",
@@ -21713,7 +21729,7 @@ var Yme = [
       resultTitle: "Show hitpoint percentage",
       keywords: ["percent", "hp percent"],
     }),
-    $me("camera", "Camera", {
+    plugin("camera", "Camera", {
       description:
         "Modeled on the RuneLite camera plugin: zoom and pitch limits, camera speed, inverted controls.",
       keywords: [
@@ -21852,7 +21868,7 @@ var Yme = [
       },
       "Zoom",
     ),
-    $me("compactOrbs", "Compact Orbs", {
+    plugin("compactOrbs", "Compact Orbs", {
       description:
         "Hides the minimap and packs the hitpoints, prayer, run and special attack orbs into a block.",
       keywords: [
@@ -21872,7 +21888,7 @@ var Yme = [
       availability: "Resizable layouts",
     }),
     _me("compactOrbs", "Compact Orbs", "Orb order", {
-      whenUnavailable: Bme,
+      whenUnavailable: NEEDS_RESIZABLE,
       resultTitle: "Compact orb order",
       description: "Reorders the orbs in the compact block.",
       keywords: [
@@ -21885,7 +21901,7 @@ var Yme = [
       availability: "Resizable layouts",
       layouts: ["resizable"],
     }),
-    $me("customMenuSwaps", "Custom Menu Swaps", {
+    plugin("customMenuSwaps", "Custom Menu Swaps", {
       description:
         "Changes which option a left click takes, one option,target rule per line.",
       keywords: [
@@ -21903,7 +21919,7 @@ var Yme = [
         "click priority",
       ],
     }),
-    $me("dpsOverlay", "DPS Overlay", {
+    plugin("dpsOverlay", "DPS Overlay", {
       description:
         "A movable panel showing the theoretical DPS of your current attack against your target.",
       keywords: [
@@ -21928,7 +21944,7 @@ var Yme = [
         "defense roll",
       ],
     }),
-    $me("entityHider", "Entity Hider", {
+    plugin("entityHider", "Entity Hider", {
       description:
         "Stops drawing chosen NPCs, projectiles or your own character, models or 2D overlays.",
       keywords: [
@@ -21986,7 +22002,7 @@ var Yme = [
         "Stops drawing an NPC from the tick it dies, death animation included.",
       keywords: ["hide dead", "hide corpses", "death animation", "dying npcs"],
     }),
-    $me("instantInventory", "Instant Inventory", {
+    plugin("instantInventory", "Instant Inventory", {
       description: "Shows inventory and equipment changes straight away.",
       keywords: [
         "gear swap",
@@ -22002,7 +22018,7 @@ var Yme = [
         "Clears conflicting prayer highlights at once instead of on the next tick.",
       keywords: ["prayer switch", "prayer swap", "prayer delay"],
     }),
-    $me("interfaceStyles", "Interface Styles", {
+    plugin("interfaceStyles", "Interface Styles", {
       description: "Changes how the overhead health bars are drawn.",
       keywords: ["ui", "hp", "bar", "hp bar", "health bar", "overhead"],
     }),
@@ -22016,7 +22032,7 @@ var Yme = [
         "classic health bars",
       ],
     }),
-    $me("attackRanges", "Attack Ranges", {
+    plugin("attackRanges", "Attack Ranges", {
       description: "Shows the tiles your weapon can attack and the NPCs on them.",
       keywords: ["attack range", "range", "los", "line of sight", "drag protection", "safespot"],
     }),
@@ -22026,28 +22042,28 @@ var Yme = [
         keywords: [],
       }),
     ),
-    $me("blindfold", "Blindfold", {
+    plugin("blindfold", "Blindfold", {
       description: "Stops drawing the terrain, the scenery, NPCs or the interface: with Skybox, a floor of your colour.",
       keywords: ["blindfold", "hide terrain", "hide scenery", "floor color", "floor colour", "greenscreen", "render"],
     }),
     ...blindfoldStore.options.map((option) =>
       _me("blindfold", "Blindfold", option.label, { description: option.info, keywords: [] }),
     ),
-    $me("defenceTracker", "Defence Tracker", {
+    plugin("defenceTracker", "Defence Tracker", {
       description: "Shows the Defence level an NPC has left after the attacks that drain it, over its head and as an info box.",
       keywords: ["defence", "defense", "party defence", "dwh", "dragon warhammer", "bgs", "bandos godsword", "elder maul", "spec", "drain"],
     }),
     ...defenceTrackerStore.options.map((option) =>
       _me("defenceTracker", "Defence Tracker", option.label, { description: option.info, keywords: [] }),
     ),
-    $me("skybox", "Skybox", {
+    plugin("skybox", "Skybox", {
       description: "The colour of the sky, and of the floor where Blindfold hides the terrain.",
       keywords: ["skybox", "sky", "background", "floor color", "floor colour"],
     }),
     ...skyboxStore.options.map((option) =>
       _me("skybox", "Skybox", option.label, { description: option.info, keywords: [] }),
     ),
-    $me("inventoryTags", "Inventory Tags", {
+    plugin("inventoryTags", "Inventory Tags", {
       description: "Outlines tagged inventory items in color.",
       keywords: [
         "item tags",
@@ -22069,7 +22085,7 @@ var Yme = [
         "reset tags",
       ],
     }),
-    $me("lineMarkers", "Line Markers", {
+    plugin("lineMarkers", "Line Markers", {
       description: "Marks lines along tile edges.",
       keywords: [
         "lines",
@@ -22115,7 +22131,7 @@ var Yme = [
       resultTitle: "Line marker width",
       keywords: ["thickness", "line thickness", "width"],
     }),
-    $me("npcHighlights", "NPC Highlights", {
+    plugin("npcHighlights", "NPC Highlights", {
       description: "Highlights chosen NPCs and their true tiles.",
       keywords: [
         "npc indicators",
@@ -22150,7 +22166,7 @@ var Yme = [
         "menu text",
       ],
     }),
-    $me("prayer", "Prayer", {
+    plugin("prayer", "Prayer", {
       description:
         "Sweeps a line across the prayer orb once per game tick, as a flicking aid.",
       keywords: [
@@ -22170,7 +22186,7 @@ var Yme = [
       description: "Keeps the sweep showing while no prayer is active.",
       keywords: ["always show", "always on", "flicking"],
     }),
-    $me("prayerFlickHelper", "Prayer Flick Helper", {
+    plugin("prayerFlickHelper", "Prayer Flick Helper", {
       description:
         "Draws the last three game ticks as bars and marks where each prayer toggle landed in its tick.",
       keywords: [
@@ -22183,7 +22199,7 @@ var Yme = [
         "prayer timing",
       ],
     }),
-    $me("projectileOverride", "Projectile Override", {
+    plugin("projectileOverride", "Projectile Override", {
       description: "Draws a boss's projectiles as another boss's projectiles.",
       keywords: ["projectile", "colorblind", "colourblind", "accessibility", "recolor", "recolour", "swap projectiles"],
     }),
@@ -22193,7 +22209,7 @@ var Yme = [
         keywords: [],
       }),
     ),
-    $me("statusBars", "Status Bars", {
+    plugin("statusBars", "Status Bars", {
       description:
         "Hitpoints and prayer bars either side of the inventory panel.",
       keywords: [
@@ -22210,7 +22226,7 @@ var Yme = [
         "Writes your current hitpoints and prayer under each bar's icon.",
       keywords: ["numbers", "hp numbers", "prayer points"],
     }),
-    $me("stretchedMode", "Stretched Mode", {
+    plugin("stretchedMode", "Stretched Mode", {
       description: "Scales the game interface.",
       keywords: [
         "interface scaling",
@@ -22234,7 +22250,7 @@ var Yme = [
       ],
     }),
     _me("stretchedMode", "Stretched Mode", "UI scale", {
-      whenUnavailable: Bme,
+      whenUnavailable: NEEDS_RESIZABLE,
       description: "Sizes the game panel, minimap and orbs.",
       keywords: [
         "ui size",
@@ -22248,7 +22264,7 @@ var Yme = [
       layouts: ["resizable"],
     }),
     _me("stretchedMode", "Stretched Mode", "Fixed layout scale", {
-      whenUnavailable: zme,
+      whenUnavailable: NEEDS_FIXED,
       description:
         "Sizes the Fixed client by a multiple of 765 × 503, fits it to the window, or stretches it to fill.",
       keywords: [
@@ -22322,7 +22338,7 @@ var Yme = [
       description: "Sizes health bars, hitsplats and overhead prayers.",
       keywords: ["hp bar size", "health bar size", "prayer size", "percent"],
     }),
-    $me("tickAudioMetronome", "Tick Audio Metronome", {
+    plugin("tickAudioMetronome", "Tick Audio Metronome", {
       description: "Plays a soft tick-tock on every game tick.",
       keywords: [
         "sound",
@@ -22349,7 +22365,7 @@ var Yme = [
       description: "Sets how loud the metronome ticks.",
       keywords: ["sound", "audio", "loudness", "loud", "quiet", "mute"],
     }),
-    $me("tickCounter", "Tick Counter", {
+    plugin("tickCounter", "Tick Counter", {
       description:
         "Counts game ticks in a repeating cycle, in an infobox, above your head, or both.",
       keywords: [
@@ -22388,7 +22404,7 @@ var Yme = [
       description: "A color for each tick of the cycle.",
       keywords: ["tick colours", "tick colors", "colour", "color"],
     }),
-    $me("tileGrid", "Tile Grid", {
+    plugin("tileGrid", "Tile Grid", {
       description:
         "Draws a grid of tile lines on the ground, under your tile markers and outlines.",
       keywords: [
@@ -22414,7 +22430,7 @@ var Yme = [
       resultTitle: "Tile grid line width",
       keywords: ["thickness", "grid width", "width"],
     }),
-    $me("tileIndicators", "Tile Indicators", {
+    plugin("tileIndicators", "Tile Indicators", {
       description:
         "Highlights your true tile, destination tile and hovered tile.",
       keywords: [
@@ -22461,7 +22477,7 @@ var Yme = [
         "color",
       ],
     }),
-    $me("tileMarkers", "Tile Markers", {
+    plugin("tileMarkers", "Tile Markers", {
       description: "Marks and labels tiles, like RuneLite ground markers.",
       keywords: [
         "ground markers",
@@ -22514,7 +22530,7 @@ var Yme = [
       resultTitle: "Tile marker border width",
       keywords: ["thickness", "outline width", "width"],
     }),
-    $me("xpDrops", "XP Drops", {
+    plugin("xpDrops", "XP Drops", {
       description:
         "Shows XP drops as you fight, with optional skill icons and a predicted hit.",
       keywords: [
@@ -22550,7 +22566,7 @@ var Zme = 1;
 var Xme = 0.95;
 var Qme = 0.57;
 var ege = new Set(["description", "availability"]);
-var tge = new Set([
+var STOPWORDS = new Set([
   "a",
   "an",
   "and",
@@ -22604,7 +22620,7 @@ var tge = new Set([
   "these",
   "those",
 ]);
-var nge = [
+var SYNONYM_GROUPS = [
   ["color", "colour"],
   ["grey", "gray"],
   ["centre", "center"],
@@ -22648,7 +22664,7 @@ function ige(h2) {
     return [];
   }
 }
-function oge(h2) {
+function undouble(h2) {
   const length5 = h2.length;
   if (
     length5 >= 4 &&
@@ -22660,7 +22676,7 @@ function oge(h2) {
     return h2;
   }
 }
-function rge(h2) {
+function stem(h2) {
   let h4 = h2;
   if (h4.length >= 5 && h4.endsWith("ies")) {
     h4 = h4.slice(0, -3) + "y";
@@ -22672,12 +22688,12 @@ function rge(h2) {
   if (h4.length >= 7 && h4.endsWith("ness")) {
     h4 = h4.slice(0, -4);
   } else if (h4.length >= 6 && h4.endsWith("ing")) {
-    h4 = oge(h4.slice(0, -3));
+    h4 = undouble(h4.slice(0, -3));
   } else if (
     (h4.length >= 5 && h4.endsWith("ed") && !h4.endsWith("eed")) ||
     (h4.length >= 5 && h4.endsWith("er"))
   ) {
-    h4 = oge(h4.slice(0, -2));
+    h4 = undouble(h4.slice(0, -2));
   }
   if (h4.length >= 4 && h4.endsWith("e")) {
     h4 = h4.slice(0, -1);
@@ -22734,11 +22750,11 @@ function sge(h2, h3, h4 = Number.POSITIVE_INFINITY) {
 function lge(h2) {
   return {
     raw: h2,
-    stem: rge(h2),
+    stem: stem(h2),
   };
 }
 function cge(h2) {
-  const h3 = h2.filter((h4) => !tge.has(h4));
+  const h3 = h2.filter((h4) => !STOPWORDS.has(h4));
   if (h3.length > 0) {
     return h3;
   } else {
@@ -22749,7 +22765,7 @@ function dge(h2, h3) {
   const h5 = ige(h3);
   const h6 = h5.map(lge);
   for (let h8 = 0; h8 + 1 < h5.length; h8++) {
-    if (!tge.has(h5[h8]) && !tge.has(h5[h8 + 1])) {
+    if (!STOPWORDS.has(h5[h8]) && !STOPWORDS.has(h5[h8 + 1])) {
       h6.push(lge(h5[h8] + h5[h8 + 1]));
     }
   }
@@ -22758,18 +22774,18 @@ function dge(h2, h3) {
     field: h2,
     text: h3,
     normalized: h7.join(" "),
-    stemmed: h7.map(rge).join(" "),
+    stemmed: h7.map(stem).join(" "),
     tokens: h6,
   };
 }
-function uge(h2) {
+function prepareEntry(h2) {
   const h4 = dge("title", h2.title);
   const h5 = h2.resultTitle ? dge("title", h2.resultTitle) : h4;
   const h6 = (function (h8) {
     const h9 = ige(h8.title);
     const ha =
       h8.resultTitle && h9.length > 1 ? ige(h8.resultTitle).at(-1) : undefined;
-    if (!ha || h9.some((hb) => rge(hb) === rge(ha))) {
+    if (!ha || h9.some((hb) => stem(hb) === stem(ha))) {
       return h8.title;
     } else {
       return h8.title + " " + ha;
@@ -22804,12 +22820,12 @@ function pge(h2) {
       for (const h7 of [h6.title, ...(h6.keywords ?? []), ...h6.breadcrumb]) {
         for (const h8 of ige(h7)) {
           h5.add(h8);
-          h5.add(rge(h8));
+          h5.add(stem(h8));
         }
       }
     }
     h4 = {
-      entries: h2.map(uge),
+      entries: h2.map(prepareEntry),
       vocabulary: h5,
     };
     hge.set(h2, h4);
@@ -22818,8 +22834,8 @@ function pge(h2) {
 }
 var mge = (() => {
   const h3 = new Map();
-  for (const h4 of nge) {
-    const h5 = new Set(h4.map(rge));
+  for (const h4 of SYNONYM_GROUPS) {
+    const h5 = new Set(h4.map(stem));
     for (const h6 of h5) {
       const h7 = h3.get(h6) ?? new Set();
       for (const h8 of h5) {
@@ -22851,7 +22867,7 @@ function gge(h2, h3) {
     stemmed: h6.map((h7) => h7.stem).join(" "),
   };
 }
-function fge(h2, h3) {
+function compareToken(h2, h3) {
   let h5 = h2.cache.get(h3.raw);
   if (h5 === undefined) {
     h5 = (function (h6, h7) {
@@ -22914,7 +22930,7 @@ function yge(h2, h3) {
     ("prefix" === h2.kind && h3.isLast && !h3.isWord)
   );
 }
-function bge(h2, h3, h4) {
+function scoreEntry(h2, h3, h4) {
   const h5 = {
     McsuU: function (hi, hj) {
       return hi - hj;
@@ -22970,10 +22986,10 @@ function bge(h2, h3, h4) {
       const hl = ege.has(hk.field);
       let hm = null;
       for (const hp of hk.tokens) {
-        if (hl && tge.has(hp.raw)) {
+        if (hl && STOPWORDS.has(hp.raw)) {
           continue;
         }
-        const hr = fge(hi, hp);
+        const hr = compareToken(hi, hp);
         if (!!hr && (!hl || !!yge(hr, hi))) {
           if (!hm || hr.quality > hm.quality) {
             hm = hr;
@@ -23075,7 +23091,7 @@ function vge(h2, h3, h4) {
     const ha = lge(h9);
     if (
       h6.some((hb) => {
-        const hc = fge(hb, ha)?.kind;
+        const hc = compareToken(hb, ha)?.kind;
         return hc !== undefined && "synonym" !== hc;
       })
     ) {
@@ -23092,7 +23108,7 @@ function wge(h2, h3, h4 = {}) {
   }
   const h8 = [];
   for (const h9 of h6.entries) {
-    const ha = bge(h9, h7, h4.layout);
+    const ha = scoreEntry(h9, h7, h4.layout);
     if (ha) {
       const hb = vge(h9.entry, h7.tokens, ha.matchedOn);
       h8.push({
@@ -23124,7 +23140,7 @@ function Sge(h2, h3) {
   const h6 = 1 - sge(h2, h3.slice(0, h2.length)) / h2.length;
   return Math.max(h5, 0.9 * h6);
 }
-function Cge(h2, h3, h4 = {}) {
+function suggest(h2, h3, h4 = {}) {
   const h6 = pge(h3);
   const h7 = gge(h2, h6.vocabulary);
   if (0 === h7.tokens.length) {
@@ -23176,7 +23192,7 @@ function Cge(h2, h3, h4 = {}) {
   return ha.slice(0, h8);
 }
 var Nge = new Map(Yme.map((h2) => [h2.id, h2]));
-function xge(h2, h3, h4 = 0) {
+function blockedNow(h2, h3, h4 = 0) {
   const h6 = (function (h9, ha) {
     if (h9.needsKeyboard && ha.touchOnly) {
       return "Needs a keyboard.";
@@ -23202,7 +23218,7 @@ function xge(h2, h3, h4 = 0) {
   };
   const h8 = h7.route ? Nge.get(h7.route.target) : undefined;
   if (h8 && h4 < 3) {
-    const h9 = xge(h8, h3, h4 + 1);
+    const h9 = blockedNow(h8, h3, h4 + 1);
     if (h9) {
       return h9;
     }
@@ -23239,7 +23255,7 @@ function Mge(h2, h3) {
     hidden: h2.length - h8.length - h9.length,
   };
 }
-function Pge({ result: result }) {
+function HighlightedTitle({ result: result }) {
   const h4 = result.entry.resultTitle ?? result.entry.title;
   const h5 = [];
   let h6 = 0;
@@ -23293,7 +23309,7 @@ function Ige() {
     ],
   });
 }
-function Age() {
+function ChevronGlyph() {
   return (0, jsxRuntime.jsx)("svg", {
     className: "drawer-search-result__chevron",
     width: "8",
@@ -23332,7 +23348,7 @@ var Oge = new Set();
 function Fge(h2) {
   Oge.add(h2);
 }
-function $ge(h2, h3) {
+function useSidebarSearch(h2, h3) {
   const [h5, h6] = (0, React.useState)("");
   const [h7, h8] = (0, React.useState)(false);
   const [h9, ha] = (0, React.useState)(false);
@@ -23429,7 +23445,7 @@ function $ge(h2, h3) {
     },
   };
 }
-function _ge({ search: search, fieldId: fieldId }) {
+function SidebarSearchToggle({ search: search, fieldId: fieldId }) {
   const h5 = (0, React.useRef)("mouse");
   return (0, jsxRuntime.jsx)(eB, {
     hint: "Search",
@@ -23451,12 +23467,12 @@ function _ge({ search: search, fieldId: fieldId }) {
         search.expand("touch" !== h5.current && h5.current !== "pen");
       }
     },
-    children: (0, jsxRuntime.jsx)(dy, {
+    children: (0, jsxRuntime.jsx)(LauncherIcon, {
       glyph: "search",
     }),
   });
 }
-function Hge({ search: search, fieldId: fieldId, resultsId: resultsId }) {
+function SidebarSearchField({ search: search, fieldId: fieldId, resultsId: resultsId }) {
   const {
     query: query,
     type: type,
@@ -23539,7 +23555,7 @@ function Hge({ search: search, fieldId: fieldId, resultsId: resultsId }) {
     ],
   });
 }
-function qge({
+function SidebarSearchBar({
   search: search,
   fieldId: fieldId,
   resultsId: resultsId,
@@ -23559,7 +23575,7 @@ function qge({
       className: "drawer-search-bar" + (className ? " " + className : ""),
       children: [
         search.open &&
-          (0, jsxRuntime.jsx)(Hge, {
+          (0, jsxRuntime.jsx)(SidebarSearchField, {
             search: search,
             fieldId: fieldId,
             resultsId: resultsId,
@@ -23597,11 +23613,11 @@ function qge({
     return null;
   }
 }
-function Bge({ result: result }) {
+function ResultText({ result: result }) {
   const { entry: entry } = result;
   return (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
     children: [
-      (0, jsxRuntime.jsx)(Pge, {
+      (0, jsxRuntime.jsx)(HighlightedTitle, {
         result: result,
       }),
       (0, jsxRuntime.jsx)("span", {
@@ -23616,7 +23632,7 @@ function Bge({ result: result }) {
     ],
   });
 }
-function zge({ result: result, onChoose: onChoose }) {
+function ResultRow({ result: result, onChoose: onChoose }) {
   return (0, jsxRuntime.jsx)("li", {
     className: "drawer-search-result-item",
     children: (0, jsxRuntime.jsxs)("button", {
@@ -23627,16 +23643,16 @@ function zge({ result: result, onChoose: onChoose }) {
       children: [
         (0, jsxRuntime.jsx)("span", {
           className: "drawer-search-result__text",
-          children: (0, jsxRuntime.jsx)(Bge, {
+          children: (0, jsxRuntime.jsx)(ResultText, {
             result: result,
           }),
         }),
-        (0, jsxRuntime.jsx)(Age, {}),
+        (0, jsxRuntime.jsx)(ChevronGlyph, {}),
       ],
     }),
   });
 }
-function Wge({ result: result, unavailable: unavailable, onChoose: onChoose }) {
+function UnavailableRow({ result: result, unavailable: unavailable, onChoose: onChoose }) {
   return (0, jsxRuntime.jsx)("li", {
     className: "drawer-search-result-item",
     children: (0, jsxRuntime.jsx)("div", {
@@ -23644,7 +23660,7 @@ function Wge({ result: result, unavailable: unavailable, onChoose: onChoose }) {
       children: (0, jsxRuntime.jsxs)("span", {
         className: "drawer-search-result__text",
         children: [
-          (0, jsxRuntime.jsx)(Bge, {
+          (0, jsxRuntime.jsx)(ResultText, {
             result: result,
           }),
           (0, jsxRuntime.jsx)("span", {
@@ -23671,7 +23687,7 @@ function Wge({ result: result, unavailable: unavailable, onChoose: onChoose }) {
     }),
   });
 }
-function Gge({ search: search, id: h3, layout: layout }) {
+function SidebarSearchResults({ search: search, id: h3, layout: layout }) {
   const {
     query: query,
     showAll: showAll,
@@ -23693,13 +23709,13 @@ function Gge({ search: search, id: h3, layout: layout }) {
     [query, layout],
   );
   const hg = (0, React.useMemo)(
-    () => (hf.length === 0 ? Tge(query, Cge(query, Yme)) : []),
+    () => (hf.length === 0 ? Tge(query, suggest(query, Yme)) : []),
     [hf.length, query],
   );
   const hh = hf.length > 0 ? hf : hg;
   const hi = hh.map((hr) => ({
     result: hr,
-    unavailable: xge(hr.entry, hc),
+    unavailable: blockedNow(hr.entry, hc),
   }));
   const {
     shownUsable: shownUsable,
@@ -23748,7 +23764,7 @@ function Gge({ search: search, id: h3, layout: layout }) {
           className: "drawer-search-results__list",
           children: shownUsable.map(({ result: result }) =>
             (0, jsxRuntime.jsx)(
-              zge,
+              ResultRow,
               {
                 result: result,
                 onChoose: ho,
@@ -23770,7 +23786,7 @@ function Gge({ search: search, id: h3, layout: layout }) {
                 ({ result: result, unavailable: unavailable }) =>
                   unavailable
                     ? (0, jsxRuntime.jsx)(
-                        Wge,
+                        UnavailableRow,
                         {
                           result: result,
                           unavailable: unavailable,
@@ -23799,7 +23815,7 @@ function Gge({ search: search, id: h3, layout: layout }) {
     ],
   });
 }
-function Kge() {
+function useSearchIds() {
   const h2 = (0, React.useId)().replace(/:/g, "");
   return {
     fieldId: "drawer-search-field-" + h2,
@@ -23840,7 +23856,7 @@ function jge(h2, h3) {
     inputRef: h7,
   };
 }
-var Uge = ({
+var TickColorChip = ({
   tick: tick,
   max: h3,
   overrides: overrides,
@@ -23889,7 +23905,7 @@ var Uge = ({
     ],
   });
 };
-var Vge = ({
+var TickColorAll = ({
   max: h2,
   uniformColor: uniformColor,
   onCommit: onCommit,
@@ -23925,7 +23941,7 @@ var Vge = ({
     ],
   });
 };
-var Yge = ({
+var TickColorChips = ({
   max: h2,
   colors: colors,
   onChange: onChange,
@@ -23945,7 +23961,7 @@ var Yge = ({
   return (0, jsxRuntime.jsxs)("div", {
     className: "tick-color-controls",
     children: [
-      (0, jsxRuntime.jsx)(Vge, {
+      (0, jsxRuntime.jsx)(TickColorAll, {
         max: h2,
         uniformColor: h9,
         onCommit: (hc) => onChange(bU(h2, hc)),
@@ -23955,7 +23971,7 @@ var Yge = ({
         className: "tick-color-chips",
         children: h7.map((hc) =>
           (0, jsxRuntime.jsx)(
-            Uge,
+            TickColorChip,
             {
               tick: hc,
               max: h2,
@@ -24006,7 +24022,7 @@ var Jge = ({ color: color, onCommit: onCommit, onMouseDown: onMouseDown }) => {
     }),
   });
 };
-var Zge = ({
+var OsrsToggle = ({
   checked: checked,
   onChange: onChange,
   disabled: disabled,
@@ -24043,7 +24059,7 @@ function Qge(h2, h3) {
     };
   }
 }
-var efe = ({
+var PluginRow = ({
   label: label,
   pluginKey: pluginKey,
   isOn: isOn,
@@ -24126,7 +24142,7 @@ var efe = ({
             ],
           }),
           onToggle &&
-            (0, jsxRuntime.jsx)(Zge, {
+            (0, jsxRuntime.jsx)(OsrsToggle, {
               checked: !!isOn,
               onChange: () => onToggle(),
               disabled: toggleDisabled,
@@ -24158,7 +24174,7 @@ function tfe(h2) {
     h2.stopPropagation();
   }
 }
-function nfe({
+function OverheadNumberPlacementRows({
   pluginKey: pluginKey,
   placement: placement,
   defaults: defaults,
@@ -24169,7 +24185,7 @@ function nfe({
 }) {
   return (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
     children: [
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         searchId: gs(pluginKey, "Show Above Prayer Icon"),
         isModified: placement.abovePrayerIcon !== defaults.abovePrayerIcon,
         onReset: () => {
@@ -24177,14 +24193,14 @@ function nfe({
             onAbovePrayerIconToggle();
           }
         },
-        children: (0, jsxRuntime.jsx)(fd, {
+        children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
           label: "Show Above Prayer Icon",
           checked: placement.abovePrayerIcon,
           onChange: () => onAbovePrayerIconToggle(),
           disabled: disabled,
         }),
       }),
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         searchId: gs(pluginKey, "Offset"),
         isModified:
           placement.offsetX !== defaults.offsetX ||
@@ -24217,7 +24233,7 @@ function nfe({
                         "aria-hidden": "true",
                         children: ha,
                       }),
-                      (0, jsxRuntime.jsx)(dP, {
+                      (0, jsxRuntime.jsx)(OsrsNumberInput, {
                         min: -200,
                         max: 200,
                         fieldWidth: 34,
@@ -24240,7 +24256,7 @@ function nfe({
           ],
         }),
       }),
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         searchId: gs(pluginKey, "Font Size"),
         isModified: placement.fontSize !== defaults.fontSize,
         onReset: () => onFontSizeChange(defaults.fontSize),
@@ -24251,7 +24267,7 @@ function nfe({
               className: "plugin-setting-label",
               children: "Font Size:",
             }),
-            (0, jsxRuntime.jsx)(dP, {
+            (0, jsxRuntime.jsx)(OsrsNumberInput, {
               min: 8,
               max: 72,
               value: placement.fontSize,
@@ -24270,16 +24286,16 @@ function nfe({
     ],
   });
 }
-function afe({ enabled: enabled, onToggle: onToggle }) {
+function AutoOverlaySizeSetting({ enabled: enabled, onToggle: onToggle }) {
   return (0, jsxRuntime.jsx)("div", {
     className: "overlay-size-setting",
     title:
       "Makes the menus, replay bar, panels and plugin overlays larger on bigger screens.",
-    children: (0, jsxRuntime.jsx)(f5, {
+    children: (0, jsxRuntime.jsx)(SettingRow, {
       isModified: !enabled,
       onReset: () => !enabled && onToggle(),
       searchId: gs("stretchedMode", "Auto-size interface and overlays"),
-      children: (0, jsxRuntime.jsx)(fd, {
+      children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
         label: "Auto-size interface and overlays",
         checked: enabled,
         onChange: onToggle,
@@ -24298,11 +24314,11 @@ function sceneOverlayScaleSetting({
   return (0, jsxRuntime.jsxs)("div", {
     className: "overlay-size-setting",
     children: [
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         isModified: !follow,
         onReset: () => !follow && onFollowToggle(),
         searchId: gs("stretchedMode", "Scale health bars, hitsplats and prayers with UI"),
-        children: (0, jsxRuntime.jsx)(fd, {
+        children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
           label: "Scale health bars, hitsplats and prayers with UI",
           checked: follow,
           onChange: onFollowToggle,
@@ -24319,7 +24335,7 @@ function sceneOverlayScaleSetting({
               title: "Sizes health bars, hitsplats and overhead prayers.",
               children: "Health bar, hitsplat and prayer scale",
             }),
-            (0, jsxRuntime.jsx)(dP, {
+            (0, jsxRuntime.jsx)(OsrsNumberInput, {
               id: "stretched-mode-scene-overlay-scale",
               value: percent,
               min: 50,
@@ -24340,7 +24356,7 @@ function sceneOverlayScaleSetting({
     ],
   });
 }
-function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
+function PillarAdditionsSettings({ pluginKey: pluginKey, options: options, onChange: onChange }) {
   const h6 = aW;
   return (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
     children: [
@@ -24349,7 +24365,7 @@ function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
         ["markPillarTiles", "Mark pillar tiles"],
       ].map(([h7, h8]) =>
         (0, jsxRuntime.jsx)(
-          f5,
+          SettingRow,
           {
             isModified: options[h7] !== h6[h7],
             onReset: () =>
@@ -24358,7 +24374,7 @@ function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
                 [h7]: h6[h7],
               }),
             searchId: gs(pluginKey, h8),
-            children: (0, jsxRuntime.jsx)(fd, {
+            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
               label: h8,
               checked: options[h7],
               onChange: () =>
@@ -24379,7 +24395,7 @@ function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
             className: "plugin-group-label",
             children: "Pillar marker style",
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             searchId: null,
             isModified: options.pillarMarkerStyle !== h6.pillarMarkerStyle,
             onReset: () =>
@@ -24414,7 +24430,7 @@ function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
           }),
         ],
       }),
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         isModified: options.pillarTileColor !== h6.pillarTileColor,
         onReset: () =>
           onChange({
@@ -24441,7 +24457,7 @@ function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
           ],
         }),
       }),
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         isModified: options.pillarTileOpacity !== h6.pillarTileOpacity,
         onReset: () =>
           onChange({
@@ -24456,7 +24472,7 @@ function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
               className: "plugin-setting-label",
               children: "Opacity (%):",
             }),
-            (0, jsxRuntime.jsx)(dP, {
+            (0, jsxRuntime.jsx)(OsrsNumberInput, {
               min: 0,
               max: 100,
               value: Math.round(options.pillarTileOpacity * 100),
@@ -24480,7 +24496,7 @@ function ife({ pluginKey: pluginKey, options: options, onChange: onChange }) {
 // A plugin of client/plugins/pluginStore.js in the Plugins panel: its switch and its settings, read from its store.
 function PluginStoreEntry({ label: label, store: store, expanded: expanded, onToggleExpand: onToggleExpand }) {
   const state = (0, React.useSyncExternalStore)(store.subscribe, store.getState);
-  return (0, jsxRuntime.jsx)(efe, {
+  return (0, jsxRuntime.jsx)(PluginRow, {
     label: label,
     pluginKey: store.key,
     isOn: state.enabled,
@@ -24505,7 +24521,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
   const set = (key, value) => onChange({ ...options, [key]: value });
   const row = (option, label, control) =>
     (0, jsxRuntime.jsx)(
-      f5,
+      SettingRow,
       {
         isModified: options[option.key] !== defaults[option.key],
         onReset: () => set(option.key, defaults[option.key]),
@@ -24528,14 +24544,14 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
     const value = options[option.key];
     if (option.type === "boolean") {
       return (0, jsxRuntime.jsx)(
-        f5,
+        SettingRow,
         {
           isModified: value !== defaults[option.key],
           onReset: () => set(option.key, defaults[option.key]),
           searchId: gs(pluginKey, option.label),
           children: (0, jsxRuntime.jsx)("div", {
             title: option.info,
-            children: (0, jsxRuntime.jsx)(fd, {
+            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
               label: option.label,
               checked: value,
               onChange: () => set(option.key, !value),
@@ -24562,7 +24578,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
       return row(
         option,
         option.label + ":",
-        (0, jsxRuntime.jsx)(dP, {
+        (0, jsxRuntime.jsx)(OsrsNumberInput, {
           min: option.min,
           max: option.max,
           value: String(value),
@@ -24591,7 +24607,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
               onMouseDown: tfe,
             }),
             (0, jsxRuntime.jsx)("span", { className: "plugin-setting-label", children: "Alpha:" }),
-            (0, jsxRuntime.jsx)(dP, {
+            (0, jsxRuntime.jsx)(OsrsNumberInput, {
               min: 0,
               max: 255,
               value: String(alpha),
@@ -24667,7 +24683,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
     ),
   });
 }
-function ofe({ layout: layout }) {
+function CompactOrbsLayoutGlyph({ layout: layout }) {
   return (0, jsxRuntime.jsx)("svg", {
     width: "18",
     height: "18",
@@ -24709,10 +24725,10 @@ function ofe({ layout: layout }) {
     ),
   });
 }
-var rfe = gu;
+var rfe = PERSISTED_SETTINGS_DEFAULTS;
 var sfe = bme;
 var lfe = aL;
-var cfe = (0, React.memo)(
+var PluginsPanelContent = (0, React.memo)(
   ({
     visible: visible,
     onClose: onClose,
@@ -25352,8 +25368,8 @@ var cfe = (0, React.memo)(
     };
     const [l6, l7] = (0, React.useState)({});
     const l8 = (0, React.useRef)(null);
-    const l9 = $ge("plugins", visible);
-    const { fieldId: fieldId, resultsId: resultsId } = Kge();
+    const l9 = useSidebarSearch("plugins", visible);
+    const { fieldId: fieldId, resultsId: resultsId } = useSearchIds();
     gb("plugins", l8, (lC) => {
       const lE = lC.split(".")[1];
       if (lE) {
@@ -25379,7 +25395,7 @@ var cfe = (0, React.memo)(
       lr || ls || lu || lv
         ? (function (lC) {
             if (lC) {
-              return mme[gR(lC)] ?? null;
+              return ENCOUNTER_PLUGIN_SECTION_NAMES[resolveBaseEncounterKind(lC)] ?? null;
             } else {
               return null;
             }
@@ -25424,10 +25440,10 @@ var cfe = (0, React.memo)(
     })();
     const lz = new Map(fo.map((lC) => [lC.value, lC.label]));
     const lB = {
-      hitpoints: gk.orbHitpointsIcon,
-      prayer: gk.orbPrayerIcon,
-      run: gk.orbRunIcon,
-      special: gk.orbSpecialIcon,
+      hitpoints: MINIMAP.orbHitpointsIcon,
+      prayer: MINIMAP.orbPrayerIcon,
+      run: MINIMAP.orbRunIcon,
+      special: MINIMAP.orbSpecialIcon,
     };
     return (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
       children: [
@@ -25437,7 +25453,7 @@ var cfe = (0, React.memo)(
         }),
         (0, jsxRuntime.jsxs)("aside", {
           className: "plugins-overlay " + (visible ? "open" : ""),
-          ...dn.drawer,
+          ...sheet.drawer,
           inert: l5.VPjKU(!visible, undefined),
           onTransitionEnd: (lC) => {
             if (
@@ -25464,7 +25480,7 @@ var cfe = (0, React.memo)(
                 (0, jsxRuntime.jsxs)("div", {
                   className: "panel-header-icons",
                   children: [
-                    (0, jsxRuntime.jsx)(_ge, {
+                    (0, jsxRuntime.jsx)(SidebarSearchToggle, {
                       search: l9,
                       fieldId: fieldId,
                     }),
@@ -25472,9 +25488,9 @@ var cfe = (0, React.memo)(
                       className: "panel-header-divider",
                       "aria-hidden": "true",
                     }),
-                    (0, jsxRuntime.jsx)(fV, {
+                    (0, jsxRuntime.jsx)(CloseButton, {
                       className: "panel-close-button",
-                      ...dn.close,
+                      ...sheet.close,
                       onClick: onClose,
                       "aria-label": "Close plugins",
                     }),
@@ -25482,7 +25498,7 @@ var cfe = (0, React.memo)(
                 }),
               ],
             }),
-            (0, jsxRuntime.jsx)(qge, {
+            (0, jsxRuntime.jsx)(SidebarSearchBar, {
               search: l9,
               fieldId: fieldId,
               resultsId: resultsId,
@@ -25502,42 +25518,42 @@ var cfe = (0, React.memo)(
                         children: lw,
                       }),
                     lu &&
-                      (0, jsxRuntime.jsx)(efe, {
+                      (0, jsxRuntime.jsx)(PluginRow, {
                         label: "Colosseum Additions",
                         pluginKey: "colosseumAdditions",
-                        scope: pme.colosseumAdditions.label,
+                        scope: ENCOUNTER_PLUGINS.colosseumAdditions.label,
                         isOn: colosseumAdditionsEnabled,
                         onToggle: onColosseumAdditionsToggle,
                         hasSettings: true,
                         expanded: l6.colosseumAdditions,
                         onToggleExpand: () => lx("colosseumAdditions"),
-                        children: (0, jsxRuntime.jsx)(ife, {
+                        children: (0, jsxRuntime.jsx)(PillarAdditionsSettings, {
                           pluginKey: "colosseumAdditions",
                           options: colosseumAdditions,
                           onChange: onColosseumAdditionsChange,
                         }),
                       }),
                     ls &&
-                      (0, jsxRuntime.jsx)(efe, {
+                      (0, jsxRuntime.jsx)(PluginRow, {
                         label: "Inferno Additions",
                         pluginKey: "infernoAdditions",
-                        scope: pme.infernoAdditions.label,
+                        scope: ENCOUNTER_PLUGINS.infernoAdditions.label,
                         isOn: infernoAdditionsEnabled,
                         onToggle: onInfernoAdditionsToggle,
                         hasSettings: true,
                         expanded: l6.infernoAdditions,
                         onToggleExpand: () => lx("infernoAdditions"),
-                        children: (0, jsxRuntime.jsx)(ife, {
+                        children: (0, jsxRuntime.jsx)(PillarAdditionsSettings, {
                           pluginKey: "infernoAdditions",
                           options: infernoAdditions,
                           onChange: onInfernoAdditionsChange,
                         }),
                       }),
                     lr &&
-                      (0, jsxRuntime.jsxs)(efe, {
+                      (0, jsxRuntime.jsxs)(PluginRow, {
                         label: "TzHaar HP Tracker",
                         pluginKey: "tzhaarHpTracker",
-                        scope: pme.tzhaarHpTracker.label,
+                        scope: ENCOUNTER_PLUGINS.tzhaarHpTracker.label,
                         isOn: tzhaarHpTrackerEnabled,
                         onToggle: onTzhaarHpTrackerToggle,
                         hasSettings: true,
@@ -25552,7 +25568,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-group-label",
                                 children: "Show HP",
                               }),
-                              (0, jsxRuntime.jsx)(f5, {
+                              (0, jsxRuntime.jsx)(SettingRow, {
                                 searchId: null,
                                 isModified:
                                   tzhaarHpTracker.showHp !== a8.showHp,
@@ -25601,7 +25617,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-group-label",
                                 children: "Highlight style",
                               }),
-                              (0, jsxRuntime.jsx)(f5, {
+                              (0, jsxRuntime.jsx)(SettingRow, {
                                 searchId: null,
                                 isModified:
                                   tzhaarHpTracker.highlightStyle !==
@@ -25651,7 +25667,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-group-label",
                                 children: "Dynamic HP color",
                               }),
-                              (0, jsxRuntime.jsx)(f5, {
+                              (0, jsxRuntime.jsx)(SettingRow, {
                                 searchId: null,
                                 isModified:
                                   tzhaarHpTracker.dynamicColor !==
@@ -25690,7 +25706,7 @@ var cfe = (0, React.memo)(
                               }),
                             ],
                           }),
-                          (0, jsxRuntime.jsx)(f5, {
+                          (0, jsxRuntime.jsx)(SettingRow, {
                             isModified:
                               tzhaarHpTracker.recolorMenu !== a8.recolorMenu,
                             onReset: () =>
@@ -25699,7 +25715,7 @@ var cfe = (0, React.memo)(
                                 recolorMenu: a8.recolorMenu,
                               }),
                             searchId: gs("tzhaarHpTracker", "Recolor menu"),
-                            children: (0, jsxRuntime.jsx)(fd, {
+                            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                               label: "Recolor menu",
                               checked: tzhaarHpTracker.recolorMenu,
                               onChange: () =>
@@ -25709,7 +25725,7 @@ var cfe = (0, React.memo)(
                                 }),
                             }),
                           }),
-                          (0, jsxRuntime.jsx)(f5, {
+                          (0, jsxRuntime.jsx)(SettingRow, {
                             isModified:
                               tzhaarHpTracker.hideDead !== a8.hideDead,
                             onReset: () =>
@@ -25718,7 +25734,7 @@ var cfe = (0, React.memo)(
                                 hideDead: a8.hideDead,
                               }),
                             searchId: gs("tzhaarHpTracker", "Hide dead NPCs"),
-                            children: (0, jsxRuntime.jsx)(fd, {
+                            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                               label: "Hide dead NPCs",
                               checked: tzhaarHpTracker.hideDead,
                               onChange: () =>
@@ -25732,10 +25748,10 @@ var cfe = (0, React.memo)(
                       }),
                     lv &&
                       setTimer &&
-                      (0, jsxRuntime.jsx)(efe, {
+                      (0, jsxRuntime.jsx)(PluginRow, {
                         label: "Zuk Set Timer",
                         pluginKey: "setTimer",
-                        scope: pme.setTimer.label,
+                        scope: ENCOUNTER_PLUGINS.setTimer.label,
                         isOn: setTimer.enabled,
                         onToggle: setTimer.onToggle,
                         toggleDisabled: setTimer.readOnly,
@@ -25744,7 +25760,7 @@ var cfe = (0, React.memo)(
                         onToggleExpand: () => lx("setTimer"),
                         children: (0, jsxRuntime.jsx)("div", {
                           "data-search-id": gs("setTimer", "Shortcuts"),
-                          children: (0, jsxRuntime.jsx)(g7, {
+                          children: (0, jsxRuntime.jsx)(KeybindingsContent, {
                             group: cB.zukSetTimerAdvance.group,
                             readOnly: setTimer.readOnly,
                           }),
@@ -25755,7 +25771,7 @@ var cfe = (0, React.memo)(
                         className: "plugins-group-label",
                         children: "General",
                       }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Anti Drag",
                       pluginKey: "antiDrag",
                       isOn: antiDragEnabled,
@@ -25764,7 +25780,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.antiDrag,
                       onToggleExpand: () => lx("antiDrag"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: dragOnShiftOnly !== sfe.onShiftOnly,
                           onReset: () => {
                             if (dragOnShiftOnly !== sfe.onShiftOnly) {
@@ -25772,13 +25788,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("antiDrag", "Require Shift to drag"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Require Shift to drag",
                             checked: dragOnShiftOnly,
                             onChange: () => onDragOnShiftOnlyToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: antiDragCtrlToDrag !== sfe.ctrlToDrag,
                           onReset: () => {
                             if (antiDragCtrlToDrag !== sfe.ctrlToDrag) {
@@ -25786,13 +25802,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("antiDrag", "Ctrl to drag immediately"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Ctrl to drag immediately",
                             checked: antiDragCtrlToDrag,
                             onChange: () => onAntiDragCtrlToDragToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: antiDragDelay !== sfe.dragDelay,
                           onReset: () => onAntiDragDelayChange(sfe.dragDelay),
                           searchId: gs("antiDrag", "Drag delay"),
@@ -25806,7 +25822,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-setting-label",
                                 children: "Drag delay:",
                               }),
-                              (0, jsxRuntime.jsx)(dP, {
+                              (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                 min: 0,
                                 max: 2000,
                                 value: antiDragDelay,
@@ -25836,7 +25852,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Attack Timer Metronome",
                       pluginKey: "attackTimerMetronome",
                       isOn: attackTimerMetronomeEnabled,
@@ -25845,7 +25861,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.attackTimerMetronome,
                       onToggleExpand: () => lx("attackTimerMetronome"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             attackTimerMetronomeShowBar !==
                             rfe.attackTimerMetronomeShowBar,
@@ -25861,14 +25877,14 @@ var cfe = (0, React.memo)(
                             "attackTimerMetronome",
                             "Show Attack Bar",
                           ),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show Attack Bar",
                             checked: attackTimerMetronomeShowBar,
                             onChange: () =>
                               onAttackTimerMetronomeShowBarToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             attackTimerMetronomeShowTicks !==
                             rfe.attackTimerMetronomeShowTicks,
@@ -25884,14 +25900,14 @@ var cfe = (0, React.memo)(
                             "attackTimerMetronome",
                             "Show Attack Cooldown Ticks",
                           ),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show Attack Cooldown Ticks",
                             checked: attackTimerMetronomeShowTicks,
                             onChange: () =>
                               onAttackTimerMetronomeShowTicksToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(nfe, {
+                        (0, jsxRuntime.jsx)(OverheadNumberPlacementRows, {
                           pluginKey: "attackTimerMetronome",
                           placement: {
                             fontSize: attackTimerMetronomeFontSize,
@@ -25916,7 +25932,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Attack Ranges",
                       pluginKey: "attackRanges",
                       isOn: attackRangesEnabled,
@@ -25936,7 +25952,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.blindfold,
                       onToggleExpand: () => lx("blindfold"),
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Boss Health Bar",
                       pluginKey: "bossHealthBar",
                       isOn: bossHealthBarEnabled,
@@ -25945,7 +25961,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.bossHealthBar,
                       onToggleExpand: () => lx("bossHealthBar"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: bossHealthBarShowName !== kme.showName,
                           onReset: () => {
                             if (bossHealthBarShowName !== kme.showName) {
@@ -25953,13 +25969,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("bossHealthBar", "Show boss name"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show boss name",
                             checked: bossHealthBarShowName,
                             onChange: () => onBossHealthBarShowNameToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             bossHealthBarShowValues !== kme.showValues,
                           onReset: () => {
@@ -25968,13 +25984,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("bossHealthBar", "Show hitpoints"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show hitpoints",
                             checked: bossHealthBarShowValues,
                             onChange: () => onBossHealthBarShowValuesToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             bossHealthBarShowPercentage !== kme.showPercentage,
                           onReset: () => {
@@ -25985,7 +26001,7 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("bossHealthBar", "Show percentage"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show percentage",
                             checked: bossHealthBarShowPercentage,
                             onChange: () =>
@@ -25994,7 +26010,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Camera",
                       pluginKey: "camera",
                       isOn: cameraPluginEnabled,
@@ -26010,7 +26026,7 @@ var cfe = (0, React.memo)(
                               className: "plugin-group-label",
                               children: "Rotate",
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraVerticalCamera !==
                                 rfe.cameraVerticalCamera,
@@ -26023,13 +26039,13 @@ var cfe = (0, React.memo)(
                                 }
                               },
                               searchId: gs("camera", "Expand pitch limit"),
-                              children: (0, jsxRuntime.jsx)(fd, {
+                              children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                 label: "Expand pitch limit",
                                 checked: cameraVerticalCamera,
                                 onChange: () => onCameraVerticalCameraToggle(),
                               }),
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraInvertYaw !== rfe.cameraInvertYaw,
                               onReset: () => {
@@ -26038,13 +26054,13 @@ var cfe = (0, React.memo)(
                                 }
                               },
                               searchId: gs("camera", "Invert yaw"),
-                              children: (0, jsxRuntime.jsx)(fd, {
+                              children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                 label: "Invert yaw",
                                 checked: cameraInvertYaw,
                                 onChange: () => onCameraInvertYawToggle(),
                               }),
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraInvertPitch !== rfe.cameraInvertPitch,
                               onReset: () => {
@@ -26055,13 +26071,13 @@ var cfe = (0, React.memo)(
                                 }
                               },
                               searchId: gs("camera", "Invert pitch"),
-                              children: (0, jsxRuntime.jsx)(fd, {
+                              children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                 label: "Invert pitch",
                                 checked: cameraInvertPitch,
                                 onChange: () => onCameraInvertPitchToggle(),
                               }),
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraRightClickMovesCamera !==
                                 rfe.cameraRightClickMovesCamera,
@@ -26077,14 +26093,14 @@ var cfe = (0, React.memo)(
                                 "camera",
                                 "Right-click moves camera",
                               ),
-                              children: (0, jsxRuntime.jsx)(fd, {
+                              children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                 label: "Right-click moves camera",
                                 checked: cameraRightClickMovesCamera,
                                 onChange: () =>
                                   onCameraRightClickMovesCameraToggle(),
                               }),
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified: cameraSpeed !== rfe.cameraSpeed,
                               onReset: () =>
                                 onCameraSpeedChange(rfe.cameraSpeed),
@@ -26096,7 +26112,7 @@ var cfe = (0, React.memo)(
                                     className: "plugin-setting-label",
                                     children: "Keyboard speed:",
                                   }),
-                                  (0, jsxRuntime.jsx)(dP, {
+                                  (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                     min: 0.1,
                                     step: 0.1,
                                     value: cameraSpeed,
@@ -26111,7 +26127,7 @@ var cfe = (0, React.memo)(
                                 ],
                               }),
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraDragSpeed !== rfe.cameraDragSpeed,
                               onReset: () =>
@@ -26124,7 +26140,7 @@ var cfe = (0, React.memo)(
                                     className: "plugin-setting-label",
                                     children: "Mouse speed:",
                                   }),
-                                  (0, jsxRuntime.jsx)(dP, {
+                                  (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                     min: 0.1,
                                     step: 0.1,
                                     value: cameraDragSpeed,
@@ -26148,7 +26164,7 @@ var cfe = (0, React.memo)(
                               className: "plugin-group-label",
                               children: "Zoom",
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraInnerZoomLevel !==
                                 rfe.cameraInnerZoomLevel,
@@ -26164,7 +26180,7 @@ var cfe = (0, React.memo)(
                                     className: "plugin-setting-label",
                                     children: "Inner limit:",
                                   }),
-                                  (0, jsxRuntime.jsx)(dP, {
+                                  (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                     min: 0,
                                     max: 8,
                                     value: cameraInnerZoomLevel,
@@ -26183,7 +26199,7 @@ var cfe = (0, React.memo)(
                                 ],
                               }),
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraOuterZoomLimit !==
                                 rfe.cameraOuterZoomLimit,
@@ -26199,7 +26215,7 @@ var cfe = (0, React.memo)(
                                     className: "plugin-setting-label",
                                     children: "Outer limit:",
                                   }),
-                                  (0, jsxRuntime.jsx)(dP, {
+                                  (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                     min: -400,
                                     max: 400,
                                     value: cameraOuterZoomLimit,
@@ -26218,7 +26234,7 @@ var cfe = (0, React.memo)(
                                 ],
                               }),
                             }),
-                            (0, jsxRuntime.jsx)(f5, {
+                            (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 cameraZoomIncrement !== rfe.cameraZoomIncrement,
                               onReset: () =>
@@ -26233,7 +26249,7 @@ var cfe = (0, React.memo)(
                                     className: "plugin-setting-label",
                                     children: "Speed:",
                                   }),
-                                  (0, jsxRuntime.jsx)(dP, {
+                                  (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                     min: 1,
                                     value: cameraZoomIncrement,
                                     onMouseDown: tfe,
@@ -26251,7 +26267,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Compact Orbs",
                       pluginKey: "compactOrbs",
                       isOn: compactOrbsEnabled,
@@ -26269,7 +26285,7 @@ var cfe = (0, React.memo)(
                               " keeps the client's own orb arrangement.",
                             ],
                           }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: compactOrbsLayout !== dM,
                           onReset: () => onCompactOrbsLayoutChange(dM),
                           hideReset: lq,
@@ -26301,13 +26317,13 @@ var cfe = (0, React.memo)(
                                         onCompactOrbsLayoutChange(lC),
                                       disabled: lq,
                                       children: [
-                                        (0, jsxRuntime.jsx)(ofe, {
+                                        (0, jsxRuntime.jsx)(CompactOrbsLayoutGlyph, {
                                           layout: lC,
                                         }),
                                         (0, jsxRuntime.jsx)("span", {
                                           className:
                                             "compact-orbs-segment__label",
-                                          children: cU[lC],
+                                          children: COMPACT_ORBS_LAYOUT_LABELS[lC],
                                         }),
                                       ],
                                     },
@@ -26318,7 +26334,7 @@ var cfe = (0, React.memo)(
                             ],
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: !dY(compactOrbsOrder),
                           onReset: () => {
                             lp(null);
@@ -26388,7 +26404,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Custom Menu Swaps",
                       pluginKey: "customMenuSwaps",
                       isOn: customMenuSwapsEnabled,
@@ -26453,7 +26469,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.defenceTracker,
                       onToggleExpand: () => lx("defenceTracker"),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "DPS Overlay",
                       pluginKey: "dpsOverlay",
                       isOn: showDetailedDps,
@@ -26461,7 +26477,7 @@ var cfe = (0, React.memo)(
                       hasSettings: true,
                       expanded: l6.dpsOverlay,
                       onToggleExpand: () => lx("dpsOverlay"),
-                      children: (0, jsxRuntime.jsx)(f5, {
+                      children: (0, jsxRuntime.jsx)(SettingRow, {
                         isModified:
                           dpsOverlayShowDetails !== rfe.dpsOverlayShowDetails,
                         onReset: () => {
@@ -26472,14 +26488,14 @@ var cfe = (0, React.memo)(
                           }
                         },
                         searchId: gs("dpsOverlay", "Detailed DPS"),
-                        children: (0, jsxRuntime.jsx)(fd, {
+                        children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                           label: "Detailed DPS",
                           checked: dpsOverlayShowDetails,
                           onChange: () => onDpsOverlayShowDetailsToggle(),
                         }),
                       }),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Entity Hider",
                       pluginKey: "entityHider",
                       isOn: entityHiderEnabled,
@@ -26489,7 +26505,7 @@ var cfe = (0, React.memo)(
                       onToggleExpand: () => lx("entityHider"),
                       children: c2.map(({ key: lC, label: label }) =>
                         (0, jsxRuntime.jsx)(
-                          f5,
+                          SettingRow,
                           {
                             isModified: entityHider[lC] !== ck[lC],
                             onReset: () => {
@@ -26498,7 +26514,7 @@ var cfe = (0, React.memo)(
                               }
                             },
                             searchId: gs("entityHider", label),
-                            children: (0, jsxRuntime.jsx)(fd, {
+                            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                               label: label,
                               checked: entityHider[lC],
                               onChange: () => onEntityHiderOptionToggle(lC),
@@ -26508,7 +26524,7 @@ var cfe = (0, React.memo)(
                         ),
                       ),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Instant Inventory",
                       pluginKey: "instantInventory",
                       isOn: instantInventoryEnabled,
@@ -26516,7 +26532,7 @@ var cfe = (0, React.memo)(
                       hasSettings: true,
                       expanded: l6.instantInventory,
                       onToggleExpand: () => lx("instantInventory"),
-                      children: (0, jsxRuntime.jsx)(f5, {
+                      children: (0, jsxRuntime.jsx)(SettingRow, {
                         isModified:
                           instantPrayerEnabled !== rfe.instantPrayerEnabled,
                         onReset: () => {
@@ -26527,14 +26543,14 @@ var cfe = (0, React.memo)(
                           }
                         },
                         searchId: gs("instantInventory", "Instant prayer"),
-                        children: (0, jsxRuntime.jsx)(fd, {
+                        children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                           label: "Instant prayer",
                           checked: instantPrayerEnabled,
                           onChange: () => onInstantPrayerToggle(),
                         }),
                       }),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Interface Styles",
                       pluginKey: "interfaceStyles",
                       isOn: interfaceStylesEnabled,
@@ -26542,7 +26558,7 @@ var cfe = (0, React.memo)(
                       hasSettings: true,
                       expanded: l6.interfaceStyles,
                       onToggleExpand: () => lx("interfaceStyles"),
-                      children: (0, jsxRuntime.jsx)(f5, {
+                      children: (0, jsxRuntime.jsx)(SettingRow, {
                         isModified:
                           interfaceStylesHdHealthBars !==
                           rfe.interfaceStylesHdHealthBars,
@@ -26558,14 +26574,14 @@ var cfe = (0, React.memo)(
                           "interfaceStyles",
                           "High detail health bars",
                         ),
-                        children: (0, jsxRuntime.jsx)(fd, {
+                        children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                           label: "High detail health bars",
                           checked: interfaceStylesHdHealthBars,
                           onChange: () => onInterfaceStylesHdHealthBarsToggle(),
                         }),
                       }),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Inventory Tags",
                       pluginKey: "inventoryTags",
                       isOn: showInventoryTags,
@@ -26619,7 +26635,7 @@ var cfe = (0, React.memo)(
                         }),
                       }),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Line Markers",
                       pluginKey: "lineMarkers",
                       absentOptions:
@@ -26715,7 +26731,7 @@ var cfe = (0, React.memo)(
                                               },
                                             ),
                                           }),
-                                          (0, jsxRuntime.jsx)(Zge, {
+                                          (0, jsxRuntime.jsx)(OsrsToggle, {
                                             checked: lE,
                                             onChange: () =>
                                               onToggleLinePreset(lC.id),
@@ -26899,11 +26915,11 @@ var cfe = (0, React.memo)(
                           (0, jsxRuntime.jsxs)("div", {
                             className: "plugin-options-stack",
                             children: [
-                              (0, jsxRuntime.jsx)(f5, {
+                              (0, jsxRuntime.jsx)(SettingRow, {
                                 isModified: !showLineMarkerLabels,
                                 onReset: onToggleShowLineMarkerLabels,
                                 searchId: gs("lineMarkers", "Show Labels"),
-                                children: (0, jsxRuntime.jsx)(fd, {
+                                children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                   label: "Show Labels",
                                   checked: showLineMarkerLabels,
                                   onChange: () =>
@@ -26911,7 +26927,7 @@ var cfe = (0, React.memo)(
                                   disabled: ii,
                                 }),
                               }),
-                              (0, jsxRuntime.jsx)(f5, {
+                              (0, jsxRuntime.jsx)(SettingRow, {
                                 isModified:
                                   Math.abs(lineMarkerWidth - 1) > 0.01,
                                 onReset: () => {
@@ -26926,7 +26942,7 @@ var cfe = (0, React.memo)(
                                       className: "plugin-setting-label",
                                       children: "Line width:",
                                     }),
-                                    (0, jsxRuntime.jsx)(dP, {
+                                    (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                       min: bq,
                                       max: 10,
                                       step: cl,
@@ -26955,7 +26971,7 @@ var cfe = (0, React.memo)(
                         ],
                       }),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "NPC Highlights",
                       pluginKey: "npcHighlights",
                       isOn: showNpcHighlights,
@@ -27094,7 +27110,7 @@ var cfe = (0, React.memo)(
                           }),
                           (0, jsxRuntime.jsx)("div", {
                             className: "npc-highlight-options",
-                            children: (0, jsxRuntime.jsx)(f5, {
+                            children: (0, jsxRuntime.jsx)(SettingRow, {
                               isModified:
                                 false !== npcHighlightColorMenuEntries,
                               onReset: () => {
@@ -27106,7 +27122,7 @@ var cfe = (0, React.memo)(
                                 "npcHighlights",
                                 "Color menu and hover text",
                               ),
-                              children: (0, jsxRuntime.jsx)(fd, {
+                              children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                 label: "Color menu and hover text",
                                 checked: npcHighlightColorMenuEntries,
                                 onChange: () =>
@@ -27117,7 +27133,7 @@ var cfe = (0, React.memo)(
                         ],
                       }),
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Prayer",
                       pluginKey: "prayer",
                       isOn: prayerEnabled,
@@ -27126,7 +27142,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.prayer,
                       onToggleExpand: () => lx("prayer"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             prayerFlickOrbEnabled !== rfe.prayerFlickOrbEnabled,
                           onReset: () => {
@@ -27138,13 +27154,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("prayer", "Pray flick on prayer orb"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Pray flick on prayer orb",
                             checked: prayerFlickOrbEnabled,
                             onChange: () => onPrayerFlickOrbToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             prayerFlickAlwaysOn !== rfe.prayerFlickAlwaysOn,
                           onReset: () => {
@@ -27155,7 +27171,7 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("prayer", "Never hide pray flick"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Never hide pray flick",
                             checked: prayerFlickAlwaysOn,
                             onChange: () => onPrayerFlickAlwaysOnToggle(),
@@ -27163,13 +27179,13 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Prayer Flick Helper",
                       pluginKey: "prayerFlickHelper",
                       isOn: prayerFlickEnabled,
                       onToggle: onPrayerFlickToggle,
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Projectile Override",
                       pluginKey: "projectileOverride",
                       isOn: projectileOverrideEnabled,
@@ -27192,7 +27208,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.skybox,
                       onToggleExpand: () => lx("skybox"),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Status Bars",
                       pluginKey: "statusBars",
                       isOn: statusBarsEnabled,
@@ -27200,7 +27216,7 @@ var cfe = (0, React.memo)(
                       hasSettings: true,
                       expanded: l6.statusBars,
                       onToggleExpand: () => lx("statusBars"),
-                      children: (0, jsxRuntime.jsx)(f5, {
+                      children: (0, jsxRuntime.jsx)(SettingRow, {
                         isModified:
                           statusBarsShowValues !== rfe.statusBarsShowValues,
                         onReset: () => {
@@ -27211,14 +27227,14 @@ var cfe = (0, React.memo)(
                           }
                         },
                         searchId: gs("statusBars", "Show values"),
-                        children: (0, jsxRuntime.jsx)(fd, {
+                        children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                           label: "Show values",
                           checked: statusBarsShowValues,
                           onChange: () => onStatusBarsShowValuesToggle(),
                         }),
                       }),
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Stretched Mode",
                       pluginKey: "stretchedMode",
                       isOn: stretchedModePluginEnabled,
@@ -27228,7 +27244,7 @@ var cfe = (0, React.memo)(
                       onToggleExpand: () => lx("stretchedMode"),
                       children: [
                         kX
-                          ? (0, jsxRuntime.jsx)(Ime, {
+                          ? (0, jsxRuntime.jsx)(FixedLayoutScaleField, {
                               fixedLayoutScale: fixedLayoutScale,
                               onFixedLayoutScaleChange:
                                 onFixedLayoutScaleChange,
@@ -27250,7 +27266,7 @@ var cfe = (0, React.memo)(
                                   }),
                                   (0, jsxRuntime.jsx)("p", {
                                     className: "stretched-mode-hint",
-                                    children: (0, jsxRuntime.jsx)(Fpe, {
+                                    children: (0, jsxRuntime.jsx)(RevealLink, {
                                       target: eR("Mobile", "Interface scaling"),
                                       children:
                                         "Edit mobile interface size in Settings",
@@ -27275,7 +27291,7 @@ var cfe = (0, React.memo)(
                                           "Sizes the game panel, minimap and orbs. Infoboxes, tooltips and menus grow less.",
                                         children: "UI scale",
                                       }),
-                                      (0, jsxRuntime.jsx)(dP, {
+                                      (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                         id: "stretched-mode-custom-scale",
                                         value: Math.round(uiScale * 100),
                                         min: 100,
@@ -27334,7 +27350,7 @@ var cfe = (0, React.memo)(
                                   }),
                                 ],
                               }),
-                        (0, jsxRuntime.jsx)(afe, {
+                        (0, jsxRuntime.jsx)(AutoOverlaySizeSetting, {
                           enabled: autoOverlayScaleEnabled,
                           onToggle: onAutoOverlayScaleToggle,
                         }),
@@ -27346,7 +27362,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Tick Audio Metronome",
                       pluginKey: "tickAudioMetronome",
                       isOn: tickAudioMetronomeEnabled,
@@ -27355,7 +27371,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.tickAudioMetronome,
                       onToggleExpand: () => lx("tickAudioMetronome"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             tickAudioMetronomeTock !==
                             rfe.tickAudioMetronomeTock,
@@ -27371,13 +27387,13 @@ var cfe = (0, React.memo)(
                             "tickAudioMetronome",
                             "Alternate tick and tock",
                           ),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Alternate tick and tock",
                             checked: tickAudioMetronomeTock,
                             onChange: () => onTickAudioMetronomeTockToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             tickAudioMetronomeVolume !==
                             rfe.tickAudioMetronomeVolume,
@@ -27393,7 +27409,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-setting-label",
                                 children: "Volume (%):",
                               }),
-                              (0, jsxRuntime.jsx)(dP, {
+                              (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                 min: 0,
                                 max: 100,
                                 value: Math.round(
@@ -27421,7 +27437,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Tick Counter",
                       pluginKey: "tickCounter",
                       isOn: showTickCounter,
@@ -27430,7 +27446,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.tickCounter,
                       onToggleExpand: () => lx("tickCounter"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             showTickCounterInfobox !==
                             rfe.showTickCounterInfobox,
@@ -27443,18 +27459,18 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("tickCounter", "Show Infobox"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show Infobox",
                             checked: showTickCounterInfobox,
                             onChange: () => onShowTickCounterInfoboxToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(Fpe, {
+                        (0, jsxRuntime.jsx)(RevealLink, {
                           target: eR("Interface", "Infobox appearance"),
                           className: "plugin-reveal-link",
                           children: "Infobox position and appearance",
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             showTickCounterOverhead !==
                             rfe.showTickCounterOverhead,
@@ -27467,13 +27483,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("tickCounter", "Show Above Head"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show Above Head",
                             checked: showTickCounterOverhead,
                             onChange: () => onShowTickCounterOverheadToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(nfe, {
+                        (0, jsxRuntime.jsx)(OverheadNumberPlacementRows, {
                           pluginKey: "tickCounter",
                           placement: {
                             fontSize: tickCounterFontSize,
@@ -27493,7 +27509,7 @@ var cfe = (0, React.memo)(
                           onOffsetChange: onTickCounterOffsetChange,
                           onFontSizeChange: onTickCounterFontSizeChange,
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: tickCounterMax !== rfe.tickCounterMax,
                           onReset: () =>
                             onTickCounterMaxChange(rfe.tickCounterMax),
@@ -27505,7 +27521,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-setting-label",
                                 children: "Cycle Length:",
                               }),
-                              (0, jsxRuntime.jsx)(dP, {
+                              (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                 min: 2,
                                 max: 20,
                                 value: tickCounterMax,
@@ -27524,7 +27540,7 @@ var cfe = (0, React.memo)(
                             ],
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: Object.keys(tickCounterColors).length > 0,
                           onReset: () =>
                             onTickCounterColorsChange(rfe.tickCounterColors),
@@ -27536,7 +27552,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-setting-label",
                                 children: "Colors:",
                               }),
-                              (0, jsxRuntime.jsx)(Yge, {
+                              (0, jsxRuntime.jsx)(TickColorChips, {
                                 max: tickCounterMax,
                                 colors: tickCounterColors,
                                 onChange: onTickCounterColorsChange,
@@ -27547,7 +27563,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Tile Grid",
                       pluginKey: "tileGrid",
                       isOn: tileGridEnabled,
@@ -27556,7 +27572,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.tileGrid,
                       onToggleExpand: () => lx("tileGrid"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             tileGridColor.toLowerCase() !== rfe.tileGridColor,
                           onReset: () =>
@@ -27578,7 +27594,7 @@ var cfe = (0, React.memo)(
                             ],
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: tileGridOpacity !== rfe.tileGridOpacity,
                           onReset: () =>
                             onTileGridOpacityChange(rfe.tileGridOpacity),
@@ -27590,7 +27606,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-setting-label",
                                 children: "Opacity (%):",
                               }),
-                              (0, jsxRuntime.jsx)(dP, {
+                              (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                 min: 0,
                                 max: 100,
                                 value: Math.round(tileGridOpacity * 100),
@@ -27609,7 +27625,7 @@ var cfe = (0, React.memo)(
                             ],
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             Math.abs(tileGridWidth - rfe.tileGridWidth) > 0.01,
                           onReset: () => {
@@ -27624,7 +27640,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-setting-label",
                                 children: "Line width:",
                               }),
-                              (0, jsxRuntime.jsx)(dP, {
+                              (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                 min: a3,
                                 max: 10,
                                 step: cb,
@@ -27649,7 +27665,7 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Tile Indicators",
                       pluginKey: "tileIndicators",
                       isOn: tileIndicatorsEnabled,
@@ -27683,7 +27699,7 @@ var cfe = (0, React.memo)(
                             lE.cornerOnly !== lG.cornerOnly ||
                             lE.enabled !== lG.enabled;
                           return (0, jsxRuntime.jsx)(
-                            f5,
+                            SettingRow,
                             {
                               searchId: gs("tileIndicators", lH),
                               isModified: lL,
@@ -27736,7 +27752,7 @@ var cfe = (0, React.memo)(
                                         className: "ti-label",
                                         children: lH,
                                       }),
-                                      (0, jsxRuntime.jsx)(Zge, {
+                                      (0, jsxRuntime.jsx)(OsrsToggle, {
                                         checked: lE.enabled,
                                         onChange: () =>
                                           onTileIndicatorStyleChange(
@@ -27761,7 +27777,7 @@ var cfe = (0, React.memo)(
                                             className: "ti-control-label",
                                             children: "Width:",
                                           }),
-                                          (0, jsxRuntime.jsx)(dP, {
+                                          (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                             min: 0.5,
                                             max: 10,
                                             step: 0.5,
@@ -27798,7 +27814,7 @@ var cfe = (0, React.memo)(
                                           }),
                                         ],
                                       }),
-                                      (0, jsxRuntime.jsx)(fd, {
+                                      (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                         label: "Corners only",
                                         checked: lE.cornerOnly,
                                         onChange: () =>
@@ -27818,7 +27834,7 @@ var cfe = (0, React.memo)(
                         }),
                       }),
                     }),
-                    (0, jsxRuntime.jsx)(efe, {
+                    (0, jsxRuntime.jsx)(PluginRow, {
                       label: "Tile Markers",
                       pluginKey: "tileMarkers",
                       absentOptions:
@@ -27920,7 +27936,7 @@ var cfe = (0, React.memo)(
                                                 },
                                               ),
                                             }),
-                                            (0, jsxRuntime.jsx)(Zge, {
+                                            (0, jsxRuntime.jsx)(OsrsToggle, {
                                               checked: lE,
                                               onChange: () =>
                                                 onTogglePreset(lC.id),
@@ -28120,11 +28136,11 @@ var cfe = (0, React.memo)(
                           (0, jsxRuntime.jsxs)("div", {
                             className: "plugin-options-stack",
                             children: [
-                              (0, jsxRuntime.jsx)(f5, {
+                              (0, jsxRuntime.jsx)(SettingRow, {
                                 isModified: !showTileMarkerLabels,
                                 onReset: onToggleShowTileMarkerLabels,
                                 searchId: gs("tileMarkers", "Show Labels"),
-                                children: (0, jsxRuntime.jsx)(fd, {
+                                children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                                   label: "Show Labels",
                                   checked: showTileMarkerLabels,
                                   onChange: () =>
@@ -28132,7 +28148,7 @@ var cfe = (0, React.memo)(
                                   disabled: ii,
                                 }),
                               }),
-                              (0, jsxRuntime.jsx)(f5, {
+                              (0, jsxRuntime.jsx)(SettingRow, {
                                 isModified:
                                   Math.abs(tileMarkerWidth - 2) > 0.01,
                                 onReset: () => {
@@ -28147,7 +28163,7 @@ var cfe = (0, React.memo)(
                                       className: "plugin-setting-label",
                                       children: "Border width:",
                                     }),
-                                    (0, jsxRuntime.jsx)(dP, {
+                                    (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                       min: bh,
                                       max: 10,
                                       step: bW,
@@ -28176,7 +28192,7 @@ var cfe = (0, React.memo)(
                         ],
                       }),
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "XP Drops",
                       pluginKey: "xpDrops",
                       isOn: xpDropsEnabled,
@@ -28185,7 +28201,7 @@ var cfe = (0, React.memo)(
                       expanded: l6.xpDrops,
                       onToggleExpand: () => lx("xpDrops"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             xpDropsShowPredictedHit !== Nme.showPredictedHit,
                           onReset: () => {
@@ -28196,13 +28212,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("xpDrops", "Show predicted hit"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show predicted hit",
                             checked: xpDropsShowPredictedHit,
                             onChange: () => onXpDropsPredictedHitToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: xpDropsGrouped !== Nme.grouped,
                           onReset: () => {
                             if (xpDropsGrouped !== Nme.grouped) {
@@ -28210,13 +28226,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("xpDrops", "Group XP drops"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Group XP drops",
                             checked: xpDropsGrouped,
                             onChange: () => onXpDropsGroupedToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: xpDropsShowIcons !== Nme.showIcons,
                           onReset: () => {
                             if (xpDropsShowIcons !== Nme.showIcons) {
@@ -28224,13 +28240,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("xpDrops", "Show skill icons"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Show skill icons",
                             checked: xpDropsShowIcons,
                             onChange: () => onXpDropsShowIconsToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: xpDropsSpeed !== Nme.speed,
                           onReset: () => onXpDropsSpeedChange(Nme.speed),
                           searchId: gs("xpDrops", "Speed"),
@@ -28241,7 +28257,7 @@ var cfe = (0, React.memo)(
                                 className: "plugin-setting-label",
                                 children: "Speed:",
                               }),
-                              (0, jsxRuntime.jsx)(dP, {
+                              (0, jsxRuntime.jsx)(OsrsNumberInput, {
                                 min: 10,
                                 max: 200,
                                 value: xpDropsSpeed,
@@ -28266,14 +28282,14 @@ var cfe = (0, React.memo)(
                         }),
                       ],
                     }),
-                    (0, jsxRuntime.jsxs)(efe, {
+                    (0, jsxRuntime.jsxs)(PluginRow, {
                       label: "Debug Overlays",
                       pluginKey: "debugOverlays",
                       hasSettings: true,
                       expanded: l6.debugOverlays,
                       onToggleExpand: () => lx("debugOverlays"),
                       children: [
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: showCoordinates !== rfe.showCoordinates,
                           onReset: () => {
                             if (showCoordinates !== rfe.showCoordinates) {
@@ -28281,13 +28297,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("debugOverlays", "Coordinate Overlay"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Coordinate Overlay",
                             checked: showCoordinates,
                             onChange: () => onShowCoordinatesToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: showNpcClickbox !== rfe.showNpcClickbox,
                           onReset: () => {
                             if (showNpcClickbox !== rfe.showNpcClickbox) {
@@ -28295,13 +28311,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("debugOverlays", "NPC Clickbox"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "NPC Clickbox",
                             checked: showNpcClickbox,
                             onChange: () => onShowNpcClickboxToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             npcAttackTimerMetronomeEnabled !==
                             rfe.npcAttackTimerMetronomeEnabled,
@@ -28317,13 +28333,13 @@ var cfe = (0, React.memo)(
                             "debugOverlays",
                             "NPC Attack Timer Metronome",
                           ),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "NPC Attack Timer Metronome",
                             checked: npcAttackTimerMetronomeEnabled,
                             onChange: () => onNpcAttackTimerMetronomeToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: showTickTiming !== rfe.showTickTiming,
                           onReset: () => {
                             if (showTickTiming !== rfe.showTickTiming) {
@@ -28331,13 +28347,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("debugOverlays", "Tick Timing"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Tick Timing",
                             checked: showTickTiming,
                             onChange: () => onShowTickTimingToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: showSoundDebug !== rfe.showSoundDebug,
                           onReset: () => {
                             if (showSoundDebug !== rfe.showSoundDebug) {
@@ -28345,13 +28361,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("debugOverlays", "Sound Debug"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Sound Debug",
                             checked: showSoundDebug,
                             onChange: () => onShowSoundDebugToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: showCameraDebug !== rfe.showCameraDebug,
                           onReset: () => {
                             if (showCameraDebug !== rfe.showCameraDebug) {
@@ -28359,13 +28375,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("debugOverlays", "Camera Debug"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Camera Debug",
                             checked: showCameraDebug,
                             onChange: () => onShowCameraDebugToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified: showModifierKeys !== rfe.showModifierKeys,
                           onReset: () => {
                             if (showModifierKeys !== rfe.showModifierKeys) {
@@ -28373,13 +28389,13 @@ var cfe = (0, React.memo)(
                             }
                           },
                           searchId: gs("debugOverlays", "Input Display"),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Input Display",
                             checked: showModifierKeys,
                             onChange: () => onShowModifierKeysToggle(),
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(f5, {
+                        (0, jsxRuntime.jsx)(SettingRow, {
                           isModified:
                             hideHardwareAccelWarning !==
                             rfe.hideHardwareAccelWarning,
@@ -28395,7 +28411,7 @@ var cfe = (0, React.memo)(
                             "debugOverlays",
                             "Hide HW Accel Warning",
                           ),
-                          children: (0, jsxRuntime.jsx)(fd, {
+                          children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                             label: "Hide HW Accel Warning",
                             checked: hideHardwareAccelWarning,
                             onChange: () => onHideHardwareAccelWarningToggle(),
@@ -28414,7 +28430,7 @@ var cfe = (0, React.memo)(
                                 }),
                               hQ.map((lC) =>
                                 (0, jsxRuntime.jsx)(
-                                  fd,
+                                  OsrsCheckbox,
                                   {
                                     label: lC.label,
                                     checked: !!encounterDebugFlags[lC.key],
@@ -28434,7 +28450,7 @@ var cfe = (0, React.memo)(
                   ],
                 }),
                 l9.active &&
-                  (0, jsxRuntime.jsx)(Gge, {
+                  (0, jsxRuntime.jsx)(SidebarSearchResults, {
                     search: l9,
                     id: resultsId,
                     layout: kX ? "fixed" : kY ? "mobile" : "resizable",
@@ -28455,8 +28471,8 @@ function ufe(h2) {
     .map((h3) => h3.trim())
     .filter(Boolean);
 }
-var hfe = "Search encounters, settings, plugins and keybinds";
-function pfe(h2) {
+var QUICK_SEARCH_PLACEHOLDER = "Search encounters, settings, plugins and keybinds";
+function quickSearchType(h2) {
   if ("encounter" === h2.kind) {
     return "Encounter";
   } else if (h2.needsKeyboard) {
@@ -28475,14 +28491,14 @@ function mfe({
   onChooseEncounter: onChooseEncounter,
   onBrowseEncounters: onBrowseEncounters,
 }) {
-  dC(es.QUICK_SEARCH, isOpen, onClose);
+  dC(ESC_PRIORITY.QUICK_SEARCH, isOpen, onClose);
   (0, React.useEffect)(() => {
     if (isOpen) {
-      window.dispatchEvent(new CustomEvent(ev));
+      window.dispatchEvent(new CustomEvent(TUTORIAL_QUICK_SEARCH_OPENED_EVENT));
     }
   }, [isOpen]);
   if (isOpen) {
-    return (0, jsxRuntime.jsx)(vfe, {
+    return (0, jsxRuntime.jsx)(QuickSearchDialog, {
       onClose: onClose,
       encounterRegistry: encounterRegistry,
       layout: layout,
@@ -28493,11 +28509,11 @@ function mfe({
     return null;
   }
 }
-var gfe = {
+var ARROW_PATH = {
   up: "M3 0h1v8H3zM2 1h1v1H2zM4 1h1v1H4zM1 2h1v1H1zM5 2h1v1H5z",
   down: "M3 0h1v8H3zM2 6h1v1H2zM4 6h1v1H4zM1 5h1v1H1zM5 5h1v1H5z",
 };
-function ffe({ direction: direction }) {
+function ArrowKey({ direction: direction }) {
   return (0, jsxRuntime.jsx)("kbd", {
     className: "kbd quick-search__arrow-key",
     children: (0, jsxRuntime.jsx)("svg", {
@@ -28508,17 +28524,17 @@ function ffe({ direction: direction }) {
       "aria-hidden": "true",
       focusable: "false",
       children: (0, jsxRuntime.jsx)("path", {
-        d: gfe[direction],
+        d: ARROW_PATH[direction],
         fill: "currentColor",
       }),
     }),
   });
 }
-var yfe = "quick-search:more";
+var MORE = "quick-search:more";
 function bfe(h2) {
   return h2.unavailable === null || undefined !== h2.unavailable.route;
 }
-function vfe({
+function QuickSearchDialog({
   onClose: onClose,
   encounterRegistry: encounterRegistry,
   layout: layout,
@@ -28616,7 +28632,7 @@ function vfe({
               };
             }
             return {
-              results: Tge(hS, Cge(hS, hT)),
+              results: Tge(hS, suggest(hS, hT)),
               suggested: true,
             };
           })(ht, hs, layout)
@@ -28636,7 +28652,7 @@ function vfe({
   const hx = ht
     ? results.map((hS) => ({
         result: hS,
-        unavailable: hS.entry.kind === "encounter" ? null : xge(hS.entry, hw),
+        unavailable: hS.entry.kind === "encounter" ? null : blockedNow(hS.entry, hw),
       }))
     : hr
         .filter((hS) => hS.variantId === undefined)
@@ -28659,12 +28675,12 @@ function vfe({
   const hD = [...shownUsable, ...shownElsewhere];
   const hE = [
     ...hD.filter(bfe).map((hS) => hS.result.entry.id),
-    ...(hidden > 0 ? [yfe] : []),
+    ...(hidden > 0 ? [MORE] : []),
   ];
   const hF = ha !== null && hE.includes(ha) ? ha : (hE[0] ?? null);
   const hG = hD.findIndex((hS) => hS.result.entry.id === hF);
   const hH = -1 === hG ? null : hD[hG];
-  const hI = hF === yfe ? ho : hG === -1 ? undefined : hp(hG);
+  const hI = hF === MORE ? ho : hG === -1 ? undefined : hp(hG);
   (0, React.useEffect)(() => {
     if (hI) {
       document.getElementById(hI)?.scrollIntoView?.({
@@ -28751,7 +28767,7 @@ function vfe({
               (0, jsxRuntime.jsxs)("span", {
                 className: "quick-search-row__head",
                 children: [
-                  (0, jsxRuntime.jsx)(Pge, {
+                  (0, jsxRuntime.jsx)(HighlightedTitle, {
                     result: hS.result,
                   }),
                   i0 &&
@@ -28796,9 +28812,9 @@ function vfe({
           }),
           (0, jsxRuntime.jsx)("span", {
             className: "quick-search-row__type",
-            children: pfe(entry),
+            children: quickSearchType(entry),
           }),
-          !hS.unavailable && (0, jsxRuntime.jsx)(Age, {}),
+          !hS.unavailable && (0, jsxRuntime.jsx)(ChevronGlyph, {}),
         ],
       },
       entry.id,
@@ -28813,7 +28829,7 @@ function vfe({
       : results.length + " " + (1 === results.length ? "match" : "matches")
     : "Encounters";
   const hR =
-    hF === yfe
+    hF === MORE
       ? "show all"
       : hH
         ? (function (hS) {
@@ -28871,7 +28887,7 @@ function vfe({
                       hb(hE[(hE.indexOf(hF) + hT + hE.length) % hE.length]);
                     } else if ("Enter" === hS.key) {
                       hS.preventDefault();
-                      if (hF === yfe) {
+                      if (hF === MORE) {
                         hN();
                       } else if (hH) {
                         hL(hH);
@@ -28879,8 +28895,8 @@ function vfe({
                     }
                   }
                 },
-                placeholder: hfe,
-                "aria-label": hfe,
+                placeholder: QUICK_SEARCH_PLACEHOLDER,
+                "aria-label": QUICK_SEARCH_PLACEHOLDER,
                 role: "combobox",
                 "aria-expanded": hD.length > 0,
                 "aria-controls": hm,
@@ -28936,11 +28952,11 @@ function vfe({
                 type: "button",
                 className:
                   "drawer-search-results__more" +
-                  (hF === yfe ? " is-selected" : ""),
+                  (hF === MORE ? " is-selected" : ""),
                 onMouseDown: (hS) => hS.preventDefault(),
                 onMouseMove: () => {
-                  if (hF !== yfe) {
-                    hb(yfe);
+                  if (hF !== MORE) {
+                    hb(MORE);
                   }
                 },
                 onClick: hN,
@@ -28961,7 +28977,7 @@ function vfe({
               className: "quick-search__browse",
               onMouseDown: (hS) => hS.preventDefault(),
               onClick: onBrowseEncounters,
-              children: ["Browse all encounters", (0, jsxRuntime.jsx)(Age, {})],
+              children: ["Browse all encounters", (0, jsxRuntime.jsx)(ChevronGlyph, {})],
             }),
             (0, jsxRuntime.jsxs)("span", {
               className: "quick-search__keys",
@@ -28970,10 +28986,10 @@ function vfe({
                 hE.length > 1 &&
                   (0, jsxRuntime.jsxs)("span", {
                     children: [
-                      (0, jsxRuntime.jsx)(ffe, {
+                      (0, jsxRuntime.jsx)(ArrowKey, {
                         direction: "up",
                       }),
-                      (0, jsxRuntime.jsx)(ffe, {
+                      (0, jsxRuntime.jsx)(ArrowKey, {
                         direction: "down",
                       }),
                       " move",
@@ -29008,7 +29024,7 @@ function vfe({
   });
 }
 React.Component;
-var wfe = class extends React.Component {
+var RendererErrorBoundary = class extends React.Component {
   constructor(h2) {
     super(h2);
     ar(this, "handleRetry", () => {
@@ -29032,7 +29048,7 @@ var wfe = class extends React.Component {
   }
   componentDidCatch(h2, h3) {
     f3(h2);
-    L.error("Renderer", "Renderer error caught by boundary:", h2, h3);
+    logger.error("Renderer", "Renderer error caught by boundary:", h2, h3);
   }
   render() {
     if (this.state.hasError) {
@@ -29093,7 +29109,7 @@ var wfe = class extends React.Component {
                     cursor: "pointer",
                     fontWeight: "bold",
                   },
-                  children: [(0, jsxRuntime.jsx)(cO, {}), "Error details"],
+                  children: [(0, jsxRuntime.jsx)(DisclosureChevron, {}), "Error details"],
                 }),
                 (0, jsxRuntime.jsx)("pre", {
                   style: {
@@ -29327,7 +29343,7 @@ var Ffe = () =>
   });
 function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
   const h6 = (0, React.useRef)(null);
-  yle(h6, isOpen);
+  useCenteredModalSnap(h6, isOpen);
   const h7 = bpe(h6, onClose);
   // Lazy: the stored index was read and parsed on every render, closed or not.
   const [h8, h9] = (0, React.useState)(Sfe);
@@ -29480,7 +29496,7 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
   };
   return (0, jsxRuntime.jsx)("div", {
     className: "replay-library-overlay",
-    ...dn.overlay,
+    ...sheet.overlay,
     ...h7,
     role: "dialog",
     "aria-modal": "true",
@@ -29488,7 +29504,7 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
     "aria-describedby": "replay-library-intro",
     children: (0, jsxRuntime.jsxs)("div", {
       className: "replay-library-card centered-modal-snap",
-      ...dn.card,
+      ...sheet.card,
       ref: h6,
       onMouseDown: (hy) => {
         if (hy.target.closest("button")) {
@@ -29498,7 +29514,7 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
       children: [
         (0, jsxRuntime.jsxs)("div", {
           className: "replay-library-header",
-          ...dn.head,
+          ...sheet.head,
           children: [
             (0, jsxRuntime.jsxs)("div", {
               className: "replay-library-heading",
@@ -29516,9 +29532,9 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
                 }),
               ],
             }),
-            (0, jsxRuntime.jsx)(fV, {
+            (0, jsxRuntime.jsx)(CloseButton, {
               className: "replay-library-close",
-              ...dn.close,
+              ...sheet.close,
               onClick: onClose,
               "aria-label": "Close",
             }),
@@ -29526,7 +29542,7 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
         }),
         (0, jsxRuntime.jsxs)("div", {
           className: "replay-library-body",
-          ...dn.body,
+          ...sheet.body,
           children: [
             "loading" === hc &&
               (0, jsxRuntime.jsx)("p", {
@@ -29732,7 +29748,7 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
                                             window.clearTimeout(ht.current);
                                           }
                                           if (
-                                            (await Kue(hG.hnqvv(Ife, hH))) &&
+                                            (await copyToClipboard(hG.hnqvv(Ife, hH))) &&
                                             hI === hu.current
                                           ) {
                                             hs(hH);
@@ -29865,7 +29881,7 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
   });
 }
 var Gfe = Object.fromEntries(
-  gM.flatMap((h2) =>
+  encounterDefinitions.flatMap((h2) =>
     h2.registered && h2.slug !== null ? [[h2.slug, h2.kind]] : [],
   ),
 );
@@ -29874,7 +29890,7 @@ function jfe(h2) {
   return h2.replace(/_/g, "-");
 }
 var Ufe = Object.fromEntries(
-  gH.map(({ retired: retired }) => [retired.slug, retired.kind]),
+  retiredEncounterKindEntries.map(({ retired: retired }) => [retired.slug, retired.kind]),
 );
 // memo: a pure function of `path` (the encounter list is fixed at load);
 // it rebuilt the whole route list with every tick.
@@ -29941,7 +29957,7 @@ function gye() {
   return (0, jsxRuntime.jsxs)("div", {
     className: "control-group control-group--no-border",
     children: [
-      (0, jsxRuntime.jsx)(fd, {
+      (0, jsxRuntime.jsx)(OsrsCheckbox, {
         checked: h3,
         label: "Send crash reports",
         onChange: (h7) => {
@@ -29969,7 +29985,7 @@ function gye() {
     ],
   });
 }
-var fye = ({
+var CollapsibleSection = ({
   title: title,
   defaultExpanded: h3 = false,
   searchId: searchId,
@@ -29991,7 +30007,7 @@ var fye = ({
         onClick: () => h8(!h7),
         "aria-expanded": h7,
         children: [
-          (0, jsxRuntime.jsx)(cO, {
+          (0, jsxRuntime.jsx)(DisclosureChevron, {
             open: h7,
             className: "collapse-indicator",
           }),
@@ -30012,8 +30028,8 @@ var fye = ({
     ],
   });
 };
-var Dre = gu;
-var yye = [
+var Dre = PERSISTED_SETTINGS_DEFAULTS;
+var FPS_CAP_OPTIONS = [
   {
     value: 0,
     label: "Uncapped",
@@ -30047,7 +30063,7 @@ var yye = [
     label: "30 FPS",
   },
 ];
-var bye = ({
+var SimulationControls = ({
   onReset: onReset,
   resetDisabled: resetDisabled,
   restartShortcutTargetsPractice: h4 = false,
@@ -30117,7 +30133,7 @@ var bye = ({
       }),
       (0, jsxRuntime.jsx)("div", {
         className: "control-group",
-        children: (0, jsxRuntime.jsx)(f5, {
+        children: (0, jsxRuntime.jsx)(SettingRow, {
           isModified: inputLagMs !== Dre.inputLagMs,
           onReset: () => onInputLagMsChange(Dre.inputLagMs),
           hideReset: true,
@@ -30173,17 +30189,17 @@ var bye = ({
             className: "group-title",
             children: "Start of Fight Countdown",
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: fightStartCountdown !== Dre.fightStartCountdown,
             onReset: () => onFightStartCountdownChange(Dre.fightStartCountdown),
             searchId: eR("Simulation", "Start of Fight Countdown", "Countdown"),
-            children: (0, jsxRuntime.jsx)(fd, {
+            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
               checked: fightStartCountdown,
               onChange: onFightStartCountdownChange,
               label: "Countdown",
             }),
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: hj,
             onReset: () =>
               onFightStartCountdownTicksChange(Dre.fightStartCountdownTicks),
@@ -30249,7 +30265,7 @@ var bye = ({
       (0, jsxRuntime.jsxs)("div", {
         className: "control-group control-group--no-border",
         children: [
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: autoAdvance !== Dre.autoAdvance,
             onReset: () => {
               if (autoAdvance !== Dre.autoAdvance) {
@@ -30257,17 +30273,17 @@ var bye = ({
               }
             },
             searchId: eR("Simulation", "Auto-Advance"),
-            children: (0, jsxRuntime.jsx)(fd, {
+            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
               checked: autoAdvance,
               onChange: () => onAutoAdvanceToggle(),
               label: "Auto-Advance",
             }),
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: pauseWhenUnfocused !== Dre.pauseWhenUnfocused,
             onReset: () => onPauseWhenUnfocusedChange(Dre.pauseWhenUnfocused),
             searchId: eR("Simulation", "Pause simulator when unfocused"),
-            children: (0, jsxRuntime.jsx)(fd, {
+            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
               checked: pauseWhenUnfocused,
               onChange: onPauseWhenUnfocusedChange,
               label: "Pause simulator when unfocused",
@@ -30278,7 +30294,7 @@ var bye = ({
     ],
   });
 };
-var vye = ({
+var DisplayControls = ({
   smoothTerrain: smoothTerrain,
   onSmoothTerrainToggle: onSmoothTerrainToggle,
   brightness: brightness,
@@ -30307,7 +30323,7 @@ var vye = ({
             className: "group-title",
             children: "View Mode",
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             searchId: null,
             isModified: selectedRenderer !== Dre.rendererType,
             onReset: () => onRendererChange(Dre.rendererType),
@@ -30343,7 +30359,7 @@ var vye = ({
             className: "group-title",
             children: "Display Options",
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: smoothTerrain !== Dre.smoothTerrain,
             onReset: () => {
               if (smoothTerrain !== Dre.smoothTerrain) {
@@ -30351,13 +30367,13 @@ var vye = ({
               }
             },
             searchId: eR("Graphics & Performance", "Smooth Terrain"),
-            children: (0, jsxRuntime.jsx)(fd, {
+            children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
               checked: smoothTerrain,
               onChange: () => onSmoothTerrainToggle(),
               label: "Smooth Terrain",
             }),
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: Math.abs(brightness - Dre.brightness) > 0.005,
             onReset: () => onBrightnessChange(Dre.brightness),
             hideReset: true,
@@ -30403,7 +30419,7 @@ var vye = ({
               ],
             }),
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: Math.abs(contrast - Dre.contrast) > 0.005,
             onReset: () => onContrastChange(Dre.contrast),
             hideReset: true,
@@ -30449,7 +30465,7 @@ var vye = ({
               ],
             }),
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: Math.abs(saturation - Dre.saturation) > 0.005,
             onReset: () => onSaturationChange(Dre.saturation),
             hideReset: true,
@@ -30495,7 +30511,7 @@ var vye = ({
               ],
             }),
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             isModified: Math.abs(renderScale - Dre.renderScaleHardware) > 0.005,
             onReset: () => onRenderScaleChange(Dre.renderScaleHardware),
             hideReset: true,
@@ -30559,7 +30575,7 @@ var vye = ({
             className: "group-title",
             children: "FPS Cap",
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             searchId: null,
             isModified: fpsCap !== Dre.fpsCap,
             onReset: () => onFpsCapChange(Dre.fpsCap),
@@ -30568,7 +30584,7 @@ var vye = ({
               onChange: (hj) => onFpsCapChange(Number(hj.target.value)),
               className: "select-input",
               "aria-label": "Frame rate cap",
-              children: yye.map((hj) =>
+              children: FPS_CAP_OPTIONS.map((hj) =>
                 (0, jsxRuntime.jsx)(
                   "option",
                   {
@@ -30590,7 +30606,7 @@ var vye = ({
             className: "group-title",
             children: "Anti-aliasing",
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             searchId: null,
             isModified: antiAliasing !== Dre.antiAliasing,
             onReset: () => onAntiAliasingChange(Dre.antiAliasing),
@@ -30624,7 +30640,7 @@ var vye = ({
       }),
     ],
   });
-var wye = ({
+var InterfaceControls = ({
   gameResolution: gameResolution,
   onGameResolutionChange: onGameResolutionChange,
   clientLayoutMode: clientLayoutMode,
@@ -30662,7 +30678,7 @@ var wye = ({
     gameResolution.width !== eL.width ||
     gameResolution.height !== eL.height ||
     gameResolution.presetId !== eL.presetId;
-  const hx = (hz) => Math.round(Math.max(320, Math.min(gh, hz)));
+  const hx = (hz) => Math.round(Math.max(320, Math.min(GAME_RESOLUTION_MAX, hz)));
   const hy = (function (hz, hA) {
     if (hz === "mobile") {
       return {
@@ -30717,7 +30733,7 @@ var wye = ({
                   children: "Mobile",
                 }),
               })
-            : (0, jsxRuntime.jsx)(f5, {
+            : (0, jsxRuntime.jsx)(SettingRow, {
                 searchId: null,
                 isModified: "modern" !== clientLayoutMode,
                 onReset: () => onClientLayoutModeChange("modern"),
@@ -30734,14 +30750,14 @@ var wye = ({
                         "option",
                         {
                           value: hz,
-                          children: e0[hz],
+                          children: CLIENT_LAYOUT_LABELS[hz],
                         },
                         hz,
                       ),
                     ),
                 }),
               }),
-          (0, jsxRuntime.jsx)($pe, {
+          (0, jsxRuntime.jsx)(SettingLinkRow, {
             label: "Interface scaling",
             value: hy.value,
             hint: hy.hint,
@@ -30770,7 +30786,7 @@ var wye = ({
                     f6.height,
                     ". Make it bigger with",
                     " ",
-                    (0, jsxRuntime.jsx)(Fpe, {
+                    (0, jsxRuntime.jsx)(RevealLink, {
                       target: hy.target,
                       children: "Interface scaling",
                     }),
@@ -30783,7 +30799,7 @@ var wye = ({
                       htmlFor: "viewport-preset",
                       children: "Resolution",
                     }),
-                    (0, jsxRuntime.jsx)(f5, {
+                    (0, jsxRuntime.jsx)(SettingRow, {
                       isModified: hw,
                       onReset: () =>
                         onGameResolutionChange({
@@ -30816,7 +30832,7 @@ var wye = ({
                               });
                               return;
                             }
-                            const hB = eU.find((hC) => hC.id === hA);
+                            const hB = RESOLUTION_PRESETS.find((hC) => hC.id === hA);
                             if (hB) {
                               onGameResolutionChange({
                                 mode: "fixed",
@@ -30833,7 +30849,7 @@ var wye = ({
                             value: "fit",
                             children: "Fit Window",
                           }),
-                          eU.map((hz) =>
+                          RESOLUTION_PRESETS.map((hz) =>
                             (0, jsxRuntime.jsx)(
                               "option",
                               {
@@ -30851,7 +30867,7 @@ var wye = ({
                       }),
                     }),
                     gameResolution.presetId === "custom" &&
-                      (0, jsxRuntime.jsx)(f5, {
+                      (0, jsxRuntime.jsx)(SettingRow, {
                         searchId: null,
                         isModified: false,
                         onReset: () => {},
@@ -30958,7 +30974,7 @@ var wye = ({
                   }),
                 ],
               }),
-            (0, jsxRuntime.jsx)(xye, {
+            (0, jsxRuntime.jsx)(ViewportPopoutControl, {
               onOpenPopout: onOpenPopout,
               canPopOut: canPopOut,
               isPopoutWindow: isPopoutWindow,
@@ -30975,25 +30991,25 @@ var wye = ({
               className: "group-title",
               children: "Side panel",
             }),
-            (0, jsxRuntime.jsx)(f5, {
+            (0, jsxRuntime.jsx)(SettingRow, {
               isModified: transparentSidePanel !== Dre.transparentSidePanel,
               onReset: () =>
                 onTransparentSidePanelChange(Dre.transparentSidePanel),
               searchId: eR("Interface", "Transparent side panel"),
-              children: (0, jsxRuntime.jsx)(fd, {
+              children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                 checked: transparentSidePanel,
                 onChange: onTransparentSidePanelChange,
                 label: "Transparent side panel",
               }),
             }),
             clientLayoutMode === "modern" &&
-              (0, jsxRuntime.jsx)(f5, {
+              (0, jsxRuntime.jsx)(SettingRow, {
                 isModified: hotkeysCloseSidePanel !== Dre.hotkeysCloseSidePanel,
                 onReset: () =>
                   onHotkeysCloseSidePanelChange(Dre.hotkeysCloseSidePanel),
                 searchId: eR("Interface", "Hotkeys close side panel"),
                 hint: "Press the open panel's key again to close it. Clicking its tab always closes it.",
-                children: (0, jsxRuntime.jsx)(fd, {
+                children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                   checked: hotkeysCloseSidePanel,
                   onChange: onHotkeysCloseSidePanelChange,
                   label: "Hotkeys close side panel",
@@ -31010,18 +31026,18 @@ var wye = ({
               className: "group-title",
               children: "Chatbox",
             }),
-            (0, jsxRuntime.jsx)(f5, {
+            (0, jsxRuntime.jsx)(SettingRow, {
               isModified: transparentChatbox !== Dre.transparentChatbox,
               onReset: () => onTransparentChatboxChange(Dre.transparentChatbox),
               searchId: eR("Interface", "Transparent chatbox"),
-              children: (0, jsxRuntime.jsx)(fd, {
+              children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                 checked: transparentChatbox,
                 onChange: onTransparentChatboxChange,
                 label: "Transparent chatbox",
               }),
             }),
             transparentChatbox &&
-              (0, jsxRuntime.jsx)(f5, {
+              (0, jsxRuntime.jsx)(SettingRow, {
                 isModified:
                   clickThroughTransparentChatbox !==
                   Dre.clickThroughTransparentChatbox,
@@ -31030,7 +31046,7 @@ var wye = ({
                     Dre.clickThroughTransparentChatbox,
                   ),
                 searchId: eR("Interface", "Click through transparent chatbox"),
-                children: (0, jsxRuntime.jsx)(fd, {
+                children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
                   checked: clickThroughTransparentChatbox,
                   onChange: onClickThroughTransparentChatboxChange,
                   label: "Click through transparent chatbox",
@@ -31038,15 +31054,15 @@ var wye = ({
               }),
           ],
         }),
-      (0, jsxRuntime.jsx)(Tye, {
+      (0, jsxRuntime.jsx)(ShortcutHintsControl, {
         showShortcutHints: showShortcutHints,
         onShowShortcutHintsToggle: onShowShortcutHintsToggle,
       }),
-      (0, jsxRuntime.jsx)(kye, {}),
+      (0, jsxRuntime.jsx)(DeviceModeControl, {}),
     ],
   });
 };
-function kye() {
+function DeviceModeControl() {
   const h3 = I();
   cw();
   const h4 = aG() ? "Mobile" : "Desktop";
@@ -31062,15 +31078,15 @@ function kye() {
           className: "group-title__label info-hint-region",
           children: [
             "Device Mode",
-            (0, jsxRuntime.jsx)(dX, {
+            (0, jsxRuntime.jsx)(InfoHint, {
               label: "Device Mode",
-              text: Sye,
+              text: DEVICE_MODE_HELP,
               hoverRegionRef: h5,
             }),
           ],
         }),
       }),
-      (0, jsxRuntime.jsx)(f5, {
+      (0, jsxRuntime.jsx)(SettingRow, {
         searchId: null,
         isModified: h3 !== "auto",
         onReset: () => am("auto"),
@@ -31078,7 +31094,7 @@ function kye() {
           className: "settings-segmented",
           role: "radiogroup",
           "aria-label": "Device Mode",
-          children: Cye.map(([h6, h7]) =>
+          children: DEVICE_MODE_OPTIONS.map(([h6, h7]) =>
             (0, jsxRuntime.jsxs)(
               "button",
               {
@@ -31090,7 +31106,7 @@ function kye() {
                   (h3 === h6 ? " is-active" : ""),
                 onClick: () => am(h6),
                 children: [
-                  (0, jsxRuntime.jsx)(Nye, {
+                  (0, jsxRuntime.jsx)(DeviceModeGlyph, {
                     mode: h6,
                   }),
                   (0, jsxRuntime.jsx)("span", {
@@ -31111,14 +31127,14 @@ function kye() {
     ],
   });
 }
-var Sye =
+var DEVICE_MODE_HELP =
   "If Auto picks the wrong mode, choose Mobile or Desktop. Only this browser is affected.";
-var Cye = [
+var DEVICE_MODE_OPTIONS = [
   ["auto", "Auto"],
   ["mobile", "Mobile"],
   ["desktop", "Desktop"],
 ];
-function Nye({ mode: mode }) {
+function DeviceModeGlyph({ mode: mode }) {
   return (0, jsxRuntime.jsxs)("svg", {
     width: "18",
     height: "18",
@@ -31177,7 +31193,7 @@ function Nye({ mode: mode }) {
     ],
   });
 }
-var xye = ({
+var ViewportPopoutControl = ({
   onOpenPopout: onOpenPopout,
   canPopOut: canPopOut,
   isPopoutWindow: isPopoutWindow,
@@ -31224,13 +31240,13 @@ var xye = ({
           }),
         ],
       });
-var Tye = ({
+var ShortcutHintsControl = ({
   showShortcutHints: h2 = true,
   onShowShortcutHintsToggle: h3 = () => {},
 }) =>
   (0, jsxRuntime.jsx)("div", {
     className: "control-group",
-    children: (0, jsxRuntime.jsx)(f5, {
+    children: (0, jsxRuntime.jsx)(SettingRow, {
       searchId: eR("Interface", "Show Shortcut Hints"),
       isModified: h2 !== Dre.showShortcutHints,
       onReset: () => {
@@ -31238,20 +31254,20 @@ var Tye = ({
           h3();
         }
       },
-      children: (0, jsxRuntime.jsx)(fd, {
+      children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
         checked: h2,
         onChange: () => h3(),
         label: "Show Shortcut Hints",
       }),
     }),
   });
-var Mye = {
+var INFOBOX_PIN_LABELS = {
   inventory: "Inventory",
   hud: "Chatbox",
   free: "Free",
 };
 var Pye = ["inventory", "hud", "free"];
-function Iye({
+function InfoboxAppearanceSettings({
   clientLayoutMode: clientLayoutMode,
   pinTarget: pinTarget,
   onPinTargetChange: onPinTargetChange,
@@ -31261,7 +31277,7 @@ function Iye({
   onTextOutlineColorChange: onTextOutlineColorChange,
 }) {
   const ha = db(pinTarget, clientLayoutMode);
-  const hb = Pye.map((hc) => eb(hc, clientLayoutMode)).filter(
+  const hb = Pye.map((hc) => infoboxPinTargetUnavailableReason(hc, clientLayoutMode)).filter(
     (hc) => hc !== null,
   );
   return (0, jsxRuntime.jsxs)("div", {
@@ -31280,16 +31296,16 @@ function Iye({
             className: "settings-field-label",
             children: "Position",
           }),
-          (0, jsxRuntime.jsx)(f5, {
+          (0, jsxRuntime.jsx)(SettingRow, {
             searchId: null,
-            isModified: pinTarget !== gu.infoboxPinTarget,
-            onReset: () => onPinTargetChange(gu.infoboxPinTarget),
+            isModified: pinTarget !== PERSISTED_SETTINGS_DEFAULTS.infoboxPinTarget,
+            onReset: () => onPinTargetChange(PERSISTED_SETTINGS_DEFAULTS.infoboxPinTarget),
             children: (0, jsxRuntime.jsx)("div", {
               className: "settings-segmented",
               role: "radiogroup",
               "aria-label": "Infobox position",
               children: Pye.map((hc) => {
-                const hd = eb(hc, clientLayoutMode);
+                const hd = infoboxPinTargetUnavailableReason(hc, clientLayoutMode);
                 return (0, jsxRuntime.jsxs)(
                   "button",
                   {
@@ -31303,12 +31319,12 @@ function Iye({
                       (ha === hc ? " is-active" : ""),
                     onClick: () => onPinTargetChange(hc),
                     children: [
-                      (0, jsxRuntime.jsx)(Aye, {
+                      (0, jsxRuntime.jsx)(PinTargetGlyph, {
                         target: hc,
                       }),
                       (0, jsxRuntime.jsx)("span", {
                         className: "settings-segmented__label",
-                        children: Mye[hc],
+                        children: INFOBOX_PIN_LABELS[hc],
                       }),
                     ],
                   },
@@ -31335,7 +31351,7 @@ function Iye({
                   ha !== pinTarget
                     ? hc.replace(/\.$/, "") +
                       ", so infoboxes sit above the chatbox. Your " +
-                      Mye[pinTarget] +
+                      INFOBOX_PIN_LABELS[pinTarget] +
                       " choice is kept for the other layouts."
                     : hc,
               },
@@ -31347,21 +31363,21 @@ function Iye({
       (0, jsxRuntime.jsx)("div", {
         className: "infobox-field",
         "data-search-id": eR("Interface", "Infobox appearance", "Text outline"),
-        children: (0, jsxRuntime.jsx)(f5, {
+        children: (0, jsxRuntime.jsx)(SettingRow, {
           searchId: null,
           isModified:
-            textOutlineEnabled !== gu.infoboxTextOutlineEnabled ||
+            textOutlineEnabled !== PERSISTED_SETTINGS_DEFAULTS.infoboxTextOutlineEnabled ||
             (textOutlineEnabled &&
-              textOutlineColor !== gu.infoboxTextOutlineColor),
+              textOutlineColor !== PERSISTED_SETTINGS_DEFAULTS.infoboxTextOutlineColor),
           onReset: () => {
-            onTextOutlineEnabledChange(gu.infoboxTextOutlineEnabled);
-            onTextOutlineColorChange(gu.infoboxTextOutlineColor);
+            onTextOutlineEnabledChange(PERSISTED_SETTINGS_DEFAULTS.infoboxTextOutlineEnabled);
+            onTextOutlineColorChange(PERSISTED_SETTINGS_DEFAULTS.infoboxTextOutlineColor);
           },
           hint: "Outlines infobox values so they stay readable over bright item icons.",
           children: (0, jsxRuntime.jsxs)("div", {
             className: "settings-inline-row",
             children: [
-              (0, jsxRuntime.jsx)(fd, {
+              (0, jsxRuntime.jsx)(OsrsCheckbox, {
                 checked: textOutlineEnabled,
                 label: "Text outline",
                 onChange: onTextOutlineEnabledChange,
@@ -31397,7 +31413,7 @@ function Iye({
     ],
   });
 }
-function Aye({ target: target }) {
+function PinTargetGlyph({ target: target }) {
   return (0, jsxRuntime.jsxs)("svg", {
     width: "18",
     height: "18",
@@ -31814,7 +31830,7 @@ function Oye({ panelVisible: h2 = true }) {
     });
   }
 }
-function Fye({ onClose: onClose }) {
+function EditLayoutEntry({ onClose: onClose }) {
   const h4 = (0, React.useRef)(null);
   return (0, jsxRuntime.jsxs)("div", {
     style: {
@@ -31829,9 +31845,9 @@ function Fye({ onClose: onClose }) {
         className: "settings-inline-label info-hint-region",
         children: [
           "Overlay positions",
-          (0, jsxRuntime.jsx)(dX, {
+          (0, jsxRuntime.jsx)(InfoHint, {
             label: "Overlay positions",
-            text: fx,
+            text: EDIT_LAYOUT_HELP,
             hoverRegionRef: h4,
           }),
         ],
@@ -31847,14 +31863,14 @@ function Fye({ onClose: onClose }) {
     ],
   });
 }
-function $ye() {
+function MobilePreferencesBadge() {
   const h3 = (0, React.useRef)(null);
   return (0, jsxRuntime.jsxs)("span", {
     ref: h3,
     className: "panel-mode-badge info-hint-region",
     children: [
       "This device",
-      (0, jsxRuntime.jsx)(dX, {
+      (0, jsxRuntime.jsx)(InfoHint, {
         label: "Mobile preferences",
         text: "Settings on this device are stored separately from your desktop preferences. Changes here only affect mobile.",
         hoverRegionRef: h3,
@@ -31862,7 +31878,7 @@ function $ye() {
     ],
   });
 }
-var _ye = (0, React.memo)(
+var SettingsSidebarContent = (0, React.memo)(
   function ({
     visible: visible,
     onClose: onClose,
@@ -31965,8 +31981,8 @@ var _ye = (0, React.memo)(
     }, [visible, request]);
     const hj = (0, React.useRef)(null);
     gb("settings", hj);
-    const hk = $ge("settings", visible);
-    const { fieldId: fieldId, resultsId: resultsId } = Kge();
+    const hk = useSidebarSearch("settings", visible);
+    const { fieldId: fieldId, resultsId: resultsId } = useSearchIds();
     const { clientLayoutMode: clientLayoutMode } = displayControls;
     const hp =
       ea.find((hr) => hr.id === activeResourcePack) ??
@@ -31980,7 +31996,7 @@ var _ye = (0, React.memo)(
         }),
         (0, jsxRuntime.jsxs)("aside", {
           className: "controls-overlay " + (visible ? "open" : ""),
-          ...dn.drawer,
+          ...sheet.drawer,
           inert: hd.WwtLW(!visible, undefined),
           children: [
             (0, jsxRuntime.jsxs)("div", {
@@ -31993,13 +32009,13 @@ var _ye = (0, React.memo)(
                       className: "panel-title",
                       children: "Settings",
                     }),
-                    hf && (0, jsxRuntime.jsx)($ye, {}),
+                    hf && (0, jsxRuntime.jsx)(MobilePreferencesBadge, {}),
                   ],
                 }),
                 (0, jsxRuntime.jsxs)("div", {
                   className: "panel-header-icons",
                   children: [
-                    (0, jsxRuntime.jsx)(_ge, {
+                    (0, jsxRuntime.jsx)(SidebarSearchToggle, {
                       search: hk,
                       fieldId: fieldId,
                     }),
@@ -32009,7 +32025,7 @@ var _ye = (0, React.memo)(
                       onClick: onOpenWhatsNew,
                       hint: "What's New",
                       "aria-label": "See what's new in OpenScim",
-                      children: (0, jsxRuntime.jsx)(dy, {
+                      children: (0, jsxRuntime.jsx)(LauncherIcon, {
                         glyph: "news",
                       }),
                     }),
@@ -32023,7 +32039,7 @@ var _ye = (0, React.memo)(
                         onClick: onOpenShortcuts,
                         "data-search-id": gf,
                         "aria-label": "Keyboard shortcuts",
-                        children: (0, jsxRuntime.jsx)(dy, {
+                        children: (0, jsxRuntime.jsx)(LauncherIcon, {
                           glyph: "keyboard",
                         }),
                       }),
@@ -32031,9 +32047,9 @@ var _ye = (0, React.memo)(
                       className: "panel-header-divider",
                       "aria-hidden": "true",
                     }),
-                    (0, jsxRuntime.jsx)(fV, {
+                    (0, jsxRuntime.jsx)(CloseButton, {
                       className: "panel-close-button",
-                      ...dn.close,
+                      ...sheet.close,
                       onClick: onClose,
                       "aria-label": "Close Settings",
                     }),
@@ -32041,7 +32057,7 @@ var _ye = (0, React.memo)(
                 }),
               ],
             }),
-            (0, jsxRuntime.jsx)(qge, {
+            (0, jsxRuntime.jsx)(SidebarSearchBar, {
               search: hk,
               fieldId: fieldId,
               resultsId: resultsId,
@@ -32072,36 +32088,36 @@ var _ye = (0, React.memo)(
                     (0, jsxRuntime.jsxs)("div", {
                       className: "settings-zone",
                       children: [
-                        (0, jsxRuntime.jsx)(fye, {
+                        (0, jsxRuntime.jsx)(CollapsibleSection, {
                           title: "Simulation",
                           defaultExpanded: false,
                           searchId: eR("Simulation"),
-                          children: (0, jsxRuntime.jsx)(bye, {
+                          children: (0, jsxRuntime.jsx)(SimulationControls, {
                             ...simulationControls,
                           }),
                         }),
-                        (0, jsxRuntime.jsx)(fye, {
+                        (0, jsxRuntime.jsx)(CollapsibleSection, {
                           title: "Graphics & Performance",
                           defaultExpanded: false,
                           searchId: eR("Graphics & Performance"),
-                          children: (0, jsxRuntime.jsx)(vye, {
+                          children: (0, jsxRuntime.jsx)(DisplayControls, {
                             ...displayControls,
                           }),
                         }),
                         (0, jsxRuntime.jsx)("div", {
                           "data-tutorial": "interface-section",
-                          children: (0, jsxRuntime.jsx)(fye, {
+                          children: (0, jsxRuntime.jsx)(CollapsibleSection, {
                             title: "Interface",
                             defaultExpanded: false,
                             searchId: eR("Interface"),
-                            children: (0, jsxRuntime.jsx)(wye, {
+                            children: (0, jsxRuntime.jsx)(InterfaceControls, {
                               ...displayControls,
                               keybinds: (0, jsxRuntime.jsx)("div", {
                                 className: "control-group",
-                                children: (0, jsxRuntime.jsx)($pe, {
+                                children: (0, jsxRuntime.jsx)(SettingLinkRow, {
                                   label: "Keybinds",
                                   hint: "Change game-panel and camera keys in the game panel.",
-                                  target: fc,
+                                  target: GAMEPANEL_KEYBINDS_ID,
                                   searchId: null,
                                   blockedReason: () =>
                                     hg ? "Needs a keyboard." : null,
@@ -32122,14 +32138,14 @@ var _ye = (0, React.memo)(
                                           className: "group-title",
                                           children: "Resource Pack",
                                         }),
-                                        (0, jsxRuntime.jsx)(f5, {
+                                        (0, jsxRuntime.jsx)(SettingRow, {
                                           searchId: null,
                                           isModified:
                                             activeResourcePack !==
-                                            gu.activeResourcePack,
+                                            PERSISTED_SETTINGS_DEFAULTS.activeResourcePack,
                                           onReset: () =>
                                             onResourcePackChange(
-                                              gu.activeResourcePack,
+                                              PERSISTED_SETTINGS_DEFAULTS.activeResourcePack,
                                             ),
                                           children: (0, jsxRuntime.jsx)(
                                             "select",
@@ -32211,7 +32227,7 @@ var _ye = (0, React.memo)(
                                         }),
                                       ],
                                     }),
-                                    (0, jsxRuntime.jsx)(Iye, {
+                                    (0, jsxRuntime.jsx)(InfoboxAppearanceSettings, {
                                       ...infoboxAppearance,
                                     }),
                                   ],
@@ -32224,7 +32240,7 @@ var _ye = (0, React.memo)(
                           (0, jsxRuntime.jsx)("div", {
                             ref: hi,
                             children: (0, jsxRuntime.jsxs)(
-                              fye,
+                              CollapsibleSection,
                               {
                                 title:
                                   "mobile" === clientLayoutMode
@@ -32233,14 +32249,14 @@ var _ye = (0, React.memo)(
                                 defaultExpanded: request > 0,
                                 searchId: eR("Mobile"),
                                 children: [
-                                  (0, jsxRuntime.jsx)(ge, {
+                                  (0, jsxRuntime.jsx)(TouchControls, {
                                     ...touchControls,
                                     mobileLayout: "mobile" === clientLayoutMode,
                                     showHaptics:
                                       hg || "mobile" === clientLayoutMode,
                                   }),
                                   "mobile" === clientLayoutMode &&
-                                    (0, jsxRuntime.jsx)(Fye, {
+                                    (0, jsxRuntime.jsx)(EditLayoutEntry, {
                                       onClose: onClose,
                                     }),
                                 ],
@@ -32260,7 +32276,7 @@ var _ye = (0, React.memo)(
                     }),
                     (0, jsxRuntime.jsx)("div", {
                       className: "settings-zone",
-                      children: (0, jsxRuntime.jsx)(fye, {
+                      children: (0, jsxRuntime.jsx)(CollapsibleSection, {
                         title: "Crash Reports",
                         defaultExpanded: false,
                         searchId: eR("Privacy"),
@@ -32316,7 +32332,7 @@ var _ye = (0, React.memo)(
                   ],
                 }),
                 hk.active &&
-                  (0, jsxRuntime.jsx)(Gge, {
+                  (0, jsxRuntime.jsx)(SidebarSearchResults, {
                     search: hk,
                     id: resultsId,
                     layout: Rge(clientLayoutMode),
@@ -32560,7 +32576,7 @@ function Bye(h2, h3, h4 = {}) {
     const { overlays: overlays, ...hx } = h9;
     const hy = startFrame > 0 ? ci(h9.frames, startFrame) : undefined;
     const hz = hj("cursorClicks")
-      ? eM(
+      ? projectActiveClicks(
           {
             samples: h9.cursorSamples,
             clicks: h9.cursorClicks,
@@ -32677,7 +32693,7 @@ function zye(h2) {
   if (h2 instanceof bj) {
     return true;
   }
-  const h4 = h2 instanceof ay ? h2 : h2 instanceof fn ? h2.safety : undefined;
+  const h4 = h2 instanceof ReplaySafetyError ? h2 : h2 instanceof fn ? h2.safety : undefined;
   if (!h4) {
     return false;
   }
@@ -32889,7 +32905,7 @@ function Gye({
   const hC = (0, React.useRef)(false);
   const hD = (0, React.useRef)(null);
   const hE = isOpen && (h8 === "privacy" || data !== null || null !== h5);
-  yle(ha, hE);
+  useCenteredModalSnap(ha, hE);
   const hF = hE;
   const hG = h8 === "privacy";
   (0, React.useEffect)(() => {
@@ -33007,7 +33023,7 @@ function Gye({
   );
   const hQ = hb === null ? null : Ife(hb);
   const hR = h5 ?? hd;
-  const hS = dV(data?.capture);
+  const hS = replayCaptureNotice(data?.capture);
   const hT = null !== data && null === h5;
   const hU = hg || hp || !hT || "ready" !== hk;
   const hV = async () => {
@@ -33149,7 +33165,7 @@ function Gye({
       }
       hf(Wye(i2));
       const i3 = i2 instanceof fn ? i2.issues : [];
-      L.error(
+      logger.error(
         "UI",
         "Replay could not be packaged for sharing",
         i3.length > 0 ? i3 : i2,
@@ -33246,7 +33262,7 @@ function Gye({
       window.clearTimeout(hs.current);
     }
     if (
-      (await Kue(hZ)) &&
+      (await copyToClipboard(hZ)) &&
       hB.current &&
       current29 === hy.current &&
       i1 === ht.current
@@ -33258,14 +33274,14 @@ function Gye({
   if (hE) {
     return (0, jsxRuntime.jsx)("div", {
       className: "share-replay-overlay",
-      ...dn.overlay,
+      ...sheet.overlay,
       ...hw,
       role: "dialog",
       "aria-modal": "true",
       "aria-labelledby": "share-replay-title",
       children: (0, jsxRuntime.jsxs)("div", {
         className: "share-replay-card centered-modal-snap",
-        ...dn.card,
+        ...sheet.card,
         ref: ha,
         onMouseDown: (hY) => {
           if (hY.target.closest("button")) {
@@ -33275,7 +33291,7 @@ function Gye({
         children: [
           (0, jsxRuntime.jsxs)("div", {
             className: "share-replay-header",
-            ...dn.head,
+            ...sheet.head,
             children: [
               (0, jsxRuntime.jsx)("h2", {
                 id: "share-replay-title",
@@ -33286,9 +33302,9 @@ function Gye({
                     ? "Share replay"
                     : "Replay shared",
               }),
-              (0, jsxRuntime.jsx)(fV, {
+              (0, jsxRuntime.jsx)(CloseButton, {
                 className: "share-replay-close",
-                ...dn.close,
+                ...sheet.close,
                 onClick: hv,
                 "aria-label": "Close",
               }),
@@ -33302,7 +33318,7 @@ function Gye({
           }),
           (0, jsxRuntime.jsxs)("div", {
             className: "share-replay-body",
-            ...dn.body,
+            ...sheet.body,
             children: [
               hG
                 ? (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
@@ -33533,7 +33549,7 @@ function Gye({
           }),
           (0, jsxRuntime.jsx)("div", {
             className: "share-replay-footer",
-            ...dn.foot,
+            ...sheet.foot,
             children:
               hG || hb !== null
                 ? (0, jsxRuntime.jsx)(OsrsButton, {
@@ -33569,7 +33585,7 @@ function Gye({
 function Kye(h2) {
   return Date.now() - h2.timestamp < 4000;
 }
-var jye = ({
+var SoundDebugOverlay = ({
   audioEngine: audioEngine,
   visible: visible,
   controlsVisible: controlsVisible,
@@ -33669,7 +33685,7 @@ var jye = ({
             gap: 2,
           },
           children: h6.map((h8) => {
-            const h9 = ule[h8.soundId] || "Unknown";
+            const h9 = SOUND_NAMES[h8.soundId] || "Unknown";
             const ha = Date.now() - h8.timestamp;
             const hb = ha > 3000 ? 1 - (ha - 3000) / 1000 : 1;
             return (0, jsxRuntime.jsxs)(
@@ -33728,7 +33744,7 @@ function Uye(h2) {
     return bP.colors.danger;
   }
 }
-function Vye({ deltas: deltas, expectedMs: expectedMs }) {
+function Sparkline({ deltas: deltas, expectedMs: expectedMs }) {
   if (deltas.length < 2) {
     return null;
   }
@@ -33776,7 +33792,7 @@ function Vye({ deltas: deltas, expectedMs: expectedMs }) {
 function Yye(h2, h3 = 1) {
   return h2.toFixed(h3);
 }
-function Jye({ label: label, value: value, color: color }) {
+function StatsRow({ label: label, value: value, color: color }) {
   return (0, jsxRuntime.jsxs)("div", {
     style: {
       display: "flex",
@@ -33800,7 +33816,7 @@ function Jye({ label: label, value: value, color: color }) {
     ],
   });
 }
-var Zye = ({ monitor: monitor, visible: visible }) => {
+var TickTimingOverlay = ({ monitor: monitor, visible: visible }) => {
   const [h5, h6] = (0, React.useState)(null);
   const h7 = (0, React.useRef)(0);
   const h8 = (0, React.useCallback)(() => {
@@ -33844,11 +33860,11 @@ var Zye = ({ monitor: monitor, visible: visible }) => {
           },
           children: "Tick Timing",
         }),
-        (0, jsxRuntime.jsx)(Jye, {
+        (0, jsxRuntime.jsx)(StatsRow, {
           label: "Expected",
           value: Yye(h5.expectedMs, 0) + "ms",
         }),
-        (0, jsxRuntime.jsx)(Jye, {
+        (0, jsxRuntime.jsx)(StatsRow, {
           label: "Last",
           value:
             Yye(h5.lastMs) +
@@ -33858,16 +33874,16 @@ var Zye = ({ monitor: monitor, visible: visible }) => {
             ")",
           color: Uye(h5.lastDeviationMs),
         }),
-        (0, jsxRuntime.jsx)(Jye, {
+        (0, jsxRuntime.jsx)(StatsRow, {
           label: "Avg",
           value: Yye(h5.avgMs) + "ms",
           color: Uye(h5.avgMs - h5.expectedMs),
         }),
-        (0, jsxRuntime.jsx)(Jye, {
+        (0, jsxRuntime.jsx)(StatsRow, {
           label: "Min / Max",
           value: Yye(h5.minMs) + " / " + Yye(h5.maxMs) + "ms",
         }),
-        (0, jsxRuntime.jsx)(Jye, {
+        (0, jsxRuntime.jsx)(StatsRow, {
           label: "Stddev",
           value: Yye(h5.stddevMs) + "ms",
           color:
@@ -33877,12 +33893,12 @@ var Zye = ({ monitor: monitor, visible: visible }) => {
                 ? bP.colors.warning
                 : bP.colors.success,
         }),
-        (0, jsxRuntime.jsx)(Jye, {
+        (0, jsxRuntime.jsx)(StatsRow, {
           label: "Max Jitter",
           value: Yye(h5.maxJitterMs) + "ms",
           color: Uye(h5.maxJitterMs),
         }),
-        (0, jsxRuntime.jsx)(Jye, {
+        (0, jsxRuntime.jsx)(StatsRow, {
           label: "Samples",
           value: "" + h5.sampleCount,
         }),
@@ -33890,7 +33906,7 @@ var Zye = ({ monitor: monitor, visible: visible }) => {
           style: {
             marginTop: 4,
           },
-          children: (0, jsxRuntime.jsx)(Vye, {
+          children: (0, jsxRuntime.jsx)(Sparkline, {
             deltas: h5.recentDeltas,
             expectedMs: h5.expectedMs,
           }),
@@ -34061,7 +34077,7 @@ function dbe(h2, h3, h4) {
   }
   return h5;
 }
-function ube(h2, h3) {
+function resolveTutorial(h2, h3) {
   let h5 = 0;
   const h6 = new Set();
   h2.steps.forEach((h7, h8) => {
@@ -34084,7 +34100,7 @@ function ube(h2, h3) {
     countedSteps: h6,
   };
 }
-function hbe(h2) {
+function difficultyLabel(h2) {
   if (h2) {
     if ("beginner" === h2) {
       return "Beginner";
@@ -34112,7 +34128,7 @@ function gbe(h2) {
   }
   return h4[0] ?? Aue(h2)[0] ?? null;
 }
-function fbe({
+function TutorialPickerModal({
   open: open,
   initialCourseId: h3 = null,
   currentSceneKind: h4 = null,
@@ -34125,7 +34141,7 @@ function fbe({
   const [hb, hc] = (0, React.useState)(null);
   const [hd, hf] = (0, React.useState)(null);
   const hg = (0, React.useRef)(null);
-  yle(hg, open);
+  useCenteredModalSnap(hg, open);
   const hh = az();
   dC(1300, open, onClose);
   const hi = (0, React.useRef)(h4);
@@ -34142,11 +34158,11 @@ function fbe({
       if (ht) {
         return ht.id;
       }
-      const hu = Tue.find((hv) => hv.surface === "app");
+      const hu = TRAINING_COURSES.find((hv) => hv.surface === "app");
       if (hu) {
         return hu.id;
       } else {
-        return Tue[0]?.id ?? null;
+        return TRAINING_COURSES[0]?.id ?? null;
       }
     })(h3, hi.current);
     hc(hp);
@@ -34180,13 +34196,13 @@ function fbe({
   }
   return (0, jsxRuntime.jsx)("div", {
     className: "tutorial-picker-backdrop",
-    ...dn.overlay,
+    ...sheet.overlay,
     role: "dialog",
     "aria-modal": "true",
     ...hj,
     children: (0, jsxRuntime.jsxs)("div", {
       className: "tp-shell centered-modal-snap",
-      ...dn.card,
+      ...sheet.card,
       ref: hg,
       onMouseDown: (hp) => {
         if (hp.target.closest("button, summary")) {
@@ -34196,14 +34212,14 @@ function fbe({
       children: [
         (0, jsxRuntime.jsxs)("header", {
           className: "tp-header",
-          ...dn.head,
+          ...sheet.head,
           children: [
             (0, jsxRuntime.jsx)("h1", {
               className: "tp-heading",
               children: "Training",
             }),
-            (0, jsxRuntime.jsx)(fV, {
-              ...dn.close,
+            (0, jsxRuntime.jsx)(CloseButton, {
+              ...sheet.close,
               onClick: onClose,
               "aria-label": "Close tutorial picker",
             }),
@@ -34212,12 +34228,12 @@ function fbe({
         (0, jsxRuntime.jsxs)("div", {
           className: "tp-body",
           children: [
-            (0, jsxRuntime.jsx)(ybe, {
+            (0, jsxRuntime.jsx)(CourseRail, {
               selectedCourseId: hb,
               onSelectCourse: hm,
             }),
             hk
-              ? (0, jsxRuntime.jsx)(vbe, {
+              ? (0, jsxRuntime.jsx)(Curriculum, {
                   course: hk,
                   selectedCourseId: hb,
                   selectedTutorialId: hd,
@@ -34226,11 +34242,11 @@ function fbe({
                   onSelectCourse: hm,
                   onSelectTutorial: ho,
                 })
-              : (0, jsxRuntime.jsx)(Sbe, {}),
+              : (0, jsxRuntime.jsx)(EmptyCurriculum, {}),
             (0, jsxRuntime.jsx)("article", {
               className: "tp-detail",
               children: hl
-                ? (0, jsxRuntime.jsx)(Cbe, {
+                ? (0, jsxRuntime.jsx)(TutorialDetail, {
                     tutorial: hl,
                     course: hk,
                     isTouchOnly: hh,
@@ -34249,7 +34265,7 @@ function fbe({
                     },
                     onSelectTutorial: ho,
                   })
-                : (0, jsxRuntime.jsx)(Nbe, {}),
+                : (0, jsxRuntime.jsx)(EmptyDetail, {}),
             }),
           ],
         }),
@@ -34257,16 +34273,16 @@ function fbe({
     }),
   });
 }
-function ybe({
+function CourseRail({
   selectedCourseId: selectedCourseId,
   onSelectCourse: onSelectCourse,
 }) {
   const h5 = (0, React.useMemo)(
-    () => Tue.filter((h7) => h7.surface === "app"),
+    () => TRAINING_COURSES.filter((h7) => h7.surface === "app"),
     [],
   );
   const h6 = (0, React.useMemo)(
-    () => Tue.filter((h7) => h7.surface === "encounter"),
+    () => TRAINING_COURSES.filter((h7) => h7.surface === "encounter"),
     [],
   );
   return (0, jsxRuntime.jsxs)("nav", {
@@ -34284,7 +34300,7 @@ function ybe({
               className: "tp-rail-items",
               children: h5.map((h7) =>
                 (0, jsxRuntime.jsx)(
-                  bbe,
+                  CourseRailItem,
                   {
                     course: h7,
                     active: h7.id === selectedCourseId,
@@ -34307,7 +34323,7 @@ function ybe({
               className: "tp-rail-items",
               children: h6.map((h7) =>
                 (0, jsxRuntime.jsx)(
-                  bbe,
+                  CourseRailItem,
                   {
                     course: h7,
                     active: h7.id === selectedCourseId,
@@ -34322,7 +34338,7 @@ function ybe({
     ],
   });
 }
-function bbe({ course: course, active: active, onSelect: onSelect }) {
+function CourseRailItem({ course: course, active: active, onSelect: onSelect }) {
   const h6 = (function (h7) {
     const h8 = mbe(h7);
     let h9 = 0;
@@ -34353,7 +34369,7 @@ function bbe({ course: course, active: active, onSelect: onSelect }) {
     ],
   });
 }
-function vbe({
+function Curriculum({
   course: course,
   selectedCourseId: selectedCourseId,
   selectedTutorialId: selectedTutorialId,
@@ -34385,8 +34401,8 @@ function vbe({
     return hi.tracks.length > 1;
   })(course);
   const hb = course.eyebrow ?? (course.surface === "app" ? "App" : "Encounter");
-  const hc = Tue.filter((hi) => hi.surface === "app");
-  const hd = Tue.filter((hi) => hi.surface === "encounter");
+  const hc = TRAINING_COURSES.filter((hi) => hi.surface === "app");
+  const hd = TRAINING_COURSES.filter((hi) => hi.surface === "encounter");
   const hf = course.tracks.filter((hi) =>
     hi.tutorialIds.every((hj) => xue(hj)?.availability === "wip"),
   );
@@ -34453,7 +34469,7 @@ function vbe({
       }),
       hg.map((hi) =>
         (0, jsxRuntime.jsx)(
-          wbe,
+          CurriculumSection,
           {
             track: hi,
             showLabel: ha,
@@ -34472,7 +34488,7 @@ function vbe({
             (0, jsxRuntime.jsxs)("summary", {
               tabIndex: -1,
               children: [
-                (0, jsxRuntime.jsx)(cO, {}),
+                (0, jsxRuntime.jsx)(DisclosureChevron, {}),
                 "Coming soon · ",
                 hh,
                 " ",
@@ -34481,7 +34497,7 @@ function vbe({
             }),
             hf.map((hi) =>
               (0, jsxRuntime.jsx)(
-                wbe,
+                CurriculumSection,
                 {
                   track: hi,
                   showLabel: true,
@@ -34498,7 +34514,7 @@ function vbe({
     ],
   });
 }
-function wbe({
+function CurriculumSection({
   track: track,
   showLabel: showLabel,
   selectedTutorialId: selectedTutorialId,
@@ -34524,7 +34540,7 @@ function wbe({
           }),
         h9.map((ha) =>
           (0, jsxRuntime.jsx)(
-            kbe,
+            CurriculumLesson,
             {
               tutorial: ha,
               isTouchOnly: isTouchOnly,
@@ -34539,14 +34555,14 @@ function wbe({
     });
   }
 }
-function kbe({
+function CurriculumLesson({
   tutorial: tutorial,
   isTouchOnly: isTouchOnly,
   active: active,
   running: running,
   onSelect: onSelect,
 }) {
-  const h8 = ube(tutorial, isTouchOnly);
+  const h8 = resolveTutorial(tutorial, isTouchOnly);
   const h9 = rbe(tutorial.id);
   const ha =
     (h9?.completed ?? false)
@@ -34596,7 +34612,7 @@ function kbe({
     ],
   });
 }
-function Sbe() {
+function EmptyCurriculum() {
   return (0, jsxRuntime.jsx)("div", {
     className: "tp-curriculum",
     children: (0, jsxRuntime.jsx)("div", {
@@ -34608,7 +34624,7 @@ function Sbe() {
     }),
   });
 }
-function Cbe({
+function TutorialDetail({
   tutorial: tutorial,
   course: course,
   isTouchOnly: isTouchOnly,
@@ -34716,7 +34732,7 @@ function Cbe({
     },
     KgrVm: "Reset progress",
   };
-  const hc = ube(tutorial, isTouchOnly);
+  const hc = resolveTutorial(tutorial, isTouchOnly);
   const hd = rbe(tutorial.id);
   const hf = hd?.completed ?? false;
   const hg = hd?.lastStep ?? -1;
@@ -34778,10 +34794,10 @@ function Cbe({
           (0, jsxRuntime.jsxs)("div", {
             className: "tp-detail-meta",
             children: [
-              hbe(tutorial.difficulty) &&
+              difficultyLabel(tutorial.difficulty) &&
                 (0, jsxRuntime.jsx)("span", {
                   className: "tp-pill tp-pill--" + tutorial.difficulty,
-                  children: hbe(tutorial.difficulty),
+                  children: difficultyLabel(tutorial.difficulty),
                 }),
               hk &&
                 (0, jsxRuntime.jsx)("span", {
@@ -35023,7 +35039,7 @@ function Cbe({
     ],
   });
 }
-function Nbe() {
+function EmptyDetail() {
   return (0, jsxRuntime.jsxs)("div", {
     className: "tp-empty",
     children: [
@@ -35039,11 +35055,11 @@ function Nbe() {
     ],
   });
 }
-var xbe = {
+var ACCENT_CLASS = {
   gold: "victory-modal-overlay--gold",
   blood: "victory-modal-overlay--blood",
 };
-function Tbe({
+function VictoryModal({
   victory: victory,
   simulationState: simulationState,
   onRestart: onRestart,
@@ -35084,7 +35100,7 @@ function Tbe({
   if (hd && hf !== null && hf) {
     return (0, gn.createPortal)(
       (0, jsxRuntime.jsx)("div", {
-        className: "victory-modal-overlay " + xbe[victory.accent],
+        className: "victory-modal-overlay " + ACCENT_CLASS[victory.accent],
         role: "dialog",
         "aria-modal": "true",
         "aria-labelledby": "victory-modal-title",
@@ -35197,7 +35213,7 @@ function Tbe({
             (0, jsxRuntime.jsxs)("div", {
               className: "victory-modal-actions",
               children: [
-                (0, jsxRuntime.jsx)(cX, {
+                (0, jsxRuntime.jsx)(OutcomePracticeActions, {
                   controls: replayPractice,
                   encounterSession: encounterSession,
                   onRestart: onRestart,
@@ -35224,7 +35240,7 @@ function Tbe({
     return null;
   }
 }
-var Mbe = ({ visible: visible, width: width, height: height }) =>
+var ViewportSizeWarning = ({ visible: visible, width: width, height: height }) =>
   visible
     ? (0, jsxRuntime.jsxs)("div", {
         className: "viewport-size-strip",
@@ -36499,7 +36515,7 @@ function Rbe(h2) {
 }
 var Lbe = ({ isOpen: isOpen, onClose: onClose }) => {
   const h5 = (0, React.useRef)(null);
-  yle(h5, isOpen);
+  useCenteredModalSnap(h5, isOpen);
   const h6 = bpe(h5, onClose);
   const [h7, h8] = (0, React.useState)("All");
   dC(1300, isOpen, onClose);
@@ -36515,7 +36531,7 @@ var Lbe = ({ isOpen: isOpen, onClose: onClose }) => {
   })(h7);
   return (0, jsxRuntime.jsx)("div", {
     className: "whats-new-overlay",
-    ...dn.overlay,
+    ...sheet.overlay,
     ...h6,
     role: "dialog",
     "aria-modal": "true",
@@ -36523,7 +36539,7 @@ var Lbe = ({ isOpen: isOpen, onClose: onClose }) => {
     "aria-describedby": "whats-new-desc",
     children: (0, jsxRuntime.jsxs)("div", {
       className: "whats-new-card centered-modal-snap",
-      ...dn.card,
+      ...sheet.card,
       ref: h5,
       onMouseDown: (ha) => {
         if (ha.target.closest("button")) {
@@ -36533,7 +36549,7 @@ var Lbe = ({ isOpen: isOpen, onClose: onClose }) => {
       children: [
         (0, jsxRuntime.jsxs)("div", {
           className: "whats-new-header",
-          ...dn.head,
+          ...sheet.head,
           children: [
             (0, jsxRuntime.jsxs)("div", {
               className: "whats-new-heading",
@@ -36550,9 +36566,9 @@ var Lbe = ({ isOpen: isOpen, onClose: onClose }) => {
                 }),
               ],
             }),
-            (0, jsxRuntime.jsx)(fV, {
+            (0, jsxRuntime.jsx)(CloseButton, {
               className: "whats-new-close",
-              ...dn.close,
+              ...sheet.close,
               onClick: onClose,
               "aria-label": "Close",
             }),
@@ -36582,7 +36598,7 @@ var Lbe = ({ isOpen: isOpen, onClose: onClose }) => {
         }),
         (0, jsxRuntime.jsx)("ol", {
           className: "whats-new-list",
-          ...dn.body,
+          ...sheet.body,
           children: h9.map((ha) =>
             (0, jsxRuntime.jsxs)(
               "li",
@@ -36671,7 +36687,7 @@ function Dbe(h2) {
     dismissAll: hb,
   };
 }
-function Obe({ item: item, onDismiss: onDismiss, onOptOut: onOptOut }) {
+function SingleToast({ item: item, onDismiss: onDismiss, onOptOut: onOptOut }) {
   const [h6, h7] = (0, React.useState)(false);
   const h8 = (0, React.useRef)(null);
   const h9 = (0, React.useRef)(false);
@@ -36759,7 +36775,7 @@ var Fbe = {
   left: 4,
   bottom: "calc(40px + 4px + 8px)",
 };
-function $be({
+function ZoomHintToast({
   toasts: toasts,
   onDismiss: onDismiss,
   onOptOut: onOptOut,
@@ -36780,7 +36796,7 @@ function $be({
     style: h7,
     children: toasts.map((h8) =>
       (0, jsxRuntime.jsx)(
-        Obe,
+        SingleToast,
         {
           item: h8,
           onDismiss: onDismiss,
@@ -36791,7 +36807,7 @@ function $be({
     ),
   });
 }
-var _be = class {
+var GamePanelTabStore = class {
   constructor(h2 = "inventory") {
     ar(this, "tab", undefined);
     ar(this, "listeners", new Set());
@@ -36839,7 +36855,7 @@ var zbe = "#CCFFAB00";
 var Wbe = "#CCFF4081";
 var Gbe = "#CC9B59B6";
 var Kbe = "#9990A4AE";
-var jbe = {
+var YAMA_NO_FLY = {
   id: "yama_p3_no_fly",
   name: "Nofly",
   description:
@@ -36876,7 +36892,7 @@ var jbe = {
     Hbe(30, 34, Gbe, "1"),
   ],
 };
-var Ube = {
+var YAMA_DONOFLY = {
   id: "yama_p3_donofly",
   name: "Donofly",
   description:
@@ -36920,8 +36936,8 @@ var Ybe = [
       Hbe(30, 37, Kbe),
     ],
   },
-  Ube,
-  jbe,
+  YAMA_DONOFLY,
+  YAMA_NO_FLY,
   {
     id: "yama_p3_godfly",
     name: "Godfly",
@@ -36997,7 +37013,7 @@ var Ybe = [
     ],
   },
 ];
-var Jbe = [
+var ZUK_INFERNO = [
   {
     id: "zuk_inferno",
     name: "Zuk Inferno Tiles",
@@ -37120,23 +37136,23 @@ var Jbe = [
 var Zbe = new Map();
 function Xbe(h2) {
   for (const h4 of h2) {
-    const h5 = gR(h4.encounterKind);
+    const h5 = resolveBaseEncounterKind(h4.encounterKind);
     const h6 = Zbe.get(h5) ?? [];
     h6.push(h4);
     Zbe.set(h5, h6);
   }
 }
 function Qbe(h2) {
-  return Zbe.get(gR(h2)) ?? [];
+  return Zbe.get(resolveBaseEncounterKind(h2)) ?? [];
 }
 Xbe(Ybe);
-Xbe(Jbe);
+Xbe(ZUK_INFERNO);
 // Presets written beside an encounter: its descriptor's `tileMarkerPresets` (client/encounters/registry.js). A
 // marker there is the arguments of Hbe above: [x, y, "#AARRGGBB", label?, fillOpacity?].
 for (const kind of cE.getRegisteredKinds()) {
   Xbe((cE.getDescriptor(kind)?.tileMarkerPresets ?? []).map((preset) => ({ ...preset, encounterKind: kind, markers: preset.markers.map((marker) => Hbe(...marker)) })));
 }
-var eve = "Check your gear, then press Start.";
+var CHECK_GEAR = "Check your gear, then press Start.";
 var tve = [...W, ...aP, D];
 var nve = {
   west: false,
@@ -37152,9 +37168,9 @@ function ave(h2) {
   }
 }
 function ive(h2) {
-  const h4 = at(h2);
+  const h4 = getInfernoSetup(h2);
   const [h5, h6] = h4.startTile;
-  const h7 = cd(h4.startWave) && (h5 !== b3[0] || h6 !== b3[1]);
+  const h7 = canChooseInfernoStartTile(h4.startWave) && (h5 !== infernoDefaultStartTile[0] || h6 !== infernoDefaultStartTile[1]);
   return aN({
     startWave: h4.startWave,
     layout: h4.spawnLayout?.wave === h4.startWave ? h4.spawnLayout : null,
@@ -37162,7 +37178,7 @@ function ive(h2) {
     startTile: h7 ? h4.startTile : null,
   });
 }
-function ove(h2, h3) {
+function planInfernoSetupLink(h2, h3) {
   const h5 = h2.pathname.split("/").filter(Boolean);
   if (h5.length !== 0 && (h5.length !== 1 || h5[0] !== "inferno")) {
     return null;
@@ -37203,7 +37219,7 @@ function ove(h2, h3) {
         },
       };
     }
-    const hh = xde(hc);
+    const hh = importInventorySetup(hc);
     if ("error" === hh.kind) {
       return {
         mechanics: hf,
@@ -37212,7 +37228,7 @@ function ove(h2, h3) {
         notice: {
           tone: "warning",
           message:
-            hg + " loaded from link, but its gear could not be read. " + eve,
+            hg + " loaded from link, but its gear could not be read. " + CHECK_GEAR,
         },
       };
     }
@@ -37229,7 +37245,7 @@ function ove(h2, h3) {
         notice: {
           tone: "warning",
           message:
-            hg + " and gear loaded from link, but " + hj + " left out. " + eve,
+            hg + " and gear loaded from link, but " + hj + " left out. " + CHECK_GEAR,
         },
       };
     }
@@ -37264,13 +37280,13 @@ function ove(h2, h3) {
     onInfernoRoute: h5.length === 1,
   };
 }
-var rve = {
+var PITCH_HZ = {
   tick: 880,
   tock: 660,
 };
 function sve(h2, h3) {
   const h5 = new Float32Array(Math.ceil(0.12 * h3));
-  const h6 = rve[h2];
+  const h6 = PITCH_HZ[h2];
   let h7 = 0;
   for (let h9 = 0; h9 < h5.length; h9++) {
     const ha = h9 / h3;
@@ -37288,7 +37304,7 @@ function sve(h2, h3) {
   return h5;
 }
 var lve = 0.1;
-function cve(h2) {
+function decodedBytes(h2) {
   return h2.length * h2.numberOfChannels * Float32Array.BYTES_PER_ELEMENT;
 }
 function dve(h2, h3) {
@@ -37312,21 +37328,21 @@ var mve = 178;
 var gve = [518, 519, 520, 521];
 var pF = "player";
 var fve = {
-  [J.ProtectMagic]: 2675,
-  [J.ProtectRange]: 2677,
-  [J.ProtectMelee]: 2676,
-  [J.EagleEye]: 2665,
-  [J.MysticMight]: 2669,
-  [J.Piety]: 3825,
-  [J.Zeal]: 12645,
-  [J.Rigour]: 2685,
-  [J.Augury]: 2670,
-  [J.Deadeye]: 10194,
-  [J.MysticVigour]: 10100,
-  [J.Redemption]: 2680,
-  [J.Preserve]: 2679,
-  [J.RapidRestore]: 2679,
-  [J.RapidHeal]: 2678,
+  [Prayer.ProtectMagic]: 2675,
+  [Prayer.ProtectRange]: 2677,
+  [Prayer.ProtectMelee]: 2676,
+  [Prayer.EagleEye]: 2665,
+  [Prayer.MysticMight]: 2669,
+  [Prayer.Piety]: 3825,
+  [Prayer.Zeal]: 12645,
+  [Prayer.Rigour]: 2685,
+  [Prayer.Augury]: 2670,
+  [Prayer.Deadeye]: 10194,
+  [Prayer.MysticVigour]: 10100,
+  [Prayer.Redemption]: 2680,
+  [Prayer.Preserve]: 2679,
+  [Prayer.RapidRestore]: 2679,
+  [Prayer.RapidHeal]: 2678,
 };
 var yve = 2672;
 var bve = 2401;
@@ -37335,20 +37351,27 @@ var wve = 2238;
 var kve = 2247;
 var Sve = [5046, 5015];
 var Cve = new Set([
-  aM.VFX_PLAYER_DEATH_CHARGE,
-  aM.VFX_PLAYER_DEATH_CHARGE_UPGRADE,
+  spotAnimIds.VFX_PLAYER_DEATH_CHARGE,
+  spotAnimIds.VFX_PLAYER_DEATH_CHARGE_UPGRADE,
 ]);
 var Nve = {
   id: 9315,
   delayCycles: 5,
 };
 var xve = new Set([
-  aM.VFX_IGNITE_STAFF_01_1X1,
-  aM.VFX_IGNITE_STAFF_01_2X2,
-  aM.VFX_IGNITE_STAFF_01_3X3,
+  spotAnimIds.VFX_IGNITE_STAFF_01_1X1,
+  spotAnimIds.VFX_IGNITE_STAFF_01_2X2,
+  spotAnimIds.VFX_IGNITE_STAFF_01_3X3,
+]);
+// An enchanted bolt's effect is heard with its graphic on the target (OBS,
+// recorded kills: ruby's graphic 754 with 2911, 2 client cycles on; diamond's
+// 758 with 2913, 1 on). The other bolts' effects were not recorded.
+var BOLT_EFFECT_SOUNDS = new Map([
+  [754, { id: 2911, delayCycles: 2 }],
+  [758, { id: 2913, delayCycles: 1 }],
 ]);
 var Tve = [5053, 5035];
-var Mve = {
+var ANCIENT_SPELL_SOUNDS = {
   "Smoke Rush": [183, 185],
   "Shadow Rush": [178, 179],
   "Blood Rush": [106, 110],
@@ -37407,7 +37430,7 @@ var Ave = [
 function Rve(...h2) {
   const h4 = new Set(h2);
   for (const h5 of h2) {
-    for (const h6 of ct(h5)) {
+    for (const h6 of getEquipmentVariantIds(h5)) {
       h4.add(h6);
     }
   }
@@ -37418,8 +37441,8 @@ var Eve = Rve(27676, 27679);
 var Dve = Rve(31115, 31113);
 var Ove = Rve(27275);
 var Fve = Rve(24417);
-var $ve = Rve(22325, 22486, 25736, 25738, 25739, 25740, 25741, 25742);
-var _ve = Rve(
+var SCYTHE_OF_VITUR_WEAPONS = Rve(22325, 22486, 25736, 25738, 25739, 25740, 25741, 25742);
+var GODSWORD_WEAPONS = Rve(
   11802,
   11804,
   11806,
@@ -37469,6 +37492,12 @@ var Wve = [
 var Gve = {
   id: 3892,
   delayCycles: 15,
+};
+// Zaryte crossbow, Evoke: 5306 two-thirds of a tick after the shot, in place
+// of the crossbow's 2695 (OBS: all 18 recorded Evokes in Nex kills).
+var ZARYTE_EVOKE_SOUND = {
+  id: 5306,
+  delayCycles: 20,
 };
 var Kve = [
   5027,
@@ -37523,6 +37552,7 @@ var awe = Rve(11802, 20368, 11806, 20372, 11808, 20374);
 var iwe = Rve(4151, 12773, 12774, 26482, 12006, 26484);
 var owe = Rve(29589);
 var rwe = Rve(11785);
+var ZARYTE_CROSSBOW_WEAPONS = Rve(26374, 27186);
 var swe = Rve(27690);
 var lwe = Rve(21003, 27100);
 var cwe = Rve(13263);
@@ -37531,7 +37561,7 @@ var uwe = Rve(29591);
 var hwe = {
   melee_stab: 2501,
 };
-var pwe = {
+var STYLE_ATTACK_SOUNDS = {
   11889: {
     melee_stab: 2562,
     melee_slash: 2524,
@@ -37588,7 +37618,7 @@ var pwe = {
     melee_slash: 2524,
   },
 };
-var mwe = {
+var ATTACK_KIND_SOUNDS = {
   melee_slash: 2500,
   melee_stab: 2517,
   melee_crush: 2567,
@@ -37598,7 +37628,7 @@ var mwe = {
   magic_air: 220,
   magic_water: 211,
 };
-var gwe = {
+var EQUIP_SOUND_BY_KIND = {
   fun: wve,
   metal_body: 2239,
   helmet: 2240,
@@ -37606,7 +37636,7 @@ var gwe = {
   hands: 2236,
   staff: kve,
 };
-var fwe = {
+var WEAPON_EQUIP_SOUNDS = {
   28338: 2232,
   28810: 2232,
   13576: 2233,
@@ -37634,7 +37664,7 @@ function bwe(h2, h3, h4, h5) {
   if (h4?.accurate !== true) {
     return h2;
   }
-  const h6 = ad(
+  const h6 = getDistanceToFootprint(
     h4.sourcePosition[0],
     h4.sourcePosition[1],
     h4.targetPosition[0],
@@ -37647,7 +37677,7 @@ function bwe(h2, h3, h4, h5) {
       id: h3,
       position: h4.targetPosition,
       range: 10,
-      delayCycles: bv(h5, h6),
+      delayCycles: getProjectileFlightCycles(h5, h6),
     },
   ];
 }
@@ -37685,21 +37715,21 @@ function vwe(h2) {
     return null;
   }
   const spellId2 = h2.spellId;
-  const h5 = spellId2 === undefined ? undefined : Mve[spellId2];
+  const h5 = spellId2 === undefined ? undefined : ANCIENT_SPELL_SOUNDS[spellId2];
   if (h5) {
-    return bwe(h5[0], h5[1], h2.spellCast, c0.magic_spell);
+    return bwe(h5[0], h5[1], h2.spellCast, projectileTimings.magic_spell);
   }
   if (spellId2 === "Dark Demonbane") {
     return ywe(h2, Tve[0], Tve[1]);
   }
-  const h6 = h2.weaponId === undefined ? undefined : aJ(h2.weaponId);
+  const h6 = h2.weaponId === undefined ? undefined : getBaseItemId(h2.weaponId);
   const h7 = h2.usingSpecialAttack === true;
   if ("number" == typeof h6) {
     if (h6 === 29000) {
       return 2699;
     }
     if (Ove.has(h6)) {
-      return bwe(6410, 1460, h2.spellCast, c0.tumekens_shadow);
+      return bwe(6410, 1460, h2.spellCast, projectileTimings.tumekens_shadow);
     }
     if (h7) {
       if (Hve.has(h6)) {
@@ -37720,6 +37750,9 @@ function vwe(h2) {
       if (rwe.has(h6)) {
         return Gve;
       }
+      if (ZARYTE_CROSSBOW_WEAPONS.has(h6)) {
+        return ZARYTE_EVOKE_SOUND;
+      }
       if (swe.has(h6)) {
         return Kve;
       }
@@ -37735,13 +37768,13 @@ function vwe(h2) {
       if (uwe.has(h6)) {
         return (function (h9) {
           const spellCast2 = h9.spellCast;
-          const hb = ae(29591, true);
+          const hb = getWeaponProjectileTiming(29591, true);
           if (h3.NIXms(!spellCast2, !hb)) {
             return Jve;
           }
-          const hc = bv(
+          const hc = getProjectileFlightCycles(
             hb,
-            ad(
+            getDistanceToFootprint(
               spellCast2.sourcePosition[0],
               spellCast2.sourcePosition[1],
               spellCast2.targetPosition[0],
@@ -37769,7 +37802,7 @@ function vwe(h2) {
       }
     }
     const h8 = (function (h9, ha) {
-      return pwe[h9]?.[ha];
+      return STYLE_ATTACK_SOUNDS[h9]?.[ha];
     })(h6, h2.attackKind);
     if (h8 !== undefined) {
       return h8;
@@ -37777,10 +37810,10 @@ function vwe(h2) {
     if (Fve.has(h6)) {
       return 2508;
     }
-    if ($ve.has(h6)) {
+    if (SCYTHE_OF_VITUR_WEAPONS.has(h6)) {
       return 2524;
     }
-    if (_ve.has(h6)) {
+    if (GODSWORD_WEAPONS.has(h6)) {
       if ("melee_crush" === h2.attackKind) {
         return 3846;
       } else {
@@ -37809,21 +37842,21 @@ function vwe(h2) {
       if (h7) {
         return Ave;
       } else {
-        return bwe(Ive[0], Ive[1], h2.spellCast, c0.eye_of_ayak);
+        return bwe(Ive[0], Ive[1], h2.spellCast, projectileTimings.eye_of_ayak);
       }
     }
     if (undefined === spellId2 && twe.has(h6)) {
-      return bwe(178, 1460, h2.spellCast, c0.magic_spell);
+      return bwe(178, 1460, h2.spellCast, projectileTimings.magic_spell);
     }
     if (h7 && (Lve.has(h6) || Eve.has(h6))) {
       return (function (h9) {
         const spellCast3 = h9.spellCast;
         const hb =
-          undefined === h9.weaponId ? undefined : ae(h9.weaponId, true);
+          undefined === h9.weaponId ? undefined : getWeaponProjectileTiming(h9.weaponId, true);
         if (!spellCast3 || !hb) {
           return ywe(h9, Pve[0], Pve[1]);
         }
-        const hc = ad(
+        const hc = getDistanceToFootprint(
           spellCast3.sourcePosition[0],
           spellCast3.sourcePosition[1],
           spellCast3.targetPosition[0],
@@ -37834,7 +37867,7 @@ function vwe(h2) {
           Pve[0],
           {
             id: Pve[1],
-            delayCycles: bv(hb, hc),
+            delayCycles: getProjectileFlightCycles(hb, hc),
           },
         ];
       })(h2);
@@ -37842,13 +37875,13 @@ function vwe(h2) {
     if (Lve.has(h6)) {
       return 178;
     }
-    if ("crossbow" === b0(h6)) {
+    if ("crossbow" === getWeaponCategory(h6)) {
       return 2695;
     }
   }
-  return mwe[h2.attackKind] ?? null;
+  return ATTACK_KIND_SOUNDS[h2.attackKind] ?? null;
 }
-var wwe = {
+var coreAudioRules = {
   attack_started: {
     resolve: (h2) => {
       const h4 = vwe(h2);
@@ -37859,7 +37892,7 @@ var wwe = {
       }
     },
     preloadIds: [
-      ...Object.values(mwe),
+      ...Object.values(ATTACK_KIND_SOUNDS),
       2695,
       2699,
       uve,
@@ -37877,6 +37910,7 @@ var wwe = {
       ...Wve.map((h2) => h2.id),
       Gve.id,
       ...zve.map((h2) => h2.id),
+      ZARYTE_EVOKE_SOUND.id,
       3869,
       5027,
       6182,
@@ -37889,11 +37923,11 @@ var wwe = {
       7019,
       2520,
       1460,
-      ...Object.values(pwe).flatMap((h2) =>
+      ...Object.values(STYLE_ATTACK_SOUNDS).flatMap((h2) =>
         Object.values(h2).filter((h3) => typeof h3 == "number"),
       ),
       ...Tve,
-      ...Object.values(Mve).flat(),
+      ...Object.values(ANCIENT_SPELL_SOUNDS).flat(),
       178,
       ...Pve,
       6410,
@@ -37981,11 +38015,11 @@ var wwe = {
       const h4 = h2;
       const h5 =
         "weapon" === h4.slot && "number" == typeof h4.itemId
-          ? fwe[aJ(h4.itemId)]
+          ? WEAPON_EQUIP_SOUNDS[getBaseItemId(h4.itemId)]
           : undefined;
-      return cr(h5 ?? gwe[h4.equipSound] ?? wve);
+      return cr(h5 ?? EQUIP_SOUND_BY_KIND[h4.equipSound] ?? wve);
     },
-    preloadIds: [wve, 2239, 2240, 2242, 2236, kve, ...Object.values(fwe)],
+    preloadIds: [wve, 2239, 2240, 2242, 2236, kve, ...Object.values(WEAPON_EQUIP_SOUNDS)],
   },
   // The player's thralls (client/engine/thralls.js), in every fight: the sound
   // of a resurrection as it is cast, and of a thrall's return to the grave.
@@ -38001,7 +38035,7 @@ var wwe = {
       if (h2.soundId !== undefined) {
         return cr(h2.soundId);
       }
-      if (spotAnimId2 === aM.VFX_PLAYER_MARK_OF_DARKNESS) {
+      if (spotAnimId2 === spotAnimIds.VFX_PLAYER_MARK_OF_DARKNESS) {
         return cr(Sve);
       } else if (Cve.has(spotAnimId2)) {
         return cr(5034);
@@ -38024,7 +38058,7 @@ var wwe = {
       const spotAnimId3 = h2.spotAnimId;
       if (2287 === spotAnimId3) {
         return cr(6847);
-      } else if (spotAnimId3 === aM.VFX_PLAYER_REDEMPTION) {
+      } else if (spotAnimId3 === spotAnimIds.VFX_PLAYER_REDEMPTION) {
         return cr(2681);
       } else {
         return cC;
@@ -38033,8 +38067,13 @@ var wwe = {
     preloadIds: [6847, 2681],
   },
   npc_graphic_applied: {
-    resolve: (h2) => (xve.has(h2.spotAnimId) ? cr(Nve) : cC),
-    preloadIds: [Nve.id],
+    resolve: (h2) =>
+      xve.has(h2.spotAnimId)
+        ? cr(Nve)
+        : BOLT_EFFECT_SOUNDS.has(h2.spotAnimId)
+          ? cr(BOLT_EFFECT_SOUNDS.get(h2.spotAnimId))
+          : cC,
+    preloadIds: [Nve.id, ...[...BOLT_EFFECT_SOUNDS.values()].map((h2) => h2.id)],
   },
   status_effect_expired: {
     resolve: (h2) => {
@@ -38056,7 +38095,7 @@ var wwe = {
     preloadIds: [512],
   },
 };
-var kwe = class {
+var FrameSoundTracker = class {
   constructor(h2) {
     ar(this, "audioEngine", undefined);
     ar(this, "state", new Map());
@@ -38134,7 +38173,7 @@ var kwe = class {
     const h6 = h2.seqType?.frameSounds?.get(h3);
     if (h6) {
       for (const h7 of h6) {
-        L.debug(
+        logger.debug(
           "FrameSoundTracker",
           "[" +
             h2.actorId +
@@ -38193,7 +38232,7 @@ var Swe = new (class {
     ar(this, "decodeCount", 0);
     ar(this, "decodeStarts", 0);
     ar(this, "sourceStarts", 0);
-    ar(this, "soundCache", new bX());
+    ar(this, "soundCache", new ReplayRecorder());
     ar(this, "failedLoads", new Set());
     ar(this, "activeSources", new Map());
     ar(this, "pausedVoices", []);
@@ -38393,7 +38432,7 @@ var Swe = new (class {
             })
             .catch((hb) => {
               this.pendingLoads.delete(h2);
-              L.warn("AudioEngine", "Failed to lazy-load sound " + h2, hb);
+              logger.warn("AudioEngine", "Failed to lazy-load sound " + h2, hb);
             });
         }
         return;
@@ -38443,7 +38482,7 @@ var Swe = new (class {
       (h7) => {
         if (!this.disposed) {
           this.bufferCache.set(h2, h7);
-          this.retainedDecodedBytes += cve(h7);
+          this.retainedDecodedBytes += decodedBytes(h7);
           this.decodeCount++;
         }
         queueMicrotask(() => {
@@ -38479,7 +38518,7 @@ var Swe = new (class {
       }
       if (!h3.has(h7) && !this.pendingDecodes.has(h6)) {
         this.bufferCache.delete(h6);
-        this.retainedDecodedBytes -= cve(h7);
+        this.retainedDecodedBytes -= decodedBytes(h7);
       }
     }
   }
@@ -38517,7 +38556,7 @@ var Swe = new (class {
           return;
         }
         this.metronomeFailureLogged = true;
-        L.warn("AudioEngine", "Metronome beat failed", h7);
+        logger.warn("AudioEngine", "Metronome beat failed", h7);
       }
     }
   }
@@ -38700,18 +38739,18 @@ var Cwe = [
 ];
 function Nwe(h2) {
   const h4 = new Set();
-  for (const h5 of Object.keys(gQ)) {
+  for (const h5 of Object.keys(consumableDefinitionByItemId)) {
     const h6 = Number(h5);
     if (h6 > 0) {
       h4.add(h6);
     }
   }
-  for (const h7 of Object.values(gQ)) {
+  for (const h7 of Object.values(consumableDefinitionByItemId)) {
     if ("replace" === h7.consume.type) {
       h4.add(h7.consume.withId);
     }
   }
-  for (const h8 of Object.values(_le)) {
+  for (const h8 of Object.values(EQUIPMENT_PRESETS)) {
     for (const h9 of Object.values(h8)) {
       for (const ha of Object.values(h9.equipment)) {
         if ("number" == typeof ha && ha > 0) {
@@ -38730,13 +38769,13 @@ function Nwe(h2) {
       h4.add(hc.id);
     }
   }
-  for (const hd of Object.values(f0)) {
+  for (const hd of Object.values(INFOBOX_ITEM_IDS)) {
     h4.add(hd);
   }
   return [...h4];
 }
 function xwe() {
-  return [...Upe(), ...Object.values(f8), ...fC(), ...Object.values(fM)];
+  return [...Upe(), ...Object.values(SIDE_BACKGROUND_SPRITES), ...fC(), ...Object.values(REPLAY_CLICK_SHEET_URLS)];
 }
 async function Twe(h2) {
   const h3 = [];
@@ -38753,7 +38792,7 @@ async function Twe(h2) {
 }
 var Mwe = null;
 var Pwe = null;
-function Iwe(h2 = dT()) {
+function collectLocalAssetPaths(h2 = dT()) {
   if (Mwe && h2 === Pwe) {
     return Mwe;
   } else {
@@ -38763,14 +38802,14 @@ function Iwe(h2 = dT()) {
         const h6 = [];
         h6.push(...d6());
         for (const h8 of Object.values(fb)) {
-          h6.push(cT(eX[h8].iconPath));
+          h6.push(cT(OSM_TAB_SLOTS[h8].iconPath));
         }
         for (const h9 of Object.values(b5)) {
           if (h9) {
             h6.push(h9);
           }
         }
-        h6.push(fQ);
+        h6.push(STATUS_BAR_PRAYER_ICON);
         for (const ha of new Set(Object.values(bS))) {
           h6.push(ha);
         }
@@ -38780,15 +38819,15 @@ function Iwe(h2 = dT()) {
           h6.push("/assets/ui/healthbar/dark_back_" + hb + "px.png");
           h6.push("/assets/ui/healthbar/yellow_front_" + hb + "px.png");
         }
-        for (const hc of ac) {
+        for (const hc of statNames) {
           h6.push("/assets/ui/skill-" + hc + ".png");
         }
         for (const hd of ff) {
-          h6.push(da.icon(hd));
-          h6.push(da.iconDisabled(hd));
+          h6.push(PRAYER.icon(hd));
+          h6.push(PRAYER.iconDisabled(hd));
         }
         const h7 = new Set();
-        for (const hf of Object.values(bu)) {
+        for (const hf of Object.values(weaponCategoryDefinitions)) {
           for (const hg of hf.styles) {
             h7.add(hg.icon);
           }
@@ -38796,20 +38835,20 @@ function Iwe(h2 = dT()) {
         for (const hh of h7) {
           h6.push("/assets/ui/combat-styles/" + hh);
         }
-        for (const hi of Object.values(ed)) {
+        for (const hi of Object.values(SPELLBOOKS)) {
           for (const hj of hi.grid) {
-            h6.push(d9(hi.iconDir, hj.icon, 24, true));
-            h6.push(d9(hi.iconDir, hj.icon, 24, false));
-            h6.push(d9(hi.iconDir, hj.icon, 40, true));
-            h6.push(d9(hi.iconDir, hj.icon, 40, false));
+            h6.push(getSpellIconPath(hi.iconDir, hj.icon, 24, true));
+            h6.push(getSpellIconPath(hi.iconDir, hj.icon, 24, false));
+            h6.push(getSpellIconPath(hi.iconDir, hj.icon, 40, true));
+            h6.push(getSpellIconPath(hi.iconDir, hj.icon, 40, false));
           }
         }
-        for (const hk of Object.keys(ed)) {
-          const { iconDir: iconDir } = ed[hk];
-          for (const hm of aY(hk)) {
-            const ho = bp(hm.name);
-            h6.push(d9(iconDir, ho, 24, true));
-            h6.push(d9(iconDir, ho, 40, true));
+        for (const hk of Object.keys(SPELLBOOKS)) {
+          const { iconDir: iconDir } = SPELLBOOKS[hk];
+          for (const hm of getCombatSpellsOfSpellbook(hk)) {
+            const ho = getSpellIconName(hm.name);
+            h6.push(getSpellIconPath(iconDir, ho, 24, true));
+            h6.push(getSpellIconPath(iconDir, ho, 40, true));
           }
         }
         h6.push(...Object.values(bs));
@@ -38827,7 +38866,7 @@ function Iwe(h2 = dT()) {
   }
 }
 async function Awe(h2) {
-  const [, h4] = await Promise.all([Iwe(), ei(Nwe(h2))]);
+  const [, h4] = await Promise.all([collectLocalAssetPaths(), ei(Nwe(h2))]);
 }
 var Rwe = null;
 async function Lwe() {
@@ -39010,7 +39049,7 @@ function Hwe(h2, h3, h4) {
   }
   return h5;
 }
-function qwe({
+function useEncounterManager({
   attackStylePerCategory: attackStylePerCategory,
   bindingsRef: bindingsRef,
   cacheManagerRef: cacheManagerRef,
@@ -39183,7 +39222,7 @@ function qwe({
   const hI = hH;
   const hK = "loading" === hp.kind ? null : hH;
   const hL = (0, React.useCallback)(
-    (iq) => bR(iq)?.defaultMechanicsConfig ?? {},
+    (iq) => getEncounterControls(iq)?.defaultMechanicsConfig ?? {},
     [],
   );
   const hN = (0, React.useCallback)(
@@ -39205,7 +39244,7 @@ function qwe({
     [mechanicsConfigPerEncounter],
   );
   const hO = (0, React.useCallback)(
-    (iq, ir) => bM(hL(iq), hN(iq, ir)),
+    (iq, ir) => buildMechanicsConfig(hL(iq), hN(iq, ir)),
     [hL, hN],
   );
   const hP = (0, React.useCallback)((iq) => hO(iq, null), [hO]);
@@ -39241,7 +39280,7 @@ function qwe({
         return {
           equipment: df(is.equipment),
           inventory: du(is.inventory),
-          supplies: gG(is.supplies),
+          supplies: cloneCombatSupplies(is.supplies),
         };
       }
       var is;
@@ -39257,7 +39296,7 @@ function qwe({
   const hT = (0, React.useCallback)(
     (iq, ir) => {
       const is = hO(iq, ir);
-      const it = bM(hL(iq));
+      const it = buildMechanicsConfig(hL(iq));
       const iu = hQ(iq, ir);
       const iv = hR(iq, ir);
       const iw = cE.getDescriptorOfKindOrVariant(iq);
@@ -39297,7 +39336,7 @@ function qwe({
     const { x: iq, y: ir } = i0;
     let is = false;
     cacheManagerRef.current
-      .ud(iq, ir, i1)
+      .loadMapLocs(iq, ir, i1)
       .then((it) => {
         if (!is) {
           hD({
@@ -39309,7 +39348,7 @@ function qwe({
       })
       .catch((it) => {
         if (!is) {
-          L.error("useEncounterManager", "Failed to load encounter locs", it);
+          logger.error("useEncounterManager", "Failed to load encounter locs", it);
           hD({
             key: i2,
             locs: [],
@@ -39334,7 +39373,7 @@ function qwe({
     const it = ir.collision?.seed ?? ir.playerStart;
     const iu = ir.collision?.dynamicLocs?.map(toLocPlacement);
     cacheManagerRef.current
-      .ld({
+      .buildArenaConfig({
         mapX: ir.mapSquare.x,
         mapY: ir.mapSquare.y,
         seedX: it[0],
@@ -39350,13 +39389,13 @@ function qwe({
             !(null === iv.walkableTiles) ||
             !(null === iv.collisionMap))
         ) {
-          a7(ir.kind, iv);
+          registerArenaConfig(ir.kind, iv);
           bindingsRef.current?.engineRef.current.reapplyArenaConfig();
         }
       })
       .catch((iv) => {
         if (!is) {
-          L.error(
+          logger.error(
             "useEncounterManager",
             "Failed to resolve arena collision",
             iv,
@@ -39382,7 +39421,7 @@ function qwe({
           ? bd(it?.modifiers, ir.modifiers)
           : hQ(is, ir.tutorial);
       const current31 = bindingsRef.current;
-      return gP({
+      return createSimulationEngine({
         encounterConfig: {
           kind: is,
           mechanics: {
@@ -39398,16 +39437,16 @@ function qwe({
             : {}),
         },
         objTypeLoader: objTypeLoader,
-        enableIntro: ir.enableIntro ?? B(is),
+        enableIntro: ir.enableIntro ?? isIntroEnabledForKind(is),
         stats: playerStats,
         ...(undefined === iu
           ? {}
           : {
               startHp: iu,
             }),
-        inventory: current31?.playerInventoryRef.current ?? gF(),
+        inventory: current31?.playerInventoryRef.current ?? createEmptyInventory(),
         equipment: current31?.playerEquipmentRef.current ?? {},
-        combatSupplies: current31?.playerCombatSuppliesRef.current ?? gC(),
+        combatSupplies: current31?.playerCombatSuppliesRef.current ?? createEmptyCombatSupplies(),
         attackStylePerCategory: attackStylePerCategory,
       });
     },
@@ -39430,8 +39469,8 @@ function qwe({
       }
       hz(null);
       const is = {};
-      const it = gF();
-      const iu = gC();
+      const it = createEmptyInventory();
+      const iu = createEmptyCombatSupplies();
       current32.setPlayerConfig((ix) => ({
         ...ix,
         equipment: is,
@@ -39525,7 +39564,7 @@ function qwe({
       for (const [iw, ix] of Object.entries(ir)) {
         if (undefined !== ix) {
           if (cu.has(iw)) {
-            if (cA[iw] === ix) {
+            if (commonMechanicsDefaults[iw] === ix) {
               delete iu[iw];
             } else {
               iu[iw] = ix;
@@ -39642,9 +39681,9 @@ function qwe({
       if (!current34) {
         return;
       }
-      const iu = ak(iq);
+      const iu = resolveKindOrRetiredEntry(iq);
       if (!iu || !cE.isRegistered(iu.kind)) {
-        L.warn(
+        logger.warn(
           "useEncounterManager",
           "Ignoring unsupported encounter transition request: '" + iq + "'",
         );
@@ -39756,7 +39795,7 @@ function qwe({
           ...current36,
           loadout: {
             ...current36.loadout,
-            supplies: gG(ir),
+            supplies: cloneCombatSupplies(ir),
           },
         });
       }
@@ -39811,7 +39850,7 @@ function qwe({
     getSavedSetup: hU,
     handleConfigureEncounter: (0, React.useCallback)(
       (iq, ir, is, it) => {
-        const iu = ak(iq);
+        const iu = resolveKindOrRetiredEntry(iq);
         const iv = iu?.kind ?? iq;
         // The sandbox has no setup window from the menus: its arena is
         // entered with its editor open at its start screen
@@ -39864,7 +39903,7 @@ function qwe({
     setSelectedLobbyEncounter: hv,
   };
 }
-function Bwe({
+function useAppHotkeys({
   disabledShortcutHints: disabledShortcutHints,
   onReset: onReset,
   onToggleQuickSearch: onToggleQuickSearch,
@@ -39988,7 +40027,7 @@ function Bwe({
     }, [triggerHintToast]);
     (0, React.useEffect)(() => {
       const hr = (hs) => {
-        if (Ame(hs)) {
+        if (isZoomKey(hs)) {
           triggerHintToast(
             "resize",
             (0, jsxRuntime.jsxs)(jsxRuntime.Fragment, {
@@ -40280,7 +40319,7 @@ function Kwe() {
     lastColor: "string" == typeof h3.lastColor ? h3.lastColor : Gwe.lastColor,
   };
 }
-var jwe = "osrs-line-markers";
+var LINE_MARKER_STORAGE_KEY = "osrs-line-markers";
 var Uwe = {
   linesByEncounter: {},
   hiddenDefaultLineKeysByEncounter: {},
@@ -40410,7 +40449,7 @@ function ike(h2, h3) {
     )
   );
 }
-var oke = new Set(["__proto__", "constructor", "prototype"]);
+var UNSAFE_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 function rke(h2, h3) {
   const h5 = {};
   const presetOverrides2 = h2.presetOverrides;
@@ -40422,7 +40461,7 @@ function rke(h2, h3) {
     return h5;
   }
   const h7 = (h8, h9, ha) => {
-    if (oke.has(h8) || oke.has(h9)) {
+    if (UNSAFE_KEYS.has(h8) || UNSAFE_KEYS.has(h9)) {
       return;
     }
     const hb = h5[h8] ?? {};
@@ -40445,13 +40484,13 @@ function rke(h2, h3) {
       }
     }
   }
-  return gI(h5, (hd, hf) => ({
+  return consolidateRetiredEncounterKinds(h5, (hd, hf) => ({
     ...hd,
     ...hf,
   })).map;
 }
 function ske() {
-  const h3 = bO(jwe);
+  const h3 = bO(LINE_MARKER_STORAGE_KEY);
   if (!h3) {
     return Uwe;
   }
@@ -40487,8 +40526,8 @@ function ske() {
     }
   }
   return {
-    linesByEncounter: gI(h4, (hc, hd) => Jwe([...(hc ?? []), ...hd])).map,
-    hiddenDefaultLineKeysByEncounter: gI(h5, (hc, hd) => [
+    linesByEncounter: consolidateRetiredEncounterKinds(h4, (hc, hd) => Jwe([...(hc ?? []), ...hd])).map,
+    hiddenDefaultLineKeysByEncounter: consolidateRetiredEncounterKinds(h5, (hc, hd) => [
       ...new Set([...(hc ?? []), ...hd]),
     ]).map,
     showLines: "boolean" == typeof h3.showLines ? h3.showLines : Uwe.showLines,
@@ -40505,7 +40544,7 @@ function ske() {
     ),
   };
 }
-function lke(h2, h3 = []) {
+function useLineMarkerActions(h2, h3 = []) {
   const h4 = {
     hLaYk: function (h7, h8) {
       return h7(h8);
@@ -40544,7 +40583,7 @@ function lke(h2, h3 = []) {
       if (ha.current) {
         ha.current = false;
       } else {
-        aj(jwe, h8);
+        aj(LINE_MARKER_STORAGE_KEY, h8);
       }
     }, [h8]);
     (0, React.useEffect)(() => {
@@ -41116,7 +41155,7 @@ function hke() {
     standalone: !h3 && isStandaloneOrFullscreen(),
   };
 }
-var pke = "(orientation: portrait)";
+var PORTRAIT_QUERY = "(orientation: portrait)";
 function mke(h2) {
   const h3 = {
     DNngB: "function",
@@ -41133,13 +41172,13 @@ function mke(h2) {
       h2 &&
       typeof window != "undefined" &&
       typeof window.matchMedia == "function" &&
-      window.matchMedia(pke).matches,
+      window.matchMedia(PORTRAIT_QUERY).matches,
   );
   (0, React.useEffect)(() => {
     if (!h2 || "function" != typeof window.matchMedia) {
       return;
     }
-    const h6 = window.matchMedia(pke);
+    const h6 = window.matchMedia(PORTRAIT_QUERY);
     const h7 = () => h5(h6.matches);
     h7();
     h6.addEventListener("change", h7);
@@ -41147,10 +41186,10 @@ function mke(h2) {
   }, [h2]);
   return h3.APQsB(h2, h4);
 }
-var gke = "scim:mobile-portrait-look-around";
+var PORTRAIT_DISMISSED_KEY = "scim:mobile-portrait-look-around";
 function fke() {
   try {
-    return "1" === window.sessionStorage.getItem(gke);
+    return "1" === window.sessionStorage.getItem(PORTRAIT_DISMISSED_KEY);
   } catch {
     return false;
   }
@@ -41325,7 +41364,7 @@ function yke(h2) {
   const hx = (0, React.useCallback)(() => {
     hf(true);
     try {
-      window.sessionStorage.setItem(gke, "1");
+      window.sessionStorage.setItem(PORTRAIT_DISMISSED_KEY, "1");
     } catch {}
     if (hl) {
       hm();
@@ -41352,7 +41391,7 @@ var bke = "osrs-npc-highlights";
 var vke = {
   highlights: [],
   showHighlights: true,
-  lastColor: cQ,
+  lastColor: DEFAULT_NPC_HIGHLIGHT_COLOR,
   colorMenuEntries: false,
   seededBossDefaults: [],
 };
@@ -41368,7 +41407,7 @@ function wke(h2) {
       npcName: h2.npcName,
       npcTypeId: h2.npcTypeId,
       mode: h2.mode,
-      color: "string" == typeof h2.color ? h2.color : cQ,
+      color: "string" == typeof h2.color ? h2.color : DEFAULT_NPC_HIGHLIGHT_COLOR,
     };
   } else {
     return null;
@@ -41409,20 +41448,20 @@ var Ske = "osrs-player-stats";
 function Cke() {
   const h3 = bO(Ske);
   if (!h3) {
-    return aQ();
+    return createDefaultStats();
   }
-  const h4 = Nke(aQ());
-  for (const h5 of ac) {
+  const h4 = Nke(createDefaultStats());
+  for (const h5 of statNames) {
     if ("agility" === h5 && h3[h5] === undefined) {
       continue;
     }
     const h6 = h3[h5];
-    if (!ca(h5, h6)) {
-      return aQ();
+    if (!isValidStatLevel(h5, h6)) {
+      return createDefaultStats();
     }
     h4[h5] = h6;
   }
-  return a1({
+  return createStatsFromLevels({
     attack: h4.attack,
     strength: h4.strength,
     defence: h4.defence,
@@ -41445,14 +41484,14 @@ function Nke(h2) {
     agility: h2.agility.max,
   };
 }
-function xke() {
+function getPathSegments() {
   return window.location.pathname
     .replace(/^\//, "")
     .replace(/\/$/, "")
     .split("/")
     .filter(Boolean);
 }
-function Tke(h2 = "") {
+function preservedQueryString(h2 = "") {
   if (typeof window == "undefined") {
     return "";
   }
@@ -41468,11 +41507,11 @@ function Tke(h2 = "") {
     return "";
   }
 }
-var Mke = {
+var NO_ROUTE_QUERY = {
   params: [],
   query: "",
 };
-function Pke(h2, h3) {
+function replaceRouteQuery(h2, h3) {
   const h5 = new Set(h3.params);
   const h6 = h2
     .replace(/^\?/, "")
@@ -41516,7 +41555,7 @@ function Ike(h2, h3) {
     return h7;
   }
 }
-function Ake(h2, h3, h4, h5, h6, h7 = Mke) {
+function useRouting(h2, h3, h4, h5, h6, h7 = NO_ROUTE_QUERY) {
   const h9 = (0, React.useRef)(false);
   const ha = (0, React.useRef)(false);
   const hb = (0, React.useRef)(null);
@@ -41533,7 +41572,7 @@ function Ake(h2, h3, h4, h5, h6, h7 = Mke) {
     } else if (h2.kind === "loading") {
       hf = Ike(h2.targetEncounter, h5);
     }
-    if (xke().join("/") === hf) {
+    if (getPathSegments().join("/") === hf) {
       if (0 === params.length) {
         return;
       }
@@ -41542,7 +41581,7 @@ function Ake(h2, h3, h4, h5, h6, h7 = Mke) {
         search: search,
         hash: hash,
       } = window.location;
-      const hk = Pke(search, {
+      const hk = replaceRouteQuery(search, {
         params: params,
         query: query,
       });
@@ -41559,11 +41598,11 @@ function Ake(h2, h3, h4, h5, h6, h7 = Mke) {
       return;
     }
     const hg = hf ? "/" + hf + "/" : "/";
-    window.history.replaceState(null, "", "" + hg + Tke(query));
+    window.history.replaceState(null, "", "" + hg + preservedQueryString(query));
   }, [h2, h5, params, query]);
   (0, React.useEffect)(() => {
     const hg = () => {
-      const hh = xke();
+      const hh = getPathSegments();
       const hi = hh[0] === "r" && 2 === hh.length && hh[1] ? hh[1] : null;
       if (null !== hi) {
         if (hb.current !== hi) {
@@ -41616,7 +41655,7 @@ function Ake(h2, h3, h4, h5, h6, h7 = Mke) {
             : "loading" === h2.kind
               ? h2.targetEncounter
               : null;
-        if ("lobby" === h2.kind || (hk !== null && gU(hk) !== gU(hj))) {
+        if ("lobby" === h2.kind || (hk !== null && resolveRetiredEncounterKind(hk) !== resolveRetiredEncounterKind(hj))) {
           h9.current = true;
           h3(hj);
           setTimeout(() => {
@@ -41624,7 +41663,7 @@ function Ake(h2, h3, h4, h5, h6, h7 = Mke) {
           }, 0);
         }
       } else {
-        window.history.replaceState(null, "", "/" + Tke());
+        window.history.replaceState(null, "", "/" + preservedQueryString());
         if ("lobby" !== h2.kind) {
           h9.current = true;
           h4();
@@ -41690,7 +41729,7 @@ function Lke(h2, h3) {
   }
   var h5;
 }
-function Eke({
+function useTileMarkerClipboard({
   activeEncounterKind: activeEncounterKind,
   markers: markers,
   importMarkers: importMarkers,
@@ -41704,7 +41743,7 @@ function Eke({
     handleExportMarkers: (0, React.useCallback)(() => {
       const h9 = Yue(markers, activeEncounterKind);
       if (h9) {
-        Kue(h9).then((ha) => {
+        copyToClipboard(h9).then((ha) => {
           h7(
             ha
               ? "Copied " + markers.length + " markers to clipboard"
@@ -41724,7 +41763,7 @@ function Eke({
         }
         const hb = Yue(ha.markers, activeEncounterKind);
         if (hb) {
-          Kue(hb).then((hc) => {
+          copyToClipboard(hb).then((hc) => {
             h7(
               hc
                 ? "Copied " +
@@ -41743,7 +41782,7 @@ function Eke({
       [activeEncounterKind, h8],
     ),
     handleImportMarkers: (0, React.useCallback)(() => {
-      Jue().then((ha) => {
+      readFromClipboard().then((ha) => {
         if (!ha) {
           h7("Clipboard empty or access denied");
           h8();
@@ -42075,7 +42114,7 @@ function Dke({
   };
 }
 function Oke() {
-  const h3 = bO(Hue);
+  const h3 = bO(TILE_MARKER_STORAGE_KEY);
   if (!h3) {
     return que;
   }
@@ -42100,7 +42139,7 @@ function Oke() {
     }
   }
   return {
-    markersByEncounter: gI(h4, (h9, ha) => Wue([...(h9 ?? []), ...ha])).map,
+    markersByEncounter: consolidateRetiredEncounterKinds(h4, (h9, ha) => Wue([...(h9 ?? []), ...ha])).map,
     showMarkers:
       "boolean" == typeof h3.showMarkers ? h3.showMarkers : que.showMarkers,
     showLabels:
@@ -42141,7 +42180,7 @@ function Fke(h2) {
       if (h9.current) {
         h9.current = false;
       } else {
-        aj(Hue, h7);
+        aj(TILE_MARKER_STORAGE_KEY, h7);
       }
     }, [h7]);
     (0, React.useEffect)(() => {
@@ -42212,7 +42251,7 @@ function $ke({ enabled: enabled, currentTick: currentTick }) {
         return;
       }
       if (
-        dj(hg) ||
+        handleOverlayClose(hg) ||
         (hh = hg.target) instanceof HTMLInputElement ||
         hh instanceof HTMLTextAreaElement ||
         (hh instanceof HTMLElement && hh.isContentEditable) ||
@@ -42231,7 +42270,7 @@ function $ke({ enabled: enabled, currentTick: currentTick }) {
           if (hi) {
             h6(dR);
           } else if (hj) {
-            h6((hl) => fs(hl, hb.current));
+            h6((hl) => advanceZukSetTimer(hl, hb.current));
           } else if (hk) {
             h8((hl) => !hl);
           }
@@ -42396,7 +42435,7 @@ function jke(h2) {
     })(true === h4.noindex);
   }, [h2]);
 }
-function Uke(h2) {
+function resolveCursorElement(h2) {
   switch (h2.kind) {
     case "panel-tab":
       return document.querySelector(Ede(h2.tab));
@@ -42416,7 +42455,7 @@ function Vke(h2) {
     y: boundingClientRect10.top + boundingClientRect10.height / 2,
   };
 }
-function Yke(h2, h3) {
+function cueAbsoluteMs(h2, h3) {
   if ("ms" === h2.time.kind) {
     return h2.time.ms;
   } else {
@@ -42424,7 +42463,7 @@ function Yke(h2, h3) {
   }
 }
 var Jke = () => () => {};
-function Zke(h2) {
+function restingVisual(h2) {
   return {
     x: "undefined" != typeof window ? gv(window.innerWidth, h2) : 0,
     y: "undefined" != typeof window ? 0.82 * window.innerHeight : 0,
@@ -42434,7 +42473,7 @@ function Zke(h2) {
     label: null,
   };
 }
-function Xke({
+function DemoCursorLayer({
   session: session,
   review: h3 = null,
   demoPlayheadStore: demoPlayheadStore,
@@ -42569,7 +42608,7 @@ function Xke({
     cyzxc: "22px",
     xIlHO: "-100%",
   };
-  const [ha, hb] = (0, React.useState)(() => Zke(sidebarInsets));
+  const [ha, hb] = (0, React.useState)(() => restingVisual(sidebarInsets));
   const hc = (0, React.useRef)(sidebarInsets);
   hc.current = sidebarInsets;
   const [hd, hf] = (0, React.useState)(null);
@@ -42620,13 +42659,13 @@ function Xke({
     let hv = false;
     const hw = [];
     let hx = null;
-    hb(Zke(hc.current));
+    hb(restingVisual(hc.current));
     hf(null);
     const hy = (hD, hE) => {
       if (hv) {
         return false;
       }
-      const hF = Uke(hD.target);
+      const hF = resolveCursorElement(hD.target);
       if (!hF) {
         return false;
       }
@@ -42670,7 +42709,7 @@ function Xke({
         hw.push(setTimeout(() => hz(hD), 120));
         return;
       }
-      const hG = Uke(hD.target);
+      const hG = resolveCursorElement(hD.target);
       if (!hG) {
         if (hD.required ?? true) {
           (function (hI) {
@@ -42820,7 +42859,7 @@ function Xke({
       }
       const hG = hD.map((hR) => ({
         cue: hR,
-        arriveMs: Yke(hR, hF),
+        arriveMs: cueAbsoluteMs(hR, hF),
         moveMs: hR.moveMs ?? 900,
       }));
       const hH = hG[0];
@@ -42877,7 +42916,7 @@ function Xke({
       hf(null);
       return;
     }
-    const hu = Uke(ht.toTarget);
+    const hu = resolveCursorElement(ht.toTarget);
     if (!hu) {
       hb((hD) => ({
         ...hD,
@@ -42887,8 +42926,8 @@ function Xke({
       return;
     }
     const hv = Vke(hu);
-    const hw = ht.fromTarget ? Uke(ht.fromTarget) : null;
-    const hx = hw ? Vke(hw) : Zke(hc.current);
+    const hw = ht.fromTarget ? resolveCursorElement(ht.fromTarget) : null;
+    const hx = hw ? Vke(hw) : restingVisual(hc.current);
     const hy =
       (hz = ht.t) < 0.5 ? 4 * hz * hz * hz : 1 - (-2 * hz + 2) ** 3 / 2;
     var hz;
@@ -42991,7 +43030,7 @@ function Xke({
             }),
             (0, jsxRuntime.jsx)(g1, {}),
             ha.label &&
-              (0, jsxRuntime.jsx)(gi, {
+              (0, jsxRuntime.jsx)(TooltipCard, {
                 content: Qke(ha.label),
                 style: {
                   position: "absolute",
@@ -43019,20 +43058,20 @@ function Qke(h2) {
       spans: [
         {
           text: h4,
-          color: h3.length > 1 && h5 === h3.length - 1 ? gp.ui : gp.action,
+          color: h3.length > 1 && h5 === h3.length - 1 ? TOOLTIP_COLORS.ui : TOOLTIP_COLORS.action,
         },
       ],
     })),
   };
 }
-function eSe(h2, h3) {
+function renderNode(h2, h3) {
   if (h2 instanceof Text) {
     return h2.data;
   }
   if (!(h2 instanceof HTMLElement)) {
     return null;
   }
-  const h5 = Array.from(h2.childNodes, (h6, h7) => eSe(h6, h3 + "-" + h7));
+  const h5 = Array.from(h2.childNodes, (h6, h7) => renderNode(h6, h3 + "-" + h7));
   switch (h2.tagName) {
     case "B":
     case "STRONG":
@@ -43100,9 +43139,9 @@ function eSe(h2, h3) {
       );
   }
 }
-function tSe({ html: html }) {
+function TutorialMarkup({ html: html }) {
   const h4 = new DOMParser().parseFromString(html, "text/html");
-  return Array.from(h4.body.childNodes, (h5, h6) => eSe(h5, "markup-" + h6));
+  return Array.from(h4.body.childNodes, (h5, h6) => renderNode(h5, "markup-" + h6));
 }
 var nSe = ["running", "awaiting-user", "paused", "failed", "complete"];
 function aSe(h2) {
@@ -43116,7 +43155,7 @@ function aSe(h2) {
       return null;
     } else {
       return (0, gn.createPortal)(
-        (0, jsxRuntime.jsx)(iSe, {
+        (0, jsxRuntime.jsx)(OverlayShell, {
           ...h2,
         }),
         document.body,
@@ -43126,7 +43165,7 @@ function aSe(h2) {
     return null;
   }
 }
-function iSe(h2) {
+function OverlayShell(h2) {
   const {
     state: state,
     onNext: onNext,
@@ -43233,7 +43272,7 @@ function iSe(h2) {
     "data-phase": state.phase,
     "aria-label": tutorial2.title + " tutorial",
     children: [
-      (0, jsxRuntime.jsx)(Xke, {
+      (0, jsxRuntime.jsx)(DemoCursorLayer, {
         session: state.activeDemoCursor,
         review: demoReview,
         demoPlayheadStore: demoPlayheadStore,
@@ -43244,7 +43283,7 @@ function iSe(h2) {
       }),
       "complete" !== state.phase &&
         "beam" === hz &&
-        (0, jsxRuntime.jsx)(gSe, {
+        (0, jsxRuntime.jsx)(TutorialBeam, {
           tutorial: tutorial2,
           currentIndex: stepIndex2,
           totalSteps: length8,
@@ -43278,7 +43317,7 @@ function iSe(h2) {
       "complete" !== state.phase &&
         "codex" === hz &&
         currentStep2 &&
-        (0, jsxRuntime.jsx)(ySe, {
+        (0, jsxRuntime.jsx)(TutorialCodex, {
           tutorial: tutorial2,
           currentIndex: stepIndex2,
           totalSteps: length8,
@@ -43297,7 +43336,7 @@ function iSe(h2) {
         }),
       state.phase === "paused" &&
         !hC &&
-        (0, jsxRuntime.jsx)(vSe, {
+        (0, jsxRuntime.jsx)(TutorialPauseOverlay, {
           tutorial: tutorial2,
           currentIndex: stepIndex2,
           totalSteps: length8,
@@ -43306,7 +43345,7 @@ function iSe(h2) {
           onExit: onExit,
         }),
       "complete" === state.phase &&
-        (0, jsxRuntime.jsx)(wSe, {
+        (0, jsxRuntime.jsx)(TutorialCompletionModal, {
           tutorial: tutorial2,
           onDismiss: onBackToTraining,
           onStartNextLesson: onStartNextLesson,
@@ -43315,10 +43354,10 @@ function iSe(h2) {
         hP === hK &&
         currentStep2 &&
         (0, jsxRuntime.jsx)(
-          dSe,
+          TutorialStepIntro,
           {
             introKey: hP,
-            title: SSe(currentStep2),
+            title: stepLabel(currentStep2),
             onDone: hQ,
           },
           hP,
@@ -43327,7 +43366,7 @@ function iSe(h2) {
   });
 }
 var oSe = new Set(["wait-for-event", "demo", "world-highlight"]);
-function rSe(h2, h3) {
+function shouldShowRestartDemo(h2, h3) {
   return (
     "demo" === h2?.kind && "awaiting-user" === h3 && false !== h2.allowReplay
   );
@@ -43335,7 +43374,7 @@ function rSe(h2, h3) {
 var sSe = 3;
 var lSe = sSe;
 var cSe = 3200;
-function dSe({ introKey: introKey, title: title, onDone: onDone }) {
+function TutorialStepIntro({ introKey: introKey, title: title, onDone: onDone }) {
   const [h6, h7] = (0, React.useState)(0);
   const [h8, h9] = (0, React.useState)(false);
   const [ha, hb] = (0, React.useState)(true);
@@ -43386,7 +43425,7 @@ function dSe({ introKey: introKey, title: title, onDone: onDone }) {
               "aria-live": "polite",
               children: title,
             }),
-            (0, jsxRuntime.jsx)(Cpe, {
+            (0, jsxRuntime.jsx)(CountdownBeats, {
               from: sSe,
               activeIndex: h6,
               className: "tutorial-step-intro-countdown",
@@ -43400,7 +43439,7 @@ function dSe({ introKey: introKey, title: title, onDone: onDone }) {
   }
 }
 var uSe = 600;
-function hSe({ total: total, filled: filled, resetNonce: h4 = 0 }) {
+function PerimeterMeter({ total: total, filled: filled, resetNonce: h4 = 0 }) {
   const h6 = Math.max(0, Math.min(filled, total));
   const [h7, h8] = (0, React.useState)(0);
   const h9 = (0, React.useRef)(h6);
@@ -43461,11 +43500,11 @@ function hSe({ total: total, filled: filled, resetNonce: h4 = 0 }) {
     }),
   });
 }
-var pSe = {
+var CUE_TONE_COLOR = {
   fire: "var(--color-error)",
   shadow: "var(--color-info)",
 };
-function mSe() {
+function RuleArrowIcon() {
   return (0, jsxRuntime.jsx)("svg", {
     className: "tutorial-beam-rule-arrow",
     width: "12",
@@ -43482,7 +43521,7 @@ function mSe() {
     }),
   });
 }
-function gSe(h2) {
+function TutorialBeam(h2) {
   const h3 = {
     BpMQx: function (hS, hT) {
       return hS instanceof hT;
@@ -43644,7 +43683,7 @@ function gSe(h2) {
     }
   })(tone, phase);
   const hC = Math.min(currentIndex + 1, totalSteps);
-  const hD = step ? SSe(step) : tutorial.title;
+  const hD = step ? stepLabel(step) : tutorial.title;
   const hE = "wait-for-event" === step?.kind && eventTarget > 0;
   const hF = "failed" === phase && canRetryCheckpoint;
   const hG = "failed" === phase && !canRetryCheckpoint;
@@ -43799,11 +43838,11 @@ function gSe(h2) {
                   (0, jsxRuntime.jsx)("span", {
                     className: "tutorial-beam-rule-cue",
                     style: {
-                      color: pSe[hS.tone],
+                      color: CUE_TONE_COLOR[hS.tone],
                     },
                     children: hS.cue,
                   }),
-                  (0, jsxRuntime.jsx)(mSe, {}),
+                  (0, jsxRuntime.jsx)(RuleArrowIcon, {}),
                   (0, jsxRuntime.jsx)("span", {
                     className: "tutorial-beam-rule-prayer",
                     children: hS.prayer,
@@ -43937,13 +43976,13 @@ function gSe(h2) {
           ],
         }),
       hE &&
-        (0, jsxRuntime.jsx)(hSe, {
+        (0, jsxRuntime.jsx)(PerimeterMeter, {
           total: eventTarget,
           filled: Math.min(eventProgress, eventTarget),
           resetNonce: progressResetNonce,
         }),
       menuOpen &&
-        (0, jsxRuntime.jsx)(fSe, {
+        (0, jsxRuntime.jsx)(BeamMenu, {
           currentIndex: currentIndex,
           totalSteps: totalSteps,
           canRetryCheckpoint: canRetryCheckpoint,
@@ -43963,7 +44002,7 @@ function gSe(h2) {
             onExit();
             onMenuClose();
           },
-          showRestartDemo: rSe(step, phase),
+          showRestartDemo: shouldShowRestartDemo(step, phase),
           onWatchAgain: () => {
             onWatchAgain();
             onMenuClose();
@@ -43972,7 +44011,7 @@ function gSe(h2) {
     ],
   });
 }
-function fSe({
+function BeamMenu({
   currentIndex: currentIndex,
   totalSteps: totalSteps,
   canRetryCheckpoint: canRetryCheckpoint,
@@ -44059,7 +44098,7 @@ function fSe({
     ],
   });
 }
-function ySe(h2) {
+function TutorialCodex(h2) {
   const {
     tutorial: tutorial,
     currentIndex: currentIndex,
@@ -44133,7 +44172,7 @@ function ySe(h2) {
                 className: "tutorial-codex-title",
                 children: hm
                   ? "All steps · " + hi + " of " + totalSteps
-                  : SSe(step),
+                  : stepLabel(step),
               }),
             ],
           }),
@@ -44149,7 +44188,7 @@ function ySe(h2) {
       (0, jsxRuntime.jsx)("div", {
         className: "tutorial-codex-body",
         children: hm
-          ? (0, jsxRuntime.jsx)(bSe, {
+          ? (0, jsxRuntime.jsx)(StepsList, {
               tutorial: tutorial,
               currentIndex: currentIndex,
               completedSteps: completedSteps,
@@ -44170,7 +44209,7 @@ function ySe(h2) {
               }),
               (0, jsxRuntime.jsx)("div", {
                 className: "tutorial-codex-callout-title",
-                children: SSe(hk),
+                children: stepLabel(hk),
               }),
             ],
           }),
@@ -44232,7 +44271,7 @@ function ySe(h2) {
     ],
   });
 }
-function bSe({
+function StepsList({
   tutorial: tutorial,
   currentIndex: currentIndex,
   completedSteps: completedSteps,
@@ -44252,7 +44291,7 @@ function bSe({
     children: tutorial.steps.map((h9, ha) => {
       const hb =
         ha === currentIndex ? "active" : h8.has(ha) ? "done" : "pending";
-      const hc = SSe(h9);
+      const hc = stepLabel(h9);
       const hd = "active" === hb;
       return (0, jsxRuntime.jsx)(
         "li",
@@ -44302,7 +44341,7 @@ function bSe({
     }),
   });
 }
-function vSe({
+function TutorialPauseOverlay({
   tutorial: tutorial,
   currentIndex: currentIndex,
   totalSteps: totalSteps,
@@ -44344,7 +44383,7 @@ function vSe({
             step &&
               (0, jsxRuntime.jsx)("p", {
                 className: "tutorial-pause-card-helper",
-                children: SSe(step),
+                children: stepLabel(step),
               }),
           ],
         }),
@@ -44371,7 +44410,7 @@ function vSe({
     }),
   });
 }
-function wSe({
+function TutorialCompletionModal({
   tutorial: tutorial,
   onDismiss: onDismiss,
   onStartNextLesson: onStartNextLesson,
@@ -44593,7 +44632,7 @@ function kSe(h2) {
     return "Continue";
   }
 }
-function SSe(h2) {
+function stepLabel(h2) {
   switch (h2.kind) {
     case "spotlight":
       return h2.popover.title;
@@ -44615,11 +44654,11 @@ function CSe(h2) {
         step: h2,
       });
     case "info":
-      return (0, jsxRuntime.jsx)(xSe, {
+      return (0, jsxRuntime.jsx)(InfoBody, {
         step: h2,
       });
     case "video":
-      return (0, jsxRuntime.jsx)(TSe, {
+      return (0, jsxRuntime.jsx)(VideoBody, {
         step: h2,
       });
     case "world-highlight":
@@ -44628,7 +44667,7 @@ function CSe(h2) {
     case "demo":
       return (0, jsxRuntime.jsx)("p", {
         className: "tutorial-codex-text",
-        children: (0, jsxRuntime.jsx)(tSe, {
+        children: (0, jsxRuntime.jsx)(TutorialMarkup, {
           html: h2.body,
         }),
       });
@@ -44636,7 +44675,7 @@ function CSe(h2) {
       if (h2.body) {
         return (0, jsxRuntime.jsx)("p", {
           className: "tutorial-codex-text",
-          children: (0, jsxRuntime.jsx)(tSe, {
+          children: (0, jsxRuntime.jsx)(TutorialMarkup, {
             html: h2.body,
           }),
         });
@@ -44648,12 +44687,12 @@ function CSe(h2) {
 function NSe({ step: step }) {
   return (0, jsxRuntime.jsx)("p", {
     className: "tutorial-codex-text",
-    children: (0, jsxRuntime.jsx)(tSe, {
+    children: (0, jsxRuntime.jsx)(TutorialMarkup, {
       html: step.popover.description,
     }),
   });
 }
-function xSe({ step: step }) {
+function InfoBody({ step: step }) {
   return (0, jsxRuntime.jsxs)("div", {
     className: "tutorial-codex-rich",
     children: [
@@ -44664,24 +44703,24 @@ function xSe({ step: step }) {
           alt: "",
         }),
       step.videoUrl &&
-        (0, jsxRuntime.jsx)(MSe, {
+        (0, jsxRuntime.jsx)(TutorialVideoPlayer, {
           videoUrl: step.videoUrl,
           posterUrl: step.videoPosterUrl,
         }),
       (0, jsxRuntime.jsx)("p", {
         className: "tutorial-codex-text",
-        children: (0, jsxRuntime.jsx)(tSe, {
+        children: (0, jsxRuntime.jsx)(TutorialMarkup, {
           html: step.body,
         }),
       }),
     ],
   });
 }
-function TSe({ step: step }) {
+function VideoBody({ step: step }) {
   return (0, jsxRuntime.jsxs)("div", {
     className: "tutorial-codex-rich",
     children: [
-      (0, jsxRuntime.jsx)(MSe, {
+      (0, jsxRuntime.jsx)(TutorialVideoPlayer, {
         videoUrl: step.videoUrl,
         posterUrl: step.posterUrl,
         loop: step.loop,
@@ -44690,14 +44729,14 @@ function TSe({ step: step }) {
       step.body &&
         (0, jsxRuntime.jsx)("p", {
           className: "tutorial-codex-text",
-          children: (0, jsxRuntime.jsx)(tSe, {
+          children: (0, jsxRuntime.jsx)(TutorialMarkup, {
             html: step.body,
           }),
         }),
     ],
   });
 }
-function MSe({
+function TutorialVideoPlayer({
   videoUrl: videoUrl,
   posterUrl: posterUrl,
   loop: loop,
@@ -44841,7 +44880,7 @@ function OSe() {
     }),
   });
 }
-function FSe(h2, h3) {
+function mountStepNav(h2, h3) {
   const length9 = h3.titles.length;
   h2.footer.querySelector(".tutorial-stepnav")?.remove();
   if (length9 <= 1) {
@@ -44994,7 +45033,7 @@ function FSe(h2, h3) {
     h6.remove();
   };
 }
-var $Se = {
+var DRIVER_CONFIG = {
   showProgress: true,
   progressText: "{{current}} of {{total}}",
   animate: false,
@@ -45012,7 +45051,7 @@ var $Se = {
   prevBtnText: "← Back",
   doneBtnText: "Got it!",
 };
-var _Se = "tutorial-suspended";
+var TOUR_SUSPENDED_CLASS = "tutorial-suspended";
 function HSe() {
   for (const h3 of document.querySelectorAll(
     '[aria-modal="true"], [role="menu"], [data-msheet="card"], [data-msheet="popover"]',
@@ -45043,7 +45082,7 @@ function qSe(h2) {
     return h2;
   }
 }
-function BSe(h2, h3, h4, h5) {
+function buildActionHooks(h2, h3, h4, h5) {
   const h7 = new Map();
   return {
     driverSteps: h2.map((h8, h9) => {
@@ -45204,7 +45243,7 @@ function BSe(h2, h3, h4, h5) {
     actionCleanups: h7,
   };
 }
-var zSe = class {
+var SpotlightRunner = class {
   constructor(h2 = {}) {
     ar(this, "driverRef", {
       current: null,
@@ -45249,7 +45288,7 @@ var zSe = class {
           tookDriverActive: classList2.contains("driver-active"),
         };
         classList2.remove("driver-active");
-        classList2.add(_Se);
+        classList2.add(TOUR_SUSPENDED_CLASS);
         return;
       }
       this.gN(true);
@@ -45488,14 +45527,14 @@ var zSe = class {
     const hw = (hG) => {
       this.disposeStepNav?.();
       const hH = this.driverRef.current?.getActiveIndex() ?? 0;
-      this.disposeStepNav = FSe(hG, {
+      this.disposeStepNav = mountStepNav(hG, {
         titles: hr,
         currentIndex: hH,
         isVisited: (hI) => hg.has(hI),
         onJump: (hI) => hu(() => hs(hI)),
       });
     };
-    const { driverSteps: driverSteps, actionCleanups: actionCleanups } = BSe(
+    const { driverSteps: driverSteps, actionCleanups: actionCleanups } = buildActionHooks(
       filteredSteps,
       hv,
       hk,
@@ -45584,7 +45623,7 @@ var zSe = class {
       };
     });
     const hB = createTourDriver({
-      ...$Se,
+      ...DRIVER_CONFIG,
       steps: hA,
       onPopoverRender: hw,
       onNextClick: hv,
@@ -45681,7 +45720,7 @@ var zSe = class {
       return;
     }
     const classList3 = document.body.classList;
-    classList3.remove(_Se);
+    classList3.remove(TOUR_SUSPENDED_CLASS);
     if (h2 && this.suspension.tookDriverActive) {
       classList3.add("driver-active");
     }
@@ -45769,16 +45808,16 @@ var zSe = class {
     this.transitionEndHandler = null;
   }
 };
-function WSe(h2) {
+function resolveTutorialEncounterCommand(h2) {
   switch (h2) {
     case "yama-opening-magic":
       return R;
     case "yama-opening-range":
       return a0;
     case "yama-spawn-fireball":
-      return ab;
+      return yamaSpawnFireballCommand;
     case "yama-spawn-void-flare":
-      return av;
+      return yamaSpawnVoidFlareCommand;
     default:
       return h2;
   }
@@ -45829,7 +45868,7 @@ var jSe = {
   demoPlayback: null,
 };
 var USe = 1800;
-var VSe = class e {
+var TutorialDirector = class e {
   constructor(h2) {
     ar(this, "adapter", undefined);
     ar(this, "state", {
@@ -46495,7 +46534,7 @@ var VSe = class e {
         this.adapter.castMarkOfDarkness();
         return;
       case "encounter-command":
-        if (!this.adapter.executeEncounterCommand(WSe(h2.commandId))) {
+        if (!this.adapter.executeEncounterCommand(resolveTutorialEncounterCommand(h2.commandId))) {
           throw new GSe(h2.commandId);
         }
         return;
@@ -46896,7 +46935,7 @@ var VSe = class e {
         this.adapter.activateTilePreset(seed.activatePresetId);
       }
       for (const h6 of seed.encounterCommandIds ?? []) {
-        if (!this.adapter.executeEncounterCommand(WSe(h6))) {
+        if (!this.adapter.executeEncounterCommand(resolveTutorialEncounterCommand(h6))) {
           throw new GSe(h6);
         }
       }
@@ -47191,7 +47230,7 @@ var VSe = class e {
     return null;
   }
 };
-function YSe(h2) {
+function useTutorialDirector(h2) {
   const {
     isTouchOnly: isTouchOnly,
     engineRef: engineRef,
@@ -47285,7 +47324,7 @@ function YSe(h2) {
     current44.setCompletionOwnership(completionOwnership);
   }, [completionOwnership, current44]);
   const hC = (0, React.useRef)(null);
-  hC.current ||= new VSe(hA.current);
+  hC.current ||= new TutorialDirector(hA.current);
   (0, React.useEffect)(() => {
     const current45 = hC.current;
     const i2 = current45.subscribe(hp);
@@ -47357,7 +47396,7 @@ function YSe(h2) {
     hE.current = failedCondition2;
   }, [simulationState.failedCondition]);
   const hF = (0, React.useCallback)(() => {
-    hD.current ||= new zSe({
+    hD.current ||= new SpotlightRunner({
       onStepHighlighted: (i1, i2, i3) => {
         hu(i3);
         const current46 = hx.current;
@@ -47554,13 +47593,13 @@ var QSe = (h2) => {
   }
 };
 function b9(h2 = {}) {
-  return (0, jsxRuntime.jsx)(ec, {
-    children: (0, jsxRuntime.jsx)(eCe, {
+  return (0, jsxRuntime.jsx)(PanelSnapRegistryProvider, {
+    children: (0, jsxRuntime.jsx)(AppShell, {
       ...h2,
     }),
   });
 }
-function eCe({ devHarness: devHarness } = {}) {
+function AppShell({ devHarness: devHarness } = {}) {
   const h3 = {
     xcWks: function (sP) {
       return sP();
@@ -48151,7 +48190,7 @@ function eCe({ devHarness: devHarness } = {}) {
   );
   const hv = (0, React.useRef)(null);
   if (null === hv.current) {
-    hv.current = new _be("inventory");
+    hv.current = new GamePanelTabStore("inventory");
   }
   const current49 = hv.current;
   const [hx, hy] = (0, React.useState)(zebakSoundSearch !== null);
@@ -48164,7 +48203,7 @@ function eCe({ devHarness: devHarness } = {}) {
   const [hN, hO] = (0, React.useState)(null);
   const { profileReady: profileReady } = Ewe();
   const hQ = (0, React.useRef)(null);
-  const [hR, hS] = dU();
+  const [hR, hS] = usePersistedSettings();
   const {
     masterVolume: masterVolume,
     sfxVolume: sfxVolume,
@@ -48387,14 +48426,14 @@ function eCe({ devHarness: devHarness } = {}) {
     // Made once: `useRef(new ...)` built (and threw away) both on every render.
     const sY = (0, React.useRef)(null);
     if (sY.current === null) {
-      sY.current = new by(Swe, ...O(), {
+      sY.current = new EventAudioPlayer(Swe, ...O(), {
         name: "core",
-        rules: wwe,
+        rules: coreAudioRules,
       });
     }
     const sZ = (0, React.useRef)(null);
     if (sZ.current === null) {
-      sZ.current = new kwe(Swe);
+      sZ.current = new FrameSoundTracker(Swe);
     }
     (0, React.useEffect)(() => {
       // Creating the audio context blocks for 40ms and more. Done here, behind
@@ -48561,18 +48600,18 @@ function eCe({ devHarness: devHarness } = {}) {
         }
         const current50 = cacheManagerRef.current;
         t1(current50.hd());
-        t4(current50.pd());
-        t7(current50.gd());
-        t9(current50.kd());
-        tg(current50.IC());
-        tj(current50.wd());
-        tm(current50.yd());
+        t4(current50.getUnderlayLoader());
+        t7(current50.getOverlayLoader());
+        t9(current50.getTextureLoader());
+        tg(current50.getMinimapNpcDotUrl());
+        tj(current50.getLocModelLoader());
+        tm(current50.getNpcModelLoader());
         tu(current50.getModelLoader());
-        tw(current50.xd());
-        tR.GiPOh(ty, current50.vd());
-        tA(current50._C());
-        tC(current50.bd());
-        tE(current50.NC());
+        tw(current50.getPlayerModelLoader());
+        tR.GiPOh(ty, current50.getAnimationSystem());
+        tA(current50.getSpotAnimTypeLoader());
+        tC(current50.getSpotAnimModelLoader());
+        tE(current50.getNpcTypeLoader());
         const current51 = bindingsRef.current;
         if (!current51) {
           return;
@@ -48587,8 +48626,8 @@ function eCe({ devHarness: devHarness } = {}) {
         const objTypeLoader2 = current50.getObjTypeLoader();
         engineRef.current.setObjTypeLoader(objTypeLoader2);
         tH(objTypeLoader2);
-        tK(current50.KC());
-        tR.hTgUn(tN, current50.BC());
+        tK(current50.getEnumTypeLoader());
+        tR.hTgUn(tN, current50.getStructTypeLoader());
         engineRef.current.setInventory(playerInventoryRef.current);
         engineRef.current.setEquipment(playerEquipmentRef.current);
         engineRef.current.setCombatSupplies(playerCombatSuppliesRef.current);
@@ -48604,7 +48643,7 @@ function eCe({ devHarness: devHarness } = {}) {
             H.end("preloadAllAssets");
             for (const u7 of u5) {
               if ("rejected" === u7.status) {
-                L.error("useCacheBootstrap", "Preload task failed:", u7.reason);
+                logger.error("useCacheBootstrap", "Preload task failed:", u7.reason);
               }
             }
             tP(true);
@@ -48613,7 +48652,7 @@ function eCe({ devHarness: devHarness } = {}) {
           }
         });
       });
-      cacheManagerRef.current.Ad().catch((tU) => {
+      cacheManagerRef.current.ensureCache().catch((tU) => {
         cy("useCacheBootstrap", "Failed to load cache:", tU);
       });
       return () => {
@@ -48766,16 +48805,16 @@ function eCe({ devHarness: devHarness } = {}) {
     }, []);
     const sU = (0, React.useCallback)(
       (t0) => {
-        const t1 = gU(t0);
+        const t1 = resolveRetiredEncounterKind(t0);
         return Owe(sR[t1] ?? Vle(t1));
       },
       [sR],
     );
     const sW = (0, React.useCallback)((t0) => df(sU(t0).equipment), [sU]);
     const sX = (0, React.useCallback)((t0) => du(sU(t0).inventory), [sU]);
-    const sY = (0, React.useCallback)((t0) => gG(sU(t0).supplies), [sU]);
+    const sY = (0, React.useCallback)((t0) => cloneCombatSupplies(sU(t0).supplies), [sU]);
     const sZ = (0, React.useCallback)((t0, t1) => {
-      const t2 = sP.WZugR(gU, t0);
+      const t2 = sP.WZugR(resolveRetiredEncounterKind, t0);
       sS((t4) => ({
         ...t4,
         [t2]: Owe(t1),
@@ -48787,7 +48826,7 @@ function eCe({ devHarness: devHarness } = {}) {
       getSupplies: sY,
       getLoadout: sU,
       setEquipment: (0, React.useCallback)((t0, t1) => {
-        const t2 = gU(t0);
+        const t2 = resolveRetiredEncounterKind(t0);
         sS((t4) => ({
           ...t4,
           [t2]: {
@@ -48797,7 +48836,7 @@ function eCe({ devHarness: devHarness } = {}) {
         }));
       }, []),
       setInventory: (0, React.useCallback)((t0, t1) => {
-        const t2 = gU(t0);
+        const t2 = resolveRetiredEncounterKind(t0);
         sS((t4) => ({
           ...t4,
           [t2]: {
@@ -48807,12 +48846,12 @@ function eCe({ devHarness: devHarness } = {}) {
         }));
       }, []),
       setSupplies: (0, React.useCallback)((t0, t1) => {
-        const t2 = gU(t0);
+        const t2 = resolveRetiredEncounterKind(t0);
         sS((t4) => ({
           ...t4,
           [t2]: {
             ...Owe(t4[t2] ?? Vle(t2)),
-            supplies: gG(t1),
+            supplies: cloneCombatSupplies(t1),
           },
         }));
       }, []),
@@ -48862,7 +48901,7 @@ function eCe({ devHarness: devHarness } = {}) {
     selectedLobbyEncounter: selectedLobbyEncounter,
     setSceneState: setSceneState,
     setSelectedLobbyEncounter: setSelectedLobbyEncounter,
-  } = qwe({
+  } = useEncounterManager({
     attackStylePerCategory: attackStylePerCategory,
     bindingsRef: hQ,
     cacheManagerRef: hf,
@@ -49036,7 +49075,7 @@ function eCe({ devHarness: devHarness } = {}) {
     activePresetIds: nj,
     togglePreset: nk,
     deactivateAllPresets: nm,
-  } = lke(activeEncounterKind, mA);
+  } = useLineMarkerActions(activeEncounterKind, mA);
   const np = (function () {
     const sP = {
       szyQz: function (t9, td) {
@@ -49178,7 +49217,7 @@ function eCe({ devHarness: devHarness } = {}) {
           npcName: td,
           npcTypeId: t9,
           mode: "trueTile",
-          color: cQ,
+          color: DEFAULT_NPC_HIGHLIGHT_COLOR,
         };
         return {
           ...th,
@@ -49551,7 +49590,7 @@ function eCe({ devHarness: devHarness } = {}) {
   const ny = (0, React.useRef)([]);
   (0, React.useEffect)(() => {
     if (!new URLSearchParams(window.location.search).get("logLevel")) {
-      L.setLevel(logLevel);
+      logger.setLevel(logLevel);
     }
   }, [logLevel]);
   const nz = (0, React.useCallback)(
@@ -49839,7 +49878,7 @@ function eCe({ devHarness: devHarness } = {}) {
     handleExportMarkers: handleExportMarkers,
     handleExportPreset: handleExportPreset,
     handleImportMarkers: handleImportMarkers,
-  } = Eke({
+  } = useTileMarkerClipboard({
     activeEncounterKind: activeEncounterKind,
     markers: markers,
     importMarkers: importMarkers,
@@ -49946,7 +49985,7 @@ function eCe({ devHarness: devHarness } = {}) {
       lineMarkerWidth: lineWidth,
     });
     if (omitted.tileMarkers > 0 || omitted.lineMarkers > 0) {
-      L.warn(
+      logger.warn(
         "Replay",
         "A shared replay cannot carry every marker on screen: omitting " +
           omitted.tileMarkers +
@@ -50052,7 +50091,7 @@ function eCe({ devHarness: devHarness } = {}) {
     tickTimingRef: tickTimingRef,
     dispatchInput: dispatchInput,
     focusPaused: focusPaused,
-  } = fT({
+  } = useSimulationWiring({
     activeMechanicsConfig: activeMechanicsConfig,
     attackStylePerCategory: attackStylePerCategory,
     autoAdvance: autoAdvance,
@@ -50283,7 +50322,7 @@ function eCe({ devHarness: devHarness } = {}) {
   const qd = fe("mobile" === clientLayoutMode || qb === "mobile");
   fq(activeResourcePack);
   (0, React.useEffect)(() => {
-    Iwe(activeResourcePack);
+    collectLocalAssetPaths(activeResourcePack);
   }, [activeResourcePack]);
   const qf =
     displayPresentationState2?.variants.infoboxPinTarget ?? infoboxPinTarget;
@@ -50592,7 +50631,7 @@ function eCe({ devHarness: devHarness } = {}) {
       if (parseResult16.success) {
         return t2;
       } else {
-        L.warn(
+        logger.warn(
           "Replay",
           "Layout could not be projected onto the share format; recording the last valid one",
           {
@@ -50793,7 +50832,7 @@ function eCe({ devHarness: devHarness } = {}) {
         if (sR.ok) {
           try {
             const sS = g4(sR.value);
-            const sT = gU(sS.encounterKind);
+            const sT = resolveRetiredEncounterKind(sS.encounterKind);
             if (!cE.getDescriptorOfKindOrVariant(sT)) {
               qZ(
                 h6.code,
@@ -50843,7 +50882,7 @@ function eCe({ devHarness: devHarness } = {}) {
         ? sceneState.encounterKind
         : "loading" === sceneState.kind
           ? sceneState.targetEncounter
-          : "lobby") === gU(h6.file.encounterKind)
+          : "lobby") === resolveRetiredEncounterKind(h6.file.encounterKind)
     ) {
       try {
         r4.current.loadExternalReplay(fB(h6.file));
@@ -50922,7 +50961,7 @@ function eCe({ devHarness: devHarness } = {}) {
     hintToasts: hintToasts,
     dismissHintToast: dismissHintToast,
     handleHintOptOut: handleHintOptOut,
-  } = Bwe({
+  } = useAppHotkeys({
     disabledShortcutHints: disabledShortcutHints,
     onReset: replay.replayPractice.onRetry,
     onToggleQuickSearch: () => {
@@ -51229,7 +51268,7 @@ function eCe({ devHarness: devHarness } = {}) {
     activeEncounterKindForAdapter: activeEncounterKind,
     mechanicsVariantKindForAdapter: mechanicsVariantKind,
   };
-  const rw = YSe({
+  const rw = useTutorialDirector({
     isTouchOnly: lp,
     engineRef: engineRef,
     simulationState: simulationState,
@@ -51469,7 +51508,7 @@ function eCe({ devHarness: devHarness } = {}) {
       playerTile: simulationState.playerPosition,
       range: engine?.getPlayerAttackRange?.() ?? 0,
       player: player,
-      weaponName: weaponId == null ? "" : (aw(weaponId)?.name ?? ""),
+      weaponName: weaponId == null ? "" : (getEquipmentDefinition(weaponId)?.name ?? ""),
       npcs: simulationState.npcs,
     });
   }, [
@@ -51553,7 +51592,7 @@ function eCe({ devHarness: devHarness } = {}) {
     };
   }, [activeSetup, replay.replayMode, resetSavedSetup]);
   const rQ = (0, React.useMemo)(
-    () => getEncounterMergedMechanicsConfig(cc),
+    () => getEncounterMergedMechanicsConfig(infernoEncounterKind),
     [getEncounterMergedMechanicsConfig],
   );
   const rR =
@@ -51600,15 +51639,15 @@ function eCe({ devHarness: devHarness } = {}) {
     (0, React.useMemo)(() => ave(rQ), [rQ]),
     !replay.replayMode &&
       null === h6 &&
-      ((rR !== null && "inferno" === gU(rR)) ||
+      ((rR !== null && "inferno" === resolveRetiredEncounterKind(rR)) ||
         ("lobby" === sceneState.kind &&
           selectedLobbyEncounter?.encounterKind === "inferno")),
   );
-  const rT = mechanicsConfigPerEncounter[cc];
+  const rT = mechanicsConfigPerEncounter[infernoEncounterKind];
   const rU = (0, React.useMemo)(
     () => ({
       mechanics: rT,
-      loadout: getLoadout(cc),
+      loadout: getLoadout(infernoEncounterKind),
     }),
     [rT, getLoadout],
   );
@@ -51664,7 +51703,7 @@ function eCe({ devHarness: devHarness } = {}) {
         hash: hash,
       };
     });
-    const [t2] = (0, React.useState)(() => ove(t1));
+    const [t2] = (0, React.useState)(() => planInfernoSetupLink(t1));
     const t4 = (0, React.useRef)(false);
     (0, React.useLayoutEffect)(() => {
       if (t2) {
@@ -51676,7 +51715,7 @@ function eCe({ devHarness: devHarness } = {}) {
         return;
       }
       t4.current = true;
-      const t5 = ove(t1, saved);
+      const t5 = planInfernoSetupLink(t1, saved);
       if (!t5) {
         return;
       }
@@ -51717,18 +51756,18 @@ function eCe({ devHarness: devHarness } = {}) {
   })({
     ready: profileReady,
     saved: rQ,
-    saveLoadout: (sP) => setLoadout(cc, sP),
+    saveLoadout: (sP) => setLoadout(infernoEncounterKind, sP),
     openSetup: (sP) => {
-      const descriptor2 = cE.getDescriptor(cc);
+      const descriptor2 = cE.getDescriptor(infernoEncounterKind);
       handleConfigureEncounter(
-        cc,
+        infernoEncounterKind,
         descriptor2?.displayName ?? "inferno",
         descriptor2?.description ?? "",
         h3.KyWIA(sP, {}),
       );
     },
     start: (sP, sQ) =>
-      enterEncounter(cc, sQ, {
+      enterEncounter(infernoEncounterKind, sQ, {
         mechanics: sP,
       }),
     stored: rU,
@@ -51737,15 +51776,15 @@ function eCe({ devHarness: devHarness } = {}) {
         ...mechanicsConfigPerEncounter,
       };
       if (mechanics) {
-        sR[cc] = mechanics;
+        sR[infernoEncounterKind] = mechanics;
       } else {
-        delete sR[cc];
+        delete sR[infernoEncounterKind];
       }
       lI(sR);
-      setLoadout(cc, loadout);
+      setLoadout(infernoEncounterKind, loadout);
     },
   });
-  Ake(sceneState, enterEncounter, enterLobby, cE, r0, rS);
+  useRouting(sceneState, enterEncounter, enterLobby, cE, r0, rS);
   const rW = (0, React.useMemo)(() => {
     if ("lobby" === sceneState.kind) {
       return "/";
@@ -51768,9 +51807,9 @@ function eCe({ devHarness: devHarness } = {}) {
     }
   }, [sceneState]);
   jke(rW);
-  dC(es.ARMED_SPELL, null !== rj, () => rk(null));
-  dC(es.SETTINGS, kR, () => kX(false));
-  dC(es.SETTINGS + 1, kY, () => kZ(false));
+  dC(ESC_PRIORITY.ARMED_SPELL, null !== rj, () => rk(null));
+  dC(ESC_PRIORITY.SETTINGS, kR, () => kX(false));
+  dC(ESC_PRIORITY.SETTINGS + 1, kY, () => kZ(false));
   fz(gf, lp ? null : () => hG(true));
   f1(({ surface: surface }) => {
     if ("action" === surface) {
@@ -51802,14 +51841,14 @@ function eCe({ devHarness: devHarness } = {}) {
       }
     }
   });
-  dC(es.CACHE_EXPLORER, hx, () => hy(false));
-  dC(es.CACHE_EXPLORER + 10, null !== selectedLobbyEncounter, () =>
+  dC(ESC_PRIORITY.CACHE_EXPLORER, hx, () => hy(false));
+  dC(ESC_PRIORITY.CACHE_EXPLORER + 10, null !== selectedLobbyEncounter, () =>
     setSelectedLobbyEncounter(null),
   );
   (0, React.useRef)(null);
   (0, React.useLayoutEffect)(() => {});
   (0, React.useEffect)(() => {}, [devHarness, isFullyLoaded]);
-  const rX = bR(engineRef.current.getEncounterKind());
+  const rX = getEncounterControls(engineRef.current.getEncounterKind());
   const rY = rX?.mechanicsToggles ?? [];
   const rZ = rX?.debugActions ?? [];
   const s0 = rX?.debugFlags ?? [];
@@ -52079,9 +52118,9 @@ function eCe({ devHarness: devHarness } = {}) {
     if (sS) {
       const sX = cE.getDescriptorOfKindOrVariant(sR);
       const sY = xle(sR, sX?.variants);
-      const sZ = _le[sY]?.[sS];
+      const sZ = EQUIPMENT_PRESETS[sY]?.[sS];
       if (sZ) {
-        const t0 = sZ.supplies ?? gC();
+        const t0 = sZ.supplies ?? createEmptyCombatSupplies();
         sT = {
           equipment: sZ.equipment,
           inventory: sZ.inventory,
@@ -52139,7 +52178,7 @@ function eCe({ devHarness: devHarness } = {}) {
         title: su(kR ? "Hide Settings" : "Open Settings"),
         children: [
           sk &&
-            (0, jsxRuntime.jsx)(dy, {
+            (0, jsxRuntime.jsx)(LauncherIcon, {
               glyph: "modifiers",
             }),
           sk
@@ -52255,7 +52294,7 @@ function eCe({ devHarness: devHarness } = {}) {
                 "data-tutorial": "plugins-button",
                 onClick: () => kZ(true),
                 children: [
-                  (0, jsxRuntime.jsx)(dy, {
+                  (0, jsxRuntime.jsx)(LauncherIcon, {
                     glyph: "actions",
                   }),
                   (0, jsxRuntime.jsx)("span", {
@@ -52304,44 +52343,44 @@ function eCe({ devHarness: devHarness } = {}) {
             role: "alert",
             children: h6.error,
           }),
-        (0, jsxRuntime.jsx)(Zye, {
+        (0, jsxRuntime.jsx)(TickTimingOverlay, {
           monitor: tickTimingRef.current,
           visible: showTickTiming,
         }),
         sk &&
-          (0, jsxRuntime.jsx)(eC, {
+          (0, jsxRuntime.jsx)(FpsOverlay, {
             visible: showFps,
           }),
-        (0, jsxRuntime.jsx)(jye, {
+        (0, jsxRuntime.jsx)(SoundDebugOverlay, {
           audioEngine: audioEngine,
           visible: showSoundDebug,
           controlsVisible: kR,
         }),
         showModifierKeys &&
-          (0, jsxRuntime.jsx)(dme, {
+          (0, jsxRuntime.jsx)(ModifierKeysOverlay, {
             isReplaying: replay.replayMode,
             modifierTrack: replay.modifierTrack,
             replayFrameStore: replay.replayFrameStore,
           }),
-        (0, jsxRuntime.jsx)(zpe, {
+        (0, jsxRuntime.jsx)(LoadingScreen, {
           cacheState: cacheDownloadState,
           isFullyLoaded: isFullyLoaded,
           isSceneReady: isSceneReady,
           onRetry: handleCacheRetry,
         }),
-        (0, jsxRuntime.jsx)(tme, {
+        (0, jsxRuntime.jsx)(MobileEntry, {
           entry: nN,
           frame: sw,
         }),
         "hardware" !== ku.status &&
-          (0, jsxRuntime.jsx)(Lpe, {
+          (0, jsxRuntime.jsx)(HardwareAccelWarning, {
             variant: "gameplay",
             gpuStatus: ku.status,
             renderer: ku.renderer,
             hidden: hideHardwareAccelWarning,
             diagnostics: ku.diagnostics,
           }),
-        (0, jsxRuntime.jsx)(Mbe, {
+        (0, jsxRuntime.jsx)(ViewportSizeWarning, {
           visible: !kR && null !== q3,
           width: q3?.width ?? 0,
           height: q3?.height ?? 0,
@@ -52365,7 +52404,7 @@ function eCe({ devHarness: devHarness } = {}) {
             const sU = xle(selectedLobbyEncounter.encounterKind, sS);
             const encounterKind3 = selectedLobbyEncounter.encounterKind;
             const sX = getSavedSetup(encounterKind3);
-            return (0, jsxRuntime.jsx)(gpe, {
+            return (0, jsxRuntime.jsx)(EncounterPanel, {
               mobile: qb === "mobile",
               npcModelLoader: loaders.npcModelLoader,
               animationSystem: animationSystem,
@@ -52398,7 +52437,7 @@ function eCe({ devHarness: devHarness } = {}) {
                 isDefault: sX.isDefault,
                 onReset: () => resetSavedSetup(encounterKind3),
               },
-              mechanicsToggles: bR(encounterKind3)?.mechanicsToggles ?? [
+              mechanicsToggles: getEncounterControls(encounterKind3)?.mechanicsToggles ?? [
                 {
                   key: "infiniteHealth",
                   label: "Infinite Health",
@@ -52444,7 +52483,7 @@ function eCe({ devHarness: devHarness } = {}) {
               },
             });
           })(),
-        (0, jsxRuntime.jsx)(gle, {
+        (0, jsxRuntime.jsx)(CacheExplorer, {
           isOpen: hx,
           onClose: () => hy(false),
           spotAnimLoader: spotAnimLoader,
@@ -52504,7 +52543,7 @@ function eCe({ devHarness: devHarness } = {}) {
               return null;
             }
             const { kind: kind } = hN;
-            return (0, jsxRuntime.jsx)(hme, {
+            return (0, jsxRuntime.jsx)(ModifiersModal, {
               encounterName: sP.displayName,
               modifiers: sP.modifiers,
               initialSelection: hN.selection,
@@ -52520,7 +52559,7 @@ function eCe({ devHarness: devHarness } = {}) {
               onClose: () => hO(null),
             });
           })(),
-        (0, jsxRuntime.jsx)(fbe, {
+        (0, jsxRuntime.jsx)(TutorialPickerModal, {
           open: kE,
           initialCourseId: kG,
           currentSceneKind: mm,
@@ -52548,7 +52587,7 @@ function eCe({ devHarness: devHarness } = {}) {
             }
           },
         }),
-        (0, jsxRuntime.jsx)(ble, {
+        (0, jsxRuntime.jsx)(CreditsModal, {
           isOpen: hH,
           onClose: () => hI(false),
         }),
@@ -52570,7 +52609,7 @@ function eCe({ devHarness: devHarness } = {}) {
         }),
         sw &&
           nN.fullscreenControl &&
-          (0, jsxRuntime.jsx)(ime, {
+          (0, jsxRuntime.jsx)(MobileFullscreenStone, {
             frame: sw,
             control: nN.fullscreenControl,
             onToggle: nN.toggleFullscreen,
@@ -52578,7 +52617,7 @@ function eCe({ devHarness: devHarness } = {}) {
             tucked: kR,
           }),
         sw &&
-          (0, jsxRuntime.jsx)(ome, {
+          (0, jsxRuntime.jsx)(MobileRestartStone, {
             frame: sw,
             slot: nN.fullscreenControl ? 1 : 0,
             onRestart: handleReset,
@@ -52599,7 +52638,7 @@ function eCe({ devHarness: devHarness } = {}) {
         (0, jsxRuntime.jsxs)("section", {
           className: "grid-panel",
           children: [
-            (0, jsxRuntime.jsx)(_ye, {
+            (0, jsxRuntime.jsx)(SettingsSidebarContent, {
               visible: kR,
               onClose: () => kX(false),
               onOpenShortcuts: () => hG(true),
@@ -52740,7 +52779,7 @@ function eCe({ devHarness: devHarness } = {}) {
                   hS("infoboxTextOutlineColor", sP),
               },
             }),
-            (0, jsxRuntime.jsxs)(wfe, {
+            (0, jsxRuntime.jsxs)(RendererErrorBoundary, {
               children: [
                 isFullyLoaded &&
                   (0, jsxRuntime.jsxs)("div", {
@@ -52916,7 +52955,7 @@ function eCe({ devHarness: devHarness } = {}) {
                                     viewportInsets: q4,
                                     viewportOffsetX: q5,
                                   },
-                                  children: (0, jsxRuntime.jsx)(g5, {
+                                  children: (0, jsxRuntime.jsx)(Grid, {
                                     onRestart: handleReset,
                                     exportEncounterGear: mz,
                                     onEncounterToolOpenChange: oI,
@@ -52924,7 +52963,7 @@ function eCe({ devHarness: devHarness } = {}) {
                                     encounterSession: encounterSession,
                                     sceneOverlay:
                                       isFullyLoaded &&
-                                      (0, jsxRuntime.jsx)(Tpe, {
+                                      (0, jsxRuntime.jsx)(EncounterTitleCard, {
                                         countdownActive:
                                           fightStartCountdownActive,
                                         encounterName:
@@ -53141,7 +53180,7 @@ function eCe({ devHarness: devHarness } = {}) {
                           ],
                         }),
                       }),
-                      (0, jsxRuntime.jsx)(Nle, {
+                      (0, jsxRuntime.jsx)(DeathModal, {
                         replayPractice: replay.replayPractice,
                         encounterSession: encounterSession,
                         visible: "death" === r6,
@@ -53155,7 +53194,7 @@ function eCe({ devHarness: devHarness } = {}) {
                         onReturnToLobby: handleReturnToLobby,
                       }),
                       r5 &&
-                        (0, jsxRuntime.jsx)(Tbe, {
+                        (0, jsxRuntime.jsx)(VictoryModal, {
                           replayPractice: replay.replayPractice,
                           encounterSession: encounterSession,
                           victory: r5,
@@ -53189,7 +53228,7 @@ function eCe({ devHarness: devHarness } = {}) {
                 }),
               ],
             }),
-            (0, jsxRuntime.jsx)(cfe, {
+            (0, jsxRuntime.jsx)(PluginsPanelContent, {
               visible: kY,
               onClose: () => kZ(false),
               encounterKind: mm,
@@ -53542,7 +53581,7 @@ function eCe({ devHarness: devHarness } = {}) {
             }),
           ],
         }),
-        (0, jsxRuntime.jsx)($be, {
+        (0, jsxRuntime.jsx)(ZoomHintToast, {
           toasts: [...hintToasts, ...s4.toasts],
           onDismiss: (sP) => {
             dismissHintToast(sP);
@@ -53600,7 +53639,7 @@ function App(h2 = {}) {
   const h4 = bK();
   if ("no-webgl2" === h4.status) {
     fq(d3(bO(gq)).activeResourcePack);
-    return (0, jsxRuntime.jsx)(ele, {
+    return (0, jsxRuntime.jsx)(BrowserSupportScreen, {
       diagnostics: h4.diagnostics,
     });
   } else {
@@ -53620,10 +53659,10 @@ var nCe = new (class {
     this.enabled = h2;
     if (h2) {
       this.start();
-      L.info("Perf", "Enabled - sampling every %ds", 10);
+      logger.info("Perf", "Enabled - sampling every %ds", 10);
     } else {
       this.stop();
-      L.info("Perf", "Disabled");
+      logger.info("Perf", "Disabled");
     }
   }
   isEnabled() {
@@ -53705,7 +53744,7 @@ var nCe = new (class {
     if (!this.enabled) {
       return;
     }
-    if (!L.isEnabled(aD.INFO, "Perf")) {
+    if (!logger.isEnabled(LogLevel.INFO, "Perf")) {
       return;
     }
     const report2 = this.getReport();
@@ -53780,7 +53819,7 @@ var aCe = new (class {
       }
     };
     window.addEventListener("keydown", this.keyHandler);
-    L.info(
+    logger.info(
       "Perf",
       "Initialized. Press F2 to toggle profiling, or use window.__perf in console.",
     );
@@ -53792,13 +53831,13 @@ var aCe = new (class {
     nCe.setEnabled(this.enabled);
     window.__perf.enabled = this.enabled;
     if (this.enabled) {
-      L.info(
+      logger.info(
         "Perf",
         "Profiling ENABLED. Reports every 5s. Use window.__perf.data() for instant snapshot.",
       );
     } else {
       this.report();
-      L.info("Perf", "Profiling DISABLED. Final report above.");
+      logger.info("Perf", "Profiling DISABLED. Final report above.");
     }
   }
   report() {
@@ -53861,7 +53900,7 @@ var interfaceFonts = [
   "RuneScape Quill 8",
   "RuneScape Small",
 ];
-L.init();
+logger.init();
 aCe.init();
 Promise.resolve()
   .then(() =>

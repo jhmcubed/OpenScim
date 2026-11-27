@@ -30,96 +30,96 @@ import {
 } from "./vendor.js";
 import {
   PK as A,
-  isSupportedCombatSpell as B,
-  clampInfernoWave as C,
+  isSupportedCombatSpell,
+  clampInfernoWave,
   ou as D,
   pF as E,
-  isPrayerUnlockedByMechanics as F,
+  isPrayerUnlockedByMechanics,
   oS as G,
   $K as H,
-  getCombatLevel as I,
+  getCombatLevel,
   Xz as J,
-  solMessageColors as K,
+  solMessageColors,
   wq as L,
-  isSafeReplayPosition as M,
+  isSafeReplayPosition,
   qw as N,
   fC as O,
   BS as P,
   cq as Q,
-  getInventoryActions as R,
-  Prayer as S,
+  getInventoryActions,
+  Prayer,
   Gw as T,
   pC as U,
   isAppleTouchDevice,
   te as W,
   mq as X,
-  getItemName as Y,
-  logger as Z,
+  getItemName,
+  logger,
   TR as a0,
   Pw as a1,
   AC as a2,
   KK as a3,
   Vh as a4,
   gw as a5,
-  infernoStartWaveKey as a7,
+  infernoStartWaveKey,
   XK as a8,
   jB as a9,
   Ck as aa,
   QK as ab,
   dW as ac,
   Gk as ad,
-  LobbyEncounter as af,
+  LobbyEncounter,
   tq as ag,
   $h as ah,
-  PlayerVisualTracker as ai,
+  PlayerVisualTracker,
   Nw as aj,
   nC as ak,
   DK as al,
-  defaultSpellbook as am,
+  defaultSpellbook,
   OB as an,
-  getInfernoWaveSlotNpcs as ao,
+  getInfernoWaveSlotNpcs,
   xf as ap,
   MK as ar,
   ae as as,
-  parseInfernoSpawnLayout as at,
+  parseInfernoSpawnLayout,
   aq as au,
   VB as av,
   JI as aw,
   rq as ax,
-  getDistanceToFootprint as ay,
-  getWeaponProjectileTiming as az,
-  infernoPillarDestroyedKeys as aB,
-  hasCountdownMovement as aC,
+  getDistanceToFootprint,
+  getWeaponProjectileTiming,
+  infernoPillarDestroyedKeys,
+  hasCountdownMovement,
   sq as aD,
   Oh as aE,
   _w as aF,
-  infernoSpawnLayoutKey as aG,
+  infernoSpawnLayoutKey,
   cS as aH,
-  getArenaBounds as aJ,
+  getArenaBounds,
   Vw as aK,
   hC as aL,
   YK as aM,
   Uh as aN,
   Uw as aO,
-  infernoStartTileKey as aP,
+  infernoStartTileKey,
   _K as aQ,
-  isNpcTargetableAtTick as aR,
+  isNpcTargetableAtTick,
   EB as aS,
-  infernoMonsterDisplayNames as aT,
+  infernoMonsterDisplayNames,
   lu as aU,
   nq as aV,
-  packHsl as aW,
+  packHsl,
   ce as aX,
   ew as aZ,
-  getInfernoSetup as b0,
+  getInfernoSetup,
   zq as b1,
-  ReplaySafetyError as b2,
+  ReplaySafetyError,
   Qw as b3,
-  getInfernoActorTemplate as b4,
+  getInfernoActorTemplate,
   IS as b5,
   hq as b6,
-  prayerSlotByPrayer as b7,
-  isSafeReplaySize as b8,
+  prayerSlotByPrayer,
+  isSafeReplaySize,
   Yw as b9,
   kC as ba,
   LS as bb,
@@ -130,43 +130,43 @@ import {
   Yz as bg,
   Uk as bh,
   JK as bi,
-  createDefaultStats as bj,
+  createDefaultStats,
   UB as bk,
   EI as bl,
   IK as bm,
   bz as bn,
   uI as bo,
   Ff as bp,
-  lobbyNpcs as bq,
+  lobbyNpcs,
   BK as br,
-  spellbookLabels as bs,
+  spellbookLabels,
   CB as bt,
-  validateInfernoSpawnLayout as bu,
+  validateInfernoSpawnLayout,
   If as bv,
   RK as bw,
-  getCombatSpellsOfSpellbook as bx,
+  getCombatSpellsOfSpellbook,
   _B as by,
   fI as bA,
   kk as bB,
   Tq as bC,
   qp as bD,
   n as bE,
-  snapshotWorkLimit as bF,
+  snapshotWorkLimit,
   IA as bG,
   OS as bI,
   fK as bJ,
   de as bK,
-  infernoDefaultStartTile as bL,
+  infernoDefaultStartTile,
   yu as bM,
-  infernoPillars as bN,
+  infernoPillars,
   BA as bO,
   WK as bP,
-  getWeaponCategoryOrUnarmed as bQ,
-  snapshotFootprintLimit as bR,
+  getWeaponCategoryOrUnarmed,
+  snapshotFootprintLimit,
   sA as bS,
   FS as bT,
   dZ as bU,
-  zukPlayerStart as bV,
+  zukPlayerStart,
   uu as bW,
   E_ as bX,
   jK as bY,
@@ -174,11 +174,11 @@ import {
   ru as c1,
   KS as c2,
   wK as c3,
-  isInfernoSnapshot as c4,
+  isInfernoSnapshot,
   Sk as c5,
   hI as c6,
   cF as c7,
-  getSpellIconName as c8,
+  getSpellIconName,
   NK as c9,
   vu as ca,
   TA as cb,
@@ -187,22 +187,22 @@ import {
   LK as cf,
   Cq as cg,
   Vp as ch,
-  getProjectileFlightCycles as ci,
-  projectileWorkLimit as cj,
+  getProjectileFlightCycles,
+  projectileWorkLimit,
   pA as ck,
   GS as cl,
   pK as cm,
   $p as cn,
-  projectileGeometryLimit as co,
+  projectileGeometryLimit,
   zA as cp,
   RS as cr,
   vK as cs,
   CZ as ct,
-  infernoPlayerStart as cu,
+  infernoPlayerStart,
   hk as cv,
-  validateInfernoStartTile as cw,
+  validateInfernoStartTile,
   eF as cx,
-  getMonsterName as cy,
+  getMonsterName,
   xK as cz,
   lq as cB,
   Ow as cC,
@@ -212,21 +212,21 @@ import {
   gq as cH,
   Fw as cJ,
   rC as cK,
-  getEncounterControls as cL,
+  getEncounterControls,
   FD as cM,
   iu as cN,
   UK as cO,
-  projectileTimings as cP,
+  projectileTimings,
   NP as cQ,
   LA as cR,
   VS as cT,
   uK as cU,
   xH as cV,
   Xp as cW,
-  formatTileString as cX,
+  formatTileString,
   FK as cY,
   bZ as d0,
-  infernoSpawnTiles as d1,
+  infernoSpawnTiles,
   nk as d3,
   cA as d4,
   kB as d5,
@@ -240,77 +240,77 @@ import {
   AK as dd,
   TK as df,
   Az as dg,
-  formatInfernoSpawnLayout as dh,
+  formatInfernoSpawnLayout,
   Ok as di,
   xZ as dj,
-  infernoEncounterKind as dk,
+  infernoEncounterKind,
   tk as dl,
-  canChooseInfernoStartTile as dm,
+  canChooseInfernoStartTile,
   oF as dp,
   HK as dq,
   cZ as ds,
-  infernoArenaBounds as dt,
+  infernoArenaBounds,
   Yp as du,
   yA as dv,
   pB as dw,
   GK as dx,
   PH as dy,
   fk as dz,
-  parseTileString as dA,
+  parseTileString,
   iF as dB,
   EK as dC,
   pu as dD,
-  getCarriedWeight as dE,
+  getCarriedWeight,
   qS as dF,
   SK as dG,
   Lq as dH,
   Jh as dI,
-  snapshotGroundItemLimit as dJ,
+  snapshotGroundItemLimit,
   nA as dK,
   US as dL,
   kK as dM,
   vq as dN,
-  isSafeReplayCycle as dO,
+  isSafeReplayCycle,
   wC as dP,
   WS as dQ,
   XV as dR,
   Sq as dS,
-  getActiveSpell as dT,
-  totalSnapshotFootprintLimit as dU,
+  getActiveSpell,
+  totalSnapshotFootprintLimit,
   Xw as dV,
   CS as dX,
   Dq as dY,
-  getWeaponCategoryDefinition as e0,
-  snapshotNpcLimit as e1,
+  getWeaponCategoryDefinition,
+  snapshotNpcLimit,
   aA as e2,
   _S as e3,
-  encounterRegistry as e4,
+  encounterRegistry,
   VK as e5,
   Qz as e6,
-  getInfernoSpawnCommandType as e7,
+  getInfernoSpawnCommandType,
 } from "./rendering.js";
 import { applyPackTheme, OsrsButton } from "./packThemes.js";
 import {
-  isItemStackable as ea,
-  createEmptyCombatSupplies as ec,
-  areCombatSuppliesEqual as ed,
-  createEmptyInventory as ee,
-  applyPrayerActions as ef,
-  consolidateRetiredEncounterKinds as eg,
-  hasRuneAvailable as eh,
-  DEATH_CHARGE_SPELL as ei,
-  getSpellRuneTypes as ej,
-  parseEngineBootstrap as ek,
-  hasMagicLevelForSpell as el,
-  RUNE_ITEM_IDS as em,
-  rebuildEngineAtReplayFrame as eo,
-  getSoulreaperStacksForWeapon as ep,
-  MARK_OF_DARKNESS_SPELL as er,
-  SimulationEngine as es,
-  canCastSpell as et,
-  consumableDefinitionByItemId as eu,
-  resolveBaseEncounterKind as ev,
-  isEncounterKind as ex,
+  isItemStackable,
+  createEmptyCombatSupplies,
+  areCombatSuppliesEqual,
+  createEmptyInventory,
+  applyPrayerActions,
+  consolidateRetiredEncounterKinds,
+  hasRuneAvailable,
+  DEATH_CHARGE_SPELL,
+  getSpellRuneTypes,
+  parseEngineBootstrap,
+  hasMagicLevelForSpell,
+  RUNE_ITEM_IDS,
+  rebuildEngineAtReplayFrame,
+  getSoulreaperStacksForWeapon,
+  MARK_OF_DARKNESS_SPELL,
+  SimulationEngine,
+  canCastSpell,
+  consumableDefinitionByItemId,
+  resolveBaseEncounterKind,
+  isEncounterKind,
 } from "./simulationEngineFactory.js";
 import { isStandaloneOrFullscreen } from "./fullscreen.js";
 import {
@@ -323,7 +323,7 @@ import {
 var pn = toEsModule(requireReact(), 1);
 var gn = requireReactDom();
 var wn = requireJsxRuntime();
-var aY = [
+var BROWSERS = [
   {
     name: "Chrome",
     href: "https://www.google.com/chrome/",
@@ -339,7 +339,7 @@ var $oe = () =>
   bb()
     ? null
     : (0, wn.jsx)(wn.Fragment, {
-        children: aY.map((ez) =>
+        children: BROWSERS.map((ez) =>
           (0, wn.jsxs)(
             "a",
             {
@@ -363,8 +363,8 @@ var $oe = () =>
           ),
         ),
       });
-var Tse = "3D graphics unavailable";
-var Soe = "This browser can't run the WebGL2 graphics the simulator needs.";
+var NO_WEBGL2_TITLE = "3D graphics unavailable";
+var NO_WEBGL2_BODY = "This browser can't run the WebGL2 graphics the simulator needs.";
 var n_e = [
   "Try OpenScim.dev on another device, or in a different browser.",
   "To keep using this browser, make sure hardware acceleration is on and no extension is blocking WebGL.",
@@ -382,7 +382,7 @@ function ase() {
     return undefined;
   }
 }
-function nae({ open: open, className: className }) {
+function DisclosureChevron({ open: open, className: className }) {
   const eB = {
     cSJDm: "is-open",
     eSmTj: function (eD, eE) {
@@ -414,7 +414,7 @@ function nae({ open: open, className: className }) {
     }),
   });
 }
-function o_e() {
+function NoticeMark() {
   return (0, wn.jsxs)("svg", {
     className: "sys-notice__icon",
     width: "18",
@@ -444,7 +444,7 @@ function o_e() {
     ],
   });
 }
-var vie = ({
+var SystemNotice = ({
   tone: tone,
   title: title,
   body: body,
@@ -491,7 +491,7 @@ var vie = ({
       ).trim(),
       role: role,
       children: [
-        (0, wn.jsx)(o_e, {}),
+        (0, wn.jsx)(NoticeMark, {}),
         (0, wn.jsxs)("div", {
           className: "sys-notice__body",
           children: [
@@ -762,7 +762,7 @@ function i_e(ez) {
 function a_e(ez) {
   return i_e(ez.pointerType);
 }
-function jie({
+function useHoverCard({
   content: content,
   anchorRef: anchorRef,
   regionRef: regionRef,
@@ -1172,7 +1172,7 @@ function jie({
 function s_e(ez, eA, eB) {
   const eD = (0, pn.useRef)(null);
   const eE = (0, pn.useId)();
-  const { card: card } = jie({
+  const { card: card } = useHoverCard({
     content: ez,
     anchorRef: eD,
     placement: eA,
@@ -1496,7 +1496,7 @@ var ls = Object.fromEntries(
   }).map(([ez, eA]) => [ez, u_e(eA)]),
 );
 // memo: a pure function of `glyph`; dozens of these re-rendered with every tick.
-var zae = (0, pn.memo)(({ glyph: glyph }) =>
+var LauncherIcon = (0, pn.memo)(({ glyph: glyph }) =>
   (0, wn.jsxs)("svg", {
     className: "launcher-icon",
     width: 16,
@@ -1540,17 +1540,17 @@ var zae = (0, pn.memo)(({ glyph: glyph }) =>
     ],
   }),
 );
-function fse({ className: className, ...eA }) {
+function CloseButton({ className: className, ...eA }) {
   return (0, wn.jsx)("button", {
     ...eA,
     type: "button",
     className: className ? "close-button " + className : "close-button",
-    children: (0, wn.jsx)(zae, {
+    children: (0, wn.jsx)(LauncherIcon, {
       glyph: "close",
     }),
   });
 }
-var zie = {
+var ESC_PRIORITY = {
   REPLAY: 0,
   SIDE_PANEL: 10,
   ARMED_SPELL: 15,
@@ -1565,7 +1565,7 @@ var d_e = [];
 var p_e = false;
 var h_e = new WeakSet();
 var g_e = new WeakSet();
-function Aae(ez) {
+function handleOverlayClose(ez) {
   if (g_e.has(ez)) {
     return true;
   }
@@ -1627,8 +1627,8 @@ function jae(ez, eA, eB) {
     };
     d_e.push(eG);
     if (!p_e) {
-      document.addEventListener("keydown", Aae);
-      window.addEventListener("keydown", Aae);
+      document.addEventListener("keydown", handleOverlayClose);
+      window.addEventListener("keydown", handleOverlayClose);
       p_e = true;
     }
     return () => {
@@ -1637,8 +1637,8 @@ function jae(ez, eA, eB) {
         d_e.splice(eH, 1);
       }
       if (!(d_e.length > 0) && !!p_e) {
-        document.removeEventListener("keydown", Aae);
-        window.removeEventListener("keydown", Aae);
+        document.removeEventListener("keydown", handleOverlayClose);
+        window.removeEventListener("keydown", handleOverlayClose);
         p_e = false;
       }
     };
@@ -1662,7 +1662,7 @@ function Die(ez) {
     return () => documentElement2.removeAttribute(m_e);
   }, [ez]);
 }
-var Dae = {
+var sheet = {
   overlay: {
     "data-msheet": "overlay",
   },
@@ -1688,7 +1688,7 @@ var Dae = {
     "data-msheet": "foot",
   },
 };
-function f_e({
+function PracticeRetryBar({
   controls: controls,
   className: eA = "",
   style: style,
@@ -1795,7 +1795,7 @@ function f_e({
     });
   }
 }
-function dae({
+function OutcomePracticeActions({
   controls: controls,
   encounterSession: encounterSession,
   onRestart: onRestart,
@@ -1971,7 +1971,7 @@ function Xse(ez, eA) {
   return (
     Jae(ez.equipment, eA.equipment) &&
     Cie(ez.inventory, eA.inventory) &&
-    ed(ez.supplies, eA.supplies)
+    areCombatSuppliesEqual(ez.supplies, eA.supplies)
   );
 }
 var b_e = [
@@ -2015,7 +2015,7 @@ var y_e = () =>
       ),
     ),
   });
-var gie = ({
+var InfoHint = ({
   label: label,
   text: text,
   hoverRegionRef: hoverRegionRef,
@@ -2086,7 +2086,7 @@ var gie = ({
     open: open,
     card: card,
     close: close,
-  } = jie({
+  } = useHoverCard({
     content: eV,
     anchorRef: eC ? eR : eQ,
     regionRef: hoverRegionRef,
@@ -2174,7 +2174,7 @@ var gie = ({
     });
   }
 };
-var sie = ({
+var OsrsNumberInput = ({
   value: value,
   min: eA,
   max: eB,
@@ -3774,7 +3774,7 @@ var Mie = [
 var W_e = "pack-browntown";
 var j_e = W_e;
 var U_e = "/assets/ui/packs/" + W_e;
-var V_e = "/assets/ui/packs/pack-vanilla";
+var SPRITE_BASE = "/assets/ui/packs/pack-vanilla";
 function Uoe(ez) {
   return Mie.some((eA) => eA.id === ez);
 }
@@ -3793,7 +3793,7 @@ function rae(ez) {
   if ("pack-vanilla" === j_e || v_e[j_e]?.has(ez)) {
     return U_e + "/" + ez;
   } else {
-    return V_e + "/" + ez;
+    return SPRITE_BASE + "/" + ez;
   }
 }
 var Y_e = {
@@ -3818,7 +3818,7 @@ var Y_e = {
   "popout_stone_selected.png": "raised",
   "tab_stone_selected.png": "selected",
 };
-function X_e(ez) {
+function mobileSprite(ez) {
   const eB = "mobile/" + ez;
   const eC = Y_e[ez];
   const eD = v_e[j_e];
@@ -3833,7 +3833,7 @@ function X_e(ez) {
       return (
         eE + "?" + x_e + "=" + encodeURIComponent(eG) + "&" + M_e + "=" + eH
       );
-    })(V_e + "/" + eB, j_e, eC);
+    })(SPRITE_BASE + "/" + eB, j_e, eC);
   } else {
     return rae(eB);
   }
@@ -3929,7 +3929,7 @@ var K_e = {
     return rae("dialog/bottom_line_mode_side_panel_edge_right.png");
   },
 };
-var Sae = {
+var PRAYER = {
   get activatedBackground() {
     return rae("prayer/activated_background.png");
   },
@@ -3984,7 +3984,7 @@ var J_e = {
     return rae("other/reset_killcount_button.png");
   },
 };
-var exe = {
+var STATS = {
   get tileLeft() {
     return rae("stats/new_tile_left.png");
   },
@@ -4085,7 +4085,7 @@ var oxe = {
     return rae("equipment-slots/weight.png");
   },
 };
-var rxe = {
+var COMBAT_BUTTONS = {
   get narrow() {
     return rae("buttons/combat_style_narrow.png");
   },
@@ -4302,7 +4302,7 @@ var dxe = {
     return rae("chatbox/chatbox_report_button_hovered.png");
   },
 };
-var pxe = {
+var OPTIONS = {
   get checkboxEmpty() {
     return rae("options/checkbox_empty.png");
   },
@@ -4316,7 +4316,7 @@ var pxe = {
     return rae("options/square_check_box_checked.png");
   },
 };
-var zc = {
+var WINDOW = {
   get closeButton() {
     return rae("other/window_close_button.png");
   },
@@ -4324,7 +4324,7 @@ var zc = {
     return rae("other/window_close_button_hovered.png");
   },
 };
-var qse = {
+var MINIMAP = {
   get frame() {
     return rae("panel/minimap_and_compass_frame.png");
   },
@@ -4434,99 +4434,99 @@ var qse = {
     return rae("other/minimap_orb_world_map_planet_hovered.png");
   },
 };
-var Aie = {
+var MOBILE = {
   get tabStone() {
-    return X_e("tab_stone.png");
+    return mobileSprite("tab_stone.png");
   },
   get tabStoneSelected() {
-    return X_e("tab_stone_selected.png");
+    return mobileSprite("tab_stone_selected.png");
   },
   get showLess() {
-    return X_e("show_less.png");
+    return mobileSprite("show_less.png");
   },
   get showMore() {
-    return X_e("show_more.png");
+    return mobileSprite("show_more.png");
   },
   get mapCompassFrame() {
-    return X_e("map_compass_frame.png");
+    return mobileSprite("map_compass_frame.png");
   },
   get orbFrame() {
-    return X_e("orb_frame.png");
+    return mobileSprite("orb_frame.png");
   },
   get orbFrameHovered() {
-    return X_e("orb_frame_hovered.png");
+    return mobileSprite("orb_frame_hovered.png");
   },
   get popoutStone() {
-    return X_e("popout_stone.png");
+    return mobileSprite("popout_stone.png");
   },
   get popoutExpand() {
-    return X_e("popout_expand.png");
+    return mobileSprite("popout_expand.png");
   },
   get popoutStoneSelected() {
-    return X_e("popout_stone_selected.png");
+    return mobileSprite("popout_stone_selected.png");
   },
   get popoutClose() {
-    return X_e("popout_close.png");
+    return mobileSprite("popout_close.png");
   },
   get fullscreenEnter() {
-    return X_e("fullscreen_enter.png");
+    return mobileSprite("fullscreen_enter.png");
   },
   get fullscreenExit() {
-    return X_e("fullscreen_exit.png");
+    return mobileSprite("fullscreen_exit.png");
   },
   get restart() {
-    return X_e("restart.png");
+    return mobileSprite("restart.png");
   },
   get hotkeyStoneSpecial() {
-    return X_e("hotkey_stone_special.png");
+    return mobileSprite("hotkey_stone_special.png");
   },
   get hotkeyStoneSpecialOn() {
-    return X_e("hotkey_stone_special_on.png");
+    return mobileSprite("hotkey_stone_special_on.png");
   },
   get hotkeyStoneDisabled() {
-    return X_e("hotkey_stone_disabled.png");
+    return mobileSprite("hotkey_stone_disabled.png");
   },
   get hotkeysAccordion() {
-    return X_e("hotkeys_accordion.png");
+    return mobileSprite("hotkeys_accordion.png");
   },
   get hotkeysAccordionBody() {
-    return X_e("hotkeys_accordion_body.png");
+    return mobileSprite("hotkeys_accordion_body.png");
   },
   get hotkeysAccordionLip() {
-    return X_e("hotkeys_accordion_lip.png");
+    return mobileSprite("hotkeys_accordion_lip.png");
   },
   get hotkeysHide() {
-    return X_e("hotkeys_hide.png");
+    return mobileSprite("hotkeys_hide.png");
   },
   get hotkeysShow() {
-    return X_e("hotkeys_show.png");
+    return mobileSprite("hotkeys_show.png");
   },
   get railTopLeft() {
-    return X_e("rail_top_left.png");
+    return mobileSprite("rail_top_left.png");
   },
   get railTop() {
-    return X_e("rail_top.png");
+    return mobileSprite("rail_top.png");
   },
   get railTopRight() {
-    return X_e("rail_top_right.png");
+    return mobileSprite("rail_top_right.png");
   },
   get railLeft() {
-    return X_e("rail_left.png");
+    return mobileSprite("rail_left.png");
   },
   get railMiddle() {
-    return X_e("rail_middle.png");
+    return mobileSprite("rail_middle.png");
   },
   get railRight() {
-    return X_e("rail_right.png");
+    return mobileSprite("rail_right.png");
   },
   get railBottomLeft() {
-    return X_e("rail_bottom_left.png");
+    return mobileSprite("rail_bottom_left.png");
   },
   get railBottom() {
-    return X_e("rail_bottom.png");
+    return mobileSprite("rail_bottom.png");
   },
   get railBottomRight() {
-    return X_e("rail_bottom_right.png");
+    return mobileSprite("rail_bottom_right.png");
   },
 };
 function bae() {
@@ -4534,11 +4534,11 @@ function bae() {
   for (const eA of [
     G_e,
     K_e,
-    Sae,
-    exe,
+    PRAYER,
+    STATS,
     nxe,
     oxe,
-    rxe,
+    COMBAT_BUTTONS,
     ixe,
     axe,
     lxe,
@@ -4546,13 +4546,13 @@ function bae() {
     cxe,
     uxe,
     dxe,
-    pxe,
+    OPTIONS,
     Q_e,
     Z_e,
     J_e,
-    zc,
-    qse,
-    Aie,
+    WINDOW,
+    MINIMAP,
+    MOBILE,
   ]) {
     for (const eB of Object.values(eA)) {
       if (typeof eB == "string") {
@@ -4561,7 +4561,7 @@ function bae() {
     }
   }
   for (const eC of txe) {
-    ez.push(exe.skillIcon(eC));
+    ez.push(STATS.skillIcon(eC));
   }
   return ez;
 }
@@ -4799,7 +4799,7 @@ var yxe = (0, pn.createContext)(undefined);
 var vxe = (0, pn.createContext)(undefined);
 var wxe = (0, pn.createContext)(false);
 var kxe = (0, pn.createContext)(undefined);
-var Gse = {
+var TOOLTIP_COLORS = {
   action: "#ffffff",
   item: "#f5c080",
   npc: "#f5ec78",
@@ -4810,7 +4810,7 @@ var Gse = {
 };
 var xxe = (0, pn.createContext)(null);
 var hoe = xxe.Provider;
-function Mxe() {
+function usePanelContentScale() {
   const eA = (0, pn.useContext)(xxe);
   const eB = (0, pn.useContext)(vxe);
   const eC = eA ?? eB;
@@ -5320,7 +5320,7 @@ var jxe = ({ onClick: onClick, hint: hint, className: eB = "" }) =>
     onClick: onClick,
     children: "Undo",
   });
-var ioe = ({ control: control, variant: variant }) =>
+var ResetToDefaultsControl = ({ control: control, variant: variant }) =>
   control.state === "hidden"
     ? null
     : (0, wn.jsx)("div", {
@@ -5360,7 +5360,7 @@ var ioe = ({ control: control, variant: variant }) =>
                 ],
               }),
       });
-var Aoe = ({
+var OsrsCheckbox = ({
   checked: checked,
   onChange: onChange,
   label: label,
@@ -5394,14 +5394,14 @@ var Uxe = {
   minY: 15,
   maxY: 48,
 };
-var Vxe = {
+var INFERNO_ARENA_MAP_IMAGE = {
   url: "/assets/encounters/inferno-arena-map.webp",
   bounds: Uxe,
   pixelsPerTile: 8,
   width: (Uxe.maxX - Uxe.minX + 1) * 8,
   height: (Uxe.maxY - Uxe.minY + 1) * 8,
 };
-var Yxe = [
+var SLOT_NAMES = [
   "North-west",
   "West",
   "South-west",
@@ -5412,11 +5412,11 @@ var Yxe = [
   "East",
   "North-east",
 ];
-var Xxe = Vxe.bounds;
+var Xxe = INFERNO_ARENA_MAP_IMAGE.bounds;
 var Gxe = Xxe.maxX - Xxe.minX + 1;
 var Kxe = Xxe.maxY - Xxe.minY + 1;
-var Qxe = dt.maxX - dt.minX + 1;
-var Zxe = dt.maxY - dt.minY + 1;
+var Qxe = infernoArenaBounds.maxX - infernoArenaBounds.minX + 1;
+var Zxe = infernoArenaBounds.maxY - infernoArenaBounds.minY + 1;
 var Jxe = [
   ...Array.from(
     {
@@ -5432,10 +5432,10 @@ var Jxe = [
   ),
 ].join("");
 function eMe(ez) {
-  const eB = aT[ez].one;
+  const eB = infernoMonsterDisplayNames[ez].one;
   return eB.charAt(0).toUpperCase() + eB.slice(1);
 }
-function tMe({
+function SpawnLayoutMap({
   wave: wave,
   kinds: kinds,
   slots: slots,
@@ -5695,7 +5695,7 @@ function tMe({
     onSlotsChange(f8);
     eO(null);
   };
-  const f4 = 1 === wave ? cu : 69 === wave ? bV : playerTile;
+  const f4 = 1 === wave ? infernoPlayerStart : 69 === wave ? zukPlayerStart : playerTile;
   return (0, wn.jsxs)(wn.Fragment, {
     children: [
       (0, wn.jsx)("fieldset", {
@@ -5868,7 +5868,7 @@ function tMe({
               if (fd?.dataset.spawnSlot === undefined) {
                 if (fd?.dataset.pillar) {
                   onPillarChange(fd.dataset.pillar);
-                } else if (fa && dm(wave)) {
+                } else if (fa && canChooseInfernoStartTile(wave)) {
                   onStartChange([
                     Xxe.minX +
                       Math.floor(
@@ -5934,9 +5934,9 @@ function tMe({
               children: [
                 (0, wn.jsx)("img", {
                   className: "spawn-map__terrain",
-                  src: Vxe.url,
-                  width: Vxe.width,
-                  height: Vxe.height,
+                  src: INFERNO_ARENA_MAP_IMAGE.url,
+                  width: INFERNO_ARENA_MAP_IMAGE.width,
+                  height: INFERNO_ARENA_MAP_IMAGE.height,
                   crossOrigin: "anonymous",
                   alt: "",
                   "aria-hidden": "true",
@@ -5948,7 +5948,7 @@ function tMe({
                 }),
                 (0, wn.jsx)("svg", {
                   className: "spawn-map__grid",
-                  style: eX([dt.minX, dt.minY], Qxe, Zxe),
+                  style: eX([infernoArenaBounds.minX, infernoArenaBounds.minY], Qxe, Zxe),
                   viewBox: "0 0 " + Qxe + " " + Zxe,
                   preserveAspectRatio: "none",
                   shapeRendering: "crispEdges",
@@ -5959,10 +5959,10 @@ function tMe({
                   }),
                 }),
                 kinds.length > 0 &&
-                  d1.map((f7, f8) => {
+                  infernoSpawnTiles.map((f7, f8) => {
                     const f9 = slots[f8];
                     const fa = f9
-                      ? b4(
+                      ? getInfernoActorTemplate(
                           "mager" === f9 || f9 === "ranger"
                             ? {
                                 kind: f9,
@@ -5993,7 +5993,7 @@ function tMe({
                             height: fa * eV.tileSize,
                           },
                           "aria-label":
-                            Yxe[f8] + ": " + (f9 ? eMe(f9) : "empty spawn"),
+                            SLOT_NAMES[f8] + ": " + (f9 ? eMe(f9) : "empty spawn"),
                           "aria-expanded": eN?.index === f8,
                           onMouseDown: (fb) => fb.preventDefault(),
                           children:
@@ -6004,11 +6004,11 @@ function tMe({
                             }),
                         }),
                       },
-                      Yxe[f8],
+                      SLOT_NAMES[f8],
                     );
                   }),
                 wave <= 66 &&
-                  bN.map((f7) => {
+                  infernoPillars.map((f7) => {
                     const f8 = destroyedPillars[f7.key];
                     return (0, wn.jsx)(
                       "button",
@@ -6043,11 +6043,11 @@ function tMe({
                     f4[0] +
                     ", " +
                     f4[1] +
-                    (dm(wave) ? ". Tap floor to move." : " (fixed)"),
+                    (canChooseInfernoStartTile(wave) ? ". Tap floor to move." : " (fixed)"),
                   children: (0, wn.jsx)("span", {
                     className:
                       "spawn-map__player-label" +
-                      (f4[1] >= dt.maxY - 1 ? " is-below" : ""),
+                      (f4[1] >= infernoArenaBounds.maxY - 1 ? " is-below" : ""),
                     children: "You",
                   }),
                 }),
@@ -6064,11 +6064,11 @@ function tMe({
                   top: eN.top,
                 },
                 role: "dialog",
-                "aria-label": "Monster at " + Yxe[eN.index],
+                "aria-label": "Monster at " + SLOT_NAMES[eN.index],
                 children: [
                   (0, wn.jsxs)("p", {
                     className: "spawn-picker__heading",
-                    children: [Yxe[eN.index], " spot"],
+                    children: [SLOT_NAMES[eN.index], " spot"],
                   }),
                   f0.map((f7) =>
                     (0, wn.jsxs)(
@@ -6097,7 +6097,7 @@ function tMe({
                         tabIndex: -1,
                         className: "spawn-picker__choice spawn-kind--" + kind,
                         "aria-label":
-                          "Swap with " + Yxe[index] + " " + eMe(kind),
+                          "Swap with " + SLOT_NAMES[index] + " " + eMe(kind),
                         onMouseDown: (f9) => f9.preventDefault(),
                         onClick: () => {
                           const f9 = [...slots];
@@ -6115,7 +6115,7 @@ function tMe({
                               "Swap ",
                               eMe(kind),
                               (0, wn.jsx)("small", {
-                                children: Yxe[index],
+                                children: SLOT_NAMES[index],
                               }),
                             ],
                           }),
@@ -6172,8 +6172,8 @@ function iMe(ez) {
   eb.add(ez);
   return () => eb.delete(ez);
 }
-var aMe = d1.map(() => null);
-function sMe({
+var aMe = infernoSpawnTiles.map(() => null);
+function InfernoSpawnSetup({
   config: config,
   onChange: onChange,
   surface: surface,
@@ -6257,7 +6257,7 @@ function sMe({
     destroyedPillars: destroyedPillars,
     spawnLayout: spawnLayout,
     startTile: startTile,
-  } = b0(config);
+  } = getInfernoSetup(config);
   const eN = 69 !== startWave;
   const [eO, eQ] = (0, pn.useState)(false);
   const eR = (0, pn.useId)();
@@ -6276,23 +6276,23 @@ function sMe({
     const fc = window.setTimeout(() => eW("idle"), 2000);
     return () => window.clearTimeout(fc);
   }, [eV]);
-  const eX = ao(startWave);
+  const eX = getInfernoWaveSlotNpcs(startWave);
   const eY = spawnLayout?.wave === startWave ? spawnLayout : null;
   const eZ = eX.length ? (eY?.slots ?? aMe) : aMe;
   const length4 = eZ.filter(Boolean).length;
   const f2 = length4 > 0 && length4 < eX.length;
   const f3 = (fc) => {
-    const fd = bu(startWave, fc);
-    const fe = fd.ok ? dh(fd.layout) : eY ? "" : config[aG];
+    const fd = validateInfernoSpawnLayout(startWave, fc);
+    const fe = fd.ok ? formatInfernoSpawnLayout(fd.layout) : eY ? "" : config[infernoSpawnLayoutKey];
     if (!("tool" !== surface) || fe !== config.infernoSpawnLayout) {
       onChange({
         ...config,
-        [aG]: fe,
+        [infernoSpawnLayoutKey]: fe,
       });
     }
   };
   const f4 =
-    dm(startWave) && (startTile[0] !== bL[0] || startTile[1] !== bL[1]);
+    canChooseInfernoStartTile(startWave) && (startTile[0] !== infernoDefaultStartTile[0] || startTile[1] !== infernoDefaultStartTile[1]);
   const f5 =
     0 === eX.length
       ? startWave < 67
@@ -6352,7 +6352,7 @@ function sMe({
         },
       };
       (async () => {
-        const fd = fc.docOI(b0, config);
+        const fd = fc.docOI(getInfernoSetup, config);
         try {
           const fe = bl(
             window.location.origin,
@@ -6387,7 +6387,7 @@ function sMe({
         (0, wn.jsxs)("div", {
           className: "inferno-copy__option",
           children: [
-            (0, wn.jsx)(Aoe, {
+            (0, wn.jsx)(OsrsCheckbox, {
               label: "Include gear",
               checked: eS,
               onChange: eT,
@@ -6405,7 +6405,7 @@ function sMe({
     className: "inferno-arena",
     id: eR,
     children: (0, wn.jsx)(
-      tMe,
+      SpawnLayoutMap,
       {
         wave: startWave,
         kinds: eX,
@@ -6415,21 +6415,21 @@ function sMe({
         onSlotsChange: f3,
         onStartChange: (fc) => {
           if (
-            cw(fc, {
+            validateInfernoStartTile(fc, {
               startWave: startWave,
               destroyedPillars: destroyedPillars,
             }).ok
           ) {
             onChange({
               ...config,
-              [aP]: cX(fc),
+              [infernoStartTileKey]: formatTileString(fc),
             });
           }
         },
         onPillarChange: (fc) =>
           onChange({
             ...config,
-            [aB[fc]]: !destroyedPillars[fc],
+            [infernoPillarDestroyedKeys[fc]]: !destroyedPillars[fc],
           }),
         caption: (0, wn.jsx)("p", {
           className: "inferno-arena__caption",
@@ -6450,7 +6450,7 @@ function sMe({
                         startWave <= 66
                           ? "Tap a pillar to knock it down. "
                           : "",
-                        dm(startWave)
+                        canChooseInfernoStartTile(startWave)
                           ? "Tap floor to move You."
                           : "Your start is fixed.",
                       ],
@@ -6482,7 +6482,7 @@ function sMe({
               onClick: () =>
                 onChange({
                   ...config,
-                  [aP]: "",
+                  [infernoStartTileKey]: "",
                 }),
               children: "Reset start",
             }),
@@ -6512,7 +6512,7 @@ function sMe({
                       (0, wn.jsxs)("span", {
                         className: "inferno-arena-summary__label",
                         children: [
-                          (0, wn.jsx)(nae, {
+                          (0, wn.jsx)(DisclosureChevron, {
                             open: eN && eO,
                           }),
                           "Edit layout",
@@ -6582,7 +6582,7 @@ function sMe({
           }),
   });
 }
-var lMe = () => {
+var InfernoLinkNotice = () => {
   const eA = (0, pn.useSyncExternalStore)(iMe, rMe, rMe);
   if (eA) {
     return (0, wn.jsxs)("div", {
@@ -6605,7 +6605,7 @@ var lMe = () => {
               }),
           ],
         }),
-        (0, wn.jsx)(fse, {
+        (0, wn.jsx)(CloseButton, {
           "aria-label": "Dismiss",
           tabIndex: -1,
           className: "inferno-link-notice__close",
@@ -6618,18 +6618,18 @@ var lMe = () => {
     return null;
   }
 };
-var cMe = [a7, aB.west, aB.south, aB.northEast];
-var uMe = {
+var cMe = [infernoStartWaveKey, infernoPillarDestroyedKeys.west, infernoPillarDestroyedKeys.south, infernoPillarDestroyedKeys.northEast];
+var START_WAVE_INFO = {
   rail: "The wave the run starts on. Clearing a wave carries straight into the next one, through TzKal-Zuk on wave 69.",
   practice:
     "The saved start wave. Typing or stepping saves it; Go or Enter starts a fresh run with this setup. Wave shortcuts save and start immediately.",
   tool: "The wave this layout is for. Changing it saves the start wave. Start wave applies your setup; unplaced monsters spawn at random.",
 };
-var dMe = {
+var SHORTCUTS_SETTINGS = {
   rail: "inferno-rail-shortcuts-expanded",
   practice: "inferno-practice-shortcuts-expanded",
 };
-var pMe = ({
+var InfernoSetup = ({
   config: config,
   onChange: onChange,
   surface: surface,
@@ -6637,20 +6637,20 @@ var pMe = ({
   exportGear: exportGear,
   actionFooter: actionFooter,
 }) => {
-  const eH = b0(config);
+  const eH = getInfernoSetup(config);
   const { startWave: startWave } = eH;
   const eK = (0, pn.useId)();
   const eM = (0, pn.useRef)(null);
   const eN = (0, pn.useId)();
-  const eO = dMe["practice" === surface ? "practice" : "rail"];
+  const eO = SHORTCUTS_SETTINGS["practice" === surface ? "practice" : "rail"];
   const [eQ, eR] = (0, pn.useState)(() => cE(eO) === true);
   const eS = (eX) =>
     onChange({
       ...config,
-      [a7]: String(C(eX)),
+      [infernoStartWaveKey]: String(clampInfernoWave(eX)),
     });
   const eT = (eX) => {
-    const eY = C(eX);
+    const eY = clampInfernoWave(eX);
     eS(eY);
     eC?.execute({
       encounter: "inferno",
@@ -6686,7 +6686,7 @@ var pMe = ({
   return (0, wn.jsxs)("div", {
     className: "inferno-setup inferno-setup--" + surface,
     children: [
-      (0, wn.jsx)(lMe, {}),
+      (0, wn.jsx)(InfernoLinkNotice, {}),
       (0, wn.jsxs)("div", {
         className: "inferno-setup__head",
         children: [
@@ -6698,9 +6698,9 @@ var pMe = ({
                 htmlFor: eK,
                 children: "Start wave",
               }),
-              (0, wn.jsx)(gie, {
+              (0, wn.jsx)(InfoHint, {
                 label: "Start wave",
-                text: uMe[surface],
+                text: START_WAVE_INFO[surface],
                 hoverRegionRef: eM,
               }),
             ],
@@ -6708,7 +6708,7 @@ var pMe = ({
           (0, wn.jsxs)("div", {
             className: "inferno-setup__command",
             children: [
-              (0, wn.jsx)(sie, {
+              (0, wn.jsx)(OsrsNumberInput, {
                 id: eK,
                 className: "inferno-setup__input",
                 value: String(startWave),
@@ -6770,7 +6770,7 @@ var pMe = ({
                 aH(eO, eX);
               },
               children: [
-                (0, wn.jsx)(nae, {
+                (0, wn.jsx)(DisclosureChevron, {
                   open: eQ,
                 }),
                 "Wave shortcuts",
@@ -6820,7 +6820,7 @@ var pMe = ({
           ],
         }),
       "rail" === surface &&
-        (0, wn.jsx)(sMe, {
+        (0, wn.jsx)(InfernoSpawnSetup, {
           config: config,
           onChange: onChange,
           surface: "rail",
@@ -6843,14 +6843,14 @@ var pMe = ({
 };
 function hMe(ez) {
   return (0, wn.jsx)(
-    gMe,
+    InfernoLayoutDraft,
     {
       ...ez,
     },
     JSON.stringify(ez.run?.currentSetup),
   );
 }
-function gMe({
+function InfernoLayoutDraft({
   config: config,
   onChange: onChange,
   run: eB,
@@ -6862,11 +6862,11 @@ function gMe({
     ...config,
     ...eG,
   };
-  const { startWave: startWave } = b0(eI);
+  const { startWave: startWave } = getInfernoSetup(eI);
   const eM = (eN) => {
     eH(
       Object.fromEntries(
-        [a7, aG, aP, ...Object.values(aB)].map((eO) => [eO, eN[eO]]),
+        [infernoStartWaveKey, infernoSpawnLayoutKey, infernoStartTileKey, ...Object.values(infernoPillarDestroyedKeys)].map((eO) => [eO, eN[eO]]),
       ),
     );
     onChange(eN);
@@ -6874,12 +6874,12 @@ function gMe({
   return (0, wn.jsxs)("div", {
     className: "inferno-layout-tool",
     children: [
-      (0, wn.jsx)(pMe, {
+      (0, wn.jsx)(InfernoSetup, {
         config: eI,
         onChange: eM,
         surface: "tool",
       }),
-      (0, wn.jsx)(sMe, {
+      (0, wn.jsx)(InfernoSpawnSetup, {
         config: eI,
         onChange: eM,
         surface: "tool",
@@ -6900,7 +6900,7 @@ function gMe({
   });
 }
 function mMe(ez) {
-  if (c4(ez)) {
+  if (isInfernoSnapshot(ez)) {
     return ez.state.wave;
   } else {
     return null;
@@ -6911,7 +6911,7 @@ var fMe = bA.reduce(
   new Map(),
 );
 var bMe = {
-  [dk]: {
+  [infernoEncounterKind]: {
     label: "Edit layout",
     icon: "layout",
     disabledReason: (ez) =>
@@ -6922,13 +6922,13 @@ var bMe = {
       }),
   },
 };
-var _Me = {
-  [dk]: {
+var SETUP_CONTROLS = {
+  [infernoEncounterKind]: {
     keys: cMe,
     railSection: "Wave & arena",
     practiceSection: "Start wave",
     summary: function (ez) {
-      const { startWave: startWave, spawnLayout: spawnLayout } = b0(ez);
+      const { startWave: startWave, spawnLayout: spawnLayout } = getInfernoSetup(ez);
       if (startWave === 69) {
         return "Wave 69 · TzKal-Zuk";
       } else if (spawnLayout?.wave === startWave) {
@@ -6939,7 +6939,7 @@ var _Me = {
     },
     hasFooterActions: true,
     render: (ez) =>
-      (0, wn.jsx)(pMe, {
+      (0, wn.jsx)(InfernoSetup, {
         ...ez,
       }),
     optionsSummary: ({ run: ez }) =>
@@ -6950,7 +6950,7 @@ function Moe(ez) {
   if (undefined === ez) {
     return undefined;
   } else {
-    return _Me[ev(ez)];
+    return SETUP_CONTROLS[resolveBaseEncounterKind(ez)];
   }
 }
 function yMe(ez) {
@@ -6963,12 +6963,12 @@ function yMe(ez) {
 function vMe(ez) {
   if (ez) {
     return (function (eB) {
-      if (c4(eB)) {
+      if (isInfernoSnapshot(eB)) {
         return aw({
           startWave: eB.state.startWave,
           destroyedPillars: eB.state.startDestroyedPillars,
-          spawnLayout: at(eB.state.startSpawnLayout),
-          startTile: dA(eB.state.startPlayerTile) ?? bL,
+          spawnLayout: parseInfernoSpawnLayout(eB.state.startSpawnLayout),
+          startTile: parseTileString(eB.state.startPlayerTile) ?? infernoDefaultStartTile,
         });
       } else {
         return "";
@@ -6981,10 +6981,10 @@ function vMe(ez) {
 function wMe(ez) {
   if (ez) {
     return (function (eB) {
-      if (!c4(eB)) {
+      if (!isInfernoSnapshot(eB)) {
         return;
       }
-      const eC = at(eB.state.waveSpawnLayout);
+      const eC = parseInfernoSpawnLayout(eB.state.waveSpawnLayout);
       const waveStartPlayerTile2 = eB.state.waveStartPlayerTile;
       if ((eC && eC.wave !== eB.state.wave) || (!eC && !waveStartPlayerTile2)) {
         return undefined;
@@ -7003,15 +7003,15 @@ function wMe(ez) {
     return undefined;
   }
 }
-function kMe(ez, eA) {
+function infernoSession(ez, eA) {
   if (ez) {
     return (function (eC, eD) {
       const eE = mMe(eC);
-      if (null === eE || !c4(eC)) {
+      if (null === eE || !isInfernoSnapshot(eC)) {
         return null;
       }
-      const eG = e7(eC);
-      const eH = at(eC.state.startSpawnLayout)?.wave === eE;
+      const eG = getInfernoSpawnCommandType(eC);
+      const eH = parseInfernoSpawnLayout(eC.state.startSpawnLayout)?.wave === eE;
       const eI = !eH && eG === "reroll-wave";
       return {
         title: eI ? "Wave " + eE + " · spawn layout locked" : "Wave " + eE,
@@ -7086,7 +7086,7 @@ function kMe(ez, eA) {
     return null;
   }
 }
-function xMe(ez) {
+function infernoWaveInfobox(ez) {
   if (ez) {
     return (function (eB) {
       const eC = mMe(eB);
@@ -7107,7 +7107,7 @@ function xMe(ez) {
   }
 }
 var MMe = {
-  [dk]: function (ez) {
+  [infernoEncounterKind]: function (ez) {
     const eB = [];
     const eC = new Map();
     let eD = null;
@@ -7118,7 +7118,7 @@ var MMe = {
       const eO = fMe.get(eH.wave);
       const eQ = eO
         ? (function ({ kind: kind, count: count }) {
-            const eT = aT[kind];
+            const eT = infernoMonsterDisplayNames[kind];
             if (1 === count) {
               return "First " + eT.one + " (" + eT.game + ")";
             } else {
@@ -7148,7 +7148,7 @@ var MMe = {
     };
     for (let eH = 0; eH < ez.length; eH++) {
       const encounter2 = ez[eH].state.encounter;
-      if (!encounter2 || !c4(encounter2)) {
+      if (!encounter2 || !isInfernoSnapshot(encounter2)) {
         continue;
       }
       const { wave: wave, phase: phase } = encounter2.state;
@@ -7226,7 +7226,7 @@ var zMe = {
   width: 40,
   height: 40,
 };
-var BMe = [0, 39, 78, 117, 156, 195, 234];
+var OSM_TAB_SLOT_Y = [0, 39, 78, 117, 156, 195, 234];
 var WMe = 3;
 var jMe = 2;
 var UMe = 33;
@@ -7273,7 +7273,7 @@ var cCe = {
   width: 519,
   height: 165,
 };
-var foe = {
+var OSM_TAB_SLOTS = {
   inventory: {
     column: "left",
     slot: 0,
@@ -7569,7 +7569,7 @@ function PCe(ez) {
     "fixed" === ez || "classic" === ez || "modern" === ez || "mobile" === ez
   );
 }
-var bie = {
+var CLIENT_LAYOUT_LABELS = {
   fixed: "Fixed",
   classic: "Resizable - Classic layout",
   modern: "Resizable - Modern layout",
@@ -7607,27 +7607,27 @@ var BCe = {
   width: 249,
   height: 38,
 };
-var WCe = {
+var FIXED_PANEL_CONTENT = {
   x: 547,
   y: 205,
   width: 190,
   height: 261,
 };
-var jCe = {
+var FIXED_CHAT = {
   x: 0,
   y: 338,
   width: 519,
   height: 165,
 };
 var UCe = {
-  x: jCe.x,
-  y: jCe.y + jCe.height - 23,
-  width: jCe.width,
+  x: FIXED_CHAT.x,
+  y: FIXED_CHAT.y + FIXED_CHAT.height - 23,
+  width: FIXED_CHAT.width,
   height: 23,
 };
 var VCe = {
-  ...jCe,
-  height: jCe.height - UCe.height,
+  ...FIXED_CHAT,
+  height: FIXED_CHAT.height - UCe.height,
 };
 var YCe = {
   x: VCe.x + 7,
@@ -7648,7 +7648,7 @@ var GCe = {
 };
 var KCe = YCe.y + YCe.height - 16;
 var QCe = 16;
-var ZCe = [5, 67, 129, 191, 253, 315, 377];
+var FIXED_CHAT_TAB_SLOT_X = [5, 67, 129, 191, 253, 315, 377];
 var JCe = 56;
 var eTe = 22;
 var tTe = 79;
@@ -7732,25 +7732,25 @@ var bTe = {
   ...mTe,
   ...fTe,
 };
-var _Te = {
+var FIXED_EDGE_LEFT_UPPER = {
   x: 516,
   y: 205,
   width: 31,
   height: 133,
 };
 var yTe = {
-  x: jCe.x + jCe.width,
-  y: jCe.y,
+  x: FIXED_CHAT.x + FIXED_CHAT.width,
+  y: FIXED_CHAT.y,
   width: 28,
   height: 128,
 };
 var vTe = {
-  x: _Te.x,
-  y: jCe.y,
+  x: FIXED_EDGE_LEFT_UPPER.x,
+  y: FIXED_CHAT.y,
   width: 3,
-  height: ln.height - jCe.y,
+  height: ln.height - FIXED_CHAT.y,
 };
-var wTe = {
+var CLASSIC_COLUMN = {
   width: 241,
   height: 335,
 };
@@ -7868,7 +7868,7 @@ var ATe = {
 };
 var ITe = {
   spriteSet: "classic",
-  size: wTe,
+  size: CLASSIC_COLUMN,
   background: {
     x: 21,
     y: 27,
@@ -7930,20 +7930,20 @@ function ETe(ez) {
 var OTe = {
   spriteSet: "fixed",
   size: fTe,
-  background: ETe(WCe),
+  background: ETe(FIXED_PANEL_CONTENT),
   backgroundTiled: false,
   backgroundOffsetY: 0,
   edges: [
     {
       sprite: "fixedLeftUpper",
-      rect: ETe(_Te),
+      rect: ETe(FIXED_EDGE_LEFT_UPPER),
     },
     {
       sprite: "fixedLeftUpper",
       rect: ETe(vTe),
       sourceSize: {
-        width: _Te.width,
-        height: _Te.height,
+        width: FIXED_EDGE_LEFT_UPPER.width,
+        height: FIXED_EDGE_LEFT_UPPER.height,
       },
     },
     {
@@ -7976,8 +7976,8 @@ var OTe = {
     stoneY: 0,
   },
   panelShell: {
-    x: $Te(WCe).x - mTe.x,
-    y: $Te(WCe).y - mTe.y,
+    x: $Te(FIXED_PANEL_CONTENT).x - mTe.x,
+    y: $Te(FIXED_PANEL_CONTENT).y - mTe.y,
   },
 };
 function LTe(ez, eA, eB) {
@@ -7993,10 +7993,10 @@ function LTe(ez, eA, eB) {
     height: eE.height * eD,
   };
 }
-var Bae = "tutorial:close-pane";
-var Yie = "tutorial:hud-opened";
-var Kie = "tutorial:quick-search-opened";
-var Qie = "tutorial:replay-entered";
+var TUTORIAL_CLOSE_PANE_EVENT = "tutorial:close-pane";
+var TUTORIAL_HUD_OPENED_EVENT = "tutorial:hud-opened";
+var TUTORIAL_QUICK_SEARCH_OPENED_EVENT = "tutorial:quick-search-opened";
+var TUTORIAL_REPLAY_ENTERED_EVENT = "tutorial:replay-entered";
 var DTe = false;
 function Kae() {
   if ("hidden" === document.visibilityState) {
@@ -8046,11 +8046,11 @@ function Iae(ez) {
   const eB = (0, pn.useSyncExternalStore)(gse, Kae, FTe);
   return eB === "hidden" || (ez && "unfocused" === eB);
 }
-var HTe = new Set([28947, 28949, 28951, 28953, 28955, 28957, 28902, 28906]);
+var DIZANAS_QUIVER_IDS = new Set([28947, 28949, 28951, 28953, 28955, 28957, 28902, 28906]);
 function Bie(ez) {
-  return ez !== undefined && HTe.has(ez);
+  return ez !== undefined && DIZANAS_QUIVER_IDS.has(ez);
 }
-function qTe(ez) {
+function buildUrl(ez) {
   return "/assets/items/" + ez + ".png";
 }
 // Item icons are Jagex artwork and are not shipped with the project. The ones
@@ -8073,14 +8073,14 @@ document.addEventListener(
   true,
 );
 function Eae(ez) {
-  return qTe(ez);
+  return buildUrl(ez);
 }
 async function Eie(ez) {
   const eB = [];
   await Promise.all(
     [...new Set(ez.filter((eC) => eC > 0))].map(async (eC) => {
       if (
-        null === (await ba(qTe(eC))) &&
+        null === (await ba(buildUrl(eC))) &&
         null === (await ba(remoteItemIconBase + eC + ".png"))
       ) {
         eB.push(eC);
@@ -8100,7 +8100,7 @@ var zTe = [
   "modifierSamples",
   "overlays",
 ];
-var BTe = {
+var REPLAY_CAPTURE_LIMITS = {
   cursorSamples: 1000000,
   viewportSamples: 200000,
   cursorClicks: 50000,
@@ -8167,7 +8167,7 @@ var UTe = zObject({
   modifierSamples: jTe,
   overlays: jTe,
 }).strict();
-function VTe(ez, eA = {}) {
+function failFastReplayArray(ez, eA = {}) {
   return zCustom(Array.isArray, "Expected array").transform((eC, eD) => {
     if (eA.min !== undefined && eC.length < eA.min) {
       eD.addIssue({
@@ -8215,7 +8215,7 @@ var YTe = zObject({
 var XTe = zObject({
   sourceStartFrame: zNumber().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
   durationMs: zNumber().finite().nonnegative(),
-  openingClicks: VTe(YTe, {
+  openingClicks: failFastReplayArray(YTe, {
     max: dx.cursorClicks,
   }).optional(),
 })
@@ -8227,7 +8227,7 @@ var GTe = zObject({
   tick: zNumber().finite(),
   kind: zEnum(["game", "spam", "public"]),
   speaker: zString().max(64).optional(),
-  segments: VTe(
+  segments: failFastReplayArray(
     zObject({
       text: zString().max(256),
       color: zString().max(32).optional(),
@@ -8267,7 +8267,7 @@ function eNe(ez) {
   }
   const frames2 = ez.frames;
   if (frames2.length > 6000) {
-    throw new b2("validation-work-limit", {
+    throw new ReplaySafetyError("validation-work-limit", {
       actual: frames2.length,
       limit: al,
     });
@@ -8283,18 +8283,18 @@ function eNe(ez) {
         ez.clip.sourceStartFrame <= 0 ||
         !Array.isArray(eE.effectContext)
       ) {
-        throw new b2("validation-work-limit");
+        throw new ReplaySafetyError("validation-work-limit");
       }
       eC = eE.effectContext;
       if (eC.length + frames2.length > 6000) {
-        throw new b2("validation-work-limit", {
+        throw new ReplaySafetyError("validation-work-limit", {
           actual: eC.length + frames2.length,
           limit: al,
         });
       }
       for (const eG of eC) {
         if (JTe(eG) && undefined !== eG.effectContext) {
-          throw new b2("validation-work-limit");
+          throw new ReplaySafetyError("validation-work-limit");
         }
       }
     }
@@ -8400,23 +8400,23 @@ function iNe(ez) {
 function aNe(ez, eA) {
   if (
     ez !== undefined &&
-    (!("number" == typeof ez) || !Number.isInteger(ez) || !dO(30 * ez))
+    (!("number" == typeof ez) || !Number.isInteger(ez) || !isSafeReplayCycle(30 * ez))
   ) {
-    throw new b2("invalid-clock", {
+    throw new ReplaySafetyError("invalid-clock", {
       frameIndex: eA,
     });
   }
 }
 function sNe(ez, eA) {
-  if (ez !== undefined && !M(ez)) {
-    throw new b2("invalid-geometry", {
+  if (ez !== undefined && !isSafeReplayPosition(ez)) {
+    throw new ReplaySafetyError("invalid-geometry", {
       frameIndex: eA,
     });
   }
 }
 function lNe(ez, eA) {
-  if (ez !== undefined && !b8(ez)) {
-    throw new b2("invalid-geometry", {
+  if (ez !== undefined && !isSafeReplaySize(ez)) {
+    throw new ReplaySafetyError("invalid-geometry", {
       frameIndex: eA,
     });
   }
@@ -8424,7 +8424,7 @@ function lNe(ez, eA) {
 function cNe(ez, eA) {
   if (undefined !== ez) {
     if (!Array.isArray(ez) || ez.length > 2) {
-      throw new b2("movement-path-limit", {
+      throw new ReplaySafetyError("movement-path-limit", {
         frameIndex: eA,
         ...(Array.isArray(ez)
           ? {
@@ -8443,8 +8443,8 @@ function uNe(ez, eA, eB, eC) {
   if (ez === undefined) {
     return;
   }
-  if (!iNe(ez) || !M(ez.from) || !M(ez.to)) {
-    throw new b2("invalid-geometry", {
+  if (!iNe(ez) || !isSafeReplayPosition(ez.from) || !isSafeReplayPosition(ez.to)) {
+    throw new ReplaySafetyError("invalid-geometry", {
       frameIndex: eC,
     });
   }
@@ -8455,11 +8455,11 @@ function uNe(ez, eA, eB, eC) {
     !Number.isInteger(eI) ||
     !Number.isInteger(eK) ||
     1 !== Math.max(Math.abs(eI), Math.abs(eK)) ||
-    !M(eA) ||
+    !isSafeReplayPosition(eA) ||
     eG[0] !== eA[0] ||
     eG[1] !== eA[1]
   ) {
-    throw new b2("invalid-geometry", {
+    throw new ReplaySafetyError("invalid-geometry", {
       frameIndex: eC,
     });
   }
@@ -8469,7 +8469,7 @@ function uNe(ez, eA, eB, eC) {
     "number" != typeof eB ||
     startTick > eB
   ) {
-    throw new b2("invalid-clock", {
+    throw new ReplaySafetyError("invalid-clock", {
       frameIndex: eC,
     });
   }
@@ -8527,9 +8527,9 @@ var gNe = zObject({
       weapon: zNumber().optional(),
       shield: zNumber().optional(),
     }).strict(),
-    npcs: VTe(hNe),
+    npcs: failFastReplayArray(hNe),
   }).strict(),
-  events: VTe(
+  events: failFastReplayArray(
     zObject({
       type: zString(),
       eventId: zNumber(),
@@ -8541,7 +8541,7 @@ var gNe = zObject({
       max: 256,
     },
   ),
-  npcPrimaries: VTe(
+  npcPrimaries: failFastReplayArray(
     zObject({
       actorId: zString(),
       trigger: zString(),
@@ -8583,7 +8583,7 @@ var gNe = zObject({
         )),
     "Only stationary presentation frames may span multiple ticks",
   );
-var mNe = VTe(gNe, {
+var mNe = failFastReplayArray(gNe, {
   max: al,
 });
 var fNe = zObject({
@@ -8594,7 +8594,7 @@ var fNe = zObject({
   clickType: zEnum(["yellow", "red"]).optional(),
 }).strict();
 var bNe = fNe.extend({
-  submenu: VTe(fNe, {
+  submenu: failFastReplayArray(fNe, {
     max: 8,
   }).optional(),
 });
@@ -8615,12 +8615,12 @@ var _Ne = zObject({
   scrollTop: zNumber().finite().nonnegative().max(65536).optional(),
 }).strict();
 var yNe = _Ne.extend({
-  entries: VTe(bNe, {
+  entries: failFastReplayArray(bNe, {
     max: 256,
   }),
 });
 var vNe = zNumber().finite().nonnegative();
-var wNe = VTe(
+var wNe = failFastReplayArray(
   zDiscriminatedUnion("kind", [
     zObject({
       kind: zLiteral("open"),
@@ -8749,12 +8749,12 @@ var PNe = zObject({
     .strict()
     .optional(),
 }).strict();
-var $Ne = zObject({
+var ReplayPanelFiltersSchema = zObject({
   prayer: zObject({
-    hidden: VTe(SNe, {
+    hidden: failFastReplayArray(SNe, {
       max: 256,
     }),
-    order: VTe(SNe, {
+    order: failFastReplayArray(SNe, {
       max: 256,
     }).nullable(),
     filterOptions: zObject({
@@ -8767,12 +8767,12 @@ var $Ne = zObject({
   }).strict(),
   spellbook: zObject({
     hidden: TNe(
-      VTe(SNe, {
+      failFastReplayArray(SNe, {
         max: 256,
       }),
     ),
     order: TNe(
-      VTe(SNe, {
+      failFastReplayArray(SNe, {
         max: 256,
       }).nullable(),
     ),
@@ -8810,13 +8810,13 @@ var oae = zObject({
   label: INe.optional(),
 }).strict();
 var ENe = zObject({
-  tileMarkers: VTe($ae, {
+  tileMarkers: failFastReplayArray($ae, {
     max: c9,
   }),
   showTileMarkers: zBoolean(),
   showTileMarkerLabels: zBoolean(),
   tileMarkerWidth: Qae.optional(),
-  lineMarkers: VTe(oae, {
+  lineMarkers: failFastReplayArray(oae, {
     max: c9,
   }),
   showLineMarkers: zBoolean(),
@@ -8830,7 +8830,7 @@ var xae = zObject({
   left: joe,
 }).strict();
 var rie = zNumber().positive().max(17);
-function ONe(ez) {
+function ReplayPresentationStateSchema(ez) {
   return zObject({
     clientLayoutMode: zEnum(ez),
     safeAreaInsets: xae.optional(),
@@ -8881,7 +8881,7 @@ function ONe(ez) {
       resizableChatboxVisible: zBoolean().optional(),
       minimapZoom: zNumber().positive().max(64).optional(),
       panelPresentation: zObject({
-        filters: $Ne,
+        filters: ReplayPanelFiltersSchema,
         modes: PNe,
       })
         .strict()
@@ -8923,8 +8923,8 @@ function ONe(ez) {
       },
     );
 }
-var mie = ONe(["fixed", "classic", "modern", "mobile"]);
-var LNe = ONe(["fixed", "classic", "modern"]);
+var mie = ReplayPresentationStateSchema(["fixed", "classic", "modern", "mobile"]);
+var LNe = ReplayPresentationStateSchema(["fixed", "classic", "modern"]);
 var DNe = zObject({
   tMs: zNumber().finite().nonnegative(),
   state: mie,
@@ -8935,8 +8935,8 @@ var FNe = zObject({
 }).strict();
 function HNe(ez, eA, eB) {
   if (eA !== undefined) {
-    if ("number" != typeof eA || !dO(eA) || !dO(ez + eA)) {
-      throw new b2("invalid-clock", {
+    if ("number" != typeof eA || !isSafeReplayCycle(eA) || !isSafeReplayCycle(ez + eA)) {
+      throw new ReplaySafetyError("invalid-clock", {
         frameIndex: eB,
       });
     }
@@ -8977,12 +8977,12 @@ function qNe(ez, eA, eB) {
   const eQ =
     (eM ? eE?.targetSize : undefined) ??
     (iNe(eK) ? eK.size : eA.primaryNpcSize);
-  if (!M(eN) || !M(eO) || !b8(eQ) || "number" != typeof ez.tick) {
+  if (!isSafeReplayPosition(eN) || !isSafeReplayPosition(eO) || !isSafeReplaySize(eQ) || "number" != typeof ez.tick) {
     return;
   }
-  const eR = eD ? cP.magic_spell : az(eG, true === ez.usingSpecialAttack);
-  const eS = ay(...eN, ...eO, eQ);
-  const eT = eR ? ci(eR, eS) : eI.projectileStartDelay + 30;
+  const eR = eD ? projectileTimings.magic_spell : getWeaponProjectileTiming(eG, true === ez.usingSpecialAttack);
+  const eS = getDistanceToFootprint(...eN, ...eO, eQ);
+  const eT = eR ? getProjectileFlightCycles(eR, eS) : eI.projectileStartDelay + 30;
   const eU = HNe(ez.tick * 30, eI.projectileStartDelay, eB);
   const eV = HNe(30 * ez.tick, eT, eB);
   if (eU !== undefined && eV !== undefined) {
@@ -9004,18 +9004,18 @@ function zNe(ez, eA, eB) {
     return ez.ricochets.flatMap((eD) => {
       if (
         !iNe(eD) ||
-        !M(eD.sourcePosition) ||
-        !M(eD.targetPosition) ||
-        !b8(eD.targetSize)
+        !isSafeReplayPosition(eD.sourcePosition) ||
+        !isSafeReplayPosition(eD.targetPosition) ||
+        !isSafeReplaySize(eD.targetSize)
       ) {
-        throw new b2("invalid-geometry", {
+        throw new ReplaySafetyError("invalid-geometry", {
           frameIndex: eB,
         });
       }
       const eE = HNe(eA, eD.startCycles, eB);
       const eG = HNe(eA, eD.endCycles, eB);
       if (eE === undefined || eG === undefined || eG < eE) {
-        throw new b2("invalid-clock", {
+        throw new ReplaySafetyError("invalid-clock", {
           frameIndex: eB,
         });
       }
@@ -9041,14 +9041,14 @@ function BNe(ez) {
     const eN = (eO, eQ) => {
       if (Array.isArray(eO)) {
         if (eO.length > eQ) {
-          throw new b2("validation-work-limit", {
+          throw new ReplaySafetyError("validation-work-limit", {
             actual: eO.length,
             limit: eQ,
           });
         }
         eM += eO.length;
         if (eM > 1048576) {
-          throw new b2("validation-work-limit", {
+          throw new ReplaySafetyError("validation-work-limit", {
             actual: eM,
             limit: bP,
           });
@@ -9082,7 +9082,7 @@ function BNe(ez) {
       }
     }
     if (!rNe(eK) || (ZTe(eI, 4) && !nNe(eI.menuEvents))) {
-      throw new b2("validation-work-limit");
+      throw new ReplaySafetyError("validation-work-limit");
     }
     if (iNe(eI.overlays)) {
       eN(eI.overlays.tileMarkers, c9);
@@ -9165,7 +9165,7 @@ function BNe(ez) {
   const eC =
     (Array.isArray(ez.cursorClicks) ? ez.cursorClicks.length : 0) + eB.length;
   if (eC > dx.cursorClicks) {
-    throw new b2("validation-work-limit", {
+    throw new ReplaySafetyError("validation-work-limit", {
       actual: eC,
       limit: dx.cursorClicks,
     });
@@ -9191,7 +9191,7 @@ function BNe(ez) {
       aNe(state3.currentTick, eO);
       if (typeof state3.currentTick == "number") {
         if (state3.currentTick < eN) {
-          throw new b2("invalid-clock", {
+          throw new ReplaySafetyError("invalid-clock", {
             frameIndex: eO,
           });
         }
@@ -9200,7 +9200,7 @@ function BNe(ez) {
           "number" == typeof eQ.throughTick &&
           eQ.throughTick < state3.currentTick
         ) {
-          throw new b2("invalid-clock", {
+          throw new ReplaySafetyError("invalid-clock", {
             frameIndex: eO,
           });
         }
@@ -9221,13 +9221,13 @@ function BNe(ez) {
       cNe(state3.playerMovementPath, eO);
       let eS = 0;
       for (const [eU, eV] of [
-        ["npcs", e1],
-        ["groundItems", dJ],
+        ["npcs", snapshotNpcLimit],
+        ["groundItems", snapshotGroundItemLimit],
       ]) {
         const eW = state3[eU];
         if (Array.isArray(eW)) {
           if (eW.length > eV) {
-            throw new b2("snapshot-work-limit", {
+            throw new ReplaySafetyError("snapshot-work-limit", {
               actual: eW.length,
               limit: eV,
               frameIndex: eO,
@@ -9235,9 +9235,9 @@ function BNe(ez) {
           }
           eK += eW.length;
           if (eK > 131072) {
-            throw new b2("snapshot-work-limit", {
+            throw new ReplaySafetyError("snapshot-work-limit", {
               actual: eK,
-              limit: bF,
+              limit: snapshotWorkLimit,
               frameIndex: eO,
             });
           }
@@ -9259,9 +9259,9 @@ function BNe(ez) {
                 : (aNe(eX.droppedTick, eO), (eS += 1)),
               eS > 65536)
             ) {
-              throw new b2("snapshot-work-limit", {
+              throw new ReplaySafetyError("snapshot-work-limit", {
                 actual: eS,
-                limit: bR,
+                limit: snapshotFootprintLimit,
                 frameIndex: eO,
               });
             }
@@ -9270,9 +9270,9 @@ function BNe(ez) {
       }
       eM += eS;
       if (eM > 4194304) {
-        throw new b2("snapshot-work-limit", {
+        throw new ReplaySafetyError("snapshot-work-limit", {
           actual: eM,
-          limit: dU,
+          limit: totalSnapshotFootprintLimit,
           frameIndex: eO,
         });
       }
@@ -9297,9 +9297,9 @@ function BNe(ez) {
             "number" != typeof eN ||
             !Number.isFinite(eN) ||
             eN < 0 ||
-            !dO(Math.ceil((eN + eO) / 20))
+            !isSafeReplayCycle(Math.ceil((eN + eO) / 20))
           ) {
-            throw new b2("invalid-clock");
+            throw new ReplaySafetyError("invalid-clock");
           }
           eK = Math.max(eK, eN + eO);
         }
@@ -9359,8 +9359,8 @@ function BNe(ez) {
         "number" == typeof eW.throughTick ? 30 * (eW.throughTick + 1) - eY : 30;
       const f0 =
         eV === eI.length - 1 ? Math.max(eZ, Math.ceil(eK / 20) - 30 * eV) : eZ;
-      if (!dO(eY + f0)) {
-        throw new b2("invalid-clock", {
+      if (!isSafeReplayCycle(eY + f0)) {
+        throw new ReplaySafetyError("invalid-clock", {
           frameIndex: eV,
         });
       }
@@ -9401,7 +9401,7 @@ function BNe(ez) {
                         !Number.isFinite(fc) ||
                         Math.abs(fc) > 128000000)
                     ) {
-                      throw new b2("invalid-geometry", {
+                      throw new ReplaySafetyError("invalid-geometry", {
                         frameIndex: eV,
                       });
                     }
@@ -9419,7 +9419,7 @@ function BNe(ez) {
                   const fa = HNe(f4, f8.endDelayCycles, eV);
                   if (undefined !== f9 && fa !== undefined) {
                     if (fa < f9) {
-                      throw new b2("invalid-clock", {
+                      throw new ReplaySafetyError("invalid-clock", {
                         frameIndex: eV,
                       });
                     }
@@ -9524,9 +9524,9 @@ function BNe(ez) {
       }
       const fr = fq - fh.start + 1;
       if (fr > 262144) {
-        throw new b2("projectile-work-limit", {
+        throw new ReplaySafetyError("projectile-work-limit", {
           actual: Math.ceil(fr),
-          limit: cj,
+          limit: projectileWorkLimit,
         });
       }
       eQ.push({
@@ -9551,9 +9551,9 @@ function BNe(ez) {
       const cycle2 = eQ[ft].cycle;
       const fw = eT + eS * Math.max(0, cycle2 - eR - 1);
       if (eU > 0 && fw > 262144) {
-        throw new b2("projectile-work-limit", {
+        throw new ReplaySafetyError("projectile-work-limit", {
           actual: fw,
-          limit: cj,
+          limit: projectileWorkLimit,
         });
       }
       for (
@@ -9567,9 +9567,9 @@ function BNe(ez) {
       }
       eR = cycle2;
       if (eU > 0 && eT > 262144) {
-        throw new b2("projectile-work-limit", {
+        throw new ReplaySafetyError("projectile-work-limit", {
           actual: eT,
-          limit: cj,
+          limit: projectileWorkLimit,
         });
       }
     }
@@ -9735,7 +9735,7 @@ var GNe = zObject({
   state: YNe,
   uiState: WNe,
   events: zArray(QTe),
-  actions: VTe(VNe),
+  actions: failFastReplayArray(VNe),
   damageHistoryLength: zNumber().int().nonnegative(),
   viewportState: zUnknown().optional(),
 }).passthrough();
@@ -9774,22 +9774,22 @@ var ePe = zObject({
     }).passthrough(),
   }).passthrough(),
   frames: jNe.pipe(
-    VTe(
+    failFastReplayArray(
       GNe.transform(({ dpsProjection: dpsProjection, ...eA }) => eA),
       {
         max: al,
       },
     ),
   ),
-  cursorSamples: VTe(KNe).refine(JNe, "cursorSamples must ascend by tMs"),
-  cursorClicks: VTe(ZNe).refine(JNe, "cursorClicks must ascend by tMs"),
-  presentationSamples: VTe(FNe, {
+  cursorSamples: failFastReplayArray(KNe).refine(JNe, "cursorSamples must ascend by tMs"),
+  cursorClicks: failFastReplayArray(ZNe).refine(JNe, "cursorClicks must ascend by tMs"),
+  presentationSamples: failFastReplayArray(FNe, {
     min: 1,
   }).refine(JNe, "presentationSamples must ascend by tMs"),
   viewportSamples: zArray(zUnknown()),
   damageHistory: zArray(zUnknown()),
   overlays: ENe.optional(),
-  modifierSamples: VTe(QNe)
+  modifierSamples: failFastReplayArray(QNe)
     .refine(JNe, "modifierSamples must ascend by tMs")
     .optional(),
 }).strict();
@@ -9799,7 +9799,7 @@ var tPe = ePe.extend({
 var nPe = ePe.extend({
   formatVersion: zLiteral(4),
   frames: jNe.pipe(
-    VTe(
+    failFastReplayArray(
       GNe.extend({
         dpsProjection: XNe.nullable().optional(),
       }),
@@ -9810,7 +9810,7 @@ var nPe = ePe.extend({
   ),
   menuEvents: kNe.optional(),
   capture: UTe.optional(),
-  presentationSamples: VTe(FNe).refine(
+  presentationSamples: failFastReplayArray(FNe).refine(
     JNe,
     "presentationSamples must ascend by tMs",
   ),
@@ -9852,7 +9852,7 @@ var aPe = nPe.extend({
   formatVersion: zLiteral(5),
   clip: XTe.optional(),
   frames: jNe.pipe(
-    VTe(iPe, {
+    failFastReplayArray(iPe, {
       max: al,
     }),
   ),
@@ -9900,7 +9900,7 @@ function dPe(ez, eA) {
 }
 var pPe = aPe.extend({
   formatVersion: zLiteral(6),
-  presentationSamples: VTe(DNe).refine(
+  presentationSamples: failFastReplayArray(DNe).refine(
     JNe,
     "presentationSamples must ascend by tMs",
   ),
@@ -9913,7 +9913,7 @@ var gPe = iPe.extend({
 var mPe = pPe.extend({
   formatVersion: zLiteral(7),
   frames: jNe.pipe(
-    VTe(gPe, {
+    failFastReplayArray(gPe, {
       max: al,
     }),
   ),
@@ -10037,7 +10037,7 @@ function kPe(ez) {
     if (eD instanceof vPe) {
       throw eD;
     }
-    if (eD instanceof b2) {
+    if (eD instanceof ReplaySafetyError) {
       throw new vPe("corrupt", undefined, [], eD);
     }
     if (eD instanceof ZodError) {
@@ -10052,9 +10052,9 @@ function kPe(ez) {
     throw eD;
   }
 }
-var xPe = [".##...##.", "#..#.#..#", "#...#...#", "#..#.#..#", ".##...##."];
-var MPe = xPe[0].length;
-var CPe = xPe.length;
+var GLYPH = [".##...##.", "#..#.#..#", "#...#...#", "#..#.#..#", ".##...##."];
+var MPe = GLYPH[0].length;
+var CPe = GLYPH.length;
 var SPe = 1 + MPe + 1;
 var TPe = 1 + CPe + 1;
 var NPe = [255, 255, 0];
@@ -10062,7 +10062,7 @@ var PPe = [0, 0, 0];
 var $Pe = (function () {
   const eA = new Uint8ClampedArray(SPe * TPe * 4);
   const eB = (eC, [eD, eE, eG]) => {
-    xPe.forEach((eI, eK) => {
+    GLYPH.forEach((eI, eK) => {
       for (let eM = 0; eM < eI.length; eM++) {
         if ("#" !== eI[eM]) {
           continue;
@@ -10145,7 +10145,7 @@ var RPe = ({ top: ez, left: left }) => {
     },
   });
 };
-var APe = xPe.flatMap((ez, eA) => {
+var APe = GLYPH.flatMap((ez, eA) => {
   const eC = [];
   for (let eD = 0; eD < ez.length; eD++) {
     if (ez[eD] !== "#") {
@@ -10201,17 +10201,17 @@ function IPe(ez, eA, eB, eC, eD, eE = false) {
   };
 }
 function EPe(ez) {
-  return true === ez.supported || ("combat" === ez.category && B(ez.label));
+  return true === ez.supported || ("combat" === ez.category && isSupportedCombatSpell(ez.label));
 }
 function OPe(ez, eA) {
   return (
-    (!eA || !!el(ez.label, eA.magicLevel)) &&
+    (!eA || !!hasMagicLevelForSpell(ez.label, eA.magicLevel)) &&
     (ez.supported === true
-      ? !eA || ej(ez.label) === null || et(ez.label, eA)
-      : !!EPe(ez) && (!eA || et(ez.label, eA)))
+      ? !eA || getSpellRuneTypes(ez.label) === null || canCastSpell(ez.label, eA)
+      : !!EPe(ez) && (!eA || canCastSpell(ez.label, eA)))
   );
 }
-function kae(ez, eA, eB, eC) {
+function getSpellIconPath(ez, eA, eB, eC) {
   const eE = eB >= 40;
   const eG = eC
     ? eE
@@ -10224,316 +10224,316 @@ function kae(ez, eA, eB, eC) {
     ez.replace(/^\/assets\/ui\/packs\/[^/]+\//, "") + "/" + eA + eG + ".png",
   );
 }
-var LPe = [
+var ARCEUUS_GRID = [
   IPe("home_teleport", "Arceuus Home Teleport", "teleport", 1, [], true),
   IPe("minigame_teleport", "Minigame Teleport", "teleport", 1, []),
   IPe("arceuus_library_teleport", "Arceuus Library Teleport", "teleport", 6, [
-    em.earth,
-    em.law,
+    RUNE_ITEM_IDS.earth,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("basic_reanimation", "Basic Reanimation", "utility", 16, [
-    em.body,
-    em.nature,
+    RUNE_ITEM_IDS.body,
+    RUNE_ITEM_IDS.nature,
   ]),
   IPe("draynor_manor_teleport", "Draynor Manor Teleport", "teleport", 17, [
-    em.earth,
-    em.water,
-    em.law,
+    RUNE_ITEM_IDS.earth,
+    RUNE_ITEM_IDS.water,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("battlefront_teleport", "Battlefront Teleport", "teleport", 23, [
-    em.earth,
-    em.fire,
-    em.law,
+    RUNE_ITEM_IDS.earth,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("mind_altar_teleport", "Mind Altar Teleport", "teleport", 28, [
-    em.mind,
-    em.law,
+    RUNE_ITEM_IDS.mind,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("respawn_teleport", "Respawn Teleport", "teleport", 34, [
-    em.soul,
-    em.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.law,
   ]),
-  IPe("ghostly_grasp", "Ghostly Grasp", "combat", 35, [em.air, em.chaos]),
+  IPe("ghostly_grasp", "Ghostly Grasp", "combat", 35, [RUNE_ITEM_IDS.air, RUNE_ITEM_IDS.chaos]),
   IPe("ressurect_lesser_ghost", "Resurrect Lesser Ghost", "utility", 38, [
-    em.air,
-    em.mind,
-    em.cosmic,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.mind,
+    RUNE_ITEM_IDS.cosmic,
   ]),
   IPe("ressurect_lesser_skeleton", "Resurrect Lesser Skeleton", "utility", 38, [
-    em.air,
-    em.mind,
-    em.cosmic,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.mind,
+    RUNE_ITEM_IDS.cosmic,
   ]),
   IPe("ressurect_lesser_zombie", "Resurrect Lesser Zombie", "utility", 38, [
-    em.air,
-    em.mind,
-    em.cosmic,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.mind,
+    RUNE_ITEM_IDS.cosmic,
   ]),
   IPe("salve_graveyard_teleport", "Salve Graveyard Teleport", "teleport", 40, [
-    em.soul,
-    em.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("adept_reanimation", "Adept Reanimation", "utility", 41, [
-    em.body,
-    em.nature,
-    em.soul,
+    RUNE_ITEM_IDS.body,
+    RUNE_ITEM_IDS.nature,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("inferior_demonbane", "Inferior Demonbane", "combat", 44, [
-    em.fire,
-    em.chaos,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.chaos,
   ]),
   IPe("shadow_veil", "Shadow Veil", "combat", 47, [
-    em.earth,
-    em.fire,
-    em.cosmic,
+    RUNE_ITEM_IDS.earth,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.cosmic,
   ]),
   IPe(
     "fenkenstrains_castle_teleport",
     "Fenkenstrain's Castle Teleport",
     "teleport",
     48,
-    [em.earth, em.soul, em.law],
+    [RUNE_ITEM_IDS.earth, RUNE_ITEM_IDS.soul, RUNE_ITEM_IDS.law],
   ),
-  IPe("dark_lure", "Dark Lure", "combat", 50, [em.nature, em.death]),
-  IPe("skeletal_grasp", "Skeletal Grasp", "combat", 56, [em.earth, em.death]),
+  IPe("dark_lure", "Dark Lure", "combat", 50, [RUNE_ITEM_IDS.nature, RUNE_ITEM_IDS.death]),
+  IPe("skeletal_grasp", "Skeletal Grasp", "combat", 56, [RUNE_ITEM_IDS.earth, RUNE_ITEM_IDS.death]),
   IPe("ressurect_superior_ghost", "Resurrect Superior Ghost", "utility", 57, [
-    em.earth,
-    em.death,
-    em.cosmic,
+    RUNE_ITEM_IDS.earth,
+    RUNE_ITEM_IDS.death,
+    RUNE_ITEM_IDS.cosmic,
   ]),
   IPe(
     "ressurect_superior_skeleton",
     "Resurrect Superior Skeleton",
     "utility",
     57,
-    [em.earth, em.death, em.cosmic],
+    [RUNE_ITEM_IDS.earth, RUNE_ITEM_IDS.death, RUNE_ITEM_IDS.cosmic],
   ),
   IPe("ressurect_superior_zombie", "Resurrect Superior Zombie", "utility", 57, [
-    em.earth,
-    em.death,
-    em.cosmic,
+    RUNE_ITEM_IDS.earth,
+    RUNE_ITEM_IDS.death,
+    RUNE_ITEM_IDS.cosmic,
   ]),
   IPe(
     "mark_of_darkness",
     "Mark of Darkness",
     "combat",
     59,
-    [em.cosmic, em.soul],
+    [RUNE_ITEM_IDS.cosmic, RUNE_ITEM_IDS.soul],
     true,
   ),
   IPe("west_ardougne_teleport", "West Ardougne Teleport", "teleport", 61, [
-    em.law,
-    em.soul,
+    RUNE_ITEM_IDS.law,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("superior_demonbane", "Superior Demonbane", "combat", 62, [
-    em.fire,
-    em.soul,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("lesser_corruption", "Lesser Corruption", "combat", 64, [
-    em.death,
-    em.soul,
+    RUNE_ITEM_IDS.death,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("harmony_island_teleport", "Harmony Island Teleport", "teleport", 65, [
-    em.law,
-    em.soul,
-    em.nature,
+    RUNE_ITEM_IDS.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.nature,
   ]),
-  IPe("vile_vigour", "Vile Vigour", "utility", 66, [em.air, em.soul]),
-  IPe("degrime", "Degrime", "utility", 70, [em.earth, em.nature]),
+  IPe("vile_vigour", "Vile Vigour", "utility", 66, [RUNE_ITEM_IDS.air, RUNE_ITEM_IDS.soul]),
+  IPe("degrime", "Degrime", "utility", 70, [RUNE_ITEM_IDS.earth, RUNE_ITEM_IDS.nature]),
   IPe("cemetary_teleport", "Cemetery Teleport", "teleport", 71, [
-    em.law,
-    em.soul,
-    em.blood,
+    RUNE_ITEM_IDS.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.blood,
   ]),
   IPe("expert_reanimation", "Expert Reanimation", "utility", 72, [
-    em.nature,
-    em.blood,
-    em.soul,
+    RUNE_ITEM_IDS.nature,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("ward_of_arceuus", "Ward of Arceuus", "combat", 73, [
-    em.cosmic,
-    em.nature,
-    em.soul,
+    RUNE_ITEM_IDS.cosmic,
+    RUNE_ITEM_IDS.nature,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("ressurect_greater_ghost", "Resurrect Greater Ghost", "utility", 76, [
-    em.fire,
-    em.blood,
-    em.cosmic,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.cosmic,
   ], true),
   IPe(
     "ressurect_greater_skeleton",
     "Resurrect Greater Skeleton",
     "utility",
     76,
-    [em.fire, em.blood, em.cosmic],
+    [RUNE_ITEM_IDS.fire, RUNE_ITEM_IDS.blood, RUNE_ITEM_IDS.cosmic],
     true,
   ),
   IPe("ressurect_greater_zombie", "Resurrect Greater Zombie", "utility", 76, [
-    em.fire,
-    em.blood,
-    em.cosmic,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.cosmic,
   ], true),
   IPe("reanimate_crops", "Resurrect Crops", "utility", 78, [
-    em.soul,
-    em.nature,
-    em.blood,
-    em.earth,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.nature,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.earth,
   ]),
-  IPe("undead_grasp", "Undead Grasp", "combat", 79, [em.fire, em.blood]),
+  IPe("undead_grasp", "Undead Grasp", "combat", 79, [RUNE_ITEM_IDS.fire, RUNE_ITEM_IDS.blood]),
   IPe(
     "death_charge",
     "Death Charge",
     "combat",
     80,
-    [em.death, em.blood, em.soul],
+    [RUNE_ITEM_IDS.death, RUNE_ITEM_IDS.blood, RUNE_ITEM_IDS.soul],
     true,
   ),
-  IPe("dark_demonbane", "Dark Demonbane", "combat", 82, [em.fire, em.soul]),
+  IPe("dark_demonbane", "Dark Demonbane", "combat", 82, [RUNE_ITEM_IDS.fire, RUNE_ITEM_IDS.soul]),
   IPe("barrows_teleport", "Barrows Teleport", "teleport", 83, [
-    em.law,
-    em.soul,
-    em.blood,
+    RUNE_ITEM_IDS.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.blood,
   ]),
   IPe("demonic_offering", "Demonic Offering", "utility", 84, [
-    em.soul,
-    em.wrath,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.wrath,
   ]),
   IPe("greater_corruption", "Greater Corruption", "combat", 85, [
-    em.blood,
-    em.soul,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("master_reanimation", "Master Reanimation", "utility", 90, [
-    em.nature,
-    em.blood,
-    em.soul,
+    RUNE_ITEM_IDS.nature,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.soul,
   ]),
   IPe("ape_atoll_teleport", "Ape Atoll Teleport", "teleport", 90, [
-    em.law,
-    em.soul,
-    em.blood,
+    RUNE_ITEM_IDS.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.blood,
   ]),
   IPe("sinister_offering", "Sinister Offering", "utility", 92, [
-    em.blood,
-    em.wrath,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.wrath,
   ]),
 ];
-var DPe = [
+var ANCIENT_GRID = [
   IPe("home_teleport", "Edgeville Home Teleport", "teleport", 1, [], true),
   IPe("minigame_teleport", "Minigame Teleport", "teleport", 1, []),
   IPe("smoke_rush", "Smoke Rush", "combat", 50, [
-    em.air,
-    em.fire,
-    em.chaos,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.chaos,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("shadow_rush", "Shadow Rush", "combat", 52, [
-    em.air,
-    em.soul,
-    em.chaos,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.chaos,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("paddewwa_teleport", "Paddewwa Teleport", "teleport", 54, [
-    em.air,
-    em.fire,
-    em.law,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.law,
   ]),
-  IPe("blood_rush", "Blood Rush", "combat", 56, [em.blood, em.chaos, em.death]),
-  IPe("ice_rush", "Ice Rush", "combat", 58, [em.water, em.chaos, em.death]),
+  IPe("blood_rush", "Blood Rush", "combat", 56, [RUNE_ITEM_IDS.blood, RUNE_ITEM_IDS.chaos, RUNE_ITEM_IDS.death]),
+  IPe("ice_rush", "Ice Rush", "combat", 58, [RUNE_ITEM_IDS.water, RUNE_ITEM_IDS.chaos, RUNE_ITEM_IDS.death]),
   IPe("senntisten_teleport", "Senntisten Teleport", "teleport", 60, [
-    em.soul,
-    em.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("smoke_burst", "Smoke Burst", "combat", 62, [
-    em.air,
-    em.fire,
-    em.chaos,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.chaos,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("shadow_burst", "Shadow Burst", "combat", 64, [
-    em.air,
-    em.soul,
-    em.chaos,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.chaos,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("kharyrll_teleport", "Kharyrll Teleport", "teleport", 66, [
-    em.blood,
-    em.law,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("blood_burst", "Blood Burst", "combat", 68, [
-    em.blood,
-    em.chaos,
-    em.death,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.chaos,
+    RUNE_ITEM_IDS.death,
   ]),
-  IPe("ice_burst", "Ice Burst", "combat", 70, [em.water, em.chaos, em.death]),
-  IPe("lassar_teleport", "Lassar Teleport", "teleport", 72, [em.water, em.law]),
+  IPe("ice_burst", "Ice Burst", "combat", 70, [RUNE_ITEM_IDS.water, RUNE_ITEM_IDS.chaos, RUNE_ITEM_IDS.death]),
+  IPe("lassar_teleport", "Lassar Teleport", "teleport", 72, [RUNE_ITEM_IDS.water, RUNE_ITEM_IDS.law]),
   IPe("smoke_blitz", "Smoke Blitz", "combat", 74, [
-    em.air,
-    em.fire,
-    em.blood,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("shadow_blitz", "Shadow Blitz", "combat", 76, [
-    em.air,
-    em.soul,
-    em.blood,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("dareeyak_teleport", "Dareeyak Teleport", "teleport", 78, [
-    em.air,
-    em.fire,
-    em.law,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.law,
   ]),
-  IPe("blood_blitz", "Blood Blitz", "combat", 80, [em.blood, em.death]),
-  IPe("ice_blitz", "Ice Blitz", "combat", 82, [em.water, em.blood, em.death]),
+  IPe("blood_blitz", "Blood Blitz", "combat", 80, [RUNE_ITEM_IDS.blood, RUNE_ITEM_IDS.death]),
+  IPe("ice_blitz", "Ice Blitz", "combat", 82, [RUNE_ITEM_IDS.water, RUNE_ITEM_IDS.blood, RUNE_ITEM_IDS.death]),
   IPe("carrallangar_teleport", "Carrallanger Teleport", "teleport", 84, [
-    em.soul,
-    em.law,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("teleport_to_target", "Teleport to Target", "teleport", 85, [
-    em.law,
-    em.chaos,
-    em.death,
+    RUNE_ITEM_IDS.law,
+    RUNE_ITEM_IDS.chaos,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("smoke_barrage", "Smoke Barrage", "combat", 86, [
-    em.air,
-    em.fire,
-    em.blood,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.fire,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("shadow_barrage", "Shadow Barrage", "combat", 88, [
-    em.air,
-    em.soul,
-    em.blood,
-    em.death,
+    RUNE_ITEM_IDS.air,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("annakarl_teleport", "Annakarl Teleport", "teleport", 90, [
-    em.blood,
-    em.law,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.law,
   ]),
   IPe("blood_barrage", "Blood Barrage", "combat", 92, [
-    em.blood,
-    em.soul,
-    em.death,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.soul,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("ice_barrage", "Ice Barrage", "combat", 94, [
-    em.water,
-    em.blood,
-    em.death,
+    RUNE_ITEM_IDS.water,
+    RUNE_ITEM_IDS.blood,
+    RUNE_ITEM_IDS.death,
   ]),
   IPe("ghorrock_teleport", "Ghorrock Teleport", "teleport", 96, [
-    em.water,
-    em.law,
+    RUNE_ITEM_IDS.water,
+    RUNE_ITEM_IDS.law,
   ]),
 ];
 function FPe() {
   return "/assets/ui/packs/" + uie() + "/spells";
 }
-var Iie = {
+var SPELLBOOKS = {
   get arceuus() {
     return {
       type: "arceuus",
       iconDir: FPe() + "/arceuus_spell",
-      grid: LPe,
+      grid: ARCEUUS_GRID,
       available: true,
     };
   },
@@ -10541,7 +10541,7 @@ var Iie = {
     return {
       type: "ancient",
       iconDir: FPe() + "/ancient_spell",
-      grid: DPe,
+      grid: ANCIENT_GRID,
       available: true,
     };
   },
@@ -10562,8 +10562,8 @@ var Iie = {
     };
   },
 };
-var Hse = Object.keys(Iie).filter((ez) => Iie[ez].available);
-function HPe(ez, eA, eB, eC, eD, eE, eG = {}) {
+var Hse = Object.keys(SPELLBOOKS).filter((ez) => SPELLBOOKS[ez].available);
+function passesSpellFilter(ez, eA, eB, eC, eD, eE, eG = {}) {
   const eH = {
     BRAtL: function (eK, eM) {
       return eK === eM;
@@ -10602,7 +10602,7 @@ function HPe(ez, eA, eB, eC, eD, eE, eG = {}) {
         return (
           (!!eO.showLackRunes ||
             !runeContext2 ||
-            !!eM.runeTypes.every((eW) => eh(eW, runeContext2))) &&
+            !!eM.runeTypes.every((eW) => hasRuneAvailable(eW, runeContext2))) &&
           (!!eO.showLackRequirements || !eM.locked) &&
           (!!eO.showUnsimulated || !!EPe(eM))
         );
@@ -10615,7 +10615,7 @@ function HPe(ez, eA, eB, eC, eD, eE, eG = {}) {
 function qPe(ez, eA) {
   return Math.trunc(ez / eA);
 }
-var zPe = {
+var CLASSIC_GRIDS = {
   standard: {
     cols: 7,
     gapX: 0,
@@ -10747,7 +10747,7 @@ var Tie = ({
     cLcJT: "canvas",
   };
   const eE = (0, pn.useRef)(null);
-  const eG = Mxe();
+  const eG = usePanelContentScale();
   const eH = bO(Number.POSITIVE_INFINITY);
   const eI = (0, pn.useRef)(null);
   const eK = (0, pn.useRef)("");
@@ -10869,26 +10869,26 @@ var Tie = ({
     },
   });
 };
-var WPe = ({ children: children, compact: compact }) =>
+var StatusBadge = ({ children: children, compact: compact }) =>
   (0, wn.jsx)("span", {
     className: "status-badge" + (compact ? " status-badge--compact" : ""),
     children: children,
   });
 var Wse = ({ compact: compact }) =>
-  (0, wn.jsx)(WPe, {
+  (0, wn.jsx)(StatusBadge, {
     compact: compact,
     children: "Beta",
   });
 function jPe(ez) {
   return (
-    cy(ez.npcTypeId) ??
+    getMonsterName(ez.npcTypeId) ??
     ez.archetypeId
       .replace(/[_-]+/g, " ")
       .replace(/([a-z])([A-Z])/g, "$1 $2")
       .replace(/\b[a-z]/g, (eB) => eB.toUpperCase())
   );
 }
-var UPe = ({
+var BossHealthControl = ({
   targetNpc: targetNpc,
   onSetBossHp: onSetBossHp,
   onApplyPreset: onApplyPreset,
@@ -10985,7 +10985,7 @@ var UPe = ({
               className: "boss-health-presets",
               children: presets.map((eS) =>
                 (0, wn.jsx)(
-                  VPe,
+                  PresetButton,
                   {
                     preset: eS,
                     bossName: eM,
@@ -11000,10 +11000,10 @@ var UPe = ({
     ],
   });
 };
-var VPe = ({ preset: preset, bossName: bossName, onApply: onApply }) => {
+var PresetButton = ({ preset: preset, bossName: bossName, onApply: onApply }) => {
   const eD = (0, pn.useRef)(null);
   const eE = (0, pn.useId)();
-  const { card: card } = jie({
+  const { card: card } = useHoverCard({
     content: preset.hint,
     anchorRef: eD,
     placement: "block",
@@ -11051,28 +11051,28 @@ function Use(ez, ...eA) {
   return ["plugins", ez, ...eA.map(YPe)].join(".");
 }
 var Ose = uoe("Keyboard shortcuts reference");
-var Ioe = "gamepanel.keybinds";
+var GAMEPANEL_KEYBINDS_ID = "gamepanel.keybinds";
 var Eoe = "gamepanel.keybinds.camera";
 var aoe = "gamepanel.keybinds.plugins";
 var Toe = "gamepanel.audio";
 function XPe(ez) {
   return Toe + "." + YPe(ez);
 }
-var ese = {
+var GAMEPANEL_AUDIO_LABELS = {
   masterVolume: "Master Volume",
   muteWhenUnfocused: "Mute when unfocused",
   sfxVolume: "Sound Effects",
   areaVolume: "Area Sounds",
 };
 var hse = {
-  masterVolume: XPe(ese.masterVolume),
-  muteWhenUnfocused: XPe(ese.muteWhenUnfocused),
-  sfxVolume: XPe(ese.sfxVolume),
-  areaVolume: XPe(ese.areaVolume),
+  masterVolume: XPe(GAMEPANEL_AUDIO_LABELS.masterVolume),
+  muteWhenUnfocused: XPe(GAMEPANEL_AUDIO_LABELS.muteWhenUnfocused),
+  sfxVolume: XPe(GAMEPANEL_AUDIO_LABELS.sfxVolume),
+  areaVolume: XPe(GAMEPANEL_AUDIO_LABELS.areaVolume),
 };
-var GPe = "settings:reveal";
-var KPe = new Set([Ioe, Eoe, aoe, Toe, ...Object.values(hse)]);
-function QPe(ez) {
+var REVEAL_EVENT = "settings:reveal";
+var KPe = new Set([GAMEPANEL_KEYBINDS_ID, Eoe, aoe, Toe, ...Object.values(hse)]);
+function revealSurfaceOf(ez) {
   if (ZPe.has(ez)) {
     return "action";
   } else if (ez.startsWith("settings.")) {
@@ -11112,7 +11112,7 @@ function Joe(ez, eA) {
   });
 }
 var JPe = new Set();
-var e$e = (ez) => ez.parentElement?.closest(".game-panel-scroll") ?? null;
+var gamePanelScrollerOf = (ez) => ez.parentElement?.closest(".game-panel-scroll") ?? null;
 function lse(ez) {
   const eA = {
     baRFl: "The game panel is not showing right now.",
@@ -11128,7 +11128,7 @@ function lse(ez) {
     },
     rTyjf: "This setting cannot be found.",
   };
-  const eB = QPe(ez);
+  const eB = revealSurfaceOf(ez);
   if (eB) {
     if (eB === "gamepanel") {
       return (function (eC) {
@@ -11191,10 +11191,10 @@ function lse(ez) {
 }
 function goe(ez) {
   const eB = lse(ez);
-  const eC = QPe(ez);
+  const eC = revealSurfaceOf(ez);
   if (eB.ok && eC && "undefined" != typeof window) {
     window.dispatchEvent(
-      new CustomEvent(GPe, {
+      new CustomEvent(REVEAL_EVENT, {
         detail: {
           id: ez,
           surface: eC,
@@ -11221,8 +11221,8 @@ function voe(ez) {
         eA.current(detail2);
       }
     };
-    window.addEventListener(GPe, eB);
-    return () => window.removeEventListener(GPe, eB);
+    window.addEventListener(REVEAL_EVENT, eB);
+    return () => window.removeEventListener(REVEAL_EVENT, eB);
   }, []);
 }
 var t$e = {
@@ -11284,7 +11284,7 @@ function soe() {
   }
 }
 var o$e = new WeakMap();
-function r$e(ez) {
+function flashRevealTarget(ez) {
   for (const eC of o$e.get(ez) ?? []) {
     window.clearTimeout(eC);
   }
@@ -11310,7 +11310,7 @@ function r$e(ez) {
   };
 }
 var i$e = null;
-function a$e(ez, eA, eB) {
+function settleThenMark(ez, eA, eB) {
   const eC = {
     fuJUo: "wheel",
     WYNeS: "touchstart",
@@ -11490,7 +11490,7 @@ function a$e(ez, eA, eB) {
     ) {
       eR();
       if (eU) {
-        r$e(eU);
+        flashRevealTarget(eU);
       }
       return;
     }
@@ -11510,7 +11510,7 @@ function s$e() {
   );
   return (eB, eC, eD) => {
     eA.current?.();
-    const eE = a$e(eB, eC, eD);
+    const eE = settleThenMark(eB, eC, eD);
     eA.current = eE;
     return eE;
   };
@@ -11570,7 +11570,7 @@ function ise(ez) {
     return ez;
   }
 }
-function l$e({
+function KeybindingEditor({
   binding: binding,
   value: value,
   editing: editing,
@@ -11677,15 +11677,15 @@ var u$e = {
   ui: 1,
   plugins: 2,
 };
-var d$e = {
+var CATEGORY_SEARCH_IDS = {
   Panel: undefined,
   Camera: Eoe,
   Plugins: aoe,
 };
-function p$e({ children: children }) {
+function DisclosureSummary({ children: children }) {
   return (0, wn.jsxs)("summary", {
     children: [
-      (0, wn.jsx)(nae, {
+      (0, wn.jsx)(DisclosureChevron, {
         className: "keybindings-chevron",
       }),
       children,
@@ -11716,7 +11716,7 @@ function m$e(ez) {
     return g$e(ez) ?? ez.group;
   }
 }
-function f$e(ez, eA) {
+function rowIsVisible(ez, eA) {
   if (ez.closest("details:not([open])")) {
     return false;
   }
@@ -11733,7 +11733,7 @@ function f$e(ez, eA) {
     boundingClientRect10.right > Math.max(boundingClientRect11.left, 0)
   );
 }
-function Mse({
+function KeybindingsContent({
   group: group,
   readOnly: eA = false,
   compact: eB = false,
@@ -11881,8 +11881,8 @@ function Mse({
     if (current16) {
       for (const ff of fb) {
         const fg = eW.current.get(ff);
-        if (fg && f$e(fg, current16)) {
-          eY.current.set(ff, r$e(fg));
+        if (fg && rowIsVisible(fg, current16)) {
+          eY.current.set(ff, flashRevealTarget(fg));
         }
       }
     }
@@ -11978,7 +11978,7 @@ function Mse({
                         id: fe + "-label-end",
                         children: fb.label.slice(fi),
                       }),
-                      (0, wn.jsx)(gie, {
+                      (0, wn.jsx)(InfoHint, {
                         label: fb.label,
                         text: "Closes the topmost menu, panel or dialog. Also cancels a selected spell or backs out of a replay.",
                         hoverRegionRef: eV,
@@ -11998,7 +11998,7 @@ function Mse({
               id: fe + "-status",
               children: ["In use: ", fg.map((fj) => fj.label).join(", ")],
             }),
-          (0, wn.jsx)(l$e, {
+          (0, wn.jsx)(KeybindingEditor, {
             binding: fb,
             value: ff,
             editing: !eA && !!eO && cp(eO) === fd,
@@ -12052,7 +12052,7 @@ function Mse({
           tabIndex: -1,
           open: true,
           children: [
-            (0, wn.jsx)(p$e, {
+            (0, wn.jsx)(DisclosureSummary, {
               children: fb,
             }),
             bS[fb] &&
@@ -12072,7 +12072,7 @@ function Mse({
           "data-keybinding-group": fb,
           tabIndex: -1,
           children: [
-            (0, wn.jsx)(p$e, {
+            (0, wn.jsx)(DisclosureSummary, {
               children: "Free camera",
             }),
             fd,
@@ -12105,7 +12105,7 @@ function Mse({
       (group ? " keybindings-content--feature" : "") +
       (eB ? " keybindings-content--compact" : ""),
     "aria-label": group ? group + " keybindings" : "Keybindings",
-    "data-search-id": group ? undefined : Ioe,
+    "data-search-id": group ? undefined : GAMEPANEL_KEYBINDS_ID,
     onKeyDown: (fb) => {
       if (eO) {
         fb.stopPropagation();
@@ -12127,7 +12127,7 @@ function Mse({
                 id: eG + "-tab-" + fb,
                 "aria-selected": eN === fb,
                 "aria-controls": eG + "-list",
-                "data-search-id": d$e[fb],
+                "data-search-id": CATEGORY_SEARCH_IDS[fb],
                 onClick: () => {
                   var fc;
                   eQ(null);
@@ -12263,7 +12263,7 @@ function Mse({
     ],
   });
 }
-var b$e = {
+var DOTS = {
   "fireball-line-vertical": [
     [9, 3.5],
     [9, 9],
@@ -12275,12 +12275,12 @@ var b$e = {
     [14.5, 9],
   ],
 };
-var _$e = ({ icon: icon }) => {
+var MechanicsChoiceGlyph = ({ icon: icon }) => {
   let eB;
   switch (icon) {
     case "fireball-line-horizontal":
     case "fireball-line-vertical":
-      eB = b$e[icon].map(([eC, eD]) =>
+      eB = DOTS[icon].map(([eC, eD]) =>
         (0, wn.jsx)(
           "circle",
           {
@@ -12322,7 +12322,7 @@ var _$e = ({ icon: icon }) => {
     children: eB,
   });
 };
-var Coe = ({
+var SettingRow = ({
   children: children,
   hint: hint,
   isModified: isModified,
@@ -12450,7 +12450,7 @@ function toe(ez) {
     assists: w$e(ez.filter((eC) => eB(eC) === "aid")),
   };
 }
-var k$e = ({
+var MechanicsChoiceRow = ({
   label: label,
   info: info,
   note: note,
@@ -12482,7 +12482,7 @@ var k$e = ({
     },
   };
   const eO = (0, pn.useRef)(null);
-  return (0, wn.jsx)(Coe, {
+  return (0, wn.jsx)(SettingRow, {
     searchId: null,
     isModified: isModified,
     hideReset: hideReset,
@@ -12498,7 +12498,7 @@ var k$e = ({
           children: [
             label,
             info &&
-              (0, wn.jsx)(gie, {
+              (0, wn.jsx)(InfoHint, {
                 label: label,
                 text: info,
                 hoverRegionRef: eO,
@@ -12542,7 +12542,7 @@ var k$e = ({
                 "aria-label": eQ.icon ? eQ.label : undefined,
                 children: [
                   eQ.icon &&
-                    (0, wn.jsx)(_$e, {
+                    (0, wn.jsx)(MechanicsChoiceGlyph, {
                       icon: eQ.icon,
                     }),
                   (0, wn.jsx)("span", {
@@ -12558,7 +12558,7 @@ var k$e = ({
     }),
   });
 };
-var x$e = ({
+var MechanicsToggleRow = ({
   label: label,
   info: info,
   note: note,
@@ -12577,12 +12577,12 @@ var x$e = ({
     XJfOe: " mechanics-toggle-info--noted",
   };
   const eM = (0, pn.useRef)(null);
-  const eN = (0, wn.jsx)(Aoe, {
+  const eN = (0, wn.jsx)(OsrsCheckbox, {
     checked: checked,
     onChange: onToggle,
     label: label,
   });
-  return (0, wn.jsx)(Coe, {
+  return (0, wn.jsx)(SettingRow, {
     searchId: null,
     isModified: isModified,
     hideReset: hideReset,
@@ -12598,7 +12598,7 @@ var x$e = ({
           children: [
             eN,
             info &&
-              (0, wn.jsx)(gie, {
+              (0, wn.jsx)(InfoHint, {
                 label: label,
                 text: info,
                 hoverRegionRef: eM,
@@ -12613,7 +12613,7 @@ var x$e = ({
       : eN,
   });
 };
-var Uie = ({
+var MechanicsSettings = ({
   variant: ez = "configurer",
   optionsExpanded: optionsExpanded,
   onOptionsExpandedChange: onOptionsExpandedChange,
@@ -12683,7 +12683,7 @@ var Uie = ({
       true !== config[dependsOn];
     if (choices && choices.length > 0) {
       return (0, wn.jsx)(
-        k$e,
+        MechanicsChoiceRow,
         {
           label: label,
           info: info,
@@ -12713,7 +12713,7 @@ var Uie = ({
         pn.Fragment,
         {
           children: [
-            (0, wn.jsx)(x$e, {
+            (0, wn.jsx)(MechanicsToggleRow, {
               label: label,
               info: info,
               note: fp,
@@ -12739,7 +12739,7 @@ var Uie = ({
               true === fq &&
               (0, wn.jsx)("div", {
                 className: "mechanics-feature-keybindings",
-                children: (0, wn.jsx)(Mse, {
+                children: (0, wn.jsx)(KeybindingsContent, {
                   group: ft,
                   readOnly: eE,
                   compact: true,
@@ -12768,7 +12768,7 @@ var Uie = ({
     });
   const f6 =
     targetNpc && onSetBossHp
-      ? (0, wn.jsx)(UPe, {
+      ? (0, wn.jsx)(BossHealthControl, {
           targetNpc: targetNpc,
           onSetBossHp: onSetBossHp,
           onApplyPreset: onApplyBossHpPreset,
@@ -12905,7 +12905,7 @@ var Uie = ({
                   onMouseDown: (fv) => fv.preventDefault(),
                   onClick: () => onOptionsExpandedChange?.(!optionsExpanded),
                   children: [
-                    (0, wn.jsx)(nae, {
+                    (0, wn.jsx)(DisclosureChevron, {
                       open: optionsExpanded,
                     }),
                     "Options ",
@@ -12982,7 +12982,7 @@ var Uie = ({
               className: "mechanics-group-rule",
             }),
           null != setupField &&
-            (0, wn.jsx)(Coe, {
+            (0, wn.jsx)(SettingRow, {
               searchId: null,
               isModified: false,
               onReset: () => {},
@@ -13005,7 +13005,7 @@ var M$e = {
 function C$e(ez) {
   return "8".repeat(Math.max(1, ez));
 }
-var Zie = ({
+var FpsOverlay = ({
   visible: visible,
   position: position,
   backed: eB = false,
@@ -13122,7 +13122,7 @@ function Wae({ store: store, children: children }) {
   });
 }
 var Iq = () => () => {};
-var T$e = [
+var OSM_HOTKEY_TYPES = [
   {
     id: 6,
     name: "Inventory Tab",
@@ -13185,7 +13185,7 @@ var T$e = [
     orb: "special",
   },
 ];
-var h3 = new Map(T$e.map((ez) => [ez.id, ez]));
+var h3 = new Map(OSM_HOTKEY_TYPES.map((ez) => [ez.id, ez]));
 function N$e(ez) {
   return h3.get(ez);
 }
@@ -13250,7 +13250,7 @@ function Uae({
     };
   }
 }
-var A$e = [
+var AUTO_STEPS = [
   {
     from: 1216,
     scale: 1.25,
@@ -13271,7 +13271,7 @@ var A$e = [
 function I$e(ez, eA = 1) {
   const eC = Math.min(ez.height, (3 * ez.width) / 4) * eA;
   let eD = 1;
-  for (const eE of A$e) {
+  for (const eE of AUTO_STEPS) {
     if (eC >= eE.from) {
       eD = eE.scale;
     }
@@ -13378,14 +13378,14 @@ var z$e = {
   hotkeysOpenOnLeft: false,
   hotkeys: P$e,
 };
-var B$e = {
+var REPLAY_ZUK_SET_TIMER_DEFAULT_POSITION = {
   x: 279,
   y: 74,
   anchorX: "left",
   anchorY: "top",
 };
 function Rae(ez) {
-  return ez.panels.zukSetTimer ?? F$e(B$e, ez.overlayScale ?? 1);
+  return ez.panels.zukSetTimer ?? F$e(REPLAY_ZUK_SET_TIMER_DEFAULT_POSITION, ez.overlayScale ?? 1);
 }
 function Qse(ez, eA, eB) {
   const eD = Math.max(0, eA);
@@ -13521,7 +13521,7 @@ function V$e() {
   );
 }
 var Hae = (0, pn.createContext)(null);
-function Y$e({ surface: surface, children: children }) {
+function WorkspacePortal({ surface: surface, children: children }) {
   const eB = (0, pn.useContext)(Hae);
   if (!eB) {
     return children;
@@ -13571,7 +13571,7 @@ function Q$e(ez, eA) {
   return eA;
 }
 var Voe = ["vertical", "horizontal", "horizontal-wide"];
-var sae = {
+var COMPACT_ORBS_LAYOUT_LABELS = {
   vertical: "Vertical",
   horizontal: "Horizontal",
   "horizontal-wide": "Wide",
@@ -13598,7 +13598,7 @@ function Mae(ez, eA, eB) {
 function fie(ez) {
   return ez.length === lie.length && ez.every((eB, eC) => eB === lie[eC]);
 }
-var Rke = "osrs-yama-settings";
+var STORAGE_KEY = "osrs-yama-settings";
 function Rie(ez, eA, navigatorRef = navigator) {
   if ("auto" !== ez) {
     return "on" === ez;
@@ -13606,7 +13606,7 @@ function Rie(ez, eA, navigatorRef = navigator) {
     return eA !== "software" && !isAppleTouchDevice(navigatorRef);
   }
 }
-var Kse = Rke;
+var Kse = STORAGE_KEY;
 var eRe = zObject({
   x: zNumber().finite(),
   y: zNumber().finite(),
@@ -13614,7 +13614,7 @@ var eRe = zObject({
   anchorY: zUndefined().optional(),
 });
 var tRe = [0.5, 1, 2];
-function Pie(ez, eA) {
+function infoboxPinTargetUnavailableReason(ez, eA) {
   if (ez === "inventory" && eA === "fixed") {
     return "Inventory is not available in Fixed.";
   } else if ("inventory" === ez && "mobile" === eA) {
@@ -13624,13 +13624,13 @@ function Pie(ez, eA) {
   }
 }
 function Cae(ez, eA) {
-  if (Pie(ez, eA)) {
+  if (infoboxPinTargetUnavailableReason(ez, eA)) {
     return "hud";
   } else {
     return ez;
   }
 }
-var poe = [
+var RESOLUTION_PRESETS = [
   {
     id: "osrs-fixed",
     label: "OSRS Fixed (765 × 503)",
@@ -13650,7 +13650,7 @@ var poe = [
     height: 1080,
   },
 ];
-var $se = 7680;
+var GAME_RESOLUTION_MAX = 7680;
 var ooe = {
   mode: "fit",
   width: 765,
@@ -13694,7 +13694,7 @@ var aRe = {
   anchorX: "right",
   anchorY: "top",
 };
-var Yse = {
+var PERSISTED_SETTINGS_DEFAULTS = {
   speedMultiplier: 1,
   autoAdvance: true,
   pauseWhenUnfocused: true,
@@ -13837,7 +13837,7 @@ var Yse = {
   mobileInterfaceScaling: 400,
   mobileLayoutPlacement: {},
 };
-var sRe = {
+var MOBILE_PLATFORM_DEFAULTS = {
   uiScale: 1,
   renderScaleHardware: 0.85,
   cameraPluginEnabled: false,
@@ -13852,7 +13852,7 @@ var sRe = {
   clientLayoutMode: "mobile",
 };
 function lRe(ez) {
-  const eB = Bse(ez);
+  const eB = parseStoredPosition(ez);
   if (eB) {
     if (
       eB.x === 0 &&
@@ -13868,7 +13868,7 @@ function lRe(ez) {
     return null;
   }
 }
-function Bse(ez) {
+function parseStoredPosition(ez) {
   const parseResult3 = Yae.strip().safeParse(ez);
   if (parseResult3.success) {
     return {
@@ -13892,14 +13892,14 @@ function Bse(ez) {
 }
 function cRe(ez, eA) {
   return (
-    Bse(ez) ?? {
+    parseStoredPosition(ez) ?? {
       ...eA,
     }
   );
 }
 var uRe = ["fit", "osrs-fixed", "hd-720", "hd-1080", "custom"];
 function dRe(ez) {
-  const eA = Sie.catch(Yse.uiScale).parse(ez);
+  const eA = Sie.catch(PERSISTED_SETTINGS_DEFAULTS.uiScale).parse(ez);
   return Math.min(3, Math.max(1, eA));
 }
 var pRe = /^#[0-9a-fA-F]{6}$/;
@@ -13929,15 +13929,15 @@ function mRe(ez) {
       typeof eB.height == "number" && Number.isFinite(eB.height)
         ? eB.height
         : ooe.height;
-    const eG = Math.round(Math.max(320, Math.min($se, eD)));
-    const eH = Math.round(Math.max(320, Math.min($se, eE)));
+    const eG = Math.round(Math.max(320, Math.min(GAME_RESOLUTION_MAX, eD)));
+    const eH = Math.round(Math.max(320, Math.min(GAME_RESOLUTION_MAX, eE)));
     let eI;
     if ("string" == typeof eB.presetId && uRe.includes(eB.presetId)) {
       eI = eB.presetId;
     } else if ("fit" === eC) {
       eI = "fit";
     } else {
-      const eK = poe.find((eM) => eM.width === eG && eM.height === eH);
+      const eK = RESOLUTION_PRESETS.find((eM) => eM.width === eG && eM.height === eH);
       eI = eK ? eK.id : "custom";
     }
     return {
@@ -13955,7 +13955,7 @@ function fRe(ez) {
   if (typeof ez == "number" && Number.isFinite(ez)) {
     return Math.max(0, Math.min(8, Math.round(ez)));
   } else {
-    return Yse.cameraInnerZoomLevel;
+    return PERSISTED_SETTINGS_DEFAULTS.cameraInnerZoomLevel;
   }
 }
 function vae(ez, eA, eB) {
@@ -14001,42 +14001,42 @@ function wRe(ez) {
     }
     eC[eD] = eH;
   }
-  return eg(eC, (eM, eN) => ({
+  return consolidateRetiredEncounterKinds(eC, (eM, eN) => ({
     ...eM,
     ...eN,
   })).map;
 }
-var kRe = {
+var PersistedSettingsShape = {
   speedMultiplier: zUnknown().transform(function (ez) {
-    return tRe.find((eA) => eA === ez) ?? Yse.speedMultiplier;
+    return tRe.find((eA) => eA === ez) ?? PERSISTED_SETTINGS_DEFAULTS.speedMultiplier;
   }),
-  autoAdvance: zUnknown().transform(() => Yse.autoAdvance),
-  pauseWhenUnfocused: zBoolean().catch(Yse.pauseWhenUnfocused),
-  inputLagMs: zNumber().finite().int().min(0).max(1000).catch(Yse.inputLagMs),
-  fightStartCountdown: zBoolean().catch(Yse.fightStartCountdown),
+  autoAdvance: zUnknown().transform(() => PERSISTED_SETTINGS_DEFAULTS.autoAdvance),
+  pauseWhenUnfocused: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.pauseWhenUnfocused),
+  inputLagMs: zNumber().finite().int().min(0).max(1000).catch(PERSISTED_SETTINGS_DEFAULTS.inputLagMs),
+  fightStartCountdown: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.fightStartCountdown),
   fightStartCountdownTicks: zUnknown().transform((ez) =>
-    hRe(ez, 1, 5, Yse.fightStartCountdownTicks),
+    hRe(ez, 1, 5, PERSISTED_SETTINGS_DEFAULTS.fightStartCountdownTicks),
   ),
-  showCoordinates: zBoolean().catch(Yse.showCoordinates),
-  showWaveTiles: zBoolean().catch(Yse.showWaveTiles),
-  showDamageTiles: zBoolean().catch(Yse.showDamageTiles),
-  showFireballDangerTiles: zBoolean().catch(Yse.showFireballDangerTiles),
-  smoothTerrain: zBoolean().catch(Yse.smoothTerrain),
-  brightness: yRe(0, 1.2, Yse.brightness),
-  contrast: yRe(0.5, 2, Yse.contrast),
-  saturation: yRe(0, 2, Yse.saturation),
+  showCoordinates: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showCoordinates),
+  showWaveTiles: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showWaveTiles),
+  showDamageTiles: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showDamageTiles),
+  showFireballDangerTiles: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showFireballDangerTiles),
+  smoothTerrain: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.smoothTerrain),
+  brightness: yRe(0, 1.2, PERSISTED_SETTINGS_DEFAULTS.brightness),
+  contrast: yRe(0.5, 2, PERSISTED_SETTINGS_DEFAULTS.contrast),
+  saturation: yRe(0, 2, PERSISTED_SETTINGS_DEFAULTS.saturation),
   rendererType: zUnknown().transform(function (ez) {
     if (ez === "webgl" || ez === "canvas2d") {
       return ez;
     } else {
-      return Yse.rendererType;
+      return PERSISTED_SETTINGS_DEFAULTS.rendererType;
     }
   }),
   mechanicsConfigPerEncounter: zUnknown().transform(wRe),
   startingHpPerEncounter: zUnknown().transform(function (ez) {
     if ("object" != typeof ez || null === ez || Array.isArray(ez)) {
       return {
-        ...Yse.startingHpPerEncounter,
+        ...PERSISTED_SETTINGS_DEFAULTS.startingHpPerEncounter,
       };
     }
     const eB = {};
@@ -14069,27 +14069,27 @@ var kRe = {
     return eC;
   }),
   logLevel: zEnum(["none", "error", "warn", "info", "debug", "trace"]).catch(
-    Yse.logLevel,
+    PERSISTED_SETTINGS_DEFAULTS.logLevel,
   ),
-  gamePanelPosition: zUnknown().transform((ez) => cRe(ez, Yse.gamePanelPosition)),
-  minimapPosition: zUnknown().transform((ez) => cRe(ez, Yse.minimapPosition)),
-  compactOrbsPosition: zUnknown().transform((ez) => cRe(ez, Yse.compactOrbsPosition)),
+  gamePanelPosition: zUnknown().transform((ez) => cRe(ez, PERSISTED_SETTINGS_DEFAULTS.gamePanelPosition)),
+  minimapPosition: zUnknown().transform((ez) => cRe(ez, PERSISTED_SETTINGS_DEFAULTS.minimapPosition)),
+  compactOrbsPosition: zUnknown().transform((ez) => cRe(ez, PERSISTED_SETTINGS_DEFAULTS.compactOrbsPosition)),
   infoboxPosition: zUnknown().transform(lRe),
-  infoboxPinTarget: zEnum(["hud", "inventory", "free"]).catch(Yse.infoboxPinTarget),
+  infoboxPinTarget: zEnum(["hud", "inventory", "free"]).catch(PERSISTED_SETTINGS_DEFAULTS.infoboxPinTarget),
   uiScale: zUnknown().transform(dRe),
-  stretchedModePluginEnabled: zBoolean().catch(Yse.stretchedModePluginEnabled),
-  autoOverlayScaleEnabled: zBoolean().catch(Yse.autoOverlayScaleEnabled),
-  sceneOverlaysFollowUiScale: zBoolean().catch(Yse.sceneOverlaysFollowUiScale),
+  stretchedModePluginEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.stretchedModePluginEnabled),
+  autoOverlayScaleEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.autoOverlayScaleEnabled),
+  sceneOverlaysFollowUiScale: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.sceneOverlaysFollowUiScale),
   sceneOverlayScalePercent: zUnknown().transform((ez) =>
-    hRe(ez, 50, 400, Yse.sceneOverlayScalePercent),
+    hRe(ez, 50, 400, PERSISTED_SETTINGS_DEFAULTS.sceneOverlayScalePercent),
   ),
-  showTickCounter: zBoolean().catch(Yse.showTickCounter),
-  showTickCounterOverhead: zBoolean().catch(Yse.showTickCounterOverhead),
-  tickCounterAbovePrayerIcon: zBoolean().catch(Yse.tickCounterAbovePrayerIcon),
-  showTickCounterInfobox: zBoolean().catch(Yse.showTickCounterInfobox),
-  tickCounterMax: zUnknown().transform((ez) => hRe(ez, 2, 20, Yse.tickCounterMax)),
+  showTickCounter: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showTickCounter),
+  showTickCounterOverhead: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showTickCounterOverhead),
+  tickCounterAbovePrayerIcon: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.tickCounterAbovePrayerIcon),
+  showTickCounterInfobox: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showTickCounterInfobox),
+  tickCounterMax: zUnknown().transform((ez) => hRe(ez, 2, 20, PERSISTED_SETTINGS_DEFAULTS.tickCounterMax)),
   tickCounterFontSize: zUnknown().transform((ez) =>
-    hRe(ez, 8, 72, Yse.tickCounterFontSize),
+    hRe(ez, 8, 72, PERSISTED_SETTINGS_DEFAULTS.tickCounterFontSize),
   ),
   tickCounterColors: zUnknown().transform(function (ez) {
     if (typeof ez != "object" || ez === null || Array.isArray(ez)) {
@@ -14106,19 +14106,19 @@ var kRe = {
     return eB;
   }),
   tickCounterOffsetX: zUnknown().transform((ez) =>
-    hRe(ez, -200, 200, Yse.tickCounterOffsetX),
+    hRe(ez, -200, 200, PERSISTED_SETTINGS_DEFAULTS.tickCounterOffsetX),
   ),
   tickCounterOffsetY: zUnknown().transform((ez) =>
-    hRe(ez, -200, 200, Yse.tickCounterOffsetY),
+    hRe(ez, -200, 200, PERSISTED_SETTINGS_DEFAULTS.tickCounterOffsetY),
   ),
-  showNpcClickbox: zBoolean().catch(Yse.showNpcClickbox),
-  showTickTiming: zBoolean().catch(Yse.showTickTiming),
-  showDetailedDps: zBoolean().catch(Yse.showDetailedDps),
-  dpsOverlayShowDetails: zBoolean().catch(Yse.dpsOverlayShowDetails),
+  showNpcClickbox: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showNpcClickbox),
+  showTickTiming: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showTickTiming),
+  showDetailedDps: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showDetailedDps),
+  dpsOverlayShowDetails: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.dpsOverlayShowDetails),
   detailedDpsPosition: zUnknown().transform(lRe),
-  showSoundDebug: zBoolean().catch(Yse.showSoundDebug),
-  showCameraDebug: zBoolean().catch(Yse.showCameraDebug),
-  showModifierKeys: zBoolean().catch(Yse.showModifierKeys),
+  showSoundDebug: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showSoundDebug),
+  showCameraDebug: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showCameraDebug),
+  showModifierKeys: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showModifierKeys),
   attackStylePerCategory: zUnknown().transform(function (ez) {
     const parseResult9 = bRe.safeParse(ez);
     if (!parseResult9.success) {
@@ -14137,44 +14137,44 @@ var kRe = {
     }
     return eC;
   }),
-  showShortcutHints: zBoolean().catch(Yse.showShortcutHints),
-  disabledShortcutHints: zArray(zString()).catch(Yse.disabledShortcutHints),
-  masterVolume: yRe(0, 1, Yse.masterVolume),
-  sfxVolume: yRe(0, 1, Yse.sfxVolume),
-  areaVolume: yRe(0, 1, Yse.areaVolume),
-  muteWhenUnfocused: zBoolean().catch(Yse.muteWhenUnfocused),
-  hideHardwareAccelWarning: zBoolean().catch(Yse.hideHardwareAccelWarning),
-  hideMobileWarning: zBoolean().catch(Yse.hideMobileWarning),
-  renderScaleHardware: yRe(0.25, 1, Yse.renderScaleHardware),
-  renderScaleSoftware: yRe(0.25, 1, Yse.renderScaleSoftware),
-  antiAliasing: zEnum(["auto", "on", "off"]).catch(Yse.antiAliasing),
-  showFps: zBoolean().catch(Yse.showFps),
+  showShortcutHints: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showShortcutHints),
+  disabledShortcutHints: zArray(zString()).catch(PERSISTED_SETTINGS_DEFAULTS.disabledShortcutHints),
+  masterVolume: yRe(0, 1, PERSISTED_SETTINGS_DEFAULTS.masterVolume),
+  sfxVolume: yRe(0, 1, PERSISTED_SETTINGS_DEFAULTS.sfxVolume),
+  areaVolume: yRe(0, 1, PERSISTED_SETTINGS_DEFAULTS.areaVolume),
+  muteWhenUnfocused: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.muteWhenUnfocused),
+  hideHardwareAccelWarning: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.hideHardwareAccelWarning),
+  hideMobileWarning: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.hideMobileWarning),
+  renderScaleHardware: yRe(0.25, 1, PERSISTED_SETTINGS_DEFAULTS.renderScaleHardware),
+  renderScaleSoftware: yRe(0.25, 1, PERSISTED_SETTINGS_DEFAULTS.renderScaleSoftware),
+  antiAliasing: zEnum(["auto", "on", "off"]).catch(PERSISTED_SETTINGS_DEFAULTS.antiAliasing),
+  showFps: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.showFps),
   fpsCap: _Re.catch(144),
   activeResourcePack: zUnknown().transform((ez) =>
-    typeof ez == "string" && Uoe(ez) ? ez : Yse.activeResourcePack,
+    typeof ez == "string" && Uoe(ez) ? ez : PERSISTED_SETTINGS_DEFAULTS.activeResourcePack,
   ),
-  cameraPluginEnabled: zBoolean().catch(Yse.cameraPluginEnabled),
-  cameraVerticalCamera: zBoolean().catch(Yse.cameraVerticalCamera),
-  cameraInvertYaw: zBoolean().catch(Yse.cameraInvertYaw),
-  cameraInvertPitch: zBoolean().catch(Yse.cameraInvertPitch),
+  cameraPluginEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.cameraPluginEnabled),
+  cameraVerticalCamera: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.cameraVerticalCamera),
+  cameraInvertYaw: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.cameraInvertYaw),
+  cameraInvertPitch: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.cameraInvertPitch),
   cameraInnerZoomLevel: zUnknown().transform(fRe),
   cameraOuterZoomLimit: zNumber()
     .finite()
     .int()
     .min(-400)
     .max(400)
-    .catch(Yse.cameraOuterZoomLimit),
-  cameraSpeed: vRe(Yse.cameraSpeed),
-  cameraDragSpeed: vRe(Yse.cameraDragSpeed),
-  cameraRightClickMovesCamera: zBoolean().catch(Yse.cameraRightClickMovesCamera),
+    .catch(PERSISTED_SETTINGS_DEFAULTS.cameraOuterZoomLimit),
+  cameraSpeed: vRe(PERSISTED_SETTINGS_DEFAULTS.cameraSpeed),
+  cameraDragSpeed: vRe(PERSISTED_SETTINGS_DEFAULTS.cameraDragSpeed),
+  cameraRightClickMovesCamera: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.cameraRightClickMovesCamera),
   cameraZoomIncrement: zNumber()
     .finite()
     .int()
     .positive()
-    .catch(Yse.cameraZoomIncrement),
+    .catch(PERSISTED_SETTINGS_DEFAULTS.cameraZoomIncrement),
   gameResolution: zUnknown().transform(mRe),
   clientLayoutMode: zUnknown().transform((ez) =>
-    PCe(ez) && ez !== "mobile" ? ez : Yse.clientLayoutMode,
+    PCe(ez) && ez !== "mobile" ? ez : PERSISTED_SETTINGS_DEFAULTS.clientLayoutMode,
   ),
   fixedLayoutScale: zUnknown().transform(function (ez) {
     if ("number" == typeof ez && Number.isFinite(ez)) {
@@ -14185,71 +14185,71 @@ var kRe = {
       return "fit";
     }
   }),
-  fixedLayoutIntegerScaling: zBoolean().catch(Yse.fixedLayoutIntegerScaling),
-  fixedChatboxVisible: zBoolean().catch(Yse.fixedChatboxVisible),
-  transparentChatbox: zBoolean().catch(Yse.transparentChatbox),
-  transparentSidePanel: zBoolean().catch(Yse.transparentSidePanel),
-  hotkeysCloseSidePanel: zBoolean().catch(Yse.hotkeysCloseSidePanel),
-  clickThroughTransparentChatbox: zBoolean().catch(Yse.clickThroughTransparentChatbox),
-  hasCompletedTutorial: zBoolean().catch(Yse.hasCompletedTutorial),
-  attackTimerMetronomeEnabled: zBoolean().catch(Yse.attackTimerMetronomeEnabled),
-  attackTimerMetronomeShowBar: zBoolean().catch(Yse.attackTimerMetronomeShowBar),
-  attackTimerMetronomeShowTicks: zBoolean().catch(Yse.attackTimerMetronomeShowTicks),
+  fixedLayoutIntegerScaling: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.fixedLayoutIntegerScaling),
+  fixedChatboxVisible: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.fixedChatboxVisible),
+  transparentChatbox: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.transparentChatbox),
+  transparentSidePanel: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.transparentSidePanel),
+  hotkeysCloseSidePanel: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.hotkeysCloseSidePanel),
+  clickThroughTransparentChatbox: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.clickThroughTransparentChatbox),
+  hasCompletedTutorial: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.hasCompletedTutorial),
+  attackTimerMetronomeEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.attackTimerMetronomeEnabled),
+  attackTimerMetronomeShowBar: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.attackTimerMetronomeShowBar),
+  attackTimerMetronomeShowTicks: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.attackTimerMetronomeShowTicks),
   attackTimerMetronomeFontSize: zUnknown().transform((ez) =>
-    hRe(ez, 8, 72, Yse.attackTimerMetronomeFontSize),
+    hRe(ez, 8, 72, PERSISTED_SETTINGS_DEFAULTS.attackTimerMetronomeFontSize),
   ),
   attackTimerMetronomeAbovePrayerIcon: zBoolean().catch(
-    Yse.attackTimerMetronomeAbovePrayerIcon,
+    PERSISTED_SETTINGS_DEFAULTS.attackTimerMetronomeAbovePrayerIcon,
   ),
   attackTimerMetronomeOffsetX: zUnknown().transform((ez) =>
-    hRe(ez, -200, 200, Yse.attackTimerMetronomeOffsetX),
+    hRe(ez, -200, 200, PERSISTED_SETTINGS_DEFAULTS.attackTimerMetronomeOffsetX),
   ),
   attackTimerMetronomeOffsetY: zUnknown().transform((ez) =>
-    hRe(ez, -200, 200, Yse.attackTimerMetronomeOffsetY),
+    hRe(ez, -200, 200, PERSISTED_SETTINGS_DEFAULTS.attackTimerMetronomeOffsetY),
   ),
-  npcAttackTimerMetronomeEnabled: zBoolean().catch(Yse.npcAttackTimerMetronomeEnabled),
-  customMenuSwapsEnabled: zBoolean().catch(Yse.customMenuSwapsEnabled),
-  customMenuSwaps: zString().catch(Yse.customMenuSwaps),
-  instantInventoryEnabled: zBoolean().catch(Yse.instantInventoryEnabled),
-  instantPrayerEnabled: zBoolean().catch(Yse.instantPrayerEnabled),
-  interfaceStylesEnabled: zBoolean().catch(Yse.interfaceStylesEnabled),
+  npcAttackTimerMetronomeEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.npcAttackTimerMetronomeEnabled),
+  customMenuSwapsEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.customMenuSwapsEnabled),
+  customMenuSwaps: zString().catch(PERSISTED_SETTINGS_DEFAULTS.customMenuSwaps),
+  instantInventoryEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.instantInventoryEnabled),
+  instantPrayerEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.instantPrayerEnabled),
+  interfaceStylesEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.interfaceStylesEnabled),
   interfaceStylesHdHealthBars: zBoolean().catch(
-    Yse.interfaceStylesHdHealthBars,
+    PERSISTED_SETTINGS_DEFAULTS.interfaceStylesHdHealthBars,
   ),
-  attackRangesEnabled: zBoolean().catch(Yse.attackRangesEnabled),
+  attackRangesEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.attackRangesEnabled),
   attackRanges: zUnknown().transform(readAttackRangesSettings),
-  projectileOverrideEnabled: zBoolean().catch(Yse.projectileOverrideEnabled),
+  projectileOverrideEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.projectileOverrideEnabled),
   projectileOverride: zUnknown().transform(readProjectileOverrideSettings),
-  prayerEnabled: zBoolean().catch(Yse.prayerEnabled),
-  prayerFlickOrbEnabled: zBoolean().catch(Yse.prayerFlickOrbEnabled),
-  prayerFlickAlwaysOn: zBoolean().catch(Yse.prayerFlickAlwaysOn),
-  prayerFlickEnabled: zBoolean().catch(Yse.prayerFlickEnabled),
-  tickAudioMetronomeEnabled: zBoolean().catch(Yse.tickAudioMetronomeEnabled),
-  tickAudioMetronomeTock: zBoolean().catch(Yse.tickAudioMetronomeTock),
-  tickAudioMetronomeVolume: yRe(0, 1, Yse.tickAudioMetronomeVolume),
-  tileGridEnabled: zBoolean().catch(Yse.tileGridEnabled),
+  prayerEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.prayerEnabled),
+  prayerFlickOrbEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.prayerFlickOrbEnabled),
+  prayerFlickAlwaysOn: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.prayerFlickAlwaysOn),
+  prayerFlickEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.prayerFlickEnabled),
+  tickAudioMetronomeEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.tickAudioMetronomeEnabled),
+  tickAudioMetronomeTock: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.tickAudioMetronomeTock),
+  tickAudioMetronomeVolume: yRe(0, 1, PERSISTED_SETTINGS_DEFAULTS.tickAudioMetronomeVolume),
+  tileGridEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.tileGridEnabled),
   tileGridColor: zString()
     .regex(pRe)
     .transform((ez) => ez.toLowerCase())
-    .catch(Yse.tileGridColor),
+    .catch(PERSISTED_SETTINGS_DEFAULTS.tileGridColor),
   tileGridOpacity: zNumber()
     .finite()
     .transform((ez) => Math.min(1, Math.max(0, ez)))
-    .catch(Yse.tileGridOpacity),
-  tileGridWidth: zNumber().finite().transform(an).catch(Yse.tileGridWidth),
+    .catch(PERSISTED_SETTINGS_DEFAULTS.tileGridOpacity),
+  tileGridWidth: zNumber().finite().transform(an).catch(PERSISTED_SETTINGS_DEFAULTS.tileGridWidth),
   prayerFlickPosition: zUnknown().transform(lRe),
-  statusBarsEnabled: zBoolean().catch(Yse.statusBarsEnabled),
-  statusBarsShowValues: zBoolean().catch(Yse.statusBarsShowValues),
-  entityHiderEnabled: zBoolean().catch(Yse.entityHiderEnabled),
+  statusBarsEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.statusBarsEnabled),
+  statusBarsShowValues: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.statusBarsShowValues),
+  entityHiderEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.entityHiderEnabled),
   entityHider: zUnknown().transform(dp),
-  tzhaarHpTrackerEnabled: zBoolean().catch(Yse.tzhaarHpTrackerEnabled),
+  tzhaarHpTrackerEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.tzhaarHpTrackerEnabled),
   tzhaarHpTracker: zUnknown().transform(bf),
-  infernoAdditionsEnabled: zBoolean().catch(Yse.infernoAdditionsEnabled),
+  infernoAdditionsEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.infernoAdditionsEnabled),
   infernoAdditions: zUnknown().transform(aS),
-  colosseumAdditionsEnabled: zBoolean().catch(Yse.colosseumAdditionsEnabled),
+  colosseumAdditionsEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.colosseumAdditionsEnabled),
   colosseumAdditions: zUnknown().transform(aS),
   zukSetTimerPosition: zUnknown().transform(lRe),
-  compactOrbsEnabled: zBoolean().catch(Yse.compactOrbsEnabled),
+  compactOrbsEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.compactOrbsEnabled),
   compactOrbsLayout: zUnknown().transform(function (ez) {
     if (
       (function (eA) {
@@ -14277,18 +14277,18 @@ var kRe = {
     }
     return eA;
   }),
-  infoboxTextOutlineEnabled: zBoolean().catch(Yse.infoboxTextOutlineEnabled),
+  infoboxTextOutlineEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.infoboxTextOutlineEnabled),
   infoboxTextOutlineColor: zString()
     .regex(pRe)
     .transform((ez) => ez.toLowerCase())
-    .catch(Yse.infoboxTextOutlineColor),
+    .catch(PERSISTED_SETTINGS_DEFAULTS.infoboxTextOutlineColor),
   touchLongPressMs: zUnknown().transform((ez) =>
-    gRe(ez, 100, b5, 50, Yse.touchLongPressMs),
+    gRe(ez, 100, b5, 50, PERSISTED_SETTINGS_DEFAULTS.touchLongPressMs),
   ),
   touchMenuRowHeight: zUnknown().transform((ez) =>
-    gRe(ez, 20, 48, 2, Yse.touchMenuRowHeight),
+    gRe(ez, 20, 48, 2, PERSISTED_SETTINGS_DEFAULTS.touchMenuRowHeight),
   ),
-  touchHapticsEnabled: zBoolean().catch(Yse.touchHapticsEnabled),
+  touchHapticsEnabled: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.touchHapticsEnabled),
   mobileHotkeys: zUnknown().transform(function (ez) {
     if (Array.isArray(ez) && ez.length === 5) {
       return ez.map((eB) =>
@@ -14302,9 +14302,9 @@ var kRe = {
       return [...P$e];
     }
   }),
-  mobileHotkeysOpenOnLeft: zBoolean().catch(Yse.mobileHotkeysOpenOnLeft),
-  mobileToolsOpen: zBoolean().catch(Yse.mobileToolsOpen),
-  mobileInterfaceScaling: zNumber().refine(hCe).catch(Yse.mobileInterfaceScaling),
+  mobileHotkeysOpenOnLeft: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.mobileHotkeysOpenOnLeft),
+  mobileToolsOpen: zBoolean().catch(PERSISTED_SETTINGS_DEFAULTS.mobileToolsOpen),
+  mobileInterfaceScaling: zNumber().refine(hCe).catch(PERSISTED_SETTINGS_DEFAULTS.mobileInterfaceScaling),
   mobileLayoutPlacement: zUnknown().transform(function (ez) {
     const parseResult10 = bRe.safeParse(ez);
     if (!parseResult10.success) {
@@ -14312,7 +14312,7 @@ var kRe = {
     }
     const eC = {};
     for (const eD of Object.values(rRe)) {
-      const eE = Bse(parseResult10.data[eD]);
+      const eE = parseStoredPosition(parseResult10.data[eD]);
       if (eE) {
         eC[eD] = eE;
       }
@@ -14355,7 +14355,7 @@ var kRe = {
               SRe(eD, eE, fRe(eG));
             }
           } else {
-            const eH = kRe[eE];
+            const eH = PersistedSettingsShape[eE];
             const parseResult12 = (
               eH instanceof ZodCatch ? eH.removeCatch() : eH
             ).safeParse(eG);
@@ -14372,7 +14372,7 @@ var kRe = {
       }
     }),
 };
-var xRe = zObject(kRe);
+var xRe = zObject(PersistedSettingsShape);
 function gae(ez) {
   const parseResult13 = bRe.safeParse(ez);
   const eC = parseResult13.success ? parseResult13.data : {};
@@ -14388,7 +14388,7 @@ function gae(ez) {
         }
       : eD;
   const eH = xRe.parse({
-    ...Yse,
+    ...PERSISTED_SETTINGS_DEFAULTS,
     ...eC,
     mechanicsConfigPerEncounter: eG,
     infoboxPinTarget:
@@ -14414,12 +14414,12 @@ function gae(ez) {
   return eN;
 }
 function dr() {
-  const eA = cE(Rke);
+  const eA = cE(STORAGE_KEY);
   if (eA) {
     return gae(eA);
   } else {
     return {
-      ...Yse,
+      ...PERSISTED_SETTINGS_DEFAULTS,
     };
   }
 }
@@ -14439,7 +14439,7 @@ function MRe(ez) {
       SRe(eC, eD, eG);
       continue;
     }
-    const eH = sRe[eD];
+    const eH = MOBILE_PLATFORM_DEFAULTS[eD];
     if (undefined !== eH) {
       SRe(eC, eD, eH);
     }
@@ -14447,13 +14447,13 @@ function MRe(ez) {
   return eC;
 }
 var CRe = {
-  gameResolution: sRe.gameResolution,
-  clientLayoutMode: sRe.clientLayoutMode,
+  gameResolution: MOBILE_PLATFORM_DEFAULTS.gameResolution,
+  clientLayoutMode: MOBILE_PLATFORM_DEFAULTS.clientLayoutMode,
 };
 function SRe(ez, eA, eB) {
   ez[eA] = eB;
 }
-function hie() {
+function usePersistedSettings() {
   const [eA, eB] = (0, pn.useState)(dr);
   const eC = (0, pn.useRef)(true);
   const eD = dR();
@@ -14468,7 +14468,7 @@ function hie() {
     eE.current = "local";
     const { autoAdvance: autoAdvance, ...eQ } = eA;
     if ("local" === current20) {
-      aH(Rke, eQ);
+      aH(STORAGE_KEY, eQ);
     }
     if ("broadcast" !== current20) {
       eG.current?.postMessage({
@@ -14979,7 +14979,7 @@ function Zn(ez) {
     return null;
   }
   const eB = ez;
-  const eC = ex(eB.encounter) ? eB.encounter : undefined;
+  const eC = isEncounterKind(eB.encounter) ? eB.encounter : undefined;
   const eD = zRe(eB.tick);
   const eE = zRe(eB.sinceStartMs);
   const eG = zRe(eB.encounterMs);
@@ -15491,7 +15491,7 @@ function yoe(ez, eA = {}) {
           eM = false;
           eV += eT * (eU ? 2 : 1);
           if (eV > 33554432) {
-            throw new b2("validation-work-limit");
+            throw new ReplaySafetyError("validation-work-limit");
           }
         } else {
           eT++;
@@ -15514,7 +15514,7 @@ function yoe(ez, eA = {}) {
           eW.push(eY === "{" ? 0 : null);
           eO = eY === "{";
           if (eQ > 2097152 || eW.length > 128) {
-            throw new b2("validation-work-limit");
+            throw new ReplaySafetyError("validation-work-limit");
           }
         } else if ("}" === eY || eY === "]") {
           eW.pop();
@@ -15526,7 +15526,7 @@ function yoe(ez, eA = {}) {
           const eZ = eW.at(-1);
           if ("number" == typeof eZ) {
             if (eZ >= 128) {
-              throw new b2("validation-work-limit");
+              throw new ReplaySafetyError("validation-work-limit");
             }
             eW[eW.length - 1] = eZ + 1;
             eS = Math.max(eS, eZ + 1);
@@ -15541,7 +15541,7 @@ function yoe(ez, eA = {}) {
           eR++;
         }
         if (eR > 6291456) {
-          throw new b2("validation-work-limit");
+          throw new ReplaySafetyError("validation-work-limit");
         }
       }
     }
@@ -15624,7 +15624,7 @@ function Xoe(ez) {
 function kse(ez) {
   const { error: error } = ez;
   const eC = (function (eE) {
-    if (eE instanceof b2) {
+    if (eE instanceof ReplaySafetyError) {
       return eE;
     }
     if (eE instanceof coe) {
@@ -15868,7 +15868,7 @@ var xAe = {
   maxJitterMs: 0,
   recentDeltas: [],
 };
-var MAe = class e {
+var TickTimingMonitor = class e {
   constructor() {
     aX(this, "deltas", []);
     aX(this, "lastTickTime", 0);
@@ -15940,8 +15940,8 @@ var MAe = class e {
     };
   }
 };
-aX(MAe, "WINDOW_SIZE", 50);
-var CAe = class {
+aX(TickTimingMonitor, "WINDOW_SIZE", 50);
+var InputLagBuffer = class {
   constructor() {
     aX(this, "queue", []);
   }
@@ -16004,7 +16004,7 @@ var PAe = {
   modifierSamples: [],
   overlays: null,
 };
-var $Ae = class {
+var ReplayCaptureBudget = class {
   constructor(ez = {}) {
     aX(this, "capture", WTe());
     aX(this, "listeners", new Set());
@@ -16027,7 +16027,7 @@ var $Ae = class {
       };
     });
     this.limits = {
-      ...BTe,
+      ...REPLAY_CAPTURE_LIMITS,
       ...ez,
     };
   }
@@ -16275,7 +16275,7 @@ var OAe = 0.05;
 var LAe = 0.05;
 var DAe = 0.1;
 var FAe = 0.005;
-var HAe = class {
+var ReplayRecorder = class {
   constructor(ez = {}, eA = new c2(), eB = {}) {
     aX(this, "clock", undefined);
     aX(this, "options", undefined);
@@ -16317,7 +16317,7 @@ var HAe = class {
     aX(this, "openingFinalizable", false);
     this.clock = eA;
     this.options = eB;
-    this.captureBudget = new $Ae(ez);
+    this.captureBudget = new ReplayCaptureBudget(ez);
   }
   getStats() {
     const { counts: counts, ancillaryBytes: ancillaryBytes } =
@@ -17427,11 +17427,11 @@ function zAe(ez, eA) {
   if (eA) {
     return {
       ...BAe(ez, eA),
-      uiState: jAe(ez.uiState, eA.uiState),
+      uiState: reuseMetadata(ez.uiState, eA.uiState),
       ...(ez.dpsProjection === undefined
         ? {}
         : {
-            dpsProjection: jAe(ez.dpsProjection, eA.dpsProjection),
+            dpsProjection: reuseMetadata(ez.dpsProjection, eA.dpsProjection),
           }),
     };
   } else {
@@ -17442,7 +17442,7 @@ function BAe(ez, eA) {
   if (ez.viewportState === undefined) {
     return ez;
   }
-  const eC = jAe(ez.viewportState, eA?.viewportState);
+  const eC = reuseMetadata(ez.viewportState, eA?.viewportState);
   if (eC === ez.viewportState) {
     return ez;
   } else {
@@ -17459,7 +17459,7 @@ function WAe(ez) {
   }
   return eA;
 }
-function jAe(ez, eA) {
+function reuseMetadata(ez, eA) {
   if (eA === undefined) {
     return ez;
   }
@@ -17774,7 +17774,7 @@ function oIe(ez) {
     }
   }
 }
-var rIe = new Set([
+var IGNORED_STATE_KEYS = new Set([
   "eventLog",
   "playerHistory",
   "primaryNpcHistory",
@@ -17826,7 +17826,7 @@ function cIe(ez) {
   if (ez && typeof ez == "object") {
     const eB = {};
     for (const eC of Object.keys(ez).sort()) {
-      if (!rIe.has(eC)) {
+      if (!IGNORED_STATE_KEYS.has(eC)) {
         eB[eC] = cIe(ez[eC]);
       }
     }
@@ -17834,7 +17834,7 @@ function cIe(ez) {
   }
   return ez;
 }
-function uIe(ez, eA, eB, eC) {
+function collectDiffs(ez, eA, eB, eC) {
   if (eC.length >= 12) {
     return;
   }
@@ -17858,7 +17858,7 @@ function uIe(ez, eA, eB, eC) {
   }
   const eE = new Set([...Object.keys(ez), ...Object.keys(eA)]);
   for (const eG of eE) {
-    uIe(ez[eG], eA[eG], eB === "" ? eG : eB + "." + eG, eC);
+    collectDiffs(ez[eG], eA[eG], eB === "" ? eG : eB + "." + eG, eC);
   }
 }
 function dIe(ez, eA) {
@@ -17883,7 +17883,7 @@ function dIe(ez, eA) {
     },
   };
   const eC = [];
-  uIe(
+  collectDiffs(
     cIe(aIe(ez)),
     cIe(
       aIe(
@@ -18035,7 +18035,7 @@ var mIe = {
   showLineMarkerLabels: false,
   lineMarkerWidth: 1,
 };
-var fIe = {
+var TAKE_OVER_UNAVAILABLE_TEXT = {
   "legacy-recording":
     "This recording cannot be taken over by the current simulator",
   "mid-run-clip":
@@ -18076,7 +18076,7 @@ function yIe(ez, eA) {
 }
 var vIe = [];
 var wIe = "Finish or cancel clip editing before using replay practice.";
-function kIe({
+function useReplay({
   practiceHeld: practiceHeld,
   practiceUnavailableReason: eA = null,
   onRetryFight: onRetryFight,
@@ -18344,7 +18344,7 @@ function kIe({
   // Made once: `useRef(new HAe(...))` built (and threw away) a recorder on every render.
   const f2 = (0, pn.useRef)(null);
   if (f2.current === null) {
-    f2.current = new HAe({}, dF.clock, {
+    f2.current = new ReplayRecorder({}, dF.clock, {
       idleClock: "held",
     });
   }
@@ -18471,7 +18471,7 @@ function kIe({
     return hv;
   }, [fz, fO]);
   const gc = f2.current.ME();
-  const gd = (0, pn.useMemo)(() => ek(gc), [gc]);
+  const gd = (0, pn.useMemo)(() => parseEngineBootstrap(gc), [gc]);
   const [gg, gh] = (0, pn.useState)(-1);
   const gi = (0, pn.useRef)(gg);
   const gj = (0, pn.useCallback)((hr) => {
@@ -19207,7 +19207,7 @@ function kIe({
       }
       let hz;
       try {
-        hz = eo(hv, current26.L$(), restoreFrameIndex2, objTypeLoader);
+        hz = rebuildEngineAtReplayFrame(hv, current26.L$(), restoreFrameIndex2, objTypeLoader);
       } catch (hE) {
         const hF =
           hE instanceof Error
@@ -19216,7 +19216,7 @@ function kIe({
         fQ({
           frameIndex: selectedFrameIndex,
           message:
-            hE instanceof b2
+            hE instanceof ReplaySafetyError
               ? "Take Over stopped because this recording exceeds supported reconstruction limits."
               : "Take Over could not rebuild this recording.",
         });
@@ -19244,7 +19244,7 @@ function kIe({
       const state7 = hz.getState();
       const hB = dIe(hy.state, state7);
       if (hB.length > 0) {
-        Z.warn(
+        logger.warn(
           "Replay",
           "Take Over reconstruction diverged from the recorded frame",
           {
@@ -19320,7 +19320,7 @@ function kIe({
     } else if (current27.hasRecording()) {
       if ((current27.D$()?.sourceStartFrame ?? 0) > 0) {
         return "A mid-fight clip cannot be restored.";
-      } else if (current27.ME() === gc ? gd : ek(current27.ME())) {
+      } else if (current27.ME() === gc ? gd : parseEngineBootstrap(current27.ME())) {
         return null;
       } else {
         return "This recording cannot be restored.";
@@ -19477,7 +19477,7 @@ function kIe({
     }
     const hs = yIe(f2.current.O$(), g5.current);
     if ("string" == typeof hs) {
-      return fIe[hs];
+      return TAKE_OVER_UNAVAILABLE_TEXT[hs];
     } else {
       return null;
     }
@@ -19655,7 +19655,7 @@ function kIe({
     () =>
       fq
         ? (function (hr, hs) {
-            const hu = undefined === hr ? undefined : MMe[ev(hr)];
+            const hu = undefined === hr ? undefined : MMe[resolveBaseEncounterKind(hr)];
             if (hu) {
               return hu(hs);
             } else {
@@ -19845,7 +19845,7 @@ function IIe(ez, eA, eB) {
     return eB;
   }
 }
-function mse({
+function useSimulationWiring({
   activeMechanicsConfig: activeMechanicsConfig,
   attackStylePerCategory: attackStylePerCategory,
   autoAdvance: autoAdvance,
@@ -20263,8 +20263,8 @@ function mse({
   const fi = (0, pn.useRef)(false);
   const [fj, fl] = (0, pn.useState)(
     () =>
-      new es({
-        encounter: new af(),
+      new SimulationEngine({
+        encounter: new LobbyEncounter(),
         stats: playerConfig.stats,
       }),
   );
@@ -20276,12 +20276,12 @@ function mse({
   fv.current = getReplayUiState;
   const fw = (0, pn.useRef)(playerConfig.equipment);
   const fx = (0, pn.useRef)(playerConfig.stats);
-  const fy = (0, pn.useRef)(ee());
-  const fz = (0, pn.useRef)(ec());
+  const fy = (0, pn.useRef)(createEmptyInventory());
+  const fz = (0, pn.useRef)(createEmptyCombatSupplies());
   const fA = (0, pn.useRef)(null);
   const [fB, fD] = (0, pn.useState)(null);
   const fE = (0, pn.useRef)(null);
-  const fF = (0, pn.useRef)(new MAe());
+  const fF = (0, pn.useRef)(new TickTimingMonitor());
   const fG = (0, pn.useRef)(null);
   const [fH, fJ] = (0, pn.useState)(0);
   const [fL, fM] = (0, pn.useState)(CIe);
@@ -20342,7 +20342,7 @@ function mse({
   const ga = xIe();
   const gb = (0, pn.useRef)(false);
   const gc = (0, pn.useRef)(null);
-  const gd = (0, pn.useRef)(new CAe());
+  const gd = (0, pn.useRef)(new InputLagBuffer());
   const gg = (0, pn.useRef)(null);
   const gh = (0, pn.useRef)(null);
   const gi = (0, pn.useRef)(null);
@@ -20488,7 +20488,7 @@ function mse({
       return hF;
     }
     const current33 = fm.current;
-    switch (b7[hE]) {
+    switch (prayerSlotByPrayer[hE]) {
       case "protection":
         return current33.activePrayer === hE;
       case "offensive":
@@ -20498,7 +20498,7 @@ function mse({
     }
   }, []);
   const gF = (0, pn.useCallback)(
-    (hE) => Object.values(S).filter((hF) => b7[hF] === hE && gE(hF)),
+    (hE) => Object.values(Prayer).filter((hF) => prayerSlotByPrayer[hF] === hE && gE(hF)),
     [gE],
   );
   const gG = (0, pn.useCallback)(
@@ -20569,7 +20569,7 @@ function mse({
   );
   const gI = (0, pn.useCallback)((hE) => {
     const hG = g0.current ?? fm.current.projectPendingPrayers();
-    const hH = ef(hG, [hE], fm.current.prayerState.points > 0);
+    const hH = applyPrayerActions(hG, [hE], fm.current.prayerState.points > 0);
     const hJ = g1.current + 1;
     g1.current = hJ;
     g0.current = hH;
@@ -20587,7 +20587,7 @@ function mse({
       const hG = (function (hH, hJ, hK) {
         let hL = hH;
         let hN = hJ;
-        for (const hO of Object.values(S)) {
+        for (const hO of Object.values(Prayer)) {
           const hP = hJ[hO]?.answeredAtTick;
           if (hP == null || hK < hP) {
             continue;
@@ -20629,7 +20629,7 @@ function mse({
     frameSoundTrackerRef.current.reset();
     eventAudioPlayerRef.current.reset();
   };
-  const gM = kIe({
+  const gM = useReplay({
     practiceHeld: replayPracticeHeld,
     practiceUnavailableReason:
       eG ??
@@ -20736,7 +20736,7 @@ function mse({
         : playerConfig,
     [playerConfig, gM.displayState.playerEquipment, gM.replayMode],
   );
-  const gO = aC(fj.getEncounterKind(), fo.mechanicsConfig);
+  const gO = hasCountdownMovement(fj.getEncounterKind(), fo.mechanicsConfig);
   // While the encounter holds the run (the sandbox before its Start), the
   // start-of-fight countdown waits as it does under a modal, and counts once
   // the hold ends; "sandbox-clock" says the hold changed.
@@ -20748,8 +20748,12 @@ function mse({
   }, []);
   const gOHeld = fj.encounter?.isPaused?.() === true;
   // An encounter that counts down itself, in ticks of its run (the sandbox:
-  // its monsters wait while the player acts), has no start-of-fight countdown.
-  const gOOwnCountdown = fj.encounter?.ownsCountdown?.() === true;
+  // its monsters wait while the player acts), has no start-of-fight countdown;
+  // nor has one whose descriptor says `fightStartCountdown: false` (a boss
+  // that waits for the player: there is nothing to count down to).
+  const gOOwnCountdown =
+    fj.encounter?.ownsCountdown?.() === true ||
+    encounterRegistry.getDescriptorOfKindOrVariant(fj.getEncounterKind())?.fightStartCountdown === false;
   const gP = (function ({
     countdownTicks: countdownTicks,
     speedMultiplier: hF,
@@ -20954,7 +20958,7 @@ function mse({
           boundary: {},
           cadence: null,
           sequence: 0,
-          offered: aC(
+          offered: hasCountdownMovement(
             hF.engine.getEncounterKind(),
             hF.engine.getMechanicsConfig(),
           ),
@@ -21180,7 +21184,7 @@ function mse({
         ].join("\n");
       })(state9.inventory, state9.playerEquipment, (hH) => {
         try {
-          return Y(hH, objTypeLoader?.load(hH)?.name, "Item " + hH);
+          return getItemName(hH, objTypeLoader?.load(hH)?.name, "Item " + hH);
         } catch {
           return "Item " + hH;
         }
@@ -21856,7 +21860,7 @@ function mse({
       null !== current45 &&
       Jae(current45.equipment, hE.equipment) &&
       Cie(current45.inventory, hE.inventory) &&
-      aC(current46.getEncounterKind(), current46.getMechanicsConfig())
+      hasCountdownMovement(current46.getEncounterKind(), current46.getMechanicsConfig())
     ) {
       return (function (hK, hL) {
         const equipment2 = hK.equipment;
@@ -22179,7 +22183,7 @@ function mse({
     window.addEventListener("vardorvis-command",handle);
     return () => window.removeEventListener("vardorvis-command",handle);
   },[fo.encounter.kind,hs]);
-  const hu = gM.replayMode ? null : kMe(fo.encounter, hs);
+  const hu = gM.replayMode ? null : infernoSession(fo.encounter, hs);
   const hv = () => {
     if (hu) {
       hu.primary.onClick();
@@ -22259,7 +22263,7 @@ function mse({
           index: hE,
         });
         fm.current.setAttackStyleIndex(hE);
-        const hG = bQ(playerConfig.equipment.weapon);
+        const hG = getWeaponCategoryOrUnarmed(playerConfig.equipment.weapon);
         updateAttackStylePerCategory({
           ...attackStylePerCategory,
           [hG]: hE,
@@ -22518,7 +22522,7 @@ function mse({
       if (gM.replayMode) {
         return;
       }
-      const hF = hE.filter((hN) => b7[hN] !== undefined);
+      const hF = hE.filter((hN) => prayerSlotByPrayer[hN] !== undefined);
       const { predicted: predicted, retire: retire } = gI({
         type: "quickPrayers",
         selections: hF,
@@ -23384,7 +23388,7 @@ function fEe(ez, eA, eB) {
     bottom: bottom,
   };
 }
-function bEe(ez) {
+function placePane(ez) {
   const {
     kind: kind,
     zoom: zoom,
@@ -23529,7 +23533,7 @@ function _Ee(ez) {
     rows: Math.ceil(Math.max(1, count) / eI),
   };
 }
-var yEe = {
+var CAPTURE_LABELS = {
   cursorSamples: "Mouse path",
   viewportSamples: "Camera detail",
   cursorClicks: "Clicks",
@@ -23551,7 +23555,7 @@ var vEe = {
   frameActions: "actions in one tick",
   file: "bytes",
 };
-function pie(ez) {
+function replayCaptureNotice(ez) {
   if (!ez) {
     return null;
   }
@@ -23563,7 +23567,7 @@ function pie(ez) {
     }
     const eE = Math.floor(stoppedAtMs2 / 1000);
     eB.push(
-      yEe[eC] +
+      CAPTURE_LABELS[eC] +
         " at " +
         Math.floor(eE / 60) +
         ":" +
@@ -23603,7 +23607,7 @@ function Nae(ez) {
   }
 }
 var wEe = () => true;
-function kEe(ez) {
+function compileField(ez) {
   const eB = ez.indexOf("*");
   if (-1 === eB) {
     return (eG) => eG === ez;
@@ -23690,7 +23694,7 @@ var Boe = [
     label: "Clickbox",
   },
 ];
-var iae = "#6fb0ae";
+var DEFAULT_NPC_HIGHLIGHT_COLOR = "#6fb0ae";
 function oie(ez, eA) {
   return ez + ":" + eA;
 }
@@ -23715,7 +23719,7 @@ function SEe(ez, eA) {
   }
   return CEe - (eC % CEe);
 }
-function Koe(ez, eA) {
+function advanceZukSetTimer(ez, eA) {
   switch (ez.status) {
     case "running":
       if ("jad" === ez.phase) {
@@ -23740,7 +23744,7 @@ function Koe(ez, eA) {
       };
   }
 }
-function TEe(ez, eA) {
+function readActualZukSetCountdown(ez, eA) {
   const eC = ez ? dy(ez) : null;
   if (false === eA || null === eC) {
     return;
@@ -23767,20 +23771,20 @@ function REe() {
   }
 }
 var AEe = () => a1().alt;
-function IEe(ez) {
+function unscaledPxVars(ez) {
   return {
     "--unscaled-px": 1 / ez + "px",
     "--border-give": 1 - 1 / ez + "px",
   };
 }
-function EEe(ez) {
+function chromeZoomStyle(ez) {
   return {
     zoom: ez,
     "--overlay-scale": ez,
-    ...IEe(ez),
+    ...unscaledPxVars(ez),
   };
 }
-var OEe = {
+var CHROME_RESIZE_TIMING = {
   duration: 200,
   easing: "cubic-bezier(0.16, 1, 0.3, 1)",
 };
@@ -23903,7 +23907,7 @@ var jEe = (ez) => {
     return ez;
   }
 };
-function UEe(ez, eA) {
+function relation(ez, eA) {
   const eC = Math.min(ez.right, eA.right) - Math.max(ez.left, eA.left);
   const eD = Math.min(ez.bottom, eA.bottom) - Math.max(ez.top, eA.top);
   const eE = [
@@ -23959,7 +23963,7 @@ function VEe(ez, eA, eB = () => true) {
       if (eH === eE || !BEe(eH, eE, eA)) {
         continue;
       }
-      const eI = UEe(eE, eH);
+      const eI = relation(eE, eH);
       if (eI) {
         if (
           !eG ||
@@ -23977,7 +23981,7 @@ function VEe(ez, eA, eB = () => true) {
   }
   return eD;
 }
-function YEe(ez, eA) {
+function resolveAttachedRects(ez, eA) {
   const eB = {
     BuMLm: function (eG, eH) {
       return eG || eH;
@@ -24212,7 +24216,7 @@ function ZEe(ez, eA) {
     }
   }
   const eE = new Map(ez.map((eM) => [eM.id, GEe(eM)]));
-  for (const [eM, eN] of YEe(eD, eE)) {
+  for (const [eM, eN] of resolveAttachedRects(eD, eE)) {
     eE.set(eM, eN);
   }
   const eG = new Map();
@@ -24237,7 +24241,7 @@ function ZEe(ez, eA) {
       }
     } else {
       eE.set(eS, QEe(eE.get(eS), eC.get(eS)));
-      const eX = YEe(eD, eE);
+      const eX = resolveAttachedRects(eD, eE);
       for (const eY of eT) {
         if (eY !== eS) {
           eE.set(eY, QEe(eX.get(eY) ?? eE.get(eY), eC.get(eY)));
@@ -24255,7 +24259,7 @@ var JEe = (ez, eA) =>
     ez.y === eA.y &&
     ez.anchorX === eA.anchorX &&
     ez.anchorY === eA.anchorY);
-function eOe() {
+function createPanelLayoutStore() {
   const ez = {
     mgTLH: function (eO, eQ, eR) {
       return eO(eQ, eR);
@@ -24660,10 +24664,10 @@ var tOe = {
   engagement: null,
 };
 var nOe = (0, pn.createContext)(null);
-function un({ children: children }) {
+function PanelSnapRegistryProvider({ children: children }) {
   const eB = (0, pn.useRef)(new Map());
   const eC = (0, pn.useRef)(new Map());
-  const eD = (0, pn.useMemo)(eOe, []);
+  const eD = (0, pn.useMemo)(createPanelLayoutStore, []);
   const eE = (0, pn.useRef)(tOe);
   const eG = (0, pn.useRef)(new Set());
   const eH = (0, pn.useRef)(null);
@@ -24764,35 +24768,35 @@ function un({ children: children }) {
 function wae() {
   return (0, pn.useContext)(nOe);
 }
-var oOe = () => {
+var useTooltip = () => {
   const ez = (0, pn.useContext)(yxe);
   if (ez === undefined) {
     throw new Error("useTooltip must be used within a TooltipProvider");
   }
   return ez;
 };
-var rOe = () => {
+var useTooltipScale = () => {
   const eA = (0, pn.useContext)(vxe);
   if (eA === undefined) {
     throw new Error("useTooltipScale must be used within a TooltipProvider");
   }
   return eA;
 };
-var iOe = {
+var FLIP_ANIMATION_TIMING = {
   duration: 120,
   easing: "cubic-bezier(0, 0, 0.2, 1)",
 };
 var aOe = "tutorial:panel-moved";
-var sOe = "panel:drag-start";
-var lOe = "panel:drag-end";
+var PANEL_DRAG_START_EVENT = "panel:drag-start";
+var PANEL_DRAG_END_EVENT = "panel:drag-end";
 var cOe = 0;
 function uOe() {
   if ((cOe = Math.max(0, cOe - 1)) === 0) {
     document.documentElement.removeAttribute("data-panel-dragging");
-    window.dispatchEvent(new CustomEvent(lOe));
+    window.dispatchEvent(new CustomEvent(PANEL_DRAG_END_EVENT));
   }
 }
-var dOe = ({
+var DraggablePanel = ({
   children: children,
   defaultPosition: defaultPosition,
   defaultInFrame: eB = false,
@@ -25110,7 +25114,7 @@ var dOe = ({
   }, [scale]);
   const fF = wae();
   const fG = (0, pn.useId)();
-  const fH = (0, pn.useMemo)(eOe, []);
+  const fH = (0, pn.useMemo)(createPanelLayoutStore, []);
   const fJ = fF?.layout ?? fH;
   const fL = (0, pn.useRef)(position === undefined);
   const [fM, fN] = (0, pn.useState)(position);
@@ -25819,7 +25823,7 @@ var dOe = ({
                 transform: "none",
               },
             ],
-            "scale" === gz.kind ? OEe : iOe,
+            "scale" === gz.kind ? CHROME_RESIZE_TIMING : FLIP_ANIMATION_TIMING,
           );
           const current57 = gc.current;
           current57.startTime = gz.startTime;
@@ -25903,7 +25907,7 @@ var dOe = ({
       fx.current = true;
       if (1 === ++cOe) {
         document.documentElement.setAttribute("data-panel-dragging", "");
-        window.dispatchEvent(new CustomEvent(sOe));
+        window.dispatchEvent(new CustomEvent(PANEL_DRAG_START_EVENT));
       }
       startDrag(gy, gz);
     },
@@ -26152,7 +26156,7 @@ var dOe = ({
             width: width,
             height: height,
             zoom: fD,
-            ...IEe(fD),
+            ...unscaledPxVars(fD),
           },
           children: (0, wn.jsx)("div", {
             ref: fs,
@@ -26179,7 +26183,7 @@ var dOe = ({
           }),
         }),
       }),
-      (0, wn.jsx)(pOe, {
+      (0, wn.jsx)(MoveAffordance, {
         visible: gv,
         active: fh,
         label: altHintLabel,
@@ -26188,7 +26192,7 @@ var dOe = ({
   });
 };
 // memo: a pure function of its props, which a tick does not change.
-var pOe = (0, pn.memo)(function pOe({ visible: visible, active: eA = false, label: label }) {
+var MoveAffordance = (0, pn.memo)(function pOe({ visible: visible, active: eA = false, label: label }) {
   const eC = {
     gPmID: "div",
     LrCrB: function (eD, eE) {
@@ -26242,7 +26246,7 @@ function hOe(ez) {
 function gOe(ez, eA) {
   return ez.spawnTick === undefined || ez.spawnTick <= eA;
 }
-function mOe({
+function usePracticeControls({
   engine: engine,
   mechanicsToggles: mechanicsToggles,
   simulationState: simulationState,
@@ -26266,7 +26270,7 @@ function mOe({
     bossNpc: eI,
     bossHpPresets: (0, pn.useMemo)(
       () =>
-        engine ? (cL(engine.getEncounterKind())?.bossHpPresets ?? []) : [],
+        engine ? (getEncounterControls(engine.getEncounterKind())?.bossHpPresets ?? []) : [],
       [engine],
     ),
     hasPracticeControls: mechanicsToggles.length > 0 || undefined !== eI,
@@ -26279,7 +26283,7 @@ var bOe = {
   anchorX: "left",
   anchorY: "top",
 };
-var _Oe = ({
+var BossHealthBarOverlay = ({
   overlayScale: ez = 1,
   enabled: enabled,
   simulationState: simulationState,
@@ -26521,7 +26525,7 @@ var _Oe = ({
   const f7 = Math.max(0, Math.min(1, f5 / f6)) * 100;
   const f8 = showPercentage && (!(eM < fOe) || !showValues);
   const f9 = showValues || f8;
-  return (0, wn.jsx)(dOe, {
+  return (0, wn.jsx)(DraggablePanel, {
     defaultPosition: f2,
     defaultInFrame: defaultSlot !== undefined,
     position: position ?? undefined,
@@ -26605,7 +26609,7 @@ var IO = ["N", "NW", "W", "SW", "S", "SE", "E", "NE"];
 function yOe(ez) {
   return Math.round(10 * ez) / 10;
 }
-function vOe(ez) {
+function formatCameraReadout(ez) {
   const { yaw: eB, pitch: pitch, fovScale: fovScale } = ez.getCameraState();
   const eE = ((yOe(eB) % 360) + 360) % 360;
   return (
@@ -26623,11 +26627,11 @@ function vOe(ez) {
   );
 }
 var wOe = ({ projection: projection }) => {
-  const [eB, eC] = (0, pn.useState)(() => vOe(projection));
+  const [eB, eC] = (0, pn.useState)(() => formatCameraReadout(projection));
   (0, pn.useEffect)(() => {
     let eE = 0;
     const eG = () => {
-      eC(vOe(projection));
+      eC(formatCameraReadout(projection));
       eE = requestAnimationFrame(eG);
     };
     eE = requestAnimationFrame(eG);
@@ -26649,7 +26653,7 @@ var wOe = ({ projection: projection }) => {
     children: eB,
   });
 };
-function kOe(ez, eA) {
+function chatScrollGeometry(ez, eA) {
   const height6 = XCe.height;
   const eD = Math.max(height6, ez + 2);
   const eE = eD - height6;
@@ -26778,27 +26782,27 @@ function MOe(ez, eA, eB, eC, eD, eE, eG = 0, eH = 0) {
     ez.restore();
   }
 }
-var COe = ["All", "Game", "Public", "Private", "Channel", "Clan", "Trade"];
+var CHAT_TABS = ["All", "Game", "Public", "Private", "Channel", "Clan", "Trade"];
 var SOe = "#ffffff";
 var TOe = XCe.x + 3;
-var NOe = {
+var OPAQUE_INK = {
   message: "#000000",
   publicText: "#0000ff",
   caret: "#0000ff",
   shadow: false,
   highlights: {
-    [K.red]: "#e00a19",
-    [K.green]: "#06600c",
+    [solMessageColors.red]: "#e00a19",
+    [solMessageColors.green]: "#06600c",
   },
 };
-var POe = {
+var TRANSPARENT_INK = {
   message: "#ffffff",
   publicText: "#9090ff",
   caret: "#9090ff",
   shadow: true,
   highlights: {},
 };
-function $Oe(ez, eA) {
+function textShadow(ez, eA) {
   if (ez.shadow) {
     return eA + "px " + eA + "px 0 #000";
   } else {
@@ -26827,7 +26831,7 @@ function AOe({ segments: segments, ink: eA }) {
     ),
   );
 }
-var IOe = (0, pn.memo)(function ({ entry: entry, scale: scale, ink: eB }) {
+var ChatLine = (0, pn.memo)(function ({ entry: entry, scale: scale, ink: eB }) {
   if ("public" === entry.kind && entry.speaker !== undefined) {
     return (0, wn.jsxs)("div", {
       className: "chatbox__line chatbox__line--speaker",
@@ -26886,7 +26890,7 @@ function EOe(ez) {
     };
   }
 }
-var OOe = (0, pn.memo)(function ({
+var Chatbox = (0, pn.memo)(function ({
   rect: rect,
   scale: scale,
   visible: visible,
@@ -27018,7 +27022,7 @@ var OOe = (0, pn.memo)(function ({
       return fB * fD;
     },
   };
-  const eK = eC ? POe : NOe;
+  const eK = eC ? TRANSPARENT_INK : OPAQUE_INK;
   const eM = eC && eD;
   const eN = (0, pn.useRef)(null);
   const eO = (0, pn.useRef)(null);
@@ -27033,7 +27037,7 @@ var OOe = (0, pn.memo)(function ({
   const f3 = (0, pn.useRef)(null);
   const [f4] = (0, pn.useState)(ds);
   const f5 = (0, pn.useRef)(null);
-  const f6 = visible ? jCe : UCe;
+  const f6 = visible ? FIXED_CHAT : UCe;
   const f7 = UCe.y - f6.y;
   const f8 = f7 + 1;
   const f9 = VCe.y - f6.y;
@@ -27041,7 +27045,7 @@ var OOe = (0, pn.memo)(function ({
   const fb = XCe.y - f6.y;
   const fc = GCe.y - f6.y;
   const fd = KCe - f6.y;
-  const fe = kOe(eY, f0);
+  const fe = chatScrollGeometry(eY, f0);
   const ff = (0, pn.useRef)(fe.maxScroll);
   ff.current = fe.maxScroll;
   const fg = (0, pn.useCallback)(() => {
@@ -27116,7 +27120,7 @@ var OOe = (0, pn.memo)(function ({
       const { clientX: clientX, clientY: clientY } = fE;
       const fN =
         boundingClientRect12.top +
-        (boundingClientRect12.height * VCe.height) / jCe.height;
+        (boundingClientRect12.height * VCe.height) / FIXED_CHAT.height;
       if (
         clientX < boundingClientRect12.left ||
         clientX >= boundingClientRect12.right ||
@@ -27161,7 +27165,7 @@ var OOe = (0, pn.memo)(function ({
   const fp = (fB, fD) => {
     f2(
       (function (fF, fG) {
-        const { maxScroll: maxScroll, thumbHeight: thumbHeight } = kOe(fF, 0);
+        const { maxScroll: maxScroll, thumbHeight: thumbHeight } = chatScrollGeometry(fF, 0);
         const fL = GCe.height - 32;
         const fM = Math.trunc((fG * maxScroll) / Math.max(1, fL - thumbHeight));
         return maxScroll - Math.min(Math.max(fM, 0), maxScroll);
@@ -27220,7 +27224,7 @@ var OOe = (0, pn.memo)(function ({
         fB.drawImage(fE, 0, f7, UCe.width, UCe.height);
         fB.globalAlpha = 1;
       }
-      ZCe.forEach((fH, fJ) => {
+      FIXED_CHAT_TAB_SLOT_X.forEach((fH, fJ) => {
         const fL = fJ === 0;
         const fM = eI.ftvKL(fL, eX);
         const fN = eI.INfsi(fL, eW)
@@ -27346,11 +27350,11 @@ var OOe = (0, pn.memo)(function ({
               fontSize: 16 * scale,
               lineHeight: scale * 14 + "px",
               color: eK.message,
-              textShadow: $Oe(eK, scale),
+              textShadow: textShadow(eK, scale),
             },
             children: messages.map((fB) =>
               (0, wn.jsx)(
-                IOe,
+                ChatLine,
                 {
                   entry: fB,
                   scale: scale,
@@ -27457,7 +27461,7 @@ var OOe = (0, pn.memo)(function ({
             height: QCe * scale,
             fontSize: 16 * scale,
             color: eK.message,
-            textShadow: $Oe(eK, scale),
+            textShadow: textShadow(eK, scale),
           },
           children: [
             "Player: ",
@@ -27477,7 +27481,7 @@ var OOe = (0, pn.memo)(function ({
           height: UCe.height * scale,
         },
       }),
-      ZCe.map((fB, fD) => {
+      FIXED_CHAT_TAB_SLOT_X.map((fB, fD) => {
         const fE = {
           left: fB * scale,
           top: f8 * scale,
@@ -27490,7 +27494,7 @@ var OOe = (0, pn.memo)(function ({
         const fF = (0, wn.jsxs)(wn.Fragment, {
           children: [
             (0, wn.jsx)("span", {
-              children: COe[fD],
+              children: CHAT_TABS[fD],
             }),
             fD >= 1 &&
               (0, wn.jsx)("span", {
@@ -27515,7 +27519,7 @@ var OOe = (0, pn.memo)(function ({
               "aria-expanded": visible,
               children: fF,
             },
-            COe[fD],
+            CHAT_TABS[fD],
           );
         } else {
           return (0, wn.jsx)(
@@ -27526,7 +27530,7 @@ var OOe = (0, pn.memo)(function ({
               style: fE,
               children: fF,
             },
-            COe[fD],
+            CHAT_TABS[fD],
           );
         }
       }),
@@ -27555,7 +27559,7 @@ var OOe = (0, pn.memo)(function ({
 });
 var LOe = "data-tooltip-bound";
 var DOe = "true";
-function FOe(ez, eA, eB, eC = false) {
+function clampAndApply(ez, eA, eB, eC = false) {
   const eE = ez.parentElement?.matches(
     ".game-viewport-frame, .workspace-presentation-surface",
   )
@@ -27610,7 +27614,7 @@ function FOe(ez, eA, eB, eC = false) {
   ez.style.left = eT + "px";
   ez.style.top = eU + "px";
 }
-var HOe = ({
+var TooltipProvider = ({
   children: children,
   initialScale: eA = 1,
   forcedScale: forcedScale,
@@ -27759,7 +27763,7 @@ var HOe = ({
         }
       }
       if (eT.current && eZ.current) {
-        FOe(eZ.current, fz.clientX, fz.clientY, f9.current);
+        clampAndApply(eZ.current, fz.clientX, fz.clientY, f9.current);
       }
     };
     const fx = (fz) => {
@@ -27812,7 +27816,7 @@ var HOe = ({
     f0.current = requestAnimationFrame(() => {
       f0.current = null;
       if (eZ.current) {
-        FOe(eZ.current, eU.current, eV.current, f9.current);
+        clampAndApply(eZ.current, eU.current, eV.current, f9.current);
       }
     });
   }, []);
@@ -27838,7 +27842,7 @@ var HOe = ({
       f0.current = requestAnimationFrame(() => {
         f0.current = null;
         if (eZ.current) {
-          fx.gZmog(FOe, eZ.current, eU.current, eV.current, f9.current);
+          fx.gZmog(clampAndApply, eZ.current, eU.current, eV.current, f9.current);
         }
       });
     }
@@ -27919,7 +27923,7 @@ var HOe = ({
   const fq = (0, pn.useCallback)((fv) => {
     eZ.current = fv;
     if (fv) {
-      FOe(fv, eU.current, eV.current, f9.current);
+      clampAndApply(fv, eU.current, eV.current, f9.current);
     }
   }, []);
   (0, pn.useEffect)(
@@ -28048,7 +28052,7 @@ var HOe = ({
     }),
   });
 };
-var _se = pn.forwardRef(
+var TooltipCard = pn.forwardRef(
   ({ content: content, scale: eA = 1, style: style }, eC) =>
     (0, wn.jsx)("div", {
       ref: eC,
@@ -28091,7 +28095,7 @@ var _se = pn.forwardRef(
       ),
     }),
 );
-_se.displayName = "TooltipCard";
+TooltipCard.displayName = "TooltipCard";
 var qOe = () => {
   const ez = {
     QJWTW: function (eN, eO) {
@@ -28106,7 +28110,7 @@ var qOe = () => {
     IbDYc: ".workspace-presentation-surface",
     pdRli: "none",
   };
-  const { registerTooltipEl: registerTooltipEl } = oOe();
+  const { registerTooltipEl: registerTooltipEl } = useTooltip();
   const {
     content: content,
     visible: visible,
@@ -28143,7 +28147,7 @@ var qOe = () => {
     : (document.querySelector(".workspace-presentation-surface") ??
       document.querySelector(".game-viewport-frame"));
   return (0, gn.createPortal)(
-    (0, wn.jsx)(_se, {
+    (0, wn.jsx)(TooltipCard, {
       ref: eI,
       content: {
         lines: eK,
@@ -28168,19 +28172,19 @@ function zOe(ez, eA, eB = false) {
     const eD = eA.load(ez);
     const eE = eB
       ? "Drop"
-      : R(ez, eD.inventoryActions).find((eH) => eH != null) || "Use";
-    const eG = Y(ez, eD.name);
+      : getInventoryActions(ez, eD.inventoryActions).find((eH) => eH != null) || "Use";
+    const eG = getItemName(ez, eD.name);
     return {
       lines: [
         {
           spans: [
             {
               text: eE + " ",
-              color: Gse.action,
+              color: TOOLTIP_COLORS.action,
             },
             {
               text: eG,
-              color: Gse.item,
+              color: TOOLTIP_COLORS.item,
             },
           ],
         },
@@ -28196,7 +28200,7 @@ function BOe(ez, eA, eB = true) {
   }
   try {
     const eD = eA.load(ez);
-    const eE = Y(ez, eD.name);
+    const eE = getItemName(ez, eD.name);
     return {
       lines: [
         {
@@ -28205,13 +28209,13 @@ function BOe(ez, eA, eB = true) {
               ? [
                   {
                     text: "Remove ",
-                    color: Gse.action,
+                    color: TOOLTIP_COLORS.action,
                   },
                 ]
               : []),
             {
               text: eE,
-              color: Gse.item,
+              color: TOOLTIP_COLORS.item,
             },
           ],
         },
@@ -28221,18 +28225,18 @@ function BOe(ez, eA, eB = true) {
     return null;
   }
 }
-function WOe() {
+function buildToggleRunTooltip() {
   return {
     lines: [
       {
         spans: [
           {
             text: "Toggle ",
-            color: Gse.action,
+            color: TOOLTIP_COLORS.action,
           },
           {
             text: "Run",
-            color: Gse.ui,
+            color: TOOLTIP_COLORS.ui,
           },
         ],
       },
@@ -28246,11 +28250,11 @@ function jOe() {
         spans: [
           {
             text: "Use ",
-            color: Gse.action,
+            color: TOOLTIP_COLORS.action,
           },
           {
             text: "Special Attack",
-            color: Gse.ui,
+            color: TOOLTIP_COLORS.ui,
           },
         ],
       },
@@ -28258,7 +28262,7 @@ function jOe() {
   };
 }
 var UOe = (0, pn.createContext)(undefined);
-var VOe = ({
+var ContextMenuProvider = ({
   children: children,
   onReplayCursorClick: onReplayCursorClick,
   isReplaying: eB = false,
@@ -28270,7 +28274,7 @@ var VOe = ({
   const [eK, eM] = (0, pn.useState)(0);
   const [eN, eO] = (0, pn.useState)(0);
   const [eQ, eR] = (0, pn.useState)(null);
-  const { hideTooltip: hideTooltip, recheckHover: recheckHover } = oOe();
+  const { hideTooltip: hideTooltip, recheckHover: recheckHover } = useTooltip();
   const eU = (0, pn.useRef)(null);
   const eV = (0, pn.useRef)(null);
   (0, pn.useEffect)(() => {
@@ -28421,7 +28425,7 @@ var VOe = ({
     children: children,
   });
 };
-function YOe() {
+function useContextMenu() {
   const ez = (0, pn.useContext)(UOe);
   if (!ez) {
     throw new Error("useContextMenu must be used within a ContextMenuProvider");
@@ -28438,7 +28442,7 @@ function GOe(ez) {
     return null;
   }
 }
-var KOe = () => {
+var ContextMenuOverlay = () => {
   const ez = {
     bVcAW: function (fz) {
       return fz();
@@ -28691,7 +28695,7 @@ var KOe = () => {
     swallowTouchCompatMouse: swallowTouchCompatMouse,
     touchOpener: eI = null,
     isReplaying: eK = false,
-  } = YOe();
+  } = useContextMenu();
   const eM = eK ? null : eI;
   const eN = b1();
   const eO = eK ? (eN?.rowHeight ?? null) : (eM?.rowHeight ?? null);
@@ -28700,9 +28704,9 @@ var KOe = () => {
   const eT = eK ? eN !== null : visible;
   const eU = eK ? (eN?.x ?? 0) : menuX;
   const eV = eK ? (eN?.y ?? 0) : menuY;
-  const { hideTooltip: hideTooltip } = oOe();
+  const { hideTooltip: hideTooltip } = useTooltip();
   const [eX, eY] = (0, pn.useState)(null);
-  const eZ = rOe();
+  const eZ = useTooltipScale();
   const f0 = eK ? (eN?.scale ?? 1) : (1 + (eZ - 1) * 0.4) * 0.85;
   const f2 = (0, pn.useRef)(null);
   const f3 = (0, pn.useRef)(null);
@@ -29773,7 +29777,7 @@ var KOe = () => {
 var QOe = "#f8e868";
 var ZOe = "#78e8e0";
 var JOe = "#f8c070";
-var eLe = {
+var EDGE_LABELS = {
   north: "North",
   east: "East",
   south: "South",
@@ -29922,7 +29926,7 @@ function rLe(ez) {
               if (!(fb instanceof Error)) {
                 throw fb;
               }
-              Z.debug(
+              logger.debug(
                 "UI",
                 "Failed to load picked NPC type " + f5.npcTypeId,
                 fb,
@@ -29933,7 +29937,7 @@ function rLe(ez) {
             const f8 = eU.attackTargetActorId === f5.actorId;
             const f9 = eU.npcMenuColor?.(f5.npcTypeId, f5.actorId) ?? QOe;
             f4.push(...cLe(f6, f9, f5.position, eW, f7, f8, f5.actorId));
-            const fa = uLe(f6, f5.npcTypeId, f9, eY);
+            const fa = buildNpcHighlightEntry(f6, f5.npcTypeId, f9, eY);
             if (fa) {
               f4.push(fa);
             }
@@ -29959,7 +29963,7 @@ function rLe(ez) {
               eU.attackTargetActorId === eU.npcActorId;
             const fe = eU.npcMenuColor?.(eU.npcId, eU.npcActorId) ?? QOe;
             const ff = cLe(fc, fe, eU.npcPosition, eW, eX, fd, eU.npcActorId);
-            const fg = uLe(fc, eU.npcId, fe, eY);
+            const fg = buildNpcHighlightEntry(fc, eU.npcId, fe, eY);
             if (fg) {
               ff.push(fg);
             }
@@ -29968,7 +29972,7 @@ function rLe(ez) {
             if (!(fh instanceof Error)) {
               throw fh;
             }
-            Z.debug("UI", "Failed to load NPC type " + eU.npcId, fh);
+            logger.debug("UI", "Failed to load NPC type " + eU.npcId, fh);
           }
         }
         return [];
@@ -30040,13 +30044,13 @@ function rLe(ez) {
           if (eS.objTypeLoader) {
             try {
               const eX = eS.objTypeLoader.load(eU.itemId);
-              eV = Y(eU.itemId, eX.name);
+              eV = getItemName(eU.itemId, eX.name);
               eW = eX.groundActions.filter((eY) => eY != null);
             } catch (eY) {
               if (!(eY instanceof Error)) {
                 throw eY;
               }
-              Z.debug("UI", "Failed to load ground item type " + eU.itemId, eY);
+              logger.debug("UI", "Failed to load ground item type " + eU.itemId, eY);
             }
           }
           if (!eW.some((eZ) => eZ.toLowerCase() === "take")) {
@@ -30111,7 +30115,7 @@ function iLe(ez) {
     return null;
   }
 }
-function aLe(ez, eA) {
+function assembleViewportContextMenu(ez, eA) {
   const eB = {
     joDkU: "Unmark",
     FOwOa: "tile",
@@ -30181,7 +30185,7 @@ function aLe(ez, eA) {
     if (lineMarkerContext?.shiftKey && lineMarkerContext.edge) {
       const edge2 = lineMarkerContext.edge;
       const eV = lineMarkerContext.hasEdge(edge2);
-      const eW = eLe[edge2.edge];
+      const eW = EDGE_LABELS[edge2.edge];
       if (eV) {
         eS.push(
           {
@@ -30340,7 +30344,7 @@ function cLe(ez, eA, eB, eC, eD, eE = false, actorId) {
     }
     const jugAction = actorId?.startsWith("zebak-jug-") && ["Push", "Pull", "Hit", "Attack"].includes(eN);
     const minimusAction = actorId === colosseumMinimusActorId && eN === "Start-wave";
-    const eO = jugAction ? () => interactWithZebakJug(actorId, eN) : minimusAction ? talkToColosseumMinimus : "Attack" === eN ? (eD ?? eC) : undefined;
+    const eO = jugAction ? () => interactWithZebakJug(actorId, eN) : minimusAction ? talkToColosseumMinimus : isNpcAttackOption(eN) ? (eD ?? eC) : undefined;
     eH.push({
       action: eN,
       target: eM,
@@ -30356,13 +30360,13 @@ function cLe(ez, eA, eB, eC, eD, eE = false, actorId) {
   });
   // The plugin Attack Ranges' drag protection: the NPC is out of the
   // player's reach, so Examine takes Attack's place at the top.
-  const attackIndex = eH.findIndex((eN) => eN.action === "Attack");
+  const attackIndex = eH.findIndex((eN) => isNpcAttackOption(eN.action));
   if (attackIndex !== -1 && isAttackDragProtected(actorId)) {
     [eH[attackIndex], eH[eH.length - 1]] = [eH[eH.length - 1], eH[attackIndex]];
   }
   return eH;
 }
-function uLe(ez, eA, eB, eC) {
+function buildNpcHighlightEntry(ez, eA, eB, eC) {
   const eD = {
     cxeIC: "Untag",
     ETrAL: function (eH, eI) {
@@ -30463,9 +30467,9 @@ function pLe(ez, eA, eB, eC, eD) {
   }
   try {
     const eG = eB.load(ez);
-    const eH = Y(ez, eG.name);
+    const eH = getItemName(ez, eG.name);
     const eI = [];
-    for (const eM of R(ez, eG.inventoryActions)) {
+    for (const eM of getInventoryActions(ez, eG.inventoryActions)) {
       if (null == eM) {
         continue;
       }
@@ -30555,7 +30559,7 @@ function hLe(ez, eA, eB, eC) {
   }
   try {
     const eE = eB.load(ez);
-    const eG = Y(ez, eE.name);
+    const eG = getItemName(ez, eE.name);
     return {
       entries: [
         {
@@ -30590,7 +30594,7 @@ function gLe(ez, eA, eB) {
     ],
   };
 }
-function mLe(ez, eA) {
+function buildRunOrbContextMenu(ez, eA) {
   return {
     entries: [
       {
@@ -30604,7 +30608,7 @@ function mLe(ez, eA) {
     ],
   };
 }
-function fLe(ez, eA) {
+function buildSpecialOrbContextMenu(ez, eA) {
   return {
     entries: [
       {
@@ -30657,7 +30661,7 @@ function _Le(ez, eA, eB, eC) {
     entries: eE,
   };
 }
-var yLe = class {
+var DisplayTimeline = class {
   constructor(ez, eA) {
     aX(this, "ticks", undefined);
     aX(this, "replay", undefined);
@@ -30774,7 +30778,7 @@ function hae({
 }) {
   const eD = bC();
   const eE = dS();
-  const [eG] = (0, pn.useState)(() => (eD && eE ? new yLe(eD, eE) : null));
+  const [eG] = (0, pn.useState)(() => (eD && eE ? new DisplayTimeline(eD, eE) : null));
   (0, pn.useLayoutEffect)(() => {
     eG?.j$({
       history: history,
@@ -30791,7 +30795,7 @@ function wLe() {
   return (0, pn.useContext)(vLe);
 }
 var kLe = [];
-var xLe = class {
+var ChatLogProjection = class {
   constructor() {
     aX(this, "history", undefined);
     aX(this, "indexedFrames", 0);
@@ -30878,7 +30882,7 @@ var CLe = {
   anchorX: "left",
   anchorY: "top",
 };
-var SLe = {
+var STYLE_LABELS = {
   melee_slash: "Melee slash",
   melee_stab: "Melee stab",
   melee_crush: "Melee crush",
@@ -30907,7 +30911,7 @@ function $Le(ez) {
       .replace(/^./, (eB) => eB.toUpperCase());
   }
 }
-var RLe = ({
+var DetailedDpsOverlay = ({
   overlayScale: ez = 1,
   engine: engine,
   dpsProjection: dpsProjection,
@@ -31028,7 +31032,7 @@ var RLe = ({
     const eY = [
       {
         label: "Style",
-        value: SLe[eV.style],
+        value: STYLE_LABELS[eV.style],
       },
       {
         label: "Accuracy",
@@ -31204,7 +31208,7 @@ var RLe = ({
     });
   }
   var eX;
-  return (0, wn.jsx)(dOe, {
+  return (0, wn.jsx)(DraggablePanel, {
     defaultPosition: CLe,
     position: eR.ihFmg(position, undefined),
     width: 208,
@@ -31243,7 +31247,7 @@ var RLe = ({
     }),
   });
 };
-var ALe = ({ selected: selected }) => {
+var NineSliceBg = ({ selected: selected }) => {
   const eA = {
     vgaZh: "repeat",
     tDHjv: function (eK, eM) {
@@ -31413,7 +31417,7 @@ var ALe = ({ selected: selected }) => {
 var ILe = 190;
 var ELe = 40;
 var OLe = "1px 1px 0 #000";
-var LLe = ({
+var AutocastSpellPicker = ({
   spellbook: spellbook,
   selectedSpell: selectedSpell,
   defensive: eB = false,
@@ -31474,9 +31478,9 @@ var LLe = ({
     DkBZT: "span",
     hSIhJ: "relative",
   };
-  const { bindTooltip: bindTooltip } = oOe();
-  const iconDir2 = Iie[spellbook].iconDir;
-  const eK = (0, pn.useMemo)(() => bx(spellbook), [spellbook]);
+  const { bindTooltip: bindTooltip } = useTooltip();
+  const iconDir2 = SPELLBOOKS[spellbook].iconDir;
+  const eK = (0, pn.useMemo)(() => getCombatSpellsOfSpellbook(spellbook), [spellbook]);
   const eM = Math.max(1, Math.min(4, eK.length));
   const eN = eM > 1 ? Math.floor((ILe - eM * ELe) / (eM - 1)) : 0;
   const eO = eM * ELe + (eM - 1) * eN;
@@ -31524,7 +31528,7 @@ var LLe = ({
             },
             children: [
               "No autocast spells on the ",
-              bs[spellbook],
+              spellbookLabels[spellbook],
               " spellbook.",
             ],
           })
@@ -31584,7 +31588,7 @@ var LLe = ({
                   justifyContent: "center",
                 },
                 children: (0, wn.jsx)(Vse, {
-                  src: kae(iconDir2, c8(eR.name), ELe, true),
+                  src: getSpellIconPath(iconDir2, getSpellIconName(eR.name), ELe, true),
                   alt: eR.name,
                   style: {
                     width: 38,
@@ -31626,7 +31630,7 @@ var LLe = ({
           textShadow: OLe,
         },
         children: [
-          (0, wn.jsx)(ALe, {}),
+          (0, wn.jsx)(NineSliceBg, {}),
           (0, wn.jsx)("span", {
             style: {
               position: "relative",
@@ -31800,7 +31804,7 @@ var BLe = ({
     },
     ...eD,
     children: [
-      (0, wn.jsx)(ALe, {
+      (0, wn.jsx)(NineSliceBg, {
         selected: active,
       }),
       (0, wn.jsx)("div", {
@@ -31818,7 +31822,7 @@ var BLe = ({
       }),
     ],
   });
-var WLe = ({
+var CombatContent = ({
   pickerStyleIndex: pickerStyleIndex,
   onPickerStyleIndexChange: onPickerStyleIndexChange,
   weaponId: weaponId,
@@ -31835,7 +31839,7 @@ var WLe = ({
   onAutoRetaliateToggle: onAutoRetaliateToggle,
   objTypeLoader: objTypeLoader,
   enumTypeLoader: enumTypeLoader,
-  spellbook: eT = am,
+  spellbook: eT = defaultSpellbook,
   selectedSpell: eU = null,
   onSelectedSpellChange: onSelectedSpellChange,
   stats: stats,
@@ -31900,8 +31904,8 @@ var WLe = ({
     },
     pxSSB: "Category: ",
   };
-  const eY = e0(weaponId);
-  const eZ = I(stats ?? bj());
+  const eY = getWeaponCategoryDefinition(weaponId);
+  const eZ = getCombatLevel(stats ?? createDefaultStats());
   const f0 = (0, pn.useMemo)(() => {
     if (weaponId && objTypeLoader) {
       try {
@@ -31942,7 +31946,7 @@ var WLe = ({
         height: 275,
         position: "relative",
       },
-      children: (0, wn.jsx)(LLe, {
+      children: (0, wn.jsx)(AutocastSpellPicker, {
         spellbook: eT,
         selectedSpell: eU,
         defensive: f9?.combatStyle === "Defensive Casting",
@@ -32115,7 +32119,7 @@ var WLe = ({
             const fe = styles2.indexOf(fb);
             const ff = eM === fe;
             const fg = "Defensive Casting" === fb.combatStyle;
-            const fh = dT({
+            const fh = getActiveSpell({
               weaponId: weaponId,
               selectedStyleIndex: fe,
               selectedSpell: eU,
@@ -32149,7 +32153,7 @@ var WLe = ({
                 children: [
                   fh
                     ? (0, wn.jsx)(Vse, {
-                        src: kae(Iie[fh.spellbook].iconDir, fh.icon, 24, true),
+                        src: getSpellIconPath(SPELLBOOKS[fh.spellbook].iconDir, fh.icon, 24, true),
                         alt: fh.name,
                         style: {
                           maxHeight: 22,
@@ -32209,11 +32213,11 @@ var WLe = ({
           boxSizing: "border-box",
         },
         children: [
-          (0, wn.jsx)(ALe, {
+          (0, wn.jsx)(NineSliceBg, {
             selected: eO,
           }),
           (0, wn.jsx)(Vse, {
-            src: eO ? rxe.autoRetaliateSelected : rxe.autoRetaliate,
+            src: eO ? COMBAT_BUTTONS.autoRetaliateSelected : COMBAT_BUTTONS.autoRetaliate,
             alt: "Auto Retaliate",
             style: {
               position: "absolute",
@@ -32281,7 +32285,7 @@ var WLe = ({
             boxSizing: "border-box",
           },
           children: [
-            (0, wn.jsx)(ALe, {
+            (0, wn.jsx)(NineSliceBg, {
               selected: f7,
             }),
             (0, wn.jsx)("div", {
@@ -32358,7 +32362,7 @@ var WLe = ({
   });
 };
 var jLe = '"RuneScape Bold 12", sans-serif';
-var ULe = ({ title: title, modified: eA = false, onReset: onReset }) =>
+var SectionHeader = ({ title: title, modified: eA = false, onReset: onReset }) =>
   (0, wn.jsxs)("div", {
     style: {
       display: "flex",
@@ -32465,7 +32469,7 @@ var QLe = (ez) => {
 };
 var ZLe = (ez) => ez !== undefined && ez >= 0;
 var JLe = (ez) => 16 + ez * 44;
-var eDe = ({ label: label, value: value, suffix: eB = "", text: text }) =>
+var StatRow = ({ label: label, value: value, suffix: eB = "", text: text }) =>
   (0, wn.jsxs)("div", {
     style: {
       display: "flex",
@@ -32491,7 +32495,7 @@ var eDe = ({ label: label, value: value, suffix: eB = "", text: text }) =>
       }),
     ],
   });
-var tDe = ({ onClick: onClick }) => {
+var StatsBackButton = ({ onClick: onClick }) => {
   const [eB, eC] = (0, pn.useState)(false);
   return (0, wn.jsx)(Jie, {
     type: "button",
@@ -32531,7 +32535,7 @@ var tDe = ({ onClick: onClick }) => {
     }),
   });
 };
-var nDe = ({ showQuiverAmmo: showQuiverAmmo }) => {
+var ConnectingLines = ({ showQuiverAmmo: showQuiverAmmo }) => {
   const eB = [
     ...(showQuiverAmmo
       ? [
@@ -32641,7 +32645,7 @@ var nDe = ({ showQuiverAmmo: showQuiverAmmo }) => {
     },
   });
 };
-var oDe = ({ label: label, style: style, ...eB }) => {
+var EquipmentActionButton = ({ label: label, style: style, ...eB }) => {
   const eD = [
     axe.edgeTop,
     axe.edgeBottom,
@@ -32709,7 +32713,7 @@ var oDe = ({ label: label, style: style, ...eB }) => {
     }),
   });
 };
-var rDe = ({
+var EquipmentContent = ({
   view: view,
   onViewChange: onViewChange,
   equipmentStats: equipmentStats,
@@ -32772,8 +32776,8 @@ var rDe = ({
       return f4 * f5;
     },
   };
-  const { bindTooltip: bindTooltip } = oOe();
-  const { bindContextMenu: bindContextMenu } = YOe();
+  const { bindTooltip: bindTooltip } = useTooltip();
+  const { bindContextMenu: bindContextMenu } = useContextMenu();
   const eR = Bie(eC.cape);
   const eS = inventory?.some((f4) => f4 !== null && Bie(f4.id)) ?? false;
   const eT = eN.Pwdwv(eR, eS);
@@ -32806,7 +32810,7 @@ var rDe = ({
               paddingBottom: 2,
             },
             children: [
-              (0, wn.jsx)(tDe, {
+              (0, wn.jsx)(StatsBackButton, {
                 onClick: () => onViewChange("equipment"),
               }),
               (0, wn.jsx)("div", {
@@ -32839,77 +32843,77 @@ var rDe = ({
               paddingBottom: 4,
             },
             children: [
-              (0, wn.jsx)(ULe, {
+              (0, wn.jsx)(SectionHeader, {
                 title: "Attack",
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Stab",
                 value: equipmentStats?.attackStab,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Slash",
                 value: equipmentStats?.attackSlash,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Crush",
                 value: equipmentStats?.attackCrush,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Magic",
                 value: equipmentStats?.attackMagic,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Ranged",
                 value: equipmentStats?.attackRanged,
               }),
-              (0, wn.jsx)(ULe, {
+              (0, wn.jsx)(SectionHeader, {
                 title: "Defence",
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Stab",
                 value: equipmentStats?.defenceStab,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Slash",
                 value: equipmentStats?.defenceSlash,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Crush",
                 value: equipmentStats?.defenceCrush,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Magic",
                 value: equipmentStats?.defenceMagic,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Ranged",
                 value: equipmentStats?.defenceRanged,
               }),
-              (0, wn.jsx)(ULe, {
+              (0, wn.jsx)(SectionHeader, {
                 title: "Other",
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Melee strength",
                 value: equipmentStats?.meleeStrength,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Ranged strength",
                 value: equipmentStats?.rangedStrength,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Magic damage",
                 value: equipmentStats?.magicDamage,
                 suffix: "%",
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Prayer",
                 value: equipmentStats?.prayer,
               }),
-              (0, wn.jsx)(eDe, {
+              (0, wn.jsx)(StatRow, {
                 label: "Weight",
                 text:
                   ((eU = objTypeLoader
-                    ? dE(eC, inventory ?? [], objTypeLoader)
+                    ? getCarriedWeight(eC, inventory ?? [], objTypeLoader)
                     : 0),
                   (Math.trunc(eU) || 0) + " kg"),
               }),
@@ -33146,7 +33150,7 @@ var rDe = ({
             spans: [
               {
                 text: "View equipment stats",
-                color: Gse.ui,
+                color: TOOLTIP_COLORS.ui,
               },
             ],
           },
@@ -33238,7 +33242,7 @@ var rDe = ({
       position: "relative",
     },
     children: [
-      (0, wn.jsx)(nDe, {
+      (0, wn.jsx)(ConnectingLines, {
         showQuiverAmmo: eT,
       }),
       (0, wn.jsx)(Tie, {
@@ -33251,7 +33255,7 @@ var rDe = ({
       }),
       eZ.map((f7) =>
         (0, wn.jsx)(
-          iDe,
+          EquipmentSlot,
           {
             spec: f7,
             ...(f7.slotName === "quiver-ammo"
@@ -33278,7 +33282,7 @@ var rDe = ({
       ),
       f0.map((f7, f8) =>
         (0, wn.jsx)(
-          oDe,
+          EquipmentActionButton,
           {
             label: f7.label,
             disabled: f7.disabled,
@@ -33300,7 +33304,7 @@ var rDe = ({
     ],
   });
 };
-var iDe = ({ spec: spec, style: style, children: children, ...eC }) =>
+var EquipmentSlot = ({ spec: spec, style: style, children: children, ...eC }) =>
   (0, wn.jsx)("div", {
     "data-testid": "equipment-slot-" + spec.slotName,
     ...eC,
@@ -33342,7 +33346,7 @@ var lDe = {
   showUnsimulated: true,
   iconResizing: true,
 };
-var cDe = "osrs-panel-filters";
+var PANEL_FILTER_STORAGE_KEY = "osrs-panel-filters";
 function uDe(ez) {
   if (null === ez || "object" != typeof ez || Array.isArray(ez)) {
     return {};
@@ -33446,7 +33450,7 @@ function _De(ez) {
   return eC;
 }
 function yDe() {
-  const eA = cE(cDe);
+  const eA = cE(PANEL_FILTER_STORAGE_KEY);
   const eB = (function (eC) {
     const eD = uDe(eC);
     const eE = uDe(eD.prayer);
@@ -33482,7 +33486,7 @@ function vDe() {
     const eV = JSON.stringify(eB);
     if (eV !== eD.current) {
       eD.current = eV;
-      aH(cDe, eB);
+      aH(PANEL_FILTER_STORAGE_KEY, eB);
     }
   }, [eB]);
   (0, pn.useEffect)(() => {
@@ -33610,10 +33614,10 @@ function vDe() {
           },
         };
       }
-      const eZ = b7[eV];
+      const eZ = prayerSlotByPrayer[eV];
       const f0 =
         "protection" === eZ || "offensive" === eZ
-          ? quickPrayerSelections2.filter((f2) => b7[f2] !== eZ)
+          ? quickPrayerSelections2.filter((f2) => prayerSlotByPrayer[f2] !== eZ)
           : quickPrayerSelections2;
       return {
         ...eX,
@@ -33781,7 +33785,7 @@ function CDe(ez) {
     y: eA.y + inventoryInset,
   };
 }
-var TDe = ({
+var InventoryContent = ({
   inventory: inventory,
   currentTick: currentTick,
   previewResetToken: previewResetToken,
@@ -33925,9 +33929,9 @@ var TDe = ({
     ifCYK: "relative",
     oagfs: "absolute",
   };
-  const { bindTooltip: bindTooltip, updateTooltip: updateTooltip } = oOe();
-  const eX = Mxe();
-  const { bindContextMenu: bindContextMenu } = YOe();
+  const { bindTooltip: bindTooltip, updateTooltip: updateTooltip } = useTooltip();
+  const eX = usePanelContentScale();
+  const { bindContextMenu: bindContextMenu } = useContextMenu();
   const [eZ, f0] = (0, pn.useState)(null);
   const [f2, f3] = (0, pn.useState)(null);
   const f4 = (0, pn.useRef)(null);
@@ -33984,7 +33988,7 @@ var TDe = ({
           onReplayCursorClick?.(fv.clientX, fv.clientY, "yellow", fv.timeStamp);
           return;
         }
-        if (eu[fx.id]) {
+        if (consumableDefinitionByItemId[fx.id]) {
           f3(null);
           eU.hfkSs(onUseItem, ft);
           onReplayCursorClick?.(fv.clientX, fv.clientY, "yellow", fv.timeStamp);
@@ -33993,7 +33997,7 @@ var TDe = ({
         if (objTypeLoader) {
           try {
             const fy = objTypeLoader.load(fx.id);
-            const fz = R(fx.id, fy.inventoryActions)
+            const fz = getInventoryActions(fx.id, fy.inventoryActions)
               .find((fA) => fA !== undefined)
               ?.trim()
               .toLowerCase();
@@ -34253,7 +34257,7 @@ var TDe = ({
   const fo = ((eX - 1) * -36) / 2;
   const fp = (-32 * (eX - 1)) / 2;
   const fq = (ft) =>
-    ea(ft.id, ft.quantity, objTypeLoader)
+    isItemStackable(ft.id, ft.quantity, objTypeLoader)
       ? (0, wn.jsx)(RPe, {
           top: 0,
           left: 0,
@@ -34530,7 +34534,7 @@ function noe({ children: children, onOpenSettings: onOpenSettings }) {
     children: children,
   });
 }
-function PDe({
+function TouchSlider({
   searchId: searchId,
   label: label,
   hint: hint,
@@ -34544,7 +34548,7 @@ function PDe({
 }) {
   const eN = (0, pn.useRef)(null);
   const eO = value !== defaultValue;
-  return (0, wn.jsx)(Coe, {
+  return (0, wn.jsx)(SettingRow, {
     isModified: eO,
     onReset: () => onChange(defaultValue),
     hideReset: true,
@@ -34564,7 +34568,7 @@ function PDe({
                   children: [
                     label,
                     hint &&
-                      (0, wn.jsx)(gie, {
+                      (0, wn.jsx)(InfoHint, {
                         label: label,
                         text: hint,
                         hoverRegionRef: eN,
@@ -34610,7 +34614,7 @@ function $De({
   onChange: onChange,
 }) {
   const eH = (0, pn.useRef)(null);
-  return (0, wn.jsx)(Coe, {
+  return (0, wn.jsx)(SettingRow, {
     isModified: checked !== defaultValue,
     onReset: () => onChange(defaultValue),
     searchId: searchId,
@@ -34618,12 +34622,12 @@ function $De({
       ref: eH,
       className: "touch-controls__toggle info-hint-region",
       children: [
-        (0, wn.jsx)(Aoe, {
+        (0, wn.jsx)(OsrsCheckbox, {
           checked: checked,
           onChange: onChange,
           label: label,
         }),
-        (0, wn.jsx)(gie, {
+        (0, wn.jsx)(InfoHint, {
           label: label,
           text: hint,
           hoverRegionRef: eH,
@@ -34632,7 +34636,7 @@ function $De({
     }),
   });
 }
-var Dse = ({
+var TouchControls = ({
   touchLongPressMs: touchLongPressMs,
   onTouchLongPressMsChange: onTouchLongPressMsChange,
   touchMenuRowHeight: touchMenuRowHeight,
@@ -34659,23 +34663,23 @@ var Dse = ({
       (0, wn.jsxs)("div", {
         className: "control-group",
         children: [
-          (0, wn.jsx)(PDe, {
+          (0, wn.jsx)(TouchSlider, {
             searchId: uoe("Mobile", "Long Tap Delay"),
             label: "Long Tap Delay",
             value: touchLongPressMs,
-            defaultValue: Yse.touchLongPressMs,
+            defaultValue: PERSISTED_SETTINGS_DEFAULTS.touchLongPressMs,
             min: 100,
             max: b5,
             step: 50,
             unit: "ms",
             onChange: onTouchLongPressMsChange,
           }),
-          (0, wn.jsx)(PDe, {
+          (0, wn.jsx)(TouchSlider, {
             searchId: uoe("Mobile", "Menu Row Height"),
             label: "Menu Row Height",
             hint: "For menus opened by a long tap.",
             value: touchMenuRowHeight,
-            defaultValue: Yse.touchMenuRowHeight,
+            defaultValue: PERSISTED_SETTINGS_DEFAULTS.touchMenuRowHeight,
             min: 20,
             max: 48,
             step: 2,
@@ -34688,7 +34692,7 @@ var Dse = ({
               label: "Vibrate on long tap",
               hint: "iPhone browsers can't vibrate.",
               checked: touchHapticsEnabled,
-              defaultValue: Yse.touchHapticsEnabled,
+              defaultValue: PERSISTED_SETTINGS_DEFAULTS.touchHapticsEnabled,
               onChange: onTouchHapticsEnabledChange,
             }),
         ],
@@ -34702,11 +34706,11 @@ var Dse = ({
               className: "group-title",
               children: "Interface scaling",
             }),
-            (0, wn.jsx)(Coe, {
+            (0, wn.jsx)(SettingRow, {
               searchId: null,
-              isModified: mobileInterfaceScaling !== Yse.mobileInterfaceScaling,
+              isModified: mobileInterfaceScaling !== PERSISTED_SETTINGS_DEFAULTS.mobileInterfaceScaling,
               onReset: () =>
-                onMobileInterfaceScalingChange(Yse.mobileInterfaceScaling),
+                onMobileInterfaceScalingChange(PERSISTED_SETTINGS_DEFAULTS.mobileInterfaceScaling),
               children: (0, wn.jsx)("select", {
                 className: "select-input",
                 "aria-label": "Interface scaling",
@@ -34740,7 +34744,7 @@ var Dse = ({
               const eV = "Slot " + (eU + 1);
               const eW = P$e[eU] ?? 0;
               return (0, wn.jsx)(
-                Coe,
+                SettingRow,
                 {
                   searchId: null,
                   isModified: eT !== eW,
@@ -34764,7 +34768,7 @@ var Dse = ({
                             value: 0,
                             children: "Empty",
                           }),
-                          T$e.map((eX) =>
+                          OSM_HOTKEY_TYPES.map((eX) =>
                             (0, wn.jsx)(
                               "option",
                               {
@@ -34787,7 +34791,7 @@ var Dse = ({
               label: "Hotkeys open side panels on the left",
               hint: "Only for panels opened from a hotkey. The pop-out can cover them.",
               checked: mobileHotkeysOpenOnLeft,
-              defaultValue: Yse.mobileHotkeysOpenOnLeft,
+              defaultValue: PERSISTED_SETTINGS_DEFAULTS.mobileHotkeysOpenOnLeft,
               onChange: onMobileHotkeysOpenOnLeftChange,
             }),
           ],
@@ -34821,18 +34825,18 @@ function ADe({ x: ez, y: eA, width: width, height: height }) {
     height: eM,
   });
   return [
-    eE(Aie.railMiddle, 3, 3, width - 6, height - 6),
-    eE(Aie.railTop, 3, 0, width - 6, 3),
-    eE(Aie.railBottom, 3, height - 3, width - 6, 3),
-    eE(Aie.railLeft, 0, 3, 3, height - 6),
-    eE(Aie.railRight, width - 3, 3, 3, height - 6),
-    eE(Aie.railTopLeft, 0, 0, 3, 3),
-    eE(Aie.railTopRight, width - 3, 0, 3, 3),
-    eE(Aie.railBottomLeft, 0, height - 3, 3, 3),
-    eE(Aie.railBottomRight, width - 3, height - 3, 3, 3),
+    eE(MOBILE.railMiddle, 3, 3, width - 6, height - 6),
+    eE(MOBILE.railTop, 3, 0, width - 6, 3),
+    eE(MOBILE.railBottom, 3, height - 3, width - 6, 3),
+    eE(MOBILE.railLeft, 0, 3, 3, height - 6),
+    eE(MOBILE.railRight, width - 3, 3, 3, height - 6),
+    eE(MOBILE.railTopLeft, 0, 0, 3, 3),
+    eE(MOBILE.railTopRight, width - 3, 0, 3, 3),
+    eE(MOBILE.railBottomLeft, 0, height - 3, 3, 3),
+    eE(MOBILE.railBottomRight, width - 3, height - 3, 3, 3),
   ];
 }
-var IDe = ({
+var MobileSideChrome = ({
   frame: frame,
   layout: layout,
   viewportWidth: viewportWidth,
@@ -34845,7 +34849,7 @@ var IDe = ({
   children: children,
   overlay: overlay,
 }) => {
-  const { bindContextMenu: bindContextMenu } = YOe();
+  const { bindContextMenu: bindContextMenu } = useContextMenu();
   const onPointerDownCapture2 = bindContextMenu(
     () => null,
   ).onPointerDownCapture;
@@ -34872,7 +34876,7 @@ var IDe = ({
   const eW = new Map(tabs.map((f4) => [Poe[f4.tab], f4]));
   const eX = selectedTab ? Poe[selectedTab] : null;
   const eY = [];
-  for (const [f4, f5] of Object.entries(foe)) {
+  for (const [f4, f5] of Object.entries(OSM_TAB_SLOTS)) {
     if (f5.column === "chat") {
       continue;
     }
@@ -34881,14 +34885,14 @@ var IDe = ({
       name: f4,
       rect: {
         x: f6.x,
-        y: f6.y + BMe[f5.slot],
+        y: f6.y + OSM_TAB_SLOT_Y[f5.slot],
         ...zMe,
       },
     });
   }
   const eZ = {
     x: eV.left.x,
-    y: eV.left.y + BMe[uCe],
+    y: eV.left.y + OSM_TAB_SLOT_Y[uCe],
     ...zMe,
   };
   const f0 = ADe({
@@ -34909,7 +34913,7 @@ var IDe = ({
       : f7;
     for (const { rect: rect } of f9) {
       f0.push({
-        src: Aie.tabStone,
+        src: MOBILE.tabStone,
         x: rect.x,
         y: rect.y,
         w: rect.width,
@@ -34919,7 +34923,7 @@ var IDe = ({
     for (const { name: name, rect: rect } of f7) {
       if (name === eX) {
         f0.push({
-          src: Aie.tabStoneSelected,
+          src: MOBILE.tabStoneSelected,
           x: rect.x,
           y: rect.y,
           w: rect.width,
@@ -34930,7 +34934,7 @@ var IDe = ({
     for (const { name: name, rect: rect } of f7) {
       if ("expand" !== name && eW.has(name)) {
         f0.push({
-          src: rae(foe[name].iconPath),
+          src: rae(OSM_TAB_SLOTS[name].iconPath),
           x: rect.x + WMe,
           y: rect.y + jMe,
           w: UMe,
@@ -34940,7 +34944,7 @@ var IDe = ({
     }
     if (f8) {
       f0.push({
-        src: tabsCollapsed ? Aie.showMore : Aie.showLess,
+        src: tabsCollapsed ? MOBILE.showMore : MOBILE.showLess,
         x: eZ.x + dCe.x,
         y: eV.left.y + dCe.y,
         w: dCe.width,
@@ -34949,7 +34953,7 @@ var IDe = ({
     }
   };
   f2(
-    eY.filter((f7) => foe[f7.name].column === "right"),
+    eY.filter((f7) => OSM_TAB_SLOTS[f7.name].column === "right"),
     false,
   );
   if (tabsCollapsed) {
@@ -34957,7 +34961,7 @@ var IDe = ({
     const f8 = tabRail2.width - 6;
     const f9 = tabRail2.height - 6;
     f0.push({
-      src: Aie.railMiddle,
+      src: MOBILE.railMiddle,
       x: f7,
       y: f7,
       w: f8,
@@ -34968,7 +34972,7 @@ var IDe = ({
     });
   }
   f2(
-    eY.filter((fa) => foe[fa.name].column === "left"),
+    eY.filter((fa) => OSM_TAB_SLOTS[fa.name].column === "left"),
     true,
   );
   const f3 = (fa) => ({
@@ -34985,7 +34989,7 @@ var IDe = ({
   });
   return (0, wn.jsxs)(wn.Fragment, {
     children: [
-      (0, wn.jsx)(dOe, {
+      (0, wn.jsx)(DraggablePanel, {
         inputSurface: "gameplay",
         defaultPosition: RDe(eS),
         position: RDe(eS),
@@ -35013,7 +35017,7 @@ var IDe = ({
             }),
             eY.map(({ name: name, rect: rect }) => {
               const fc = eW.get(name);
-              if (!fc || (tabsCollapsed && "right" === foe[name].column)) {
+              if (!fc || (tabsCollapsed && "right" === OSM_TAB_SLOTS[name].column)) {
                 return null;
               }
               const fd = eX === name;
@@ -35049,7 +35053,7 @@ var IDe = ({
         }),
       }),
       children !== null &&
-        (0, wn.jsx)(dOe, {
+        (0, wn.jsx)(DraggablePanel, {
           inputSurface: "gameplay",
           defaultPosition: RDe(eT),
           position: RDe(eT),
@@ -35100,21 +35104,21 @@ var IDe = ({
     ],
   });
 };
-function EDe(ez) {
+function stoneSprite(ez) {
   switch (ez) {
     case "resting":
-      return Aie.tabStone;
+      return MOBILE.tabStone;
     case "active":
-      return Aie.tabStoneSelected;
+      return MOBILE.tabStoneSelected;
     case "special":
-      return Aie.hotkeyStoneSpecial;
+      return MOBILE.hotkeyStoneSpecial;
     case "specialOn":
-      return Aie.hotkeyStoneSpecialOn;
+      return MOBILE.hotkeyStoneSpecialOn;
     case "disabled":
-      return Aie.hotkeyStoneDisabled;
+      return MOBILE.hotkeyStoneDisabled;
   }
 }
-var ODe = ({
+var MobileHotkeys = ({
   frame: frame,
   viewportWidth: viewportWidth,
   viewportHeight: viewportHeight,
@@ -35125,7 +35129,7 @@ var ODe = ({
   onToggleCollapsed: onToggleCollapsed,
 }) => {
   const { customize: customize } = jse();
-  const { bindContextMenu: bindContextMenu } = YOe();
+  const { bindContextMenu: bindContextMenu } = useContextMenu();
   const eN = bindContextMenu(() => ({
     entries: [
       {
@@ -35175,7 +35179,7 @@ var ODe = ({
       }),
     );
     eV.push({
-      src: Aie.hotkeysAccordionLip,
+      src: MOBILE.hotkeysAccordionLip,
       x: 0,
       y: eT,
       w: 58,
@@ -35198,7 +35202,7 @@ var ODe = ({
       const f2 = (function (f3, f4) {
         if (f3.tab) {
           return {
-            src: rae(foe[Poe[f3.tab]].iconPath),
+            src: rae(OSM_TAB_SLOTS[Poe[f3.tab]].iconPath),
             width: 33,
             height: 36,
           };
@@ -35207,26 +35211,26 @@ var ODe = ({
         switch (f3.orb) {
           case "quickPrayers":
             return {
-              src: f5 ? qse.orbPrayerIconActivated : qse.orbPrayerIcon,
+              src: f5 ? MINIMAP.orbPrayerIconActivated : MINIMAP.orbPrayerIcon,
               width: 26,
               height: 26,
             };
           case "run":
             return {
-              src: f5 ? qse.orbRunIconActivated : qse.orbRunIcon,
+              src: f5 ? MINIMAP.orbRunIconActivated : MINIMAP.orbRunIcon,
               width: 26,
               height: 26,
             };
           default:
             return {
-              src: eZ.ZlgpU(rae, foe.combat.iconPath),
+              src: eZ.ZlgpU(rae, OSM_TAB_SLOTS.combat.iconPath),
               width: 33,
               height: 36,
             };
         }
       })(f0, facts);
       eV.push({
-        src: EDe($$e(f0, facts)),
+        src: stoneSprite($$e(f0, facts)),
         x: eX.x,
         y: eT + eX.y,
         w: 40,
@@ -35241,14 +35245,14 @@ var ODe = ({
       });
     });
     eV.push({
-      src: Aie.hotkeysAccordionBody,
+      src: MOBILE.hotkeysAccordionBody,
       x: 0,
       y: eU - 43,
       w: 58,
       h: 43,
     });
     eV.push({
-      src: Aie.hotkeysHide,
+      src: MOBILE.hotkeysHide,
       x: 12,
       y: eU - 5 - 36,
       w: 33,
@@ -35256,14 +35260,14 @@ var ODe = ({
     });
   } else {
     eV.push({
-      src: Aie.hotkeysAccordion,
+      src: MOBILE.hotkeysAccordion,
       x: 0,
       y: eU - 43,
       w: 58,
       h: 43,
     });
     eV.push({
-      src: Aie.hotkeysShow,
+      src: MOBILE.hotkeysShow,
       x: 12,
       y: eU - 5 - 36,
       w: 33,
@@ -35282,7 +35286,7 @@ var ODe = ({
     background: "transparent",
     cursor: "default",
   });
-  return (0, wn.jsx)(dOe, {
+  return (0, wn.jsx)(DraggablePanel, {
     inputSurface: "gameplay",
     defaultPosition: {
       x: eR.x,
@@ -35363,7 +35367,7 @@ var ODe = ({
 };
 var LDe = 30 / 255;
 var DDe = 45 / 255;
-var FDe = ({ rows: rows }) => {
+var FilterMenu = ({ rows: rows }) => {
   const [eB, eC] = (0, pn.useState)(null);
   const [eD, eE] = (0, pn.useState)(null);
   const eG = (0, pn.useRef)(null);
@@ -35482,7 +35486,7 @@ var FDe = ({ rows: rows }) => {
     }),
   });
 };
-var HDe = [
+var PRAYER_GRID = [
   {
     icon: "thick_skin",
     label: "Thick Skin",
@@ -35543,14 +35547,14 @@ var HDe = [
     icon: "rapid_restore",
     label: "Rapid Restore",
     level: 19,
-    prayer: S.RapidRestore,
+    prayer: Prayer.RapidRestore,
     healing: true,
   },
   {
     icon: "rapid_heal",
     label: "Rapid Heal",
     level: 22,
-    prayer: S.RapidHeal,
+    prayer: Prayer.RapidHeal,
     healing: true,
   },
   {
@@ -35597,46 +35601,46 @@ var HDe = [
     icon: "protect_from_magic",
     label: "Protect from Magic",
     level: 37,
-    prayer: S.ProtectMagic,
+    prayer: Prayer.ProtectMagic,
   },
   {
     icon: "protect_from_missiles",
     label: "Protect from Missiles",
     level: 40,
-    prayer: S.ProtectRange,
+    prayer: Prayer.ProtectRange,
   },
   {
     icon: "protect_from_melee",
     label: "Protect from Melee",
     level: 43,
-    prayer: S.ProtectMelee,
+    prayer: Prayer.ProtectMelee,
   },
   {
     icon: "eagle_eye",
     label: "Eagle Eye",
     level: 44,
-    prayer: S.EagleEye,
+    prayer: Prayer.EagleEye,
     tierGroup: "ranged",
     successor: "rigour",
     upgrade: {
       icon: "deadeye",
       label: "Deadeye",
       level: 62,
-      prayer: S.Deadeye,
+      prayer: Prayer.Deadeye,
     },
   },
   {
     icon: "mystic_might",
     label: "Mystic Might",
     level: 45,
-    prayer: S.MysticMight,
+    prayer: Prayer.MysticMight,
     tierGroup: "magic",
     successor: "augury",
     upgrade: {
       icon: "mystic_vigour",
       label: "Mystic Vigour",
       level: 63,
-      prayer: S.MysticVigour,
+      prayer: Prayer.MysticVigour,
     },
   },
   {
@@ -35648,7 +35652,7 @@ var HDe = [
     icon: "redemption",
     label: "Redemption",
     level: 49,
-    prayer: S.Redemption,
+    prayer: Prayer.Redemption,
   },
   {
     icon: "smite",
@@ -35659,7 +35663,7 @@ var HDe = [
     icon: "preserve",
     label: "Preserve",
     level: 55,
-    prayer: S.Preserve,
+    prayer: Prayer.Preserve,
   },
   {
     icon: "chivalry",
@@ -35673,14 +35677,14 @@ var HDe = [
     icon: "piety",
     label: "Piety",
     level: 70,
-    prayer: S.Piety,
+    prayer: Prayer.Piety,
     tierGroup: "melee-combined",
     defenceLevel: 70,
     upgrade: {
       icon: "zeal",
       label: "Zeal",
       level: 84,
-      prayer: S.Zeal,
+      prayer: Prayer.Zeal,
       attackLevel: 75,
       strengthLevel: 75,
     },
@@ -35689,7 +35693,7 @@ var HDe = [
     icon: "rigour",
     label: "Rigour",
     level: 74,
-    prayer: S.Rigour,
+    prayer: Prayer.Rigour,
     tierGroup: "ranged-combined",
     defenceLevel: 70,
   },
@@ -35697,13 +35701,13 @@ var HDe = [
     icon: "augury",
     label: "Augury",
     level: 77,
-    prayer: S.Augury,
+    prayer: Prayer.Augury,
     tierGroup: "magic-combined",
     defenceLevel: 70,
   },
 ];
-var qDe = new Map(HDe.map((ez) => [ez.icon, ez]));
-var Loe = HDe.flatMap((ez) =>
+var qDe = new Map(PRAYER_GRID.map((ez) => [ez.icon, ez]));
+var Loe = PRAYER_GRID.flatMap((ez) =>
   ez.upgrade ? [ez.icon, ez.upgrade.icon] : [ez.icon],
 );
 var zDe = {
@@ -35715,7 +35719,7 @@ var zDe = {
 function BDe(ez, eA) {
   return eA.basePrayerLevel >= ez.level;
 }
-function WDe(ez, eA) {
+function meetsPrayerRequirements(ez, eA) {
   return (
     eA.baseDefenceLevel >= (ez.defenceLevel ?? 1) &&
     eA.baseAttackLevel >= (ez.attackLevel ?? 1) &&
@@ -35723,14 +35727,14 @@ function WDe(ez, eA) {
   );
 }
 function jDe(ez, eA) {
-  return BDe(ez, eA) && WDe(ez, eA);
+  return BDe(ez, eA) && meetsPrayerRequirements(ez, eA);
 }
-function UDe(ez, eA = zDe, eB = {}) {
+function resolvePrayerSlots(ez, eA = zDe, eB = {}) {
   return ez.map((eD) => {
     const upgrade2 = eD.upgrade;
     if (
       undefined === upgrade2 ||
-      !F(upgrade2.prayer, eB) ||
+      !isPrayerUnlockedByMechanics(upgrade2.prayer, eB) ||
       eA.basePrayerLevel < upgrade2.level
     ) {
       return {
@@ -35756,7 +35760,7 @@ function UDe(ez, eA = zDe, eB = {}) {
     };
   });
 }
-function VDe(ez, eA, eB, eC, eD, eE = zDe) {
+function passesPrayerFilter(ez, eA, eB, eC, eD, eE = zDe) {
   if (eD) {
     return ez;
   }
@@ -35775,7 +35779,7 @@ function VDe(ez, eA, eB, eC, eD, eE = zDe) {
           !jDe(eR, eO)) &&
         (!!eN.showRapidHealing || !eM.healing) &&
         (!!eN.showLackLevel || !!BDe(eM, eO)) &&
-        (!!eN.showLackRequirements || !!WDe(eM, eO))
+        (!!eN.showLackRequirements || !!meetsPrayerRequirements(eM, eO))
       );
     })(eK, eB, eE, eI),
   );
@@ -35784,7 +35788,7 @@ var YDe = 37;
 var XDe = 34;
 var GDe = 11 - Math.floor(1.5);
 var KDe = 16 - Math.floor(1.5);
-var QDe = {
+var OSRS_COLORS = {
   get orange() {
     return cK.colors.native.orange;
   },
@@ -35794,14 +35798,14 @@ var QDe = {
   buttonBorderLight: "#6d5a3b",
   buttonBorderDark: "#2a1f15",
 };
-var ZDe = ({ children: children, active: active, style: style, ...eC }) =>
+var StoneButton = ({ children: children, active: active, style: style, ...eC }) =>
   (0, wn.jsxs)("button", {
     type: "button",
     style: {
       position: "relative",
       fontFamily: '"RuneScape Bold 12", sans-serif',
       fontSize: "16px",
-      color: active ? QDe.white : QDe.orange,
+      color: active ? OSRS_COLORS.white : OSRS_COLORS.orange,
       textShadow: "1px 1px 0 #000",
       background: "transparent",
       border: "none",
@@ -35818,7 +35822,7 @@ var ZDe = ({ children: children, active: active, style: style, ...eC }) =>
     },
     ...eC,
     children: [
-      (0, wn.jsx)(ALe, {
+      (0, wn.jsx)(NineSliceBg, {
         selected: active,
       }),
       (0, wn.jsx)("span", {
@@ -35833,7 +35837,7 @@ var ZDe = ({ children: children, active: active, style: style, ...eC }) =>
 var JDe = ({ children: children }) =>
   (0, wn.jsx)("span", {
     style: {
-      color: QDe.white,
+      color: OSRS_COLORS.white,
     },
     children: children,
   });
@@ -35858,7 +35862,7 @@ function tFe(ez, eA, eB, eC, eD) {
     return null;
   }
 }
-var nFe = ({
+var PrayerContent = ({
   activePrayer: activePrayer,
   offensivePrayer: offensivePrayer,
   independentPrayers: independentPrayers,
@@ -35985,9 +35989,9 @@ var nFe = ({
     fzdHO: "16px",
     Gbimd: "1px 1px 0 #000",
   };
-  const { bindTooltip: bindTooltip } = oOe();
-  const f5 = Mxe();
-  const { bindContextMenu: bindContextMenu } = YOe();
+  const { bindTooltip: bindTooltip } = useTooltip();
+  const f5 = usePanelContentScale();
+  const { bindContextMenu: bindContextMenu } = useContextMenu();
   const [f7, f8] = (0, pn.useState)(null);
   const f9 = (0, pn.useRef)(null);
   const fa = (0, pn.useRef)(null);
@@ -36024,7 +36028,7 @@ var nFe = ({
             );
           }
         });
-      })(filterSettings.order, HDe),
+      })(filterSettings.order, PRAYER_GRID),
     [filterSettings.order],
   );
   const fi = (0, pn.useMemo)(
@@ -36033,7 +36037,7 @@ var nFe = ({
   );
   const fj = (0, pn.useMemo)(
     () =>
-      UDe(fh, availability, {
+      resolvePrayerSlots(fh, availability, {
         upgradedPrayers: upgradedPrayers,
         zealPrayer: zealPrayer,
       }),
@@ -36041,7 +36045,7 @@ var nFe = ({
   );
   const fl = (0, pn.useMemo)(
     () =>
-      VDe(fj, ff, filterOptions2, filteringEnabled, reorderMode, availability),
+      passesPrayerFilter(fj, ff, filterOptions2, filteringEnabled, reorderMode, availability),
     [ff, filterOptions2, filteringEnabled, reorderMode, fj, availability],
   );
   const fm = (0, pn.useMemo)(() => fl.map((fA) => fA.icon).join("|"), [fl]);
@@ -36068,7 +36072,7 @@ var nFe = ({
         if (undefined !== fH) {
           return fH;
         }
-        const fJ = b7[fB];
+        const fJ = prayerSlotByPrayer[fB];
         if ("protection" === fJ) {
           return fD === fB;
         } else if ("offensive" === fJ) {
@@ -36090,7 +36094,7 @@ var nFe = ({
       if (!fA.prayer || !fA.available) {
         return;
       }
-      const fB = b7[fA.prayer];
+      const fB = prayerSlotByPrayer[fA.prayer];
       if (fB === "protection") {
         onPrayerChange(fA.prayer);
       } else if ("offensive" === fB) {
@@ -36252,7 +36256,7 @@ var nFe = ({
       if (fA.prayer && ft(fA.prayer)) {
         fy.push({
           ...fE,
-          src: Sae.activatedBackground,
+          src: PRAYER.activatedBackground,
           width: XDe,
           height: XDe,
           opacity: fG,
@@ -36261,7 +36265,7 @@ var nFe = ({
       const fH = ff.has(fA.icon) ? 0.3 : fF ? 1 : 0.4;
       fy.push({
         ...fE,
-        src: fF ? Sae.icon(fA.displayIcon) : Sae.iconDisabled(fA.displayIcon),
+        src: fF ? PRAYER.icon(fA.displayIcon) : PRAYER.iconDisabled(fA.displayIcon),
         opacity: fG * fH,
       });
     });
@@ -36322,7 +36326,7 @@ var nFe = ({
         sprites: fy,
       }),
       f3.jevhN(filterViewOpen, filteringEnabled)
-        ? (0, wn.jsx)(FDe, {
+        ? (0, wn.jsx)(FilterMenu, {
             rows: fz,
           })
         : fl.map((fA, fB) => {
@@ -36366,7 +36370,7 @@ var nFe = ({
                     (fx(fH, fB),
                     !reorderMode && (fv(fA), fA.prayer && fA.available))
                   ) {
-                    const fJ = b7[fA.prayer];
+                    const fJ = prayerSlotByPrayer[fA.prayer];
                     if (
                       "protection" === fJ ||
                       ("offensive" === fJ &&
@@ -36397,11 +36401,11 @@ var nFe = ({
                                     {
                                       text:
                                         (fJ ? "Deactivate" : "Activate") + " ",
-                                      color: Gse.action,
+                                      color: TOOLTIP_COLORS.action,
                                     },
                                     {
                                       text: fH,
-                                      color: Gse.prayer,
+                                      color: TOOLTIP_COLORS.prayer,
                                     },
                                   ],
                                 },
@@ -36414,7 +36418,7 @@ var nFe = ({
                                 spans: [
                                   {
                                     text: fA.label,
-                                    color: QDe.white,
+                                    color: OSRS_COLORS.white,
                                   },
                                 ],
                               },
@@ -36480,7 +36484,7 @@ var nFe = ({
               zIndex: 100,
             },
             children: (0, wn.jsx)(Vse, {
-              src: Sae.icon(fA.displayIcon),
+              src: PRAYER.icon(fA.displayIcon),
               alt: fA.label,
               style: {
                 opacity: fH ? 0.3 : 1,
@@ -36549,7 +36553,7 @@ var nFe = ({
               },
               children: [
                 (0, wn.jsx)(Vse, {
-                  src: Sae.iconSmall,
+                  src: PRAYER.iconSmall,
                   alt: "",
                   style: {
                     width: 17,
@@ -36565,7 +36569,7 @@ var nFe = ({
             filteringEnabled &&
               !reorderMode &&
               !eM &&
-              (0, wn.jsx)(ZDe, {
+              (0, wn.jsx)(StoneButton, {
                 onClick: () => onFilterViewOpenChange(!filterViewOpen),
                 style: {
                   width: 56,
@@ -36584,7 +36588,7 @@ var nFe = ({
 function Qoe() {
   return [ixe.middle];
 }
-var oFe = ({
+var QuickPrayerSetup = ({
   quickPrayerSelections: quickPrayerSelections,
   availability: availability,
   upgradedPrayers: upgradedPrayers,
@@ -36599,7 +36603,7 @@ var oFe = ({
   const [eI] = doe(Qoe());
   const eK = (0, pn.useMemo)(
     () =>
-      UDe(HDe, availability, {
+      resolvePrayerSlots(PRAYER_GRID, availability, {
         upgradedPrayers: upgradedPrayers,
         zealPrayer: zealPrayer,
       }),
@@ -36653,7 +36657,7 @@ var oFe = ({
               children: [
                 eU &&
                   (0, wn.jsx)(Vse, {
-                    src: Sae.activatedBackground,
+                    src: PRAYER.activatedBackground,
                     alt: "",
                     style: {
                       position: "absolute",
@@ -36667,8 +36671,8 @@ var oFe = ({
                   }),
                 (0, wn.jsx)(Vse, {
                   src: eS
-                    ? Sae.icon(eM.displayIcon)
-                    : Sae.iconDisabled(eM.displayIcon),
+                    ? PRAYER.icon(eM.displayIcon)
+                    : PRAYER.iconDisabled(eM.displayIcon),
                   alt: eM.label,
                   style: {
                     opacity: eS ? 1 : 0.4,
@@ -36722,7 +36726,7 @@ var oFe = ({
     ],
   });
 };
-function rFe({ id: ez, percent: percent, onChange: onChange }) {
+function AudioSlider({ id: ez, percent: percent, onChange: onChange }) {
   const eD = [
     [Z_e.leftCap, 0],
     [Z_e.firstNotch, 16],
@@ -36786,28 +36790,28 @@ var iFe = [
     label: "Keybindings",
   },
 ];
-var aFe = ({
+var SettingsContent = ({
   subTab: subTab,
   onSubTabChange: onSubTabChange,
   keybindCategory: keybindCategory,
   onKeybindCategoryChange: onKeybindCategoryChange,
   readOnly: readOnly,
-  masterVolume: eE = Yse.masterVolume,
-  sfxVolume: eG = Yse.sfxVolume,
-  areaVolume: eH = Yse.areaVolume,
+  masterVolume: eE = PERSISTED_SETTINGS_DEFAULTS.masterVolume,
+  sfxVolume: eG = PERSISTED_SETTINGS_DEFAULTS.sfxVolume,
+  areaVolume: eH = PERSISTED_SETTINGS_DEFAULTS.areaVolume,
   onVolumeChange: onVolumeChange,
-  muteWhenUnfocused: eK = Yse.muteWhenUnfocused,
+  muteWhenUnfocused: eK = PERSISTED_SETTINGS_DEFAULTS.muteWhenUnfocused,
   onMuteWhenUnfocusedChange: onMuteWhenUnfocusedChange,
 }) => {
   const eO = (eQ, eR, eS) => {
-    const eT = Yse[eR];
+    const eT = PERSISTED_SETTINGS_DEFAULTS[eR];
     const eU = Math.round(eS * 100);
     return (0, wn.jsxs)("fieldset", {
       className: "audio-volume",
       "aria-label": eQ,
       "data-search-id": hse[eR],
       children: [
-        (0, wn.jsx)(Coe, {
+        (0, wn.jsx)(SettingRow, {
           searchId: null,
           isModified: Math.abs(eS - eT) > 0.005,
           onReset: () => onVolumeChange?.(eR, eT),
@@ -36826,7 +36830,7 @@ var aFe = ({
             ],
           }),
         }),
-        (0, wn.jsx)(rFe, {
+        (0, wn.jsx)(AudioSlider, {
           id: "audio-" + eR,
           percent: eU,
           onChange: (eV) => onVolumeChange?.(eR, eV / 100),
@@ -36888,15 +36892,15 @@ var aFe = ({
                 className: "audio-master-group",
                 "aria-label": "Master audio",
                 children: [
-                  eO(ese.masterVolume, "masterVolume", eE),
+                  eO(GAMEPANEL_AUDIO_LABELS.masterVolume, "masterVolume", eE),
                   (0, wn.jsx)("div", {
                     className: "audio-preference",
                     "data-search-id": hse.muteWhenUnfocused,
-                    children: (0, wn.jsx)(Coe, {
+                    children: (0, wn.jsx)(SettingRow, {
                       searchId: null,
-                      isModified: eK !== Yse.muteWhenUnfocused,
+                      isModified: eK !== PERSISTED_SETTINGS_DEFAULTS.muteWhenUnfocused,
                       onReset: () =>
-                        onMuteWhenUnfocusedChange?.(Yse.muteWhenUnfocused),
+                        onMuteWhenUnfocusedChange?.(PERSISTED_SETTINGS_DEFAULTS.muteWhenUnfocused),
                       children: (0, wn.jsxs)("button", {
                         type: "button",
                         role: "checkbox",
@@ -36911,7 +36915,7 @@ var aFe = ({
                             height: 17,
                           }),
                           (0, wn.jsx)("span", {
-                            children: ese.muteWhenUnfocused,
+                            children: GAMEPANEL_AUDIO_LABELS.muteWhenUnfocused,
                           }),
                         ],
                       }),
@@ -36922,14 +36926,14 @@ var aFe = ({
               (0, wn.jsxs)("div", {
                 className: "audio-channels",
                 children: [
-                  eO(ese.sfxVolume, "sfxVolume", eG),
-                  eO(ese.areaVolume, "areaVolume", eH),
+                  eO(GAMEPANEL_AUDIO_LABELS.sfxVolume, "sfxVolume", eG),
+                  eO(GAMEPANEL_AUDIO_LABELS.areaVolume, "areaVolume", eH),
                 ],
               }),
             ],
           }),
         subTab === "keybinds" &&
-          (0, wn.jsx)(Mse, {
+          (0, wn.jsx)(KeybindingsContent, {
             readOnly: readOnly,
             category: keybindCategory,
             onCategoryChange: onKeybindCategoryChange,
@@ -36938,7 +36942,7 @@ var aFe = ({
     }),
   });
 };
-function sFe(ez) {
+function edgeSprite(ez) {
   switch (ez) {
     case "classicLeft":
       return G_e.edgeLeft;
@@ -36952,7 +36956,7 @@ function sFe(ez) {
       return G_e.fixedEdgeRight;
   }
 }
-function lFe(ez, eA, eB) {
+function rowSprites(ez, eA, eB) {
   const eC = [
     {
       src: eB,
@@ -37019,7 +37023,7 @@ function cFe({ row: ez, slots: slots, dataTutorial: dataTutorial }) {
   });
   var eC;
 }
-var uFe = ({
+var SidePanelColumn = ({
   geometry: geometry,
   backgroundOpacity: eA = 1,
   topRow: topRow,
@@ -37042,7 +37046,7 @@ var uFe = ({
   const eO = eI
     .map(
       (eS) =>
-        sFe(eS.sprite) +
+        edgeSprite(eS.sprite) +
         "@" +
         eS.rect.x +
         "," +
@@ -37053,12 +37057,12 @@ var uFe = ({
         eS.rect.height,
     )
     .join(";");
-  const eQ = [eK, ...eI.map((eS) => sFe(eS.sprite))];
+  const eQ = [eK, ...eI.map((eS) => edgeSprite(eS.sprite))];
   const eR = [
     ...geometry.edges
       .filter((eS) => eS.sourceSize === undefined)
       .map((eS) => ({
-        src: sFe(eS.sprite),
+        src: edgeSprite(eS.sprite),
         x: eS.rect.x,
         y: eS.rect.y,
         w: eS.rect.width,
@@ -37066,12 +37070,12 @@ var uFe = ({
         width: eS.rect.width,
         height: eS.rect.height,
       })),
-    ...lFe(
+    ...rowSprites(
       geometry.tabRowTop,
       topRow,
       eH ? G_e.fixedTabsTopRow : G_e.tabsTopRow,
     ),
-    ...lFe(
+    ...rowSprites(
       geometry.tabRowBottom,
       bottomRow,
       eH ? G_e.fixedTabsBottomRow : G_e.tabsBottomRow,
@@ -37131,7 +37135,7 @@ var uFe = ({
             }
           }
           for (const eW of eI) {
-            const eX = eT.get(sFe(eW.sprite));
+            const eX = eT.get(edgeSprite(eW.sprite));
             if (eX) {
               MOe(eS, eX, eW.rect.x, eW.rect.y, eW.rect.width, eW.rect.height);
             }
@@ -37169,7 +37173,7 @@ var dFe = (ez, eA, eB) => ({
   label: eA,
   stat: eB,
 });
-var pFe = [
+var PANEL_CELLS = [
   dFe("attack", "Attack", "attack"),
   dFe("hitpoints", "Hitpoints", "hitpoints"),
   dFe("mining", "Mining", null),
@@ -37205,13 +37209,13 @@ function bFe(ez) {
   };
 }
 var _Fe = (ez) => ba(ez, "immediate");
-var yFe = ({
+var SkillsPanelCanvas = ({
   tileLeft: tileLeft,
   tileRightWithSlash: tileRightWithSlash,
   icons: icons,
 }) => {
   const eD = (0, pn.useRef)(null);
-  const eE = Mxe();
+  const eE = usePanelContentScale();
   const [eG, eH] = (0, pn.useState)(
     () => (typeof window != "undefined" && window.devicePixelRatio) || 1,
   );
@@ -37313,7 +37317,7 @@ var yFe = ({
         }
       })
       .catch((eN) => {
-        Z.error("SkillsPanelCanvas", "Failed to compose the skills panel:", eN);
+        logger.error("SkillsPanelCanvas", "Failed to compose the skills panel:", eN);
       });
     return () => {
       eK = true;
@@ -37349,20 +37353,20 @@ var vFe = (ez, eA) => ({
   color: "#FFFF00",
   textShadow: "1px 1px 0 #000",
 });
-var wFe = ({ stats: stats }) => {
+var SkillsContent = ({ stats: stats }) => {
   const eB = {
-    ...bj(),
+    ...createDefaultStats(),
     ...stats,
   };
   const eC = uie();
   const eD = (0, pn.useMemo)(
     () => ({
       activePackId: eC,
-      tileLeft: exe.tileLeft,
-      tileRightWithSlash: exe.tileRightWithSlash,
-      icons: pFe.map((eE) => ({
+      tileLeft: STATS.tileLeft,
+      tileRightWithSlash: STATS.tileRightWithSlash,
+      icons: PANEL_CELLS.map((eE) => ({
         name: eE.name,
-        src: exe.skillIcon(eE.name),
+        src: STATS.skillIcon(eE.name),
       })),
     }),
     [eC],
@@ -37375,12 +37379,12 @@ var wFe = ({ stats: stats }) => {
     },
     "data-testid": "skills-panel",
     children: [
-      (0, wn.jsx)(yFe, {
+      (0, wn.jsx)(SkillsPanelCanvas, {
         tileLeft: eD.tileLeft,
         tileRightWithSlash: eD.tileRightWithSlash,
         icons: eD.icons,
       }),
-      pFe.map((eE, eG) => {
+      PANEL_CELLS.map((eE, eG) => {
         const eH = bFe(eG);
         const eI =
           eE.stat === null
@@ -37452,7 +37456,7 @@ function kFe(ez, eA, eB, eC, eD, eE, eG, eH, eI, eK, eM) {
     return null;
   }
 }
-var xFe = {
+var CATEGORY_LABELS = {
   combat: "Combat",
   teleport: "Teleport",
   utility: "Utility",
@@ -37464,7 +37468,7 @@ var MFe = ({ children: children }) =>
     },
     children: children,
   });
-var CFe = ({
+var SpellbookContent = ({
   spellbook: ez = "arceuus",
   onMarkOfDarknessCast: onMarkOfDarknessCast,
   onHomeTeleportCast: onHomeTeleportCast,
@@ -37625,10 +37629,10 @@ var CFe = ({
     dVwEU: '"RuneScape Bold 12", sans-serif',
     DBUjC: "span",
   };
-  const { bindTooltip: bindTooltip } = oOe();
-  const f3 = Mxe();
-  const { bindContextMenu: bindContextMenu } = YOe();
-  const f5 = Iie[ez];
+  const { bindTooltip: bindTooltip } = useTooltip();
+  const f3 = usePanelContentScale();
+  const { bindContextMenu: bindContextMenu } = useContextMenu();
+  const f5 = SPELLBOOKS[ez];
   const [f6, f7] = (0, pn.useState)(null);
   const f8 = (0, pn.useRef)(null);
   const f9 = (0, pn.useRef)(null);
@@ -37683,7 +37687,7 @@ var CFe = ({
     [ff, f5.grid],
   );
   const fo = (0, pn.useMemo)(
-    () => HPe(fm, fi, fj, fh, filteringEnabled, reorderMode, fl),
+    () => passesSpellFilter(fm, fi, fj, fh, filteringEnabled, reorderMode, fl),
     [fi, fj, fh, filteringEnabled, reorderMode, fm, fl],
   );
   const fp = (0, pn.useMemo)(() => fo.map((fH) => fH.icon).join("|"), [fo]);
@@ -37717,7 +37721,7 @@ var CFe = ({
     () =>
       (function (fH, fJ, fL, fM = true) {
         if (!fH) {
-          const fX = zPe[fL];
+          const fX = CLASSIC_GRIDS[fL];
           return {
             slotSize: 24,
             startX:
@@ -37945,7 +37949,7 @@ var CFe = ({
               ? 1
               : 0.7;
         return {
-          src: kae(f5.iconDir, fH.icon, fz.slotSize, OPe(fH, runeContext)),
+          src: getSpellIconPath(f5.iconDir, fH.icon, fz.slotSize, OPe(fH, runeContext)),
           x: fL.x,
           y: fL.y,
           w: fz.slotSize,
@@ -37962,7 +37966,7 @@ var CFe = ({
         children: [
           "Show ",
           (0, wn.jsx)(MFe, {
-            children: xFe[fH],
+            children: CATEGORY_LABELS[fH],
           }),
           " spells",
         ],
@@ -38015,7 +38019,7 @@ var CFe = ({
         sprites: fF,
       }),
       f0.aBfpL(filterViewOpen, filteringEnabled)
-        ? (0, wn.jsx)(FDe, {
+        ? (0, wn.jsx)(FilterMenu, {
             rows: fG,
           })
         : (0, wn.jsxs)("div", {
@@ -38115,11 +38119,11 @@ var CFe = ({
                             spans: [
                               {
                                 text: "Cast ",
-                                color: Gse.action,
+                                color: TOOLTIP_COLORS.action,
                               },
                               {
                                 text: fW,
-                                color: Gse.spell,
+                                color: TOOLTIP_COLORS.spell,
                               },
                             ],
                           },
@@ -38304,7 +38308,7 @@ var CFe = ({
               zIndex: 100,
             },
             children: (0, wn.jsx)(Vse, {
-              src: kae(
+              src: getSpellIconPath(
                 f5.iconDir,
                 fH.icon,
                 current103.slotSize,
@@ -38388,7 +38392,7 @@ var CFe = ({
               textShadow: "1px 1px 0 #000",
             },
             children: [
-              (0, wn.jsx)(ALe, {
+              (0, wn.jsx)(NineSliceBg, {
                 selected: filterViewOpen,
               }),
               (0, wn.jsx)("span", {
@@ -38406,7 +38410,7 @@ var CFe = ({
 };
 var MW = (ez, eA, eB, eC) =>
   "rgba(" + ez + ", " + eA + ", " + eB + ", " + eC / 255 + ")";
-var SFe = {
+var STATUS_BAR_COLORS = {
   background: MW(0, 0, 0, 150),
   hitpoints: MW(225, 35, 0, 125),
   prayer: MW(50, 200, 200, 175),
@@ -38453,13 +38457,13 @@ function NFe(ez, eA) {
     ez.fillStyle = eR;
     ez.fillRect(eS, eT, eU, eV);
   };
-  eK(eC, SFe.background);
+  eK(eC, STATUS_BAR_COLORS.background);
   eK(
     {
       ...eC,
       height: 1,
     },
-    SFe.background,
+    STATUS_BAR_COLORS.background,
   );
   eK(
     {
@@ -38467,7 +38471,7 @@ function NFe(ez, eA) {
       y: eC.y + eC.height - 1,
       height: 1,
     },
-    SFe.background,
+    STATUS_BAR_COLORS.background,
   );
   const eM = eC.y + 1;
   const eN = eC.height - 2;
@@ -38478,7 +38482,7 @@ function NFe(ez, eA) {
       width: 1,
       height: eN,
     },
-    SFe.background,
+    STATUS_BAR_COLORS.background,
   );
   eK(
     {
@@ -38487,7 +38491,7 @@ function NFe(ez, eA) {
       width: 1,
       height: eN,
     },
-    SFe.background,
+    STATUS_BAR_COLORS.background,
   );
   const eO = TFe(eC, eG, current);
   if (eO) {
@@ -38498,7 +38502,7 @@ var PFe = 16;
 var $Fe = '"RuneScape Small", sans-serif';
 var RFe = "#ffffff";
 var AFe = "#000000";
-function IFe(ez, eA) {
+function paintBarValue(ez, eA) {
   const {
     bar: eC,
     bounds: bounds,
@@ -38517,7 +38521,7 @@ function IFe(ez, eA) {
   ez.fillStyle = RFe;
   ez.fillText(eM, eH, eI);
 }
-var use = "/assets/ui/status-bars/prayer.png";
+var STATUS_BAR_PRAYER_ICON = "/assets/ui/status-bars/prayer.png";
 var EFe = {
   x: 5,
   y: 6,
@@ -38554,7 +38558,7 @@ function LFe(ez) {
     bounds: OFe(eC, eD),
   };
 }
-var DFe = (0, pn.memo)(
+var StatusBars = (0, pn.memo)(
   ({
     mode: mode,
     activePackId: activePackId,
@@ -38578,10 +38582,10 @@ var DFe = (0, pn.memo)(
           switch (eW) {
             case "fixed":
               return LFe({
-                x: WCe.x - mTe.x,
-                y: WCe.y - mTe.y,
-                width: WCe.width,
-                height: WCe.height,
+                x: FIXED_PANEL_CONTENT.x - mTe.x,
+                y: FIXED_PANEL_CONTENT.y - mTe.y,
+                width: FIXED_PANEL_CONTENT.width,
+                height: FIXED_PANEL_CONTENT.height,
               });
             case "classic":
               return LFe(kTe);
@@ -38612,15 +38616,15 @@ var DFe = (0, pn.memo)(
     const eS = (0, pn.useMemo)(
       () => ({
         activePackId: activePackId,
-        hitpoints: qse.orbHitpointsIcon,
+        hitpoints: MINIMAP.orbHitpointsIcon,
       }),
       [activePackId],
     );
     const eT = (function (eW) {
       if (eW) {
-        return SFe.prayerActive;
+        return STATUS_BAR_COLORS.prayerActive;
       } else {
-        return SFe.prayer;
+        return STATUS_BAR_COLORS.prayer;
       }
     })(anyPrayerActive);
     const eU = (0, pn.useCallback)(() => {
@@ -38651,7 +38655,7 @@ var DFe = (0, pn.memo)(
         bar: left,
         max: maxHitpoints,
         current: currentHitpoints,
-        color: SFe.hitpoints,
+        color: STATUS_BAR_COLORS.hitpoints,
       });
       NFe(context10, {
         ...f2,
@@ -38661,12 +38665,12 @@ var DFe = (0, pn.memo)(
         color: eT,
       });
       if (showValues) {
-        IFe(context10, {
+        paintBarValue(context10, {
           ...f2,
           bar: left,
           current: currentHitpoints,
         });
-        IFe(context10, {
+        paintBarValue(context10, {
           ...f2,
           bar: right,
           current: currentPrayer,
@@ -38727,7 +38731,7 @@ var DFe = (0, pn.memo)(
           style: eV(left),
         }),
         (0, wn.jsx)(Vse, {
-          src: use,
+          src: STATUS_BAR_PRAYER_ICON,
           style: eV(right),
         }),
       ],
@@ -38738,13 +38742,13 @@ var FFe = 32;
 var HFe = 30;
 var qFe = Math.ceil(4.5) + 2;
 var zFe = Math.ceil(6.71875) + 2;
-var BFe = (ez) =>
+var loadChromeImage = (ez) =>
   ba(ez, "immediate").then(
     (eA) => eA ?? Promise.reject(new Error("Failed to load " + ez)),
   );
 var WFe = () => {
   const eA = (0, pn.useRef)(null);
-  const eB = Mxe();
+  const eB = usePanelContentScale();
   const [eC, eD] = (0, pn.useState)(
     () => (typeof window != "undefined" && window.devicePixelRatio) || 1,
   );
@@ -38820,14 +38824,14 @@ var WFe = () => {
     let eI = false;
     const eK = eB * eC;
     Promise.all([
-      BFe(eG.edgeTop),
-      BFe(eG.edgeBottom),
-      BFe(eG.edgeLeft),
-      BFe(eG.edgeRight),
-      BFe(eG.cornerTopLeft),
-      BFe(eG.cornerTopRight),
-      BFe(eG.cornerBottomLeft),
-      BFe(eG.cornerBottomRight),
+      loadChromeImage(eG.edgeTop),
+      loadChromeImage(eG.edgeBottom),
+      loadChromeImage(eG.edgeLeft),
+      loadChromeImage(eG.edgeRight),
+      loadChromeImage(eG.cornerTopLeft),
+      loadChromeImage(eG.cornerTopRight),
+      loadChromeImage(eG.cornerBottomLeft),
+      loadChromeImage(eG.cornerBottomRight),
     ])
       .then(([eM, eN, eO, eQ, eR, eS, eT, eU]) => {
         if (eI) {
@@ -38920,7 +38924,7 @@ var jFe = {
   anchorY: "bottom",
 };
 var UFe = jFe;
-function VFe(ez) {
+function selectedTabStoneSprite(ez) {
   switch (ez) {
     case "topLeft":
       return G_e.tabStoneSelectedTopLeft;
@@ -38967,7 +38971,7 @@ var YFe = ({
       position: "relative",
     },
   });
-var xoe = {
+var SIDE_BACKGROUND_SPRITES = {
   get tradebackingDark() {
     return G_e.background;
   },
@@ -38986,7 +38990,7 @@ var XFe = () => {
           sprite: "tradebackingLight",
           alpha: RTe(150),
         };
-  const eB = xoe[eA.sprite];
+  const eB = SIDE_BACKGROUND_SPRITES[eA.sprite];
   const [eC] = doe([eB]);
   return (0, wn.jsx)("div", {
     "aria-hidden": "true",
@@ -39008,9 +39012,9 @@ var XFe = () => {
 };
 var GFe = () => {};
 function KFe(ez) {
-  return e4.getDescriptorOfKindOrVariant(ez)?.mapSquare;
+  return encounterRegistry.getDescriptorOfKindOrVariant(ez)?.mapSquare;
 }
-var QFe = [
+var HINTS = [
   {
     keys: "Alt + Drag",
     keysCompact: "Alt+Drag",
@@ -39043,7 +39047,7 @@ var QFe = [
   },
 ];
 // memo: its props are stable from tick to tick; the Alt key comes from a store.
-var ZFe = (0, pn.memo)(({ insets: insets }) => {
+var HintBar = (0, pn.memo)(({ insets: insets }) => {
   const eA = {
     SZWsa: "Alt",
     jAUaT: function (eG, eH) {
@@ -39081,12 +39085,12 @@ var ZFe = (0, pn.memo)(({ insets: insets }) => {
     const eI = () => eD(true);
     const eK = () => eD(false);
     window.addEventListener("keydown", eH, true);
-    window.addEventListener(sOe, eI);
-    window.addEventListener(lOe, eK);
+    window.addEventListener(PANEL_DRAG_START_EVENT, eI);
+    window.addEventListener(PANEL_DRAG_END_EVENT, eK);
     return () => {
       window.removeEventListener("keydown", eH, true);
-      window.removeEventListener(sOe, eI);
-      window.removeEventListener(lOe, eK);
+      window.removeEventListener(PANEL_DRAG_START_EVENT, eI);
+      window.removeEventListener(PANEL_DRAG_END_EVENT, eK);
     };
   }, []);
   return (0, wn.jsx)("div", {
@@ -39111,7 +39115,7 @@ var ZFe = (0, pn.memo)(({ insets: insets }) => {
         }),
         (0, wn.jsx)("ul", {
           className: "hint-bar__chips",
-          children: QFe.map((eG) =>
+          children: HINTS.map((eG) =>
             (0, wn.jsxs)(
               "li",
               {
@@ -39153,12 +39157,12 @@ var ZFe = (0, pn.memo)(({ insets: insets }) => {
     }),
   });
 });
-var boe = {
+var INFOBOX_ITEM_IDS = {
   saturatedHeart: 27641,
   antipoison: 2446,
   surgePotion: 30875,
 };
-var JFe = {
+var STAT_CONFIG = {
   attack: {
     id: "stat-attack",
     name: "Attack",
@@ -39185,9 +39189,9 @@ var JFe = {
     spriteUrl: "/assets/ui/skill-magic.png",
   },
 };
-function eHe(ez, eA) {
+function selectInfoboxes(ez, eA) {
   const eC = [];
-  const eD = xMe(ez.encounter);
+  const eD = infernoWaveInfobox(ez.encounter);
   if (eD) {
     eC.push(eD);
   }
@@ -39235,7 +39239,7 @@ function eHe(ez, eA) {
     const eR = ez.stats.magic.current - ez.stats.magic.max;
     eC.push({
       id: "saturated-heart",
-      itemId: boe.saturatedHeart,
+      itemId: INFOBOX_ITEM_IDS.saturatedHeart,
       text: eQ,
       ticksRemaining: eH,
       sampledAtTick: ez.currentTick,
@@ -39319,7 +39323,7 @@ function eHe(ez, eA) {
     const eX = dY(eW);
     eC.push({
       id: "antipoison",
-      itemId: boe.antipoison,
+      itemId: INFOBOX_ITEM_IDS.antipoison,
       text: eX,
       ticksRemaining: eW,
       sampledAtTick: ez.currentTick,
@@ -39332,7 +39336,7 @@ function eHe(ez, eA) {
     const eY = dY(surgePotionCooldownTicks2);
     eC.push({
       id: "surge-potion-cooldown",
-      itemId: boe.surgePotion,
+      itemId: INFOBOX_ITEM_IDS.surgePotion,
       text: eY,
       ticksRemaining: surgePotionCooldownTicks2,
       sampledAtTick: ez.currentTick,
@@ -39343,7 +39347,7 @@ function eHe(ez, eA) {
   for (const eZ of ["attack", "strength", "defence", "ranged", "magic"]) {
     const f0 = ez.stats[eZ];
     if (f0.current !== f0.max) {
-      const f2 = JFe[eZ];
+      const f2 = STAT_CONFIG[eZ];
       const f3 = f0.current - f0.max;
       const f4 = f3 > 0 ? "+" : "";
       eC.push({
@@ -39366,7 +39370,7 @@ function tHe(ez, eA) {
         spans: [
           {
             text: ez,
-            color: Gse.item,
+            color: TOOLTIP_COLORS.item,
           },
         ],
       },
@@ -39374,14 +39378,14 @@ function tHe(ez, eA) {
         spans: [
           {
             text: eA,
-            color: Gse.action,
+            color: TOOLTIP_COLORS.action,
           },
         ],
       },
     ],
   };
 }
-var nHe = ({ text: text, hasSprite: hasSprite, color: color, tone: tone }) =>
+var InfoBoxText = ({ text: text, hasSprite: hasSprite, color: color, tone: tone }) =>
   (0, wn.jsx)("span", {
     className:
       "infobox-text" +
@@ -39398,12 +39402,12 @@ var oHe = ({
   ...eB
 }) => {
   const eD = cg(ticksRemaining, sampledAtTick);
-  return (0, wn.jsx)(nHe, {
+  return (0, wn.jsx)(InfoBoxText, {
     text: dH(eD),
     ...eB,
   });
 };
-var rHe = ({
+var InfoBoxItem = ({
   infobox: infobox,
   contentScale: contentScale,
   hovered: hovered,
@@ -39435,7 +39439,7 @@ var rHe = ({
         }),
       undefined === infobox.ticksRemaining ||
       undefined === infobox.sampledAtTick
-        ? (0, wn.jsx)(nHe, {
+        ? (0, wn.jsx)(InfoBoxText, {
             text: infobox.text,
             hasSprite: eG,
             color: eI,
@@ -39513,7 +39517,7 @@ var iHe = ({
       showTapTooltip: showTapTooltip,
       ownsTapTooltip: ownsTapTooltip,
       hideVirtualTooltip: hideVirtualTooltip,
-    } = oOe();
+    } = useTooltip();
     const [eW, eX] = pn.useState(null);
     const eY = pn.useRef(null);
     const eZ = pn.useRef(null);
@@ -39712,7 +39716,7 @@ var iHe = ({
     return eW;
   })(eH);
   const eK = Cxe() ?? 1;
-  const eM = eHe(simulationState, infoBoxSettings);
+  const eM = selectInfoboxes(simulationState, infoBoxSettings);
   if (0 === eM.length) {
     return null;
   }
@@ -39741,7 +39745,7 @@ var iHe = ({
         const eT = ZIe(eS);
         if (eT) {
           return (0, wn.jsx)(
-            rHe,
+            InfoBoxItem,
             {
               infobox: eR,
               contentScale: eQ,
@@ -39782,7 +39786,7 @@ var iHe = ({
     },
     children: eM.map((eR) =>
       (0, wn.jsx)(
-        rHe,
+        InfoBoxItem,
         {
           infobox: eR,
           contentScale: eB,
@@ -39793,7 +39797,7 @@ var iHe = ({
     ),
   });
 };
-function aHe(ez) {
+function paintedOnTop(ez) {
   return (function (eB, eC) {
     const eD = new Map();
     for (let eE = 0; eE < eB.length; eE++) {
@@ -39884,7 +39888,7 @@ function sHe(ez) {
     height: ez.bottom - ez.top,
   };
 }
-var lHe = ({ disabled: ez = false }) => {
+var OverlapGuideOverlay = ({ disabled: ez = false }) => {
   const eA = {
     SoRtd: function (eH, eI) {
       return eH(eI);
@@ -39920,7 +39924,7 @@ var lHe = ({ disabled: ez = false }) => {
     let eH = 0;
     let eI = "";
     const eK = () => {
-      const eM = aHe(eB.getStackedPanels());
+      const eM = paintedOnTop(eB.getStackedPanels());
       const eN = JSON.stringify(eM);
       if (eN !== eI) {
         eI = eN;
@@ -40003,7 +40007,7 @@ function uHe(ez) {
     height: gapChannel2.height,
   };
 }
-var dHe = () => {
+var SnapGuideOverlay = () => {
   const eA = wae();
   const eB = eA?.subscribeSnapState;
   const eC = eA?.getSnapState;
@@ -40130,7 +40134,7 @@ function gHe({
     top: Math.max(0, gamePanelTop - 5 - stripScaledHeight),
   };
 }
-var mHe = ({
+var InfoBoxPanel = ({
   simulationState: simulationState,
   infoBoxSettings: infoBoxSettings,
   clientLayoutMode: eB = "modern",
@@ -40143,10 +40147,10 @@ var mHe = ({
   pinTarget: eK = "inventory",
   chatboxAnchor: chatboxAnchor,
 }) => {
-  const { setScale: setScale } = oOe();
-  const eQ = rOe();
+  const { setScale: setScale } = useTooltip();
+  const eQ = useTooltipScale();
   const eR = (0, pn.useMemo)(
-    () => eHe(simulationState, infoBoxSettings),
+    () => selectInfoboxes(simulationState, infoBoxSettings),
     [simulationState, infoBoxSettings],
   );
   const eS = (0, pn.useMemo)(
@@ -40201,7 +40205,7 @@ var mHe = ({
           case "fixed":
             return fTe;
           case "classic":
-            return wTe;
+            return CLASSIC_COLUMN;
           case "mobile":
             return ATe;
         }
@@ -40364,7 +40368,7 @@ var mHe = ({
     readingOrder: f9,
   });
   const fc = f9 || fa;
-  return (0, wn.jsx)(dOe, {
+  return (0, wn.jsx)(DraggablePanel, {
     defaultPosition: eZ,
     position: f9 ? f8 : fa ? f5 : (position ?? eZ),
     width: panelWidth,
@@ -40386,7 +40390,7 @@ var mHe = ({
     children: fb,
   });
 };
-function fHe({
+function PracticeSessionBar({
   session: session,
   className: eA = "",
   style: style,
@@ -40452,12 +40456,12 @@ const CommunityLinks = (0, pn.memo)(function CommunityLinks({ className, showLab
     "aria-label": description,
     onMouseDown: (eC) => eC.preventDefault(),
     children: [
-      (0, wn.jsx)(zae, { glyph }),
+      (0, wn.jsx)(LauncherIcon, { glyph }),
       showLabels && (0, wn.jsx)("span", { children: name }),
     ],
   }, name));
 });
-function bHe(ez, eA) {
+function createTracker(ez, eA) {
   const eB = {
     mAQKF: "undefined",
     Qqjyn: "style",
@@ -40596,7 +40600,7 @@ function bHe(ez, eA) {
 function _He(ez, eA, eB) {
   const eD = (0, pn.useRef)(eA);
   eD.current = eA;
-  const [eE] = (0, pn.useState)(() => bHe(() => eD.current(), ez));
+  const [eE] = (0, pn.useState)(() => createTracker(() => eD.current(), ez));
   const eG = wae()?.layout;
   (0, pn.useLayoutEffect)(() => {
     eE.start();
@@ -40622,14 +40626,14 @@ function _He(ez, eA, eB) {
     return () => window.removeEventListener("resize", eE.runNow);
   }, [eE]);
 }
-function yHe({
+function EncounterWorkbench({
   open: open,
   title: title,
   anchor: anchor,
   onClose: onClose,
   children: children,
 }) {
-  jae(zie.SIDE_PANEL, open, onClose);
+  jae(ESC_PRIORITY.SIDE_PANEL, open, onClose);
   return (0, gn.createPortal)(
     (0, wn.jsxs)("section", {
       className: "encounter-workbench",
@@ -40652,7 +40656,7 @@ function yHe({
             (0, wn.jsx)("h2", {
               children: title,
             }),
-            (0, wn.jsx)(fse, {
+            (0, wn.jsx)(CloseButton, {
               "aria-label": "Close " + title,
               tabIndex: -1,
               onClick: onClose,
@@ -40677,14 +40681,14 @@ var vHe = () =>
       d: "M1 1 L9 9 M1 9 L9 1",
     }),
   });
-var wHe = {
+var SECTION_LABELS = {
   fightSetup: "Fight",
   mechanics: "Mechanics",
   assists: "Aids",
 };
-var kHe = (ez) => (ez.startsWith("section:") ? ez.slice(8) : wHe[ez]);
+var kHe = (ez) => (ez.startsWith("section:") ? ez.slice(8) : SECTION_LABELS[ez]);
 var xHe = [];
-var MHe = ({
+var PracticePane = ({
   tab: ez,
   onTabChange: onTabChange,
   replaying: replaying,
@@ -40740,7 +40744,7 @@ var MHe = ({
   const eW = replaying ? "stats" : ez;
   const eX = (0, pn.useRef)(null);
   const eY = (0, pn.useId)();
-  const { card: card } = jie({
+  const { card: card } = useHoverCard({
     content:
       "Setup is off while you watch a replay. Exit Replay to change the fight.",
     anchorRef: eX,
@@ -40798,14 +40802,14 @@ var MHe = ({
       "stats" === eW
         ? (0, wn.jsx)("div", {
             className: "launcher-pane__body",
-            children: (0, wn.jsx)(SHe, {
+            children: (0, wn.jsx)(PracticeStats, {
               simulationState: simulationState,
               engine: engine,
               dpsProjection: dpsProjection,
               replaying: replaying,
             }),
           })
-        : (0, wn.jsx)(CHe, {
+        : (0, wn.jsx)(SetupBody, {
             practice: practice,
             mechanicsConfig: mechanicsConfig,
             onMechanicsConfigChange: onMechanicsConfigChange,
@@ -40842,7 +40846,7 @@ var MHe = ({
     ],
   });
 };
-var CHe = ({
+var SetupBody = ({
   practice: practice,
   mechanicsConfig: mechanicsConfig,
   onMechanicsConfigChange: onMechanicsConfigChange,
@@ -41056,7 +41060,7 @@ var CHe = ({
                 children:
                   "Fight setup and mechanics appear here once you start an encounter.",
               }),
-            (0, wn.jsx)(Uie, {
+            (0, wn.jsx)(MechanicsSettings, {
               variant: "practice",
               config: mechanicsConfig,
               onConfigChange: onMechanicsConfigChange,
@@ -41072,7 +41076,7 @@ var CHe = ({
               optionsExpanded: practice.optionsExpanded,
               onOptionsExpandedChange: practice.setOptionsExpanded,
             }),
-            (0, wn.jsx)(ioe, {
+            (0, wn.jsx)(ResetToDefaultsControl, {
               control: resetToDefaults,
               variant: "practice",
             }),
@@ -41082,7 +41086,7 @@ var CHe = ({
     ],
   });
 };
-var SHe = ({
+var PracticeStats = ({
   simulationState: simulationState,
   engine: engine,
   dpsProjection: dpsProjection,
@@ -41203,7 +41207,7 @@ var SHe = ({
               }),
             ],
           }),
-          (0, wn.jsx)(THe, {
+          (0, wn.jsx)(Bar, {
             pct: eE.hpPct,
             hasFill: eE.hpHasFill,
             color: eE.hpColor,
@@ -41226,7 +41230,7 @@ var SHe = ({
                   }),
                 ],
               }),
-              (0, wn.jsx)(THe, {
+              (0, wn.jsx)(Bar, {
                 pct: eE.targetHpPct,
                 hasFill: eE.targetHasFill,
                 color: eE.targetHpColor,
@@ -41317,7 +41321,7 @@ var SHe = ({
     ],
   });
 };
-var THe = ({ pct: ez, hasFill: hasFill, color: color }) =>
+var Bar = ({ pct: ez, hasFill: hasFill, color: color }) =>
   (0, wn.jsx)("div", {
     className: "launcher-stats__bar",
     children: (0, wn.jsx)("div", {
@@ -41329,7 +41333,7 @@ var THe = ({ pct: ez, hasFill: hasFill, color: color }) =>
       },
     }),
   });
-function NHe(ez, eA = false) {
+function useEncounterTool(ez, eA = false) {
   const eB = {
     PHvHj: function (eU, eV) {
       return eU && eV;
@@ -41355,7 +41359,7 @@ function NHe(ez, eA = false) {
     },
   };
   const encounter3 = ez.simulationState.encounter;
-  const eD = undefined === (eE = encounter3.kind) ? undefined : bMe[ev(eE)];
+  const eD = undefined === (eE = encounter3.kind) ? undefined : bMe[resolveBaseEncounterKind(eE)];
   var eE;
   const eG = yMe(encounter3);
   const eH = vMe(encounter3);
@@ -41492,7 +41496,7 @@ function LHe(ez) {
     return null;
   }
 }
-var DHe = ({
+var LauncherButton = ({
   glyph: glyph,
   label: label,
   iconName: eB = label,
@@ -41528,7 +41532,7 @@ var DHe = ({
   const eR = (0, pn.useId)();
   const eS =
     disabledReason ?? (notice ? eB + ". " + notice : iconOnly ? eB : null);
-  const { card: card } = jie({
+  const { card: card } = useHoverCard({
     content: eS,
     anchorRef: eQ,
     placement: "block",
@@ -41569,7 +41573,7 @@ var DHe = ({
         onClick: live ? onClick : undefined,
         children: [
           eU
-            ? (0, wn.jsx)(zae, {
+            ? (0, wn.jsx)(LauncherIcon, {
                 glyph: eU,
               })
             : label,
@@ -41585,7 +41589,7 @@ var DHe = ({
     ],
   });
 };
-var FHe = (ez) => {
+var TopChrome = (ez) => {
   const eA = {
     pdSqo: function (ga, gb, gc) {
       return ga(gb, gc);
@@ -41783,7 +41787,7 @@ var FHe = (ez) => {
     const gb = window.setTimeout(() => eX(false), 320);
     return () => window.clearTimeout(gb);
   }, [eQ, eT]);
-  const eZ = mOe({
+  const eZ = usePracticeControls({
     engine: ez.engine,
     mechanicsToggles: ez.mechanicsToggles,
     simulationState: ez.simulationState,
@@ -41807,21 +41811,21 @@ var FHe = (ez) => {
     }
   }, []);
   const fh = replay?.isReplaying ?? false;
-  const fi = NHe(ez, fh);
+  const fi = useEncounterTool(ez, fh);
   const fj =
     fh || null == ez.replayPractice?.startTick ? null : ez.replayPractice;
   const fl = eA.RjAIi(fh, fj) ? null : (ez.encounterSession ?? null);
   const fm = fj !== null || fl !== null;
   const fo = (ga, gb, gc) =>
     fj
-      ? (0, wn.jsx)(f_e, {
+      ? (0, wn.jsx)(PracticeRetryBar, {
           controls: fj,
           presentation: ga,
           className: gb,
           style: gc,
         })
       : fl
-        ? (0, wn.jsx)(fHe, {
+        ? (0, wn.jsx)(PracticeSessionBar, {
             session: fl,
             presentation: ga,
             className: gb,
@@ -42049,7 +42053,7 @@ var FHe = (ez) => {
   const fP = fm ? fO : fN;
   const fQ =
     fm && !fx && f5 && fy && fG
-      ? bEe({
+      ? placePane({
           kind: "actions",
           zoom: zoom,
           row: fG,
@@ -42080,7 +42084,7 @@ var FHe = (ez) => {
         ? {
             kind: fx,
             fromIcon: fD,
-            at: bEe({
+            at: placePane({
               kind: fx,
               zoom: zoom,
               row: fG,
@@ -42097,18 +42101,18 @@ var FHe = (ez) => {
   (0, pn.useEffect)(() => {
     const ga = () =>
       f2((gb) => (gb === "practice" || gb === "actions" ? null : gb));
-    window.addEventListener(Bae, ga);
-    return () => window.removeEventListener(Bae, ga);
+    window.addEventListener(TUTORIAL_CLOSE_PANE_EVENT, ga);
+    return () => window.removeEventListener(TUTORIAL_CLOSE_PANE_EVENT, ga);
   }, []);
   const fU = (ga) => {
     fi.close();
     f2((gb) => (gb === ga ? null : ga));
     if (ga === "practice" && f0 !== "practice") {
-      window.dispatchEvent(new CustomEvent(Yie));
+      window.dispatchEvent(new CustomEvent(TUTORIAL_HUD_OPENED_EVENT));
     }
   };
-  jae(zie.SIDE_PANEL, "practice" === f0 || "actions" === f0, fS);
-  jae(zie.LAUNCHER_MENU, "menu" === f0, fS);
+  jae(ESC_PRIORITY.SIDE_PANEL, "practice" === f0 || "actions" === f0, fS);
+  jae(ESC_PRIORITY.LAUNCHER_MENU, "menu" === f0, fS);
   (0, pn.useEffect)(() => {
     if ("menu" !== f0) {
       return;
@@ -42141,7 +42145,7 @@ var FHe = (ez) => {
       onOpenedOnce?.();
     }
   }, [openOnce, onOpenedOnce]);
-  const fX = EEe(zoom);
+  const fX = chromeZoomStyle(zoom);
   const fY = (ga, gb) => ({
     ...fX,
     left: ga / zoom,
@@ -42166,7 +42170,7 @@ var FHe = (ez) => {
       };
       if (gd === fi.definition?.icon) {
         return (0, wn.jsx)(
-          DHe,
+          LauncherButton,
           {
             ...gh,
             label: fi.definition.label,
@@ -42186,7 +42190,7 @@ var FHe = (ez) => {
       switch (gd) {
         case "menu":
           return (0, wn.jsx)(
-            DHe,
+            LauncherButton,
             {
               ...gh,
               label: "Menu",
@@ -42200,7 +42204,7 @@ var FHe = (ez) => {
           );
         case "practice":
           return (0, wn.jsx)(
-            DHe,
+            LauncherButton,
             {
               ...gh,
               label: "Practice",
@@ -42213,7 +42217,7 @@ var FHe = (ez) => {
           );
         case "actions":
           return (0, wn.jsx)(
-            DHe,
+            LauncherButton,
             {
               ...gh,
               label: "Actions",
@@ -42232,7 +42236,7 @@ var FHe = (ez) => {
           );
         case "modifiers":
           return (0, wn.jsx)(
-            DHe,
+            LauncherButton,
             {
               ...gh,
               label: "Modifiers",
@@ -42251,7 +42255,7 @@ var FHe = (ez) => {
           );
         case "replay":
           return (0, wn.jsx)(
-            DHe,
+            LauncherButton,
             {
               ...gh,
               label: "Replay",
@@ -42436,7 +42440,7 @@ var FHe = (ez) => {
             fo(g3?.fromIcon || g4.width < 240 ? "compact" : "labelled"),
             g7,
             fx === "practice" &&
-              (0, wn.jsx)(MHe, {
+              (0, wn.jsx)(PracticePane, {
                 onRestart: ez.onRestart,
                 restartShortcutTargetsSession: fm,
                 restoring: ez.replayPractice?.busy,
@@ -42498,7 +42502,7 @@ var FHe = (ez) => {
       fi.mounted &&
         fi.definition &&
         (0, wn.jsx)(
-          yHe,
+          EncounterWorkbench,
           {
             title: fi.definition.label,
             open: fi.open && !eV,
@@ -42541,7 +42545,7 @@ var FHe = (ez) => {
               "aria-label": "See what's new in OpenScim",
               onMouseDown: (eC) => eC.preventDefault(),
               onClick: plugins.onWhatsNew,
-              children: (0, wn.jsx)(zae, { glyph: "news" }),
+              children: (0, wn.jsx)(LauncherIcon, { glyph: "news" }),
             }),
             (0, wn.jsx)(CommunityLinks, {
               className: "launcher-btn launcher-btn--icon launcher-btn--link",
@@ -42561,7 +42565,7 @@ var FHe = (ez) => {
       ez.showFps &&
         !g9 &&
         (0, gn.createPortal)(
-          (0, wn.jsx)(Zie, {
+          (0, wn.jsx)(FpsOverlay, {
             visible: true,
             backed: true,
             position: g8,
@@ -42648,7 +42652,7 @@ var YHe = {
   background: "#69c7d3",
   boxShadow: "1px 0 0 rgba(0, 0, 0, 0.75), -1px 0 0 rgba(0, 0, 0, 0.75)",
 };
-var XHe = () => {
+var PrayerOrbFlickSweep = () => {
   const eA = (0, pn.useRef)(null);
   const eB = wLe();
   (0, pn.useLayoutEffect)(() => {
@@ -42699,11 +42703,11 @@ var XHe = () => {
     }),
   });
 };
-var GHe = [283, 261, 239, 217];
+var ORB_ARC_ANGLES = [283, 261, 239, 217];
 function Nz(ez, eA, eB) {
   return Math.max(eA, Math.min(eB, ez));
 }
-function KHe(ez, eA) {
+function getOrbNumberColor(ez, eA) {
   if (eA <= 0) {
     return "rgb(255, 0, 0)";
   }
@@ -42719,7 +42723,7 @@ function KHe(ez, eA) {
     return "rgb(255, " + Nz(Math.round((eC * 255) / eD), 0, 255) + ", 0)";
   }
 }
-var QHe = ({
+var Orb = ({
   alt: ez,
   mobileFrame: eA = false,
   cx: eB,
@@ -42804,11 +42808,11 @@ var QHe = ({
   const fd = eY.lKqIJ(eN, iconActiveSprite) ? iconActiveSprite : iconSprite;
   const fe = eA
     ? eQ && eZ
-      ? Aie.orbFrameHovered
-      : Aie.orbFrame
+      ? MOBILE.orbFrameHovered
+      : MOBILE.orbFrame
     : eQ && eZ
-      ? qse.orbFrameHovered
-      : qse.orbFrame;
+      ? MINIMAP.orbFrameHovered
+      : MINIMAP.orbFrame;
   return (0, wn.jsxs)("div", {
     style: {
       position: "absolute",
@@ -42835,7 +42839,7 @@ var QHe = ({
             whiteSpace: "nowrap",
             textAlign: "center",
             overflow: "hidden",
-            color: KHe(f7, eE),
+            color: getOrbNumberColor(f7, eE),
             textShadow: "1px 1px 0 #000",
             WebkitFontSmoothing: "none",
           },
@@ -42894,7 +42898,7 @@ var QHe = ({
                   overflow: "hidden",
                 },
                 children: (0, wn.jsx)(Vse, {
-                  src: qse.orbEmpty,
+                  src: MINIMAP.orbEmpty,
                   alt: "",
                   "aria-hidden": true,
                   width: 26,
@@ -42940,7 +42944,7 @@ var QHe = ({
             opacity: eO ? 0.45 : 1,
           },
         }),
-      eU && (0, wn.jsx)(XHe, {}),
+      eU && (0, wn.jsx)(PrayerOrbFlickSweep, {}),
       (0, wn.jsx)("button", {
         type: "button",
         onMouseDown: eO
@@ -42990,7 +42994,7 @@ var QHe = ({
     ],
   });
 };
-var ZHe = ({
+var MinimapOrbs = ({
   centerX: centerX,
   centerY: centerY,
   radius: radius,
@@ -43066,8 +43070,8 @@ var ZHe = ({
       return fi(fj);
     },
   };
-  const { bindTooltip: bindTooltip } = oOe();
-  const { bindContextMenu: bindContextMenu } = YOe();
+  const { bindTooltip: bindTooltip } = useTooltip();
+  const { bindContextMenu: bindContextMenu } = useContextMenu();
   const f8 = wDe(isSpecialAttackActive, pendingSpecialAttackToggles);
   const f9 = (function ({
     prayerPluginEnabled: prayerPluginEnabled,
@@ -43089,7 +43093,7 @@ var ZHe = ({
   });
   const fa =
     "arc" === eC
-      ? GHe.map((fi) => {
+      ? ORB_ARC_ANGLES.map((fi) => {
           const fl = (function (fm, fo) {
             const fp = (fm * Math.PI) / 180;
             return {
@@ -43150,33 +43154,33 @@ var ZHe = ({
       overflow: "visible",
     },
     children: [
-      (0, wn.jsx)(QHe, {
+      (0, wn.jsx)(Orb, {
         mobileFrame: fb,
         alt: "Hitpoints",
         current: currentHP,
         max: maxHP,
         fillSprite:
           undefined !== poisonVarp && poisonVarp >= 1000000
-            ? qse.orbHitpointsVenom
+            ? MINIMAP.orbHitpointsVenom
             : fh
-              ? qse.orbHitpointsPoison
-              : qse.orbHitpoints,
+              ? MINIMAP.orbHitpointsPoison
+              : MINIMAP.orbHitpoints,
         iconSprite:
-          currentHP <= 19 ? qse.orbHitpointsLowLifeIcon : qse.orbHitpointsIcon,
+          currentHP <= 19 ? MINIMAP.orbHitpointsLowLifeIcon : MINIMAP.orbHitpointsIcon,
         hoverable: fh,
         cx: fe("hitpoints").x,
         cy: fe("hitpoints").y,
       }),
-      (0, wn.jsx)(QHe, {
+      (0, wn.jsx)(Orb, {
         mobileFrame: fb,
         alt: "Prayer",
         current: currentPrayer,
         max: 99,
         fillSprite: isQuickPrayerActive
-          ? qse.orbPrayerActivated
-          : qse.orbPrayer,
-        iconSprite: qse.orbPrayerIcon,
-        iconActiveSprite: qse.orbPrayerIconActivated,
+          ? MINIMAP.orbPrayerActivated
+          : MINIMAP.orbPrayer,
+        iconSprite: MINIMAP.orbPrayerIcon,
+        iconActiveSprite: MINIMAP.orbPrayerIconActivated,
         hoverable: true,
         isActive: eM,
         flickSweep: f9,
@@ -43186,32 +43190,32 @@ var ZHe = ({
         contextMenuProps: ff,
         tooltipProps: fg,
       }),
-      (0, wn.jsx)(QHe, {
+      (0, wn.jsx)(Orb, {
         mobileFrame: fb,
         alt: "Run Energy",
         current: runEnergy,
         max: 100,
-        fillSprite: isRunEnabled ? qse.orbRunActivated : qse.orbRun,
-        iconSprite: qse.orbRunIcon,
-        iconActiveSprite: qse.orbRunIconActivated,
+        fillSprite: isRunEnabled ? MINIMAP.orbRunActivated : MINIMAP.orbRun,
+        iconSprite: MINIMAP.orbRunIcon,
+        iconActiveSprite: MINIMAP.orbRunIconActivated,
         hoverable: true,
         isActive: isRunEnabled,
         cx: fe("run").x,
         cy: fe("run").y,
         onClick: (fi) => kDe(onRunToggle, onReplayCursorClick, fi),
-        contextMenuProps: bindContextMenu(() => mLe(isRunEnabled, onRunToggle)),
-        tooltipProps: bindTooltip(WOe),
+        contextMenuProps: bindContextMenu(() => buildRunOrbContextMenu(isRunEnabled, onRunToggle)),
+        tooltipProps: bindTooltip(buildToggleRunTooltip),
       }),
-      (0, wn.jsx)(QHe, {
+      (0, wn.jsx)(Orb, {
         mobileFrame: fb,
         alt: "Special Attack",
         current: soulreaperStacks ?? specialAttack,
         max: soulreaperStacks === undefined ? 100 : 5,
-        fillSprite: f8 ? qse.orbSpecialActivated : qse.orbSpecial,
+        fillSprite: f8 ? MINIMAP.orbSpecialActivated : MINIMAP.orbSpecial,
         iconSprite:
           undefined === soulreaperStacks
-            ? qse.orbSpecialIcon
-            : qse.orbSoulreaperAxeIcon,
+            ? MINIMAP.orbSpecialIcon
+            : MINIMAP.orbSoulreaperAxeIcon,
         isActive: f8,
         disabled: !hasSpecialAttack,
         hoverable: hasSpecialAttack,
@@ -43219,7 +43223,7 @@ var ZHe = ({
         cy: fe("special").y,
         onClick: (fi) => kDe(onSpecialAttackToggle, onReplayCursorClick, fi),
         contextMenuProps: hasSpecialAttack
-          ? bindContextMenu(() => fLe(f8, onSpecialAttackToggle))
+          ? bindContextMenu(() => buildSpecialOrbContextMenu(f8, onSpecialAttackToggle))
           : undefined,
         tooltipProps: hasSpecialAttack ? bindTooltip(jOe) : undefined,
       }),
@@ -43612,7 +43616,7 @@ function lqe(ez, eA, eB, eC, eD, eE, eG, eH, eI, eK, eM, eN, eO) {
         for (let fl = fg; fl < fh; fl++) {
           const fm = fj >> 8;
           if (fm >= 0 && fm < aE.length) {
-            ez[fi + fl] = cqe(aE[fm]);
+            ez[fi + fl] = rgbToAbgr(aE[fm]);
           }
           fj += eY;
         }
@@ -43623,11 +43627,11 @@ function lqe(ez, eA, eB, eC, eD, eE, eG, eH, eI, eK, eM, eN, eO) {
     }
   }
 }
-function cqe(ez) {
+function rgbToAbgr(ez) {
   return ((255 & ez) << 16) | 4278190080 | (65280 & ez) | ((ez >> 16) & 255);
 }
 var uqe = 96;
-function dqe(ez, eA, eB, eC, eD, eE = 0) {
+function drawMapSquareTerrain(ez, eA, eB, eC, eD, eE = 0) {
   const {
     pixels: pixels,
     width: width,
@@ -43696,7 +43700,7 @@ function kqe(ez, eA) {
   return (ez * yqe) / (eA * 4);
 }
 var xqe = () => {};
-var Mqe = (0, pn.forwardRef)(function (
+var Minimap = (0, pn.forwardRef)(function (
   {
     simulationState: simulationState,
     mapLoader: mapLoader,
@@ -43951,7 +43955,7 @@ var Mqe = (0, pn.forwardRef)(function (
   const fw = (0, pn.useRef)(154);
   const fx = (0, pn.useRef)(null);
   if (fx.current === null) {
-    const gF = new ai(
+    const gF = new PlayerVisualTracker(
       simulationState.playerPosition[0],
       simulationState.playerPosition[1],
     );
@@ -43974,8 +43978,8 @@ var Mqe = (0, pn.forwardRef)(function (
   );
   const [fH, fJ] = (0, pn.useState)(4);
   const [fL, fM] = (0, pn.useState)(false);
-  const { setScale: setScale } = oOe();
-  const fO = rOe();
+  const { setScale: setScale } = useTooltip();
+  const fO = useTooltipScale();
   const fP = Nie();
   const reportMinimapZoom2 = (0, pn.useContext)(j$e).reportMinimapZoom;
   (0, pn.useEffect)(() => {
@@ -44017,7 +44021,7 @@ var Mqe = (0, pn.forwardRef)(function (
       if (!(gL instanceof Error)) {
         throw gL;
       }
-      Z.debug("UI", "Failed to load minimap NPC type " + gG.npcTypeId, gL);
+      logger.debug("UI", "Failed to load minimap NPC type " + gG.npcTypeId, gL);
       fr.current.set(gG.npcTypeId, false);
       return false;
     }
@@ -44184,7 +44188,7 @@ var Mqe = (0, pn.forwardRef)(function (
                       const hb = ((gV * 256) / gY) | 0;
                       const hc = (gW / gZ) | 0;
                       const hd = (gX / gZ) | 0;
-                      gM[gU][h8] = aW(hb, hc, hd);
+                      gM[gU][h8] = packHsl(hb, hc, hd);
                     }
                   }
                 }
@@ -44264,10 +44268,10 @@ var Mqe = (0, pn.forwardRef)(function (
                   gI.set(gL + 1, -1);
                   continue;
                 }
-                gN = aW(gM.hue, gM.saturation, gM.lightness);
+                gN = packHsl(gM.hue, gM.saturation, gM.lightness);
               }
               if (gM.secondaryColor !== -1) {
-                gN = aW(
+                gN = packHsl(
                   gM.secondaryHue,
                   gM.secondarySaturation,
                   gM.secondaryLightness,
@@ -44300,7 +44304,7 @@ var Mqe = (0, pn.forwardRef)(function (
           fG(gI);
         }
       } catch (gO) {
-        Z.error("UI", "Failed to load minimap data:", gO);
+        logger.error("UI", "Failed to load minimap data:", gO);
       }
     })();
     return () => {
@@ -44317,7 +44321,7 @@ var Mqe = (0, pn.forwardRef)(function (
       for (let gK = 0; gK < 1; gK++) {
         const gL = fF[gI][gK];
         if (gL) {
-          dqe(
+          drawMapSquareTerrain(
             {
               pixels: gH,
               width: yqe,
@@ -44487,7 +44491,7 @@ var Mqe = (0, pn.forwardRef)(function (
   const gp = gh ? "none" : undefined;
   const gr = f9 ? lTe.x : gd ? PMe + EMe : 62;
   const gs = f9 ? lTe.y : gd ? $Me : 0;
-  const gt = f9 ? qse.fixedFrame : gd ? Aie.mapCompassFrame : qse.frame;
+  const gt = f9 ? MINIMAP.fixedFrame : gd ? MOBILE.mapCompassFrame : MINIMAP.frame;
   const gu = f9 ? 172 : 182;
   const gv = f9 ? 156 : 166;
   const gx = f9 ? fqe : 22;
@@ -44509,7 +44513,7 @@ var Mqe = (0, pn.forwardRef)(function (
           xpOrb: bCe,
         }
       : null;
-  const gE = (0, wn.jsx)(ZHe, {
+  const gE = (0, wn.jsx)(MinimapOrbs, {
     centerX: 162,
     centerY: 84,
     layout: gC,
@@ -44550,7 +44554,7 @@ var Mqe = (0, pn.forwardRef)(function (
     onSpecialAttackToggle: onSpecialAttackToggle,
     onReplayCursorClick: onReplayCursorClick,
   });
-  return (0, wn.jsx)(dOe, {
+  return (0, wn.jsx)(DraggablePanel, {
     inputSurface: "gameplay",
     defaultPosition: gh
       ? aRe
@@ -44586,9 +44590,9 @@ var Mqe = (0, pn.forwardRef)(function (
       children: [
         f9 &&
           [
-            [qse.fixedLeftEdge, cTe],
-            [qse.fixedRightEdge, uTe],
-            [qse.fixedBottom, dTe],
+            [MINIMAP.fixedLeftEdge, cTe],
+            [MINIMAP.fixedRightEdge, uTe],
+            [MINIMAP.fixedBottom, dTe],
           ].map(([gG, gH]) =>
             (0, wn.jsx)(
               "img",
@@ -44627,7 +44631,7 @@ var Mqe = (0, pn.forwardRef)(function (
           children: [
             (0, wn.jsx)(Vse, {
               ref: fp,
-              src: qse.compass,
+              src: MINIMAP.compass,
               alt: "Compass",
               style: {
                 position: "absolute",
@@ -44702,11 +44706,11 @@ var Mqe = (0, pn.forwardRef)(function (
                   children: (0, wn.jsx)(pae, {
                     src: eZ
                       ? fL
-                        ? qse.orbXpActivatedHovered
-                        : qse.orbXpActivated
+                        ? MINIMAP.orbXpActivatedHovered
+                        : MINIMAP.orbXpActivated
                       : fL
-                        ? qse.orbXpHovered
-                        : qse.orbXp,
+                        ? MINIMAP.orbXpHovered
+                        : MINIMAP.orbXp,
                     alt: "",
                     "aria-hidden": true,
                     width: gD.xpOrb.width,
@@ -44843,8 +44847,8 @@ var Mqe = (0, pn.forwardRef)(function (
     }),
   });
 });
-var Yoe = "Drag plugin overlays to move them. Game UI stays put.";
-var Cqe = () => {
+var EDIT_LAYOUT_HELP = "Drag plugin overlays to move them. Game UI stays put.";
+var MobileLayoutEditBar = () => {
   const eA = (0, pn.useRef)(null);
   return (0, wn.jsx)("div", {
     role: "toolbar",
@@ -44869,15 +44873,15 @@ var Cqe = () => {
           ref: eA,
           type: "button",
           className: "layout-edit-pill info-hint-region",
-          "aria-label": "Editing layout. " + Yoe,
+          "aria-label": "Editing layout. " + EDIT_LAYOUT_HELP,
           children: [
             (0, wn.jsx)("span", {
               className: "layout-edit-pill__label",
               children: "Editing layout",
             }),
-            (0, wn.jsx)(gie, {
+            (0, wn.jsx)(InfoHint, {
               label: "Editing layout",
-              text: Yoe,
+              text: EDIT_LAYOUT_HELP,
               hoverRegionRef: eA,
               insideControl: true,
             }),
@@ -44896,11 +44900,11 @@ var Cqe = () => {
     }),
   });
 };
-var Sqe = (0, pn.memo)(Uie);
+var Sqe = (0, pn.memo)(MechanicsSettings);
 var Tqe = [];
 var Nqe = [];
-var Pqe = "encounter-setup";
-function $qe(ez) {
+var ENCOUNTER_SETUP = "encounter-setup";
+function MobilePracticeControls(ez) {
   const eA = {
     lcFhd: function (fc, fd) {
       return fc(fd);
@@ -44961,8 +44965,8 @@ function $qe(ez) {
     zaqnm: "osm-tools__restart",
     fheGK: "actions",
   };
-  const eB = NHe(ez);
-  const eC = mOe(ez);
+  const eB = useEncounterTool(ez);
+  const eC = usePracticeControls(ez);
   const eD = ez.replayPractice?.startTick != null ? ez.replayPractice : null;
   const eE = eD ? null : (ez.encounterSession ?? null);
   const {
@@ -45096,7 +45100,7 @@ function $qe(ez) {
     ...(eT !== null && eM
       ? [
           {
-            id: Pqe,
+            id: ENCOUNTER_SETUP,
             label: eM.practiceSection ?? eM.railSection,
           },
         ]
@@ -45188,7 +45192,7 @@ function $qe(ez) {
               }),
           !eZ &&
             fa?.info &&
-            (0, wn.jsx)(gie, {
+            (0, wn.jsx)(InfoHint, {
               label: fa.label,
               text: fa.info,
               hoverRegionRef: f2,
@@ -45298,33 +45302,33 @@ function $qe(ez) {
                 ],
               })
             : "session" === f8.id && eD
-              ? (0, wn.jsx)(f_e, {
+              ? (0, wn.jsx)(PracticeRetryBar, {
                   controls: eD,
                   presentation: "compact",
                   className: "osm-tools__session",
                 })
               : "session" === f8.id && eE
-                ? (0, wn.jsx)(fHe, {
+                ? (0, wn.jsx)(PracticeSessionBar, {
                     session: eE,
                     presentation: "compact",
                     className: "osm-tools__session",
                   })
                 : "health" === f8.id && eC.bossNpc
-                  ? (0, wn.jsx)(UPe, {
+                  ? (0, wn.jsx)(BossHealthControl, {
                       targetNpc: eC.bossNpc,
                       onSetBossHp: ez.onSetBossHp,
                     })
                   : "phases" === f8.id && eC.bossNpc
                     ? (0, wn.jsx)("div", {
                         className: "osm-tools__phases",
-                        children: (0, wn.jsx)(UPe, {
+                        children: (0, wn.jsx)(BossHealthControl, {
                           targetNpc: eC.bossNpc,
                           onSetBossHp: ez.onSetBossHp,
                           onApplyPreset: ez.onApplyBossHpPreset,
                           presets: eC.bossHpPresets,
                         }),
                       })
-                    : f8.id === Pqe
+                    : f8.id === ENCOUNTER_SETUP
                       ? eT
                       : "restart" === f8.id
                         ? (0, wn.jsxs)("div", {
@@ -45358,7 +45362,7 @@ function $qe(ez) {
       eB.mounted &&
         eB.definition &&
         (0, wn.jsx)(
-          yHe,
+          EncounterWorkbench,
           {
             title: eB.definition.label,
             open: eB.open,
@@ -45897,7 +45901,7 @@ function Oqe(ez, eA) {
     return -1;
   }
 }
-function Lqe(ez) {
+function describeChapter(ez) {
   const eA = ez.attempt > 1 ? " (attempt " + ez.attempt + ")" : "";
   const eB = ez.detail ? ": " + ez.detail : "";
   const eC = ez.cleared ? "" : " (not finished)";
@@ -45908,7 +45912,7 @@ function Dqe(ez, eA, { railPx: railPx, thumbPx: thumbPx }) {
   const eG = Math.max(1, eA - 1);
   return thumbPx / 2 + (eE * Math.min(Math.max(0, ez), eG)) / eG;
 }
-var Fqe = (0, pn.memo)(function ({
+var ReplayWaveMarks = (0, pn.memo)(function ({
   landmarks: landmarks,
   totalFrames: totalFrames,
 }) {
@@ -45933,7 +45937,7 @@ var Fqe = (0, pn.memo)(function ({
     });
   }
 });
-var Hqe = (0, pn.memo)(function ({
+var WaveGrid = (0, pn.memo)(function ({
   chapters: chapters,
   currentIndex: currentIndex,
   onPick: onPick,
@@ -45951,7 +45955,7 @@ var Hqe = (0, pn.memo)(function ({
             (eD.landmark ? " replay-waves__cell--landmark" : "") +
             (eD.cleared ? "" : " replay-waves__cell--open") +
             (eE === currentIndex ? " replay-waves__cell--current" : ""),
-          "aria-label": Lqe(eD),
+          "aria-label": describeChapter(eD),
           "aria-current": eE === currentIndex ? "true" : undefined,
           onClick: () => onPick(eD),
           children: eD.shortLabel,
@@ -45961,7 +45965,7 @@ var Hqe = (0, pn.memo)(function ({
     ),
   });
 });
-function qqe({
+function ReplayWavePicker({
   chapterSet: chapterSet,
   currentIndex: currentIndex,
   panelRef: panelRef,
@@ -45992,14 +45996,14 @@ function qqe({
       ),
     onPointerLeave: () => eG(null),
     children: [
-      (0, wn.jsx)(Hqe, {
+      (0, wn.jsx)(WaveGrid, {
         chapters: chapters,
         currentIndex: currentIndex,
         onPick: eM,
       }),
       (0, wn.jsx)("p", {
         className: "replay-waves__detail",
-        children: eI ? Lqe(eI) : null,
+        children: eI ? describeChapter(eI) : null,
       }),
     ],
   });
@@ -46009,7 +46013,7 @@ var tfe = (ez) => {
     ez.preventDefault();
   }
 };
-var zqe = (ez) =>
+var isFormField = (ez) =>
   ez instanceof HTMLElement &&
   ["INPUT", "TEXTAREA", "SELECT"].includes(ez.tagName);
 var Bqe = () =>
@@ -46125,7 +46129,7 @@ var Vqe = () =>
       }),
     ],
   });
-var Yqe = () =>
+var IconCursor = () =>
   (0, wn.jsxs)("svg", {
     "aria-hidden": "true",
     width: "12",
@@ -46197,7 +46201,7 @@ var Gqe = () =>
       }),
     ],
   });
-var Kqe = () =>
+var IconLateTick = () =>
   (0, wn.jsxs)("svg", {
     "aria-hidden": "true",
     width: "12",
@@ -46270,20 +46274,20 @@ var Jqe = {
 };
 var eze = [];
 var tze = [];
-var nze = (ez) => Math.round(ez.lateByMs) + " ms late";
-var oze = (ez, eA) => ({
+var lateTickMs = (ez) => Math.round(ez.lateByMs) + " ms late";
+var lateTickLine = (ez, eA) => ({
   spans: [
     {
       text: "Tick " + (eA?.[ez.frameIndex] ?? ez.frameIndex + 1),
       color: "#f0b878",
     },
     {
-      text: " ran " + nze(ez),
+      text: " ran " + lateTickMs(ez),
       color: "#e8dcc8",
     },
   ],
 });
-var rze = ({
+var ReplayControls = ({
   capture: capture,
   compact: compact,
   moreMenu: eB = false,
@@ -46651,7 +46655,7 @@ var rze = ({
       f9(Math.max(0, totalFrames - 1)) +
       ".";
   (0, pn.useEffect)(() => ff(null), [replayFrameIndex, fr, ff]);
-  const fy = (0, pn.useMemo)(() => pie(capture), [capture]);
+  const fy = (0, pn.useMemo)(() => replayCaptureNotice(capture), [capture]);
   const fz = null !== eY || Boolean(replayPractice?.busy);
   const fA = trim?.range ?? null;
   const fB = fA !== null;
@@ -46729,8 +46733,8 @@ var rze = ({
       onPlayPause();
     }
   }, [trim, isPlaying, f3, onPlayPause]);
-  jae(zie.REPLAY, true, (gK) => {
-    if (zqe(gK.target)) {
+  jae(ESC_PRIORITY.REPLAY, true, (gK) => {
+    if (isFormField(gK.target)) {
       return false;
     }
     if (fQ) {
@@ -46751,7 +46755,7 @@ var rze = ({
       if (!(target3 instanceof HTMLElement)) {
         return;
       }
-      if (zqe(target3)) {
+      if (isFormField(target3)) {
         return;
       }
       if (target3.closest("button") && (" " === gK.key || "Enter" === gK.key)) {
@@ -46912,7 +46916,7 @@ var rze = ({
         return gQ();
       },
     };
-    const { bindTooltip: bindTooltip, hideTooltip: hideTooltip } = oOe();
+    const { bindTooltip: bindTooltip, hideTooltip: hideTooltip } = useTooltip();
     const gO = (0, pn.useRef)(false);
     const gP = bindTooltip(gK);
     return {
@@ -46941,7 +46945,7 @@ var rze = ({
       },
     };
   })(Jqe);
-  const { bindTooltip: bindTooltip, hideTooltip: hideTooltip } = oOe();
+  const { bindTooltip: bindTooltip, hideTooltip: hideTooltip } = useTooltip();
   const gb = (0, pn.useMemo)(
     () =>
       (function (gK, gL) {
@@ -46963,7 +46967,7 @@ var rze = ({
           "Worst: tick " +
           (gL?.[gN.frameIndex] ?? gN.frameIndex + 1) +
           ", " +
-          nze(gN) +
+          lateTickMs(gN) +
           ".";
         const gR = gM.slice(0, 5);
         const gT = gK.length - gR.length;
@@ -46977,7 +46981,7 @@ var rze = ({
                 },
               ],
             },
-            ...gR.map((gV) => oze(gV, gL)),
+            ...gR.map((gV) => lateTickLine(gV, gL)),
             ...(gT > 0
               ? [
                   {
@@ -47039,7 +47043,7 @@ var rze = ({
       }
     }
     if (gg.current) {
-      gK.push(oze(gg.current, frameTicks));
+      gK.push(lateTickLine(gg.current, frameTicks));
     }
     if (gK.length > 0) {
       return {
@@ -47052,7 +47056,7 @@ var rze = ({
   const gj = (0, pn.useRef)(null);
   const gk = (0, pn.useId)();
   const [gl, gm] = (0, pn.useState)(false);
-  const { card: card } = jie({
+  const { card: card } = useHoverCard({
     anchorRef: gj,
     cardId: gk,
     content: "Restart: tick " + replayPractice?.startTick,
@@ -47403,7 +47407,7 @@ var rze = ({
               ),
             }),
           fL &&
-            (0, wn.jsx)(Fqe, {
+            (0, wn.jsx)(ReplayWaveMarks, {
               landmarks: fP,
               totalFrames: totalFrames,
             }),
@@ -47429,7 +47433,7 @@ var rze = ({
               " of " +
               f9(Math.max(0, totalFrames - 1)) +
               (fO ? ", " + fO.label : "") +
-              (gs ? ", ran " + nze(gs) : ""),
+              (gs ? ", ran " + lateTickMs(gs) : ""),
             min: 0,
             max: Math.max(0, totalFrames - 1),
             value: g4,
@@ -47631,7 +47635,7 @@ var rze = ({
                           "replay-wave__label" +
                           (fQ ? " replay-wave__label--open" : ""),
                         "aria-label": fO
-                          ? Lqe(fO) + ". Choose a wave"
+                          ? describeChapter(fO) + ". Choose a wave"
                           : "Choose a wave",
                         hint: fQ ? null : "Choose a wave",
                         hintPlacement: "above",
@@ -47659,13 +47663,13 @@ var rze = ({
                 : (0, wn.jsx)("span", {
                     className: "replay-wave__label replay-wave__label--static",
                     role: "note",
-                    "aria-label": fO ? Lqe(fO) : gA,
+                    "aria-label": fO ? describeChapter(fO) : gA,
                     children: gA,
                   }),
             }),
           fQ &&
             eI &&
-            (0, wn.jsx)(qqe, {
+            (0, wn.jsx)(ReplayWavePicker, {
               chapterSet: eI,
               currentIndex: fN,
               panelRef: fU,
@@ -47768,7 +47772,7 @@ var rze = ({
               onMouseMove: gd.onMouseMove,
               onMouseLeave: gd.onMouseLeave,
               children: [
-                (0, wn.jsx)(Kqe, {}),
+                (0, wn.jsx)(IconLateTick, {}),
                 (0, wn.jsxs)("span", {
                   className: "replay-late__count",
                   "aria-hidden": "true",
@@ -47821,7 +47825,7 @@ var rze = ({
                           onReplayCursorVisibleChange(!replayCursorVisible),
                         onMouseDown: tfe,
                         children: [
-                          (0, wn.jsx)(Yqe, {}),
+                          (0, wn.jsx)(IconCursor, {}),
                           !fB &&
                             (0, wn.jsx)("span", {
                               className: "replay-cursor-toggle__label",
@@ -47885,7 +47889,7 @@ var rze = ({
                       (0, wn.jsx)(c_e, {
                         className: "replay-takeover-wrap",
                         hint: eW
-                          ? fIe[eW]
+                          ? TAKE_OVER_UNAVAILABLE_TEXT[eW]
                           : (gG ??
                             "Play from tick " +
                               ft +
@@ -47905,7 +47909,7 @@ var rze = ({
                           },
                           disabled: eW !== null || gD,
                           "aria-label": eW
-                            ? "Take over unavailable: " + fIe[eW]
+                            ? "Take over unavailable: " + TAKE_OVER_UNAVAILABLE_TEXT[eW]
                             : "Take over",
                           children: [
                             (0, wn.jsx)("span", {
@@ -47961,12 +47965,12 @@ var rze = ({
                         "mid-run-clip" !== eW &&
                         (0, wn.jsx)("p", {
                           className: "replay-more-note",
-                          children: fIe[eW],
+                          children: TAKE_OVER_UNAVAILABLE_TEXT[eW],
                         }),
                       fG &&
                         replayPractice?.practiceUnavailableReason &&
                         replayPractice.practiceUnavailableReason !==
-                          (eW ? fIe[eW] : null) &&
+                          (eW ? TAKE_OVER_UNAVAILABLE_TEXT[eW] : null) &&
                         (0, wn.jsx)("p", {
                           className: "replay-more-note",
                           children: replayPractice.practiceUnavailableReason,
@@ -47998,7 +48002,7 @@ var ize = (ez) => {
     ez.preventDefault();
   }
 };
-var aze = (ez) => {
+var MobileToolWindow = (ez) => {
   const eA = {
     WUygo: "replay",
     ByLBe: "exit",
@@ -48366,7 +48370,7 @@ var aze = (ez) => {
     eA.QquyQ(onOccupiedChange, f5);
   }, [f6, onOccupiedChange]);
   (0, pn.useEffect)(() => () => onOccupiedChange?.([]), [onOccupiedChange]);
-  jae(zie.REPLAY, eT.open && !eE, () =>
+  jae(ESC_PRIORITY.REPLAY, eT.open && !eE, () =>
     eG({
       type: "close",
     }),
@@ -48401,7 +48405,7 @@ var aze = (ez) => {
           className: "osm-tools__note",
           children: "Practice is off while a replay plays.",
         })
-      : (0, wn.jsx)($qe, {
+      : (0, wn.jsx)(MobilePracticeControls, {
           simulationState: ez.simulationState,
           engine: ez.engine,
           mechanicsConfig: ez.mechanicsConfig,
@@ -48424,7 +48428,7 @@ var aze = (ez) => {
             ref: eQ,
             className: "osm-tools__transport",
             "data-tutorial": "replay-controls",
-            children: (0, wn.jsx)(rze, {
+            children: (0, wn.jsx)(ReplayControls, {
               compact: true,
               moreMenu: true,
               ...replay,
@@ -48463,7 +48467,7 @@ var aze = (ez) => {
                 }),
               }),
             !eX &&
-              (0, wn.jsx)(zae, {
+              (0, wn.jsx)(LauncherIcon, {
                 glyph: "menu",
               }),
             (0, wn.jsx)("span", {
@@ -48569,7 +48573,7 @@ var aze = (ez) => {
                     ),
                   children:
                     window3.width < 126 || dock2.height < 22
-                      ? (0, wn.jsx)(zae, {
+                      ? (0, wn.jsx)(LauncherIcon, {
                           glyph: fc,
                         })
                       : lEe[fc],
@@ -48602,7 +48606,7 @@ var aze = (ez) => {
             }),
           children:
             dock2.width < 28 || dock2.height < 20
-              ? (0, wn.jsx)(zae, {
+              ? (0, wn.jsx)(LauncherIcon, {
                   glyph: "menu",
                 })
               : "Tools",
@@ -48612,12 +48616,17 @@ var aze = (ez) => {
   });
 };
 function sze(ez) {
-  return ez.actions.some((eA) => eA === "Attack");
+  return ez.actions.some(isNpcAttackOption);
+}
+// The options of an NPC that attack it: Attack, and Charge, the only option of
+// the Nightmare's totems (CACHE: 9435 and the other totems), where a hit charges one.
+function isNpcAttackOption(action) {
+  return action === "Attack" || action === "Charge";
 }
 function lze(ez) {
   return ez.actions.some((eA) => eA != null);
 }
-function cze(ez, eA) {
+function resolveInteractiveNpcPick(ez, eA) {
   if (!eA) {
     return null;
   }
@@ -48630,7 +48639,7 @@ function cze(ez, eA) {
       if (!(eG instanceof Error)) {
         throw eG;
       }
-      Z.debug("UI", "Failed to load picked NPC type " + eD.npcTypeId, eG);
+      logger.debug("UI", "Failed to load picked NPC type " + eD.npcTypeId, eG);
       eC ??= {
         picked: eD,
       };
@@ -48655,7 +48664,7 @@ var dze = () => {};
 function $Y(ez) {
   return 100 * ez + "%";
 }
-var pze = ({ mark: mark }) => {
+var Mark = ({ mark: mark }) => {
   const eA = {
     KjqVV: function (eK, eM) {
       return eK ?? eM;
@@ -48705,7 +48714,7 @@ var pze = ({ mark: mark }) => {
     },
   });
 };
-var hze = ({
+var PrayerFlickOverlay = ({
   overlayScale: ez = 1,
   enabled: enabled,
   position: position,
@@ -48865,7 +48874,7 @@ var hze = ({
         ? ", " + eN.slippedCount + " arrived on a later tick"
         : "") +
       ".";
-  return (0, wn.jsx)(dOe, {
+  return (0, wn.jsx)(DraggablePanel, {
     defaultPosition: uze,
     position: eK.enPhj(position, undefined),
     width: 208,
@@ -48963,7 +48972,7 @@ var hze = ({
                     }),
                   eR.marks.map((eT) =>
                     (0, wn.jsx)(
-                      pze,
+                      Mark,
                       {
                         mark: eT,
                       },
@@ -48996,7 +49005,7 @@ function Sse() {
     }),
   });
 }
-var sse = {
+var REPLAY_CLICK_SHEET_URLS = {
   yellow: "/yellow_click_sheet.webp",
   red: "/red_click_sheet.webp",
 };
@@ -49116,9 +49125,9 @@ function Tze(ez) {
   }
   return "M" + eB.join("L") + "Z";
 }
-function Nze({ click: click }) {
+function ReplayClickMarker({ click: click }) {
   const eB = _ze(click.type, click.elapsedMs, click.progress);
-  const [eC] = doe(click.type === "ui" ? [] : [sse[click.type]]);
+  const [eC] = doe(click.type === "ui" ? [] : [REPLAY_CLICK_SHEET_URLS[click.type]]);
   const eD = {
     className: "replay-click-marker replay-click-marker--" + click.type,
     "data-click-type": click.type,
@@ -49132,7 +49141,7 @@ function Nze({ click: click }) {
     },
   };
   const eE = click.touch
-    ? (0, wn.jsx)(Pze, {
+    ? (0, wn.jsx)(ReplayTapCue, {
         elapsedMs: click.elapsedMs,
         discs: eB.kind === "world" ? Aze : Ize,
       })
@@ -49187,7 +49196,7 @@ function Nze({ click: click }) {
       })(eB);
   }
 }
-function Pze({ elapsedMs: elapsedMs, discs: discs }) {
+function ReplayTapCue({ elapsedMs: elapsedMs, discs: discs }) {
   const eB = (function (eC) {
     const eD = Math.floor(Math.max(0, eC) / fze);
     if (eD >= yze.length) {
@@ -49222,7 +49231,7 @@ function Pze({ elapsedMs: elapsedMs, discs: discs }) {
     return null;
   }
 }
-function $ze({ hold: hold }) {
+function ReplayHoldMarker({ hold: hold }) {
   const eB = (function (eD) {
     const eE = Math.floor(Math.max(0, eD) / fze);
     const eG = wze[eE];
@@ -49346,7 +49355,7 @@ function Foe(ez, eA) {
       : {}),
   };
 }
-function roe(ez, eA) {
+function projectActiveClicks(ez, eA) {
   const clicks2 = ez.clicks;
   const eD = [];
   for (const [eE, eG] of (ez.openingClicks ?? []).entries()) {
@@ -49444,8 +49453,8 @@ function Wze(ez, eA) {
   }
   return eD;
 }
-var jze = Symbol("replay-cursor-input-gate");
-function Uze({
+var REPLAY_CURSOR_INPUT_GATE_OWNER = Symbol("replay-cursor-input-gate");
+function ReplayCursorLayer({
   track: track,
   frameIndex: frameIndex,
   playheadMs: playheadMs,
@@ -49551,9 +49560,9 @@ function Uze({
     return f4;
   })(eE, eC);
   (0, pn.useEffect)(() => {
-    c0(true, jze);
+    c0(true, REPLAY_CURSOR_INPUT_GATE_OWNER);
     return () => {
-      c0(false, jze);
+      c0(false, REPLAY_CURSOR_INPUT_GATE_OWNER);
       eG?.hideTooltip();
     };
   }, [eG]);
@@ -49561,7 +49570,7 @@ function Uze({
   const eU = eT?.x;
   const eV = eT?.y;
   const eW = eT?.touch === true;
-  const eX = eN && eQ ? roe(track, eM) : [];
+  const eX = eN && eQ ? projectActiveClicks(track, eM) : [];
   const eY = eX.at(-1)?.occurrence;
   const eZ =
     eI && eN && eO && eR
@@ -49670,7 +49679,7 @@ function Uze({
         }),
       eZ.map((f0) =>
         (0, wn.jsx)(
-          $ze,
+          ReplayHoldMarker,
           {
             hold: f0,
           },
@@ -49679,7 +49688,7 @@ function Uze({
       ),
       eX.map((f0) =>
         (0, wn.jsx)(
-          Nze,
+          ReplayClickMarker,
           {
             click: f0,
           },
@@ -49762,7 +49771,7 @@ function Kze(ez, eA, eB) {
   }
 }
 var Qze = Yze(dw[0]?.color ?? "") ?? "#FFFFFF";
-var Zze = ({
+var TileMarkerColorPicker = ({
   isOpen: isOpen,
   anchor: anchor,
   initialColor: initialColor,
@@ -49946,7 +49955,7 @@ var Zze = ({
     }
   };
   const fe = Yze(eS) ?? eQ;
-  jae(zie.COLOR_PICKER, isOpen, onCancel);
+  jae(ESC_PRIORITY.COLOR_PICKER, isOpen, onCancel);
   (0, pn.useEffect)(() => {
     if (!isOpen) {
       return;
@@ -50002,7 +50011,7 @@ var Zze = ({
       className: "tile-marker-picker-backdrop",
       children: (0, wn.jsxs)("div", {
         className: "tile-marker-picker",
-        ...Dae.popover,
+        ...sheet.popover,
         ref: f2,
         children: [
           (0, wn.jsxs)("div", {
@@ -50239,7 +50248,7 @@ var Zze = ({
           }),
           (0, wn.jsxs)("div", {
             className: "tile-marker-picker-footer",
-            ...Dae.foot,
+            ...sheet.foot,
             children: [
               (0, wn.jsx)("button", {
                 type: "button",
@@ -50261,7 +50270,7 @@ var Zze = ({
     document.body,
   );
 };
-var Jze = ({
+var TileMarkerLabelEditor = ({
   isOpen: isOpen,
   tile: tile,
   anchor: anchor,
@@ -50324,7 +50333,7 @@ var Jze = ({
       eM.current.select();
     }
   }, [isOpen]);
-  jae(zie.COLOR_PICKER, isOpen, onCancel);
+  jae(ESC_PRIORITY.COLOR_PICKER, isOpen, onCancel);
   (0, pn.useEffect)(() => {
     if (!isOpen) {
       return;
@@ -50389,7 +50398,7 @@ var Jze = ({
       className: "tile-marker-label-backdrop",
       children: (0, wn.jsxs)("div", {
         className: "tile-marker-label-editor",
-        ...Dae.popover,
+        ...sheet.popover,
         ref: eK,
         children: [
           (0, wn.jsxs)("div", {
@@ -50437,7 +50446,7 @@ var Jze = ({
           }),
           (0, wn.jsxs)("div", {
             className: "tile-marker-label-footer",
-            ...Dae.foot,
+            ...sheet.foot,
             children: [
               (0, wn.jsx)("button", {
                 type: "button",
@@ -50459,26 +50468,26 @@ var Jze = ({
     document.body,
   );
 };
-var eBe = () => window.location.reload();
-var tBe = {
+var reloadPage = () => window.location.reload();
+var HELD_NOTE = {
   fight: "The fight is paused.",
   replay: "Replay playback is paused.",
 };
-function nBe(ez) {
+function statusName(ez) {
   if ("failed" === ez.kind) {
     return "failed-" + ez.reason;
   } else {
     return ez.kind;
   }
 }
-var fn = ({
+var ViewportStatusOverlay = ({
   status: status,
   rect: rect,
   portrait: eB = false,
   cornerOccupied: eC = false,
   heldActivity: eD = null,
   recoveringDelayMs: eE = 700,
-  onReload: eG = eBe,
+  onReload: eG = reloadPage,
 }) => {
   const eH = {
     GXcAm: function (eR, eS) {
@@ -50527,7 +50536,7 @@ var fn = ({
     return null;
   }
   const eN = "failed" === status.kind && "unsupported" === status.reason;
-  const eO = eD ? tBe[eD] : null;
+  const eO = eD ? HELD_NOTE[eD] : null;
   const eQ = eB ? "banner" : "card";
   return (0, wn.jsx)("div", {
     className: [
@@ -50538,29 +50547,29 @@ var fn = ({
       .filter(Boolean)
       .join(" "),
     style: rect,
-    "data-render-status": nBe(status),
+    "data-render-status": statusName(status),
     "data-portrait": eH.SgRaY(eB, undefined),
     children: eI
-      ? (0, wn.jsx)(vie, {
+      ? (0, wn.jsx)(SystemNotice, {
           tone: "progress",
           layout: "strip",
           role: "status",
           title: "Restoring the 3D view",
         })
       : eN
-        ? (0, wn.jsx)(vie, {
+        ? (0, wn.jsx)(SystemNotice, {
             tone: "blocked",
             layout: eQ,
             role: "alert",
             className: "viewport-status__notice",
-            title: Tse,
-            body: Soe,
+            title: NO_WEBGL2_TITLE,
+            body: NO_WEBGL2_BODY,
             detail: eO,
             steps: bse(),
             links: (0, wn.jsx)($oe, {}),
             note: ase(),
           })
-        : (0, wn.jsx)(vie, {
+        : (0, wn.jsx)(SystemNotice, {
             tone: "blocked",
             layout: eQ,
             role: "alert",
@@ -50591,7 +50600,7 @@ function RR(ez, eA) {
   }
   return eC;
 }
-var rBe = class {
+var XpDropProjection = class {
   constructor() {
     aX(this, "history", undefined);
     aX(this, "options", undefined);
@@ -50713,14 +50722,14 @@ var uBe = {
   magic: "/assets/ui/skill-magic.png",
   hitpoints: "/assets/ui/skill-hitpoints.png",
 };
-var dBe = new Intl.NumberFormat("en-US");
-function pBe({
+var XP_FORMAT = new Intl.NumberFormat("en-US");
+function DropContent({
   drop: drop,
   showIcons: showIcons,
   showPredictedHit: showPredictedHit,
   overlayOuterScale: overlayOuterScale,
 }) {
-  const eE = Mxe();
+  const eE = usePanelContentScale();
   const eG = drop.skills.reduce((eH, eI) => eH + eI.amount, 0);
   return (0, wn.jsxs)(hoe, {
     value: eE * overlayOuterScale,
@@ -50741,8 +50750,8 @@ function pBe({
         className: "xp-drop__text",
         children:
           showPredictedHit && drop.predictedHit > 0
-            ? dBe.format(eG) + " (" + drop.predictedHit + ")"
-            : dBe.format(eG),
+            ? XP_FORMAT.format(eG) + " (" + drop.predictedHit + ")"
+            : XP_FORMAT.format(eG),
       }),
     ],
   });
@@ -50757,7 +50766,7 @@ function hBe(ez) {
 }
 // memo: its props are stable from tick to tick; the drops come from its own
 // subscription, which moves them without a render.
-var gBe = (0, pn.memo)(({
+var XpDropOverlay = (0, pn.memo)(({
   overlayScale: ez = 1,
   overlayOuterScale: eA = 1,
   enabled: enabled,
@@ -50807,7 +50816,7 @@ var gBe = (0, pn.memo)(({
     if (eQ.hCKjD(!enabled, !eT)) {
       return;
     }
-    const eU = new rBe();
+    const eU = new XpDropProjection();
     const eV = {
       grouped: grouped,
       speed: speed,
@@ -50869,7 +50878,7 @@ var gBe = (0, pn.memo)(({
     };
   }, [enabled, eT, grouped, speed]);
   if (enabled) {
-    return (0, wn.jsx)(dOe, {
+    return (0, wn.jsx)(DraggablePanel, {
       defaultPosition: cBe,
       position: eQ.QtcES(position, undefined),
       width: sBe,
@@ -50904,7 +50913,7 @@ var gBe = (0, pn.memo)(({
                     eV.style.opacity = eU.opacity;
                   }
                 },
-                children: (0, wn.jsx)(pBe, {
+                children: (0, wn.jsx)(DropContent, {
                   drop: eU.drop,
                   showIcons: showIcons,
                   showPredictedHit: showPredictedHit,
@@ -50930,7 +50939,7 @@ var mBe = {
 function nse(ez, eA) {
   return ez ?? F$e(mBe, eA);
 }
-var fBe = ({
+var Countdown = ({
   ticksRemaining: ticksRemaining,
   sampledAtTick: sampledAtTick,
   running: running,
@@ -50949,7 +50958,7 @@ var fBe = ({
     ],
   });
 };
-var bBe = ({ combo: combo, action: action }) =>
+var KeyHint = ({ combo: combo, action: action }) =>
   (0, wn.jsxs)("span", {
     className: "zuk-set-timer__hint",
     children: [
@@ -50964,7 +50973,7 @@ var bBe = ({ combo: combo, action: action }) =>
       }),
     ],
   });
-var _Be = ({
+var ZukSetTimerOverlay = ({
   overlayScale: ez = 1,
   timer: timer,
   keybinds: eB = dK,
@@ -51056,7 +51065,7 @@ var _Be = ({
         };
     }
   })(timer);
-  return (0, wn.jsx)(dOe, {
+  return (0, wn.jsx)(DraggablePanel, {
     defaultPosition: mBe,
     position: eO.HiaIt(position, undefined),
     width: 208,
@@ -51101,7 +51110,7 @@ var _Be = ({
         (0, wn.jsxs)("div", {
           className: "zuk-set-timer__readout",
           children: [
-            (0, wn.jsx)(fBe, {
+            (0, wn.jsx)(Countdown, {
               ticksRemaining: eQ,
               sampledAtTick: currentTick,
               running: eR,
@@ -51127,7 +51136,7 @@ var _Be = ({
           className: "zuk-set-timer__cue",
           children: eT
             ? eB.zukSetTimerAdvance
-              ? (0, wn.jsx)(bBe, {
+              ? (0, wn.jsx)(KeyHint, {
                   combo: eB.zukSetTimerAdvance,
                   action: eT.action + " " + eT.cue,
                 })
@@ -51140,11 +51149,11 @@ var _Be = ({
         (0, wn.jsxs)("div", {
           className: "zuk-set-timer__controls",
           children: [
-            (0, wn.jsx)(bBe, {
+            (0, wn.jsx)(KeyHint, {
               combo: eB.zukSetTimerReset,
               action: "Reset",
             }),
-            (0, wn.jsx)(bBe, {
+            (0, wn.jsx)(KeyHint, {
               combo: eB.zukSetTimerReveal,
               action: actual ? "Hide" : "Actual",
             }),
@@ -51155,7 +51164,7 @@ var _Be = ({
   });
 };
 var bZ = Q$e(0, d0);
-var yBe = Q$e(
+var GamePanel = Q$e(
   0,
   ({
     simulationState: simulationState,
@@ -51410,8 +51419,8 @@ var yBe = Q$e(
       setScale: setScale,
       hideTooltip: hideTooltip,
       recheckHover: recheckHover,
-    } = oOe();
-    const gY = rOe();
+    } = useTooltip();
+    const gY = useTooltipScale();
     const {
       prayerFilter: prayerFilter,
       spellbookFilter: spellbookFilter,
@@ -51426,7 +51435,7 @@ var yBe = Q$e(
       toggleSpellFilterOption: toggleSpellFilterOption,
       ownFilters: ownFilters,
     } = vDe();
-    const { bindContextMenu: bindContextMenu } = YOe();
+    const { bindContextMenu: bindContextMenu } = useContextMenu();
     const hd = V$e();
     const reportPanelPresentation2 = (0, pn.useContext)(
       j$e,
@@ -51471,9 +51480,9 @@ var yBe = Q$e(
     const hA = (0, pn.useMemo)(
       () =>
         (function (i8, i9 = zDe, ia = {}) {
-          const ib = UDe(HDe, i9, ia);
+          const ib = resolvePrayerSlots(PRAYER_GRID, i9, ia);
           const ic = new Map(
-            HDe.flatMap((ih) =>
+            PRAYER_GRID.flatMap((ih) =>
               ih.prayer === undefined
                 ? []
                 : ih.upgrade === undefined
@@ -51618,7 +51627,7 @@ var yBe = Q$e(
           null === ia.current.blockedReason(ic.id)
         ) {
           i9(ic.id);
-          ib(document, ic.id, e$e);
+          ib(document, ic.id, gamePanelScrollerOf);
         }
       });
     })(
@@ -51760,7 +51769,7 @@ var yBe = Q$e(
       (0, pn.useEffect)(() => {
         const ib = (ic) => {
           if (
-            !Aae(ic) &&
+            !handleOverlayClose(ic) &&
             !bg() &&
             !ic.repeat &&
             !ic.isComposing &&
@@ -51857,7 +51866,7 @@ var yBe = Q$e(
     const hX = () => {
       switch (hL) {
         case "inventory":
-          return (0, wn.jsx)(TDe, {
+          return (0, wn.jsx)(InventoryContent, {
             inventory: inventory,
             currentTick: simulationState?.currentTick,
             previewResetToken: inventoryPreviewResetToken,
@@ -51877,7 +51886,7 @@ var yBe = Q$e(
             onPickInventoryTagColor: onPickInventoryTagColor,
           });
         case "combat":
-          return (0, wn.jsx)(WLe, {
+          return (0, wn.jsx)(CombatContent, {
             pickerStyleIndex: hp,
             onPickerStyleIndexChange: hF,
             weaponId: weaponId,
@@ -51899,11 +51908,11 @@ var yBe = Q$e(
             stats: simulationState?.stats,
           });
         case "skills":
-          return (0, wn.jsx)(wFe, {
+          return (0, wn.jsx)(SkillsContent, {
             stats: simulationState?.stats,
           });
         case "spellbook":
-          return (0, wn.jsx)(CFe, {
+          return (0, wn.jsx)(SpellbookContent, {
             spellbook: spellbook,
             runeContext: runeContext,
             armedSpell: armedSpell,
@@ -51931,7 +51940,7 @@ var yBe = Q$e(
           });
         case "prayer":
           if (hw) {
-            return (0, wn.jsx)(oFe, {
+            return (0, wn.jsx)(QuickPrayerSetup, {
               quickPrayerSelections: quickPrayerSelections,
               availability: hx,
               upgradedPrayers: hy,
@@ -51940,7 +51949,7 @@ var yBe = Q$e(
               onClose: onCloseQuickPrayerSetup ?? (() => {}),
             });
           } else {
-            return (0, wn.jsx)(nFe, {
+            return (0, wn.jsx)(PrayerContent, {
               activePrayer: activePrayer,
               offensivePrayer: offensivePrayer ?? null,
               independentPrayers: independentPrayers,
@@ -51969,7 +51978,7 @@ var yBe = Q$e(
             });
           }
         case "equipment":
-          return (0, wn.jsx)(rDe, {
+          return (0, wn.jsx)(EquipmentContent, {
             view: hr,
             onViewChange: hG,
             equipmentStats: equipmentStats,
@@ -51983,7 +51992,7 @@ var yBe = Q$e(
             objTypeLoader: objTypeLoader,
           });
         case "settings":
-          return (0, wn.jsx)(aFe, {
+          return (0, wn.jsx)(SettingsContent, {
             subTab: hs,
             onSubTabChange: hH,
             keybindCategory: gA,
@@ -52118,7 +52127,7 @@ var yBe = Q$e(
         selectedStone:
           hL === i8.tab
             ? {
-                src: VFe(i9.stone),
+                src: selectedTabStoneSprite(i9.stone),
                 dx: i9.dx,
                 width: i9.width,
               }
@@ -52126,7 +52135,7 @@ var yBe = Q$e(
       };
     };
     const i4 = g8
-      ? (0, wn.jsx)(DFe, {
+      ? (0, wn.jsx)(StatusBars, {
           mode: g3,
           activePackId: uie(),
           currentHitpoints: simulationState?.playerHP ?? 0,
@@ -52234,7 +52243,7 @@ var yBe = Q$e(
           case "run":
             return {
               onPress: (ih) => kDe(onRunToggle, onReplayCursorClick, ih),
-              ...bindContextMenu(() => mLe(fw, () => onRunToggle?.())),
+              ...bindContextMenu(() => buildRunOrbContextMenu(fw, () => onRunToggle?.())),
             };
           default:
             if (hasSpecialAttack) {
@@ -52242,7 +52251,7 @@ var yBe = Q$e(
                 onPress: (ih) =>
                   kDe(onSpecialAttackToggle, onReplayCursorClick, ih),
                 ...bindContextMenu(() =>
-                  fLe(i9, () => onSpecialAttackToggle?.()),
+                  buildSpecialOrbContextMenu(i9, () => onSpecialAttackToggle?.()),
                 ),
               };
             } else {
@@ -52254,7 +52263,7 @@ var yBe = Q$e(
       };
       return (0, wn.jsxs)(wn.Fragment, {
         children: [
-          (0, wn.jsx)(ODe, {
+          (0, wn.jsx)(MobileHotkeys, {
             frame: mobileFrame,
             viewportWidth: viewportWidth,
             viewportHeight: viewportHeight,
@@ -52268,7 +52277,7 @@ var yBe = Q$e(
               }
             },
           }),
-          (0, wn.jsx)(IDe, {
+          (0, wn.jsx)(MobileSideChrome, {
             frame: mobileFrame,
             layout: i8,
             viewportWidth: viewportWidth,
@@ -52296,7 +52305,7 @@ var yBe = Q$e(
     if ("fixed" === g3 || "classic" === g3) {
       const ic = g3 === "fixed" ? OTe : ITe;
       const id = "fixed" === g3 ? TTe(bTe, gY) : undefined;
-      return (0, wn.jsx)(dOe, {
+      return (0, wn.jsx)(DraggablePanel, {
         inputSurface: "gameplay",
         defaultPosition: jFe,
         position: panelPosition,
@@ -52312,7 +52321,7 @@ var yBe = Q$e(
         locked: locked,
         scaleEnabled: "fixed" !== g3,
         dataTutorial: "game-panel",
-        children: (0, wn.jsx)(uFe, {
+        children: (0, wn.jsx)(SidePanelColumn, {
           geometry: ic,
           backgroundOpacity: g3 === "classic" ? i5 : 1,
           topRow: i0.filter((ig) => ig.row === "top").map(i3),
@@ -52352,7 +52361,7 @@ var yBe = Q$e(
     return (0, wn.jsxs)(wn.Fragment, {
       children: [
         ho &&
-          (0, wn.jsx)(dOe, {
+          (0, wn.jsx)(DraggablePanel, {
             inputSurface: "gameplay",
             defaultPosition: UFe,
             position: panelPosition,
@@ -52374,7 +52383,7 @@ var yBe = Q$e(
               children: [i6("modern"), i4],
             }),
           }),
-        (0, wn.jsx)(dOe, {
+        (0, wn.jsx)(DraggablePanel, {
           inputSurface: "gameplay",
           defaultPosition: {
             x: 0,
@@ -52421,7 +52430,7 @@ var vBe = (ez) => {
       () => {},
     );
   })();
-  return (0, wn.jsx)(yBe, {
+  return (0, wn.jsx)(GamePanel, {
     ...ez,
     activeTab: ez.activeTab ?? eA,
   });
@@ -52429,7 +52438,7 @@ var vBe = (ez) => {
 var wBe = (0, pn.memo)(function (ez) {
   const eA = (function () {
     const eB = wLe();
-    const [eC] = (0, pn.useState)(() => new xLe());
+    const [eC] = (0, pn.useState)(() => new ChatLogProjection());
     const eD = (0, pn.useCallback)(() => {
       const eE = eB?.getSnapshot();
       if (eE) {
@@ -52440,7 +52449,7 @@ var wBe = (0, pn.memo)(function (ez) {
     }, [eB, eC]);
     return (0, pn.useSyncExternalStore)(eB?.subscribe ?? MLe, eD);
   })();
-  return (0, wn.jsx)(OOe, {
+  return (0, wn.jsx)(Chatbox, {
     ...ez,
     messages: eA,
   });
@@ -52448,7 +52457,7 @@ var wBe = (0, pn.memo)(function (ez) {
 var uZ = {
   kind: "ok",
 };
-var kBe = Object.fromEntries(bq.map((ez) => [ez.actorId, ez]));
+var kBe = Object.fromEntries(lobbyNpcs.map((ez) => [ez.actorId, ez]));
 var xBe = {
   x: 0,
   y: 0,
@@ -52492,7 +52501,7 @@ function SBe(ez, eA) {
     return eA;
   }
 }
-var TBe = ({
+var ViewportContextMenuBridge = ({
   onTileClick: onTileClick,
   onNpcAction: onNpcAction,
   onNpcAttackByTarget: onNpcAttackByTarget,
@@ -52551,7 +52560,7 @@ var TBe = ({
       return fa(fb);
     },
   };
-  const { showContextMenu: showContextMenu } = YOe();
+  const { showContextMenu: showContextMenu } = useContextMenu();
   const f7 = (0, pn.useCallback)(
     (fa) => tileMarkers.some((fb) => fb.x === fa[0] && fb.y === fa[1]),
     [tileMarkers],
@@ -52661,7 +52670,7 @@ var TBe = ({
               onTake: onTakeGroundItem,
             }
           : undefined;
-      const fm = aLe(
+      const fm = assembleViewportContextMenu(
         {
           tile: fa,
           onTileClick: onTileClick,
@@ -52732,7 +52741,7 @@ var TBe = ({
     children: children(f9),
   });
 };
-var NBe = ({
+var ViewportEntityBridge = ({
   entityContext: entityContext,
   projection3D: projection3D,
   isLobby: isLobby,
@@ -52804,7 +52813,7 @@ var NBe = ({
       return eU();
     },
   };
-  const { showTooltip: showTooltip, hideTooltip: hideTooltip } = oOe();
+  const { showTooltip: showTooltip, hideTooltip: hideTooltip } = useTooltip();
   const [eO, eQ] = (0, pn.useState)("yellow");
   const eR = (0, pn.useRef)("none");
   const eS = (0, pn.useRef)({
@@ -52893,11 +52902,11 @@ var NBe = ({
                     spans: [
                       {
                         text: f8.action + " ",
-                        color: Gse.action,
+                        color: TOOLTIP_COLORS.action,
                       },
                       {
                         text: f9,
-                        color: f8.targetColor ?? Gse.npc,
+                        color: f8.targetColor ?? TOOLTIP_COLORS.npc,
                       },
                     ],
                   },
@@ -52910,7 +52919,7 @@ var NBe = ({
           return;
         }
       }
-      const f0 = cze(eY, entityContext.npcTypeLoader);
+      const f0 = resolveInteractiveNpcPick(eY, entityContext.npcTypeLoader);
       if (f0) {
         const { picked: picked, npcType: npcType } = f0;
         if (!npcType) {
@@ -52922,7 +52931,10 @@ var NBe = ({
           );
           return;
         }
-        if (sze(npcType)) {
+        // An NPC without "Attack" its encounter marks (npcHoverShowsOption) shows its first option too, and
+        // its name read as the right-click menu reads it (lLe): the jug's cache name is "<col=00ffff>Jug</col>".
+        const showsOption = !sze(npcType) && !!entityContext.npcHoverShowsOption?.(picked.actorId);
+        if (sze(npcType) || showsOption) {
           const fa = entityContext.npcMenuColor?.(
             picked.npcTypeId,
             picked.actorId,
@@ -52930,7 +52942,8 @@ var NBe = ({
           eW(
             "npc:" + picked.actorId + ":" + eK.TyQge(fa, ""),
             (function (fb, fc) {
-              const fd = fb.name || "NPC";
+              let fd = fb.name || "NPC";
+              if (showsOption) ({ name: fd, color: fc } = lLe(fd, fc ?? TOOLTIP_COLORS.npc));
               const fe = fb.actions.find((fg) => fg != null);
               if (!fe) {
                 return null;
@@ -52943,11 +52956,11 @@ var NBe = ({
                     spans: [
                       {
                         text: fe + " ",
-                        color: Gse.action,
+                        color: TOOLTIP_COLORS.action,
                       },
                       {
                         text: fd + ff,
-                        color: fc ?? Gse.npc,
+                        color: fc ?? TOOLTIP_COLORS.npc,
                       },
                     ],
                   },
@@ -52973,18 +52986,18 @@ var NBe = ({
             try {
               const fd = fc.load(fb);
               const fe = fd.groundActions.find((fg) => fg != null) || "Take";
-              const ff = Y(fb, fd.name);
+              const ff = getItemName(fb, fd.name);
               return {
                 lines: [
                   {
                     spans: [
                       {
                         text: fe + " ",
-                        color: Gse.action,
+                        color: TOOLTIP_COLORS.action,
                       },
                       {
                         text: ff,
-                        color: Gse.item,
+                        color: TOOLTIP_COLORS.item,
                       },
                     ],
                   },
@@ -53003,7 +53016,7 @@ var NBe = ({
         if (lobbyObject) {
           eW(
             "loc:lobby",
-            { lines: [{ spans: [{ text: lobbyObject.action + " ", color: Gse.action }, { text: lobbyObject.name, color: Gse.loc }] }] },
+            { lines: [{ spans: [{ text: lobbyObject.action + " ", color: TOOLTIP_COLORS.action }, { text: lobbyObject.name, color: TOOLTIP_COLORS.loc }] }] },
             "red",
             null,
           );
@@ -53034,11 +53047,11 @@ var NBe = ({
                         spans: [
                           {
                             text: fg + " ",
-                            color: Gse.action,
+                            color: TOOLTIP_COLORS.action,
                           },
                           {
                             text: ff,
-                            color: Gse.loc,
+                            color: TOOLTIP_COLORS.loc,
                           },
                         ],
                       },
@@ -53084,7 +53097,7 @@ var NBe = ({
     children: children(eT, eO),
   });
 };
-var mn = (ez) => {
+var Grid = (ez) => {
   const eA = {
     WLgQF: function (n2, n3) {
       return n2(n3);
@@ -53561,8 +53574,8 @@ var mn = (ez) => {
     pillarAdditions: hW = null,
     chatboxVisible: hX = true,
     onChatboxVisibleChange: onChatboxVisibleChange,
-    chatboxTransparent: i0 = Yse.transparentChatbox,
-    chatboxClickThrough: i1 = Yse.clickThroughTransparentChatbox,
+    chatboxTransparent: i0 = PERSISTED_SETTINGS_DEFAULTS.transparentChatbox,
+    chatboxClickThrough: i1 = PERSISTED_SETTINGS_DEFAULTS.clickThroughTransparentChatbox,
     topChrome: topChrome,
     compactOrbs: compactOrbs,
     compactOrbsLayout: compactOrbsLayout,
@@ -53671,7 +53684,7 @@ var mn = (ez) => {
     }
   }, [jD]);
   const jE = (0, pn.useMemo)(
-    () => pie(replayControls?.capture),
+    () => replayCaptureNotice(replayControls?.capture),
     [replayControls?.capture],
   );
   const jF = null !== jz;
@@ -53752,7 +53765,7 @@ var mn = (ez) => {
   const k3 = (0, pn.useMemo)(
     () =>
       (function (n2) {
-        const n3 = n2.visible ? jCe : UCe;
+        const n3 = n2.visible ? FIXED_CHAT : UCe;
         switch (n2.layout) {
           case "mobile":
             return null;
@@ -53771,14 +53784,14 @@ var mn = (ez) => {
           case "classic":
           case "modern": {
             const n5 = Math.max(0, n2.frame.width - n2.insetLeft);
-            const n6 = Math.max(0, Math.min(n2.resizableScale, n5 / jCe.width));
+            const n6 = Math.max(0, Math.min(n2.resizableScale, n5 / FIXED_CHAT.width));
             const n7 = n3.height * n6;
             return {
               scale: n6,
               rect: {
                 x: n2.insetLeft,
                 y: n2.frame.height - n7,
-                width: jCe.width * n6,
+                width: FIXED_CHAT.width * n6,
                 height: n7,
               },
             };
@@ -53866,7 +53879,7 @@ var mn = (ez) => {
   }, [km, jQ, replayControls?.isReplaying]);
   const [kq, ks] = (0, pn.useState)(200);
   const ku = jQ
-    ? eHe(simulationState, {
+    ? selectInfoboxes(simulationState, {
         showTickCounterInfobox:
           eA.vcqIj(showTickCounter, true) && (showTickCounterInfobox ?? true),
         tickCounterMax: tickCounterMax,
@@ -53884,7 +53897,7 @@ var mn = (ez) => {
   const kx = replayControls?.isReplaying ?? false;
   (0, pn.useEffect)(() => {
     if (kx) {
-      window.dispatchEvent(new CustomEvent(Qie));
+      window.dispatchEvent(new CustomEvent(TUTORIAL_REPLAY_ENTERED_EVENT));
     }
   }, [kx]);
   const ky = (0, pn.useMemo)(() => {
@@ -54142,7 +54155,7 @@ var mn = (ez) => {
             transform: "none",
           },
         ],
-        OEe,
+        CHROME_RESIZE_TIMING,
       );
       n8.current = ng;
       ng.onfinish = () => {
@@ -54424,7 +54437,7 @@ var mn = (ez) => {
           ? simulationState.npcs.find((n5) => n5.role === "boss")
           : simulationState.npcs.find((n5) => n5.id === n2);
       if (n3) {
-        if (aR(n3, simulationState.currentTick)) {
+        if (isNpcTargetableAtTick(n3, simulationState.currentTick)) {
           return {
             actorId: n3.id,
             npcTypeId: n3.npcTypeId,
@@ -54596,10 +54609,10 @@ var mn = (ez) => {
               }
               const n5 = n4.split(",");
               n3.push({
-                option: kEe(Vs(n5[0])),
-                target: kEe(Vs(n5[1])),
-                topOption: n5.length > 2 ? kEe(Vs(n5[2])) : wEe,
-                topTarget: n5.length > 3 ? kEe(Vs(n5[3])) : wEe,
+                option: compileField(Vs(n5[0])),
+                target: compileField(Vs(n5[1])),
+                topOption: n5.length > 2 ? compileField(Vs(n5[2])) : wEe,
+                topTarget: n5.length > 3 ? compileField(Vs(n5[3])) : wEe,
               });
             }
             return n3;
@@ -54654,6 +54667,9 @@ var mn = (ez) => {
       pickGroundItems: lX,
       objTypeLoader: objTypeLoader,
       npcMenuColor: m1,
+      // An NPC its encounter marks (SimulationEngine.js, hoverShowsOption) shows its first option on hover
+      // even without "Attack".
+      npcHoverShowsOption: (actorId) => m0.current.some((npc) => npc.id === actorId && npc.hoverShowsOption),
     }),
     [
       lS,
@@ -54740,7 +54756,7 @@ var mn = (ez) => {
           }
         }
       }
-      const n5 = cze(lV(n4, n2), npcTypeLoader);
+      const n5 = resolveInteractiveNpcPick(lV(n4, n2), npcTypeLoader);
       if (encounterKind === "zebak" && !n5?.npcType) {
         const tile = lp.current.screenToTile(n2);
         const jug = tile && simulationState.npcs.find(npc =>
@@ -55096,7 +55112,7 @@ var mn = (ez) => {
       onIntroTimingGetterChange(null);
     }
   }, [onIntroTimingGetterChange, fl, lm]);
-  return (0, wn.jsx)(HOe, {
+  return (0, wn.jsx)(TooltipProvider, {
     initialScale: uiScale,
     forcedScale: jO
       ? jP
@@ -55104,10 +55120,10 @@ var mn = (ez) => {
         ? jW.scale
         : (jz?.uiScale ?? (hc ? undefined : 1)),
     onScaleChange: onUiScaleChange,
-    children: (0, wn.jsx)(VOe, {
+    children: (0, wn.jsx)(ContextMenuProvider, {
       onReplayCursorClick: onReplayCursorClick,
       isReplaying: replayControls?.isReplaying,
-      children: (0, wn.jsx)(NBe, {
+      children: (0, wn.jsx)(ViewportEntityBridge, {
         entityContext: m5,
         projection3D: lp.current,
         isLobby: encounterKind === "lobby",
@@ -55117,7 +55133,7 @@ var mn = (ez) => {
         objTypeLoader: objTypeLoader,
         onTakeGroundItem: onTakeGroundItem,
         children: (n2, n3) =>
-          (0, wn.jsx)(TBe, {
+          (0, wn.jsx)(ViewportContextMenuBridge, {
             onTileClick: m8,
             onNpcAction: m9,
             onNpcAttackByTarget: mb,
@@ -55329,7 +55345,7 @@ var mn = (ez) => {
                             ),
                   }),
                   lw &&
-                    (0, wn.jsx)(fn, {
+                    (0, wn.jsx)(ViewportStatusOverlay, {
                       status: hw,
                       rect: lx,
                       portrait: ly,
@@ -55363,14 +55379,14 @@ var mn = (ez) => {
                     },
                     children: [
                       (0, wn.jsx)(qOe, {}),
-                      (0, wn.jsx)(KOe, {}),
-                      (0, wn.jsx)(dHe, {}),
+                      (0, wn.jsx)(ContextMenuOverlay, {}),
+                      (0, wn.jsx)(SnapGuideOverlay, {}),
                       replayControls?.isReplaying &&
                         replayControls.replayCursorVisible &&
                         replayCursorTrack &&
-                        (0, wn.jsx)(Y$e, {
+                        (0, wn.jsx)(WorkspacePortal, {
                           surface: "cursor",
-                          children: (0, wn.jsx)(Uze, {
+                          children: (0, wn.jsx)(ReplayCursorLayer, {
                             track: replayCursorTrack,
                             frameIndex: replayControls.replayFrameIndex,
                             isPlaying: replayControls.isPlaying,
@@ -55378,10 +55394,10 @@ var mn = (ez) => {
                             layoutRevision: jG,
                           }),
                         }),
-                      (0, wn.jsx)(ZFe, {
+                      (0, wn.jsx)(HintBar, {
                         insets: k1,
                       }),
-                      (0, wn.jsx)(Zze, {
+                      (0, wn.jsx)(TileMarkerColorPicker, {
                         isOpen: null !== mf,
                         anchor: mf?.anchor ?? null,
                         initialColor: mf?.initialColor ?? iU,
@@ -55393,7 +55409,7 @@ var mn = (ez) => {
                         subtitle: "Outline and fill",
                         showFill: true,
                       }),
-                      (0, wn.jsx)(Zze, {
+                      (0, wn.jsx)(TileMarkerColorPicker, {
                         isOpen: null !== mw,
                         anchor: mw?.anchor ?? null,
                         initialColor:
@@ -55406,7 +55422,7 @@ var mn = (ez) => {
                         title: "Inventory Tag Color",
                         showOpacity: false,
                       }),
-                      (0, wn.jsx)(Zze, {
+                      (0, wn.jsx)(TileMarkerColorPicker, {
                         isOpen: mE !== null,
                         anchor: mE?.anchor ?? null,
                         initialColor: mE?.initialColor ?? "#00ffff",
@@ -55417,7 +55433,7 @@ var mn = (ez) => {
                         subtitle: mE?.modeLabel,
                         showOpacity: false,
                       }),
-                      (0, wn.jsx)(Jze, {
+                      (0, wn.jsx)(TileMarkerLabelEditor, {
                         isOpen: mL !== null,
                         tile: mL?.tile ?? null,
                         anchor: mL?.anchor ?? null,
@@ -55425,7 +55441,7 @@ var mn = (ez) => {
                         onApply: mO,
                         onCancel: mP,
                       }),
-                      (0, wn.jsx)(Zze, {
+                      (0, wn.jsx)(TileMarkerColorPicker, {
                         isOpen: ml !== null,
                         anchor: ml?.anchor ?? null,
                         initialColor: ml?.initialColor ?? iU,
@@ -55435,7 +55451,7 @@ var mn = (ez) => {
                         title: "Line Marker Color",
                         subtitle: "Line style",
                       }),
-                      (0, wn.jsx)(Jze, {
+                      (0, wn.jsx)(TileMarkerLabelEditor, {
                         isOpen: null !== mQ,
                         tile: mQ?.tile ?? null,
                         anchor: mQ?.anchor ?? null,
@@ -55445,7 +55461,7 @@ var mn = (ez) => {
                       }),
                       jM &&
                         "canvas2d" !== fl &&
-                        (0, wn.jsx)(Mqe, {
+                        (0, wn.jsx)(Minimap, {
                           ref: lH,
                           simulationState: simulationState,
                           initialCameraYaw: lp.current.getCameraState().yaw,
@@ -55457,12 +55473,12 @@ var mn = (ez) => {
                           minimapNpcDotUrl: minimapNpcDotUrl,
                           mapSquare: KFe(encounterKind),
                           speedMultiplier: gl,
-                          arenaBounds: aJ(),
+                          arenaBounds: getArenaBounds(),
                           hasSpecialAttack: K$e(
                             playerEquipment?.weapon,
                             enumTypeLoader,
                           ),
-                          soulreaperStacks: ep(
+                          soulreaperStacks: getSoulreaperStacksForWeapon(
                             playerEquipment?.weapon,
                             simulationState.soulreaperStacks,
                           ),
@@ -55573,16 +55589,16 @@ var mn = (ez) => {
                         }),
                       !k9 &&
                         replayControls?.isReplaying &&
-                        (0, wn.jsx)(Y$e, {
+                        (0, wn.jsx)(WorkspacePortal, {
                           surface: "transport",
                           children: (0, wn.jsx)("div", {
                             className: "replay-transport-dock",
                             style: l4,
                             children: (0, wn.jsx)("div", {
                               ref: jC,
-                              style: EEe(hb),
+                              style: chromeZoomStyle(hb),
                               "data-tutorial": "replay-controls",
-                              children: (0, wn.jsx)(rze, {
+                              children: (0, wn.jsx)(ReplayControls, {
                                 compact: ((n6 = l3 / hb), n6 <= 720),
                                 ...replayControls,
                                 replayPractice: replayPractice,
@@ -55591,9 +55607,9 @@ var mn = (ez) => {
                           }),
                         }),
                       eA.ZhcVe(!k9, topChrome) &&
-                        (0, wn.jsx)(Y$e, {
+                        (0, wn.jsx)(WorkspacePortal, {
                           surface: "chrome",
-                          children: (0, wn.jsx)(FHe, {
+                          children: (0, wn.jsx)(TopChrome, {
                             onRestart: onRestart,
                             frameRef: jx,
                             fixed: jO,
@@ -55720,7 +55736,7 @@ var mn = (ez) => {
                           weaponId: playerEquipment?.weapon,
                           specialAttackPercent:
                             simulationState.specialAttack?.energy,
-                          soulreaperStacks: ep(
+                          soulreaperStacks: getSoulreaperStacksForWeapon(
                             playerEquipment?.weapon,
                             simulationState.soulreaperStacks,
                           ),
@@ -55802,13 +55818,13 @@ var mn = (ez) => {
                             },
                           }),
                         }),
-                      (0, wn.jsx)(Y$e, {
+                      (0, wn.jsx)(WorkspacePortal, {
                         surface: "transport",
                         children: (0, wn.jsx)("div", {
                           "data-replay-viewer-chrome": k8 ? "" : undefined,
                           children:
                             k9 &&
-                            (0, wn.jsx)(aze, {
+                            (0, wn.jsx)(MobileToolWindow, {
                               onRestart: onRestart,
                               frame: k9,
                               viewport: kb,
@@ -55841,7 +55857,7 @@ var mn = (ez) => {
                         }),
                       }),
                       eA.ZhcVe(jM, !jQ) &&
-                        (0, wn.jsx)(mHe, {
+                        (0, wn.jsx)(InfoBoxPanel, {
                           clientLayoutMode: hA,
                           simulationState: simulationState,
                           infoBoxSettings: {
@@ -55863,7 +55879,7 @@ var mn = (ez) => {
                           viewportHeight: jI.height,
                           exclusionRects: lg,
                         }),
-                      (0, wn.jsx)(gBe, {
+                      (0, wn.jsx)(XpDropOverlay, {
                         overlayScale: jW?.scale ?? jA,
                         overlayOuterScale: hd,
                         enabled: gz,
@@ -55881,7 +55897,7 @@ var mn = (ez) => {
                         exclusionRects: lg,
                       }),
                       jM &&
-                        (0, wn.jsx)(_Oe, {
+                        (0, wn.jsx)(BossHealthBarOverlay, {
                           overlayScale: jW?.scale ?? jA,
                           width: ky ? 150 : undefined,
                           enabled: gH,
@@ -55908,7 +55924,7 @@ var mn = (ez) => {
                           exclusionRects: lg,
                         }),
                       jM &&
-                        (0, wn.jsx)(RLe, {
+                        (0, wn.jsx)(DetailedDpsOverlay, {
                           overlayScale: jA,
                           engine: eA.zpJWj(engine, null),
                           dpsProjection: dpsProjection,
@@ -55928,7 +55944,7 @@ var mn = (ez) => {
                           exclusionRects: ky?.aidExclusions ?? lg,
                         }),
                       jM &&
-                        (0, wn.jsx)(hze, {
+                        (0, wn.jsx)(PrayerFlickOverlay, {
                           overlayScale: jA,
                           enabled: gR,
                           position:
@@ -55942,13 +55958,13 @@ var mn = (ez) => {
                           exclusionRects: ky?.aidExclusions ?? lg,
                         }),
                       jM &&
-                        (0, wn.jsx)(_Be, {
+                        (0, wn.jsx)(ZukSetTimerOverlay, {
                           overlayScale: jA,
                           timer: zukSetTimer?.timer,
                           keybinds: zukSetTimer?.keybinds,
                           currentTick: simulationState.currentTick,
                           actual: zukSetTimer?.showActual
-                            ? TEe(
+                            ? readActualZukSetCountdown(
                                 simulationState.encounter,
                                 typeof simulationState.mechanicsConfig
                                   .zukSets == "boolean"
@@ -55975,7 +55991,7 @@ var mn = (ez) => {
                             pointerEvents: "none",
                             zIndex: 25,
                           },
-                          children: (0, wn.jsx)(Cqe, {}),
+                          children: (0, wn.jsx)(MobileLayoutEditBar, {}),
                         }),
                       (0, wn.jsx)("div", {
                         style: {
@@ -55984,7 +56000,7 @@ var mn = (ez) => {
                           pointerEvents: "none",
                           zIndex: 25,
                         },
-                        children: (0, wn.jsx)(lHe, {
+                        children: (0, wn.jsx)(OverlapGuideOverlay, {
                           disabled: replayControls?.isReplaying ?? false,
                         }),
                       }),
@@ -56002,15 +56018,15 @@ var mn = (ez) => {
 export {
   eae,
   tae,
-  nae,
+  DisclosureChevron,
   aae,
-  iae,
+  DEFAULT_NPC_HIGHLIGHT_COLOR,
   oae,
   rae,
-  sae,
+  COMPACT_ORBS_LAYOUT_LABELS,
   lae,
   cae,
-  dae,
+  OutcomePracticeActions,
   uae,
   hae,
   pae,
@@ -56021,8 +56037,8 @@ export {
   bae,
   vae,
   wae,
-  kae,
-  Sae,
+  getSpellIconPath,
+  PRAYER,
   Cae,
   Nae,
   xae,
@@ -56030,19 +56046,19 @@ export {
   Mae,
   Pae,
   Iae,
-  Aae,
+  handleOverlayClose,
   Rae,
   Lae,
   Eae,
-  Dae,
+  sheet,
   Oae,
   Fae,
   $ae,
   _ae,
   Hae,
   qae,
-  Bae,
-  zae,
+  TUTORIAL_CLOSE_PANE_EVENT,
+  LauncherIcon,
   Wae,
   Gae,
   Kae,
@@ -56058,19 +56074,19 @@ export {
   iie,
   oie,
   rie,
-  sie,
+  OsrsNumberInput,
   lie,
   cie,
   die,
   uie,
-  hie,
-  pie,
+  usePersistedSettings,
+  replayCaptureNotice,
   mie,
-  gie,
+  InfoHint,
   fie,
   yie,
-  bie,
-  vie,
+  CLIENT_LAYOUT_LABELS,
+  SystemNotice,
   wie,
   kie,
   Sie,
@@ -56079,10 +56095,10 @@ export {
   xie,
   Tie,
   Mie,
-  Pie,
-  un,
-  Iie,
-  Aie,
+  infoboxPinTargetUnavailableReason,
+  PanelSnapRegistryProvider,
+  SPELLBOOKS,
+  MOBILE,
   Rie,
   Lie,
   Eie,
@@ -56094,51 +56110,51 @@ export {
   Hie,
   qie,
   Bie,
-  zie,
+  ESC_PRIORITY,
   Wie,
   Gie,
-  Kie,
-  jie,
-  Uie,
+  TUTORIAL_QUICK_SEARCH_OPENED_EVENT,
+  useHoverCard,
+  MechanicsSettings,
   Vie,
-  Yie,
+  TUTORIAL_HUD_OPENED_EVENT,
   Jie,
-  Zie,
+  FpsOverlay,
   Xie,
-  Qie,
+  TUTORIAL_REPLAY_ENTERED_EVENT,
   eoe,
   toe,
   noe,
   aoe,
-  ioe,
+  ResetToDefaultsControl,
   ooe,
-  roe,
+  projectActiveClicks,
   soe,
   loe,
   coe,
   doe,
   uoe,
   hoe,
-  poe,
+  RESOLUTION_PRESETS,
   moe,
   goe,
-  foe,
+  OSM_TAB_SLOTS,
   yoe,
-  boe,
+  INFOBOX_ITEM_IDS,
   voe,
   woe,
   koe,
-  Soe,
-  Coe,
+  NO_WEBGL2_BODY,
+  SettingRow,
   ln,
   Noe,
-  xoe,
+  SIDE_BACKGROUND_SPRITES,
   Toe,
   Moe,
   Zn,
   Poe,
-  Ioe,
-  Aoe,
+  GAMEPANEL_KEYBINDS_ID,
+  OsrsCheckbox,
   Roe,
   Loe,
   Eoe,
@@ -56153,16 +56169,16 @@ export {
   zoe,
   Woe,
   Goe,
-  Koe,
+  advanceZukSetTimer,
   joe,
   Uoe,
   Voe,
-  Yoe,
+  EDIT_LAYOUT_HELP,
   Joe,
   Zoe,
   Xoe,
   Qoe,
-  ese,
+  GAMEPANEL_AUDIO_LABELS,
   tse,
   Kn,
   nse,
@@ -56170,19 +56186,19 @@ export {
   ise,
   ose,
   rse,
-  sse,
+  REPLAY_CLICK_SHEET_URLS,
   lse,
   cse,
   dse,
-  use,
+  STATUS_BAR_PRAYER_ICON,
   hse,
   pse,
   Rn,
-  mse,
+  useSimulationWiring,
   gse,
-  fse,
+  CloseButton,
   yse,
-  fn,
+  ViewportStatusOverlay,
   bse,
   vse,
   wse,
@@ -56191,31 +56207,31 @@ export {
   Cse,
   Nse,
   xse,
-  mn,
-  Tse,
-  Mse,
+  Grid,
+  NO_WEBGL2_TITLE,
+  KeybindingsContent,
   Pse,
   Ise,
   CommunityLinks,
   Rse,
   Lse,
   Ese,
-  Dse,
+  TouchControls,
   Ose,
   Fse,
-  $se,
-  _se,
+  GAME_RESOLUTION_MAX,
+  TooltipCard,
   Hse,
-  qse,
-  Bse,
+  MINIMAP,
+  parseStoredPosition,
   zse,
   Wse,
-  Gse,
+  TOOLTIP_COLORS,
   Kse,
   jse,
   Use,
   Vse,
-  Yse,
+  PERSISTED_SETTINGS_DEFAULTS,
   Jse,
   Zse,
   Xse,

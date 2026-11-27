@@ -6,6 +6,7 @@ import { buildScene } from "../shared/buildScene.js";
 import { doomKind, doomMapSquare, doomDeepKind, doomDeepMapSquare, bossActorId } from "./encounter.js";
 import { npcTypeIds, seqIds, spotAnims, locIds, bossStart, bossSize } from "./delves.js";
 import { withLarvaTracker } from "./larvaTracker.js";
+import { doomAudio } from "./audio.js";
 
 const identity = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 const loc = (prefix, locId, [x, y]) => ({
@@ -77,6 +78,7 @@ export const doomPresentation = (BaseScene) => ({
   kind: doomKind,
   renderConfig,
   sceneBuilder: (context) => buildScene(larvaTrackerScene(BaseScene), renderConfig, context),
+  audio: doomAudio,
   defaultCamera: { yaw: 0, pitch: -45, zoom: 330 },
   presentation: {
     title: "Doom of Mokhaiotl",

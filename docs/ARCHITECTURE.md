@@ -23,8 +23,8 @@ Names in `code font` are the names in the code today, short ones included.
 | `client/util/` | 246 | What every layer uses and is neither a rule of the game nor game data: the logger and the colour packing. Two modules that import nothing. See "Utilities" below. |
 | `client/assets/simulationEngineFactory.js` | 50 | Re-exports `client/engine/` for the chunks that import the engine from here. |
 | `client/assets/rendering.js` | 63,990 | Misnamed: cache decoding and the renderer, the tables of the scenes (weapon animations, projectiles), the encounters' scenes and their presentations. See "rendering.js" below. |
-| `client/assets/Grid.js` | 55,965 | React components, and the hook that owns the engine and runs the tick loop (`mse`), the replay recorder and player. |
-| `client/assets/application.js` | 54,723 | The React application: routes, settings, the encounter manager hook (`qwe`, log tag `useEncounterManager`). |
+| `client/assets/Grid.js` | 55,965 | React components (`Grid`, `GamePanel`, `ReplayControls`, `TopChrome`…), the hook that wires the engine and the tick loop to the interface (`useSimulationWiring`), the replay hook and recorder (`useReplay`, `ReplayRecorder`) and the persisted settings (`usePersistedSettings`). |
+| `client/assets/application.js` | 54,723 | The React application (`AppShell`): routes (`useRouting`), settings, the Plugins panel (`PluginsPanelContent`), the encounter manager hook (`useEncounterManager`). |
 | `client/encounters/shared/` | 1,169 | What the encounters share and the engine itself does not need: the NPC definition framework, NPC attack rolls, the default pursuit, the route search, the default scene builder. Six modules. See "Shared rules" below. |
 | `client/encounters/registry.js` | 212 | The encounter definitions (for each encounter its kind, the factory of its encounter object, its descriptor and its controls), found in the `encounter.js` of every directory beside it; the lookups over them, and `encounterRegistry`, which the engine asks for the encounter of a kind. Moved out of `rendering.js` and cleaned. See "The encounters" below. |
 | `client/encounters/presentations.js` | 57 | What draws an encounter, for the encounters written in modules: `presentationBuilders`, the functions found in the `presentation.js` of every encounter's directory, which `rendering.js` calls with its base scene class. See "Engine and encounter" below and `docs/ADDING-AN-ENCOUNTER.md`. |
@@ -315,7 +315,10 @@ members are optional: `onTickStart`, `playerInputLocked`,
 `monsterStatOverrides`, `onPlayerDamageTaken`, `isTombsOfAmascut`,
 `playerDamageOnNpc`. The last, `(damage, { attacker, target, attack }) =>
 damage`, decides a player's hit on one of the encounter's NPCs as it lands
-(the Doom of Mokhaiotl's larvae and shield); `isDemonbaneAttack(attack)` of
+(the Doom of Mokhaiotl's larvae and shield). `predictPlayerDamageOnNpc`, of
+the same form, says what such a hit will do as the attack is launched,
+without side effects: the experience and the XP drop's hit are given from it
+(the Alchemical Hydra's shield). `isDemonbaneAttack(attack)` of
 `engine/playerAttack/formula.js` tells a demonbane weapon or spell. An NPC
 whose `formulaStats.alwaysAccuratePlayerHit` is true is hit by every attack.
 Two rules are asked as a player's attack is planned, with the rules
@@ -733,11 +736,11 @@ rules only through what `rendering.js` passes to `zebakDefinition`: `stats`,
 
 ## From a route to a running fight
 
-1. `application.js` splits the path (`xke`) and maps the slug to a kind with
+1. `application.js` splits the path (`getPathSegments`) and maps the slug to a kind with
    `Gfe`, a table built from the engine's `encounterDefinitions`
    (`/yama` → `yama_p3`; a retired slug such as `/zuk` maps to its
    successor with mechanics, through `resolveKindOrRetiredEntry` of
-   `client/encounters/registry.js`). The hook `Ake` keeps the URL and
+   `client/encounters/registry.js`). The hook `useRouting` keeps the URL and
    the scene state in step.
 2. `enterEncounter(kind)` (`ii` in the encounter manager hook) builds the
    engine with `createSimulationEngine({ encounterConfig: { kind, mechanics,
@@ -749,14 +752,14 @@ rules only through what `rendering.js` passes to `zebakDefinition`: `stats`,
    The scene state becomes
    `loading`, then `encounter` once the scene is ready.
 3. The same hook asks the cache for the arena
-   (`cacheManager.ld({ mapX, mapY, seedX, seedY, ... })`: flood fill from the
+   (`cacheManager.buildArenaConfig({ mapX, mapY, seedX, seedY, ... })`: flood fill from the
    seed tile over the map's collision), registers it for the kind (`oe`) and
    tells the engine to adopt it (`engine.reapplyArenaConfig()`).
 4. `Grid.js` builds the scene: `de.create(kind, { cacheManager,
    eventAudioPlayer, frameSoundTracker, encounterRenderConfig })` calls the
    presentation's `sceneBuilder`. It throws for a kind that has no
    presentation ("No scene builder registered for encounter kind").
-5. The simulation hook (`mse` in `Grid.js`) owns the engine. When it gets a
+5. The simulation hook (`useSimulationWiring` in `Grid.js`) owns the engine. When it gets a
    new engine it applies the loadout, applies the pre-pot (`applyPrepot`) and starts a
    recording (`engine.getEngineRunConfig()`). Every 600 ms it calls `engine.advanceTick(clickedTile)`,
    then `getState()` and `getLastTickEvents()`, records the frame, publishes the state to
@@ -772,7 +775,7 @@ is a chunk, and neither is edited. The
 route's title and description come from the descriptor when `application.js`
 has no `seo` (`client/seo/routes.js`, which marks such a page `noindex`;
 the build writes a page per route from the same list,
-`tools/seo/prerender.mjs`). Default loadouts (`_le`
+`tools/seo/prerender.mjs`). Default loadouts (`EQUIPMENT_PRESETS`
 in `application.js`) are optional: a kind without them starts with nothing
 worn. `docs/ADDING-AN-ENCOUNTER.md` is the guide, with what still needs a
 chunk; `test/fixtures/training-ground/` is an encounter added that way,
@@ -904,6 +907,9 @@ changed. Then the same tools as for the engine, applied to the directory:
 `replace-define-field.mjs` (and `replace-static-defines.mjs` for a class with
 static values), `rename-bindings.mjs` (with `--locals` for parameters and
 locals) and `rename-members.mjs`, each with a names file in `tools/names/`.
+A renamed export is followed where code reads it through the module object
+(`import * as`, `(await import(...)).name`, also in tests and tools), and
+refused where that object cannot be followed (`--module-reads` lists both).
 Last, `tools/repoint-imports.mjs` makes the other modules import the moved
 code from its module instead of through `rendering.js`.
 

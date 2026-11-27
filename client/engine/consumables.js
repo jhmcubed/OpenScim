@@ -430,6 +430,34 @@ var consumableDefinitionByItemId = {
       immunityTicks: 1200,
     },
   ]),
+  // The anti-venoms cure venom outright and keep it off while the poison
+  // value is below -38 (SimulationEngine.js, VENOM_IMMUNITY_THRESHOLD).
+  // WIKI (Poison, Venom): 12.3 minutes of poison immunity (41 pulses), and 36
+  // to 54 seconds of venom immunity.
+  ...createSteppedDoseConsumableEntries(12905, 2, 229, "potion", 3, () => [ // Anti-venom(4)
+    {
+      op: "cure_poison",
+      immunityTicks: 1230,
+      curesVenom: true,
+    },
+  ]),
+  // WIKI: 15 minutes of poison immunity (50 pulses), 216 seconds of venom immunity.
+  ...createSteppedDoseConsumableEntries(12913, 2, 229, "potion", 3, () => [ // Anti-venom+(4)
+    {
+      op: "cure_poison",
+      immunityTicks: 1500,
+      curesVenom: true,
+    },
+  ]),
+  // OBS (Araxxor, 4 kills): a dose sets the poison value to -59; WIKI: 17.7
+  // minutes of poison immunity, 378 seconds of venom immunity.
+  ...createSteppedDoseConsumableEntries(29824, 3, 229, "potion", 3, () => [ // Extended anti-venom+(4)
+    {
+      op: "cure_poison",
+      immunityTicks: 1770,
+      curesVenom: true,
+    },
+  ]),
   ...createSteppedDoseConsumableEntries(31638, 3, 229, "potion", 3, () => [ // Extended stamina potion(4)
     {
       op: "restore_run",
@@ -922,18 +950,18 @@ function applyConsumableEffect(effect, playerState, effectModifiers) {
         },
       };
     case "cure_poison":
-      return applyCurePoison(
-        playerState.poisonState.poisonVarp >= VENOM_VARP_BASE
-          ? {
-              ...playerState,
-              poisonState: {
-                ...playerState.poisonState,
-                poisonVarp: venomVarpToPoisonVarp(playerState.poisonState.poisonVarp),
-              },
-            }
-          : playerState,
-        effect.immunityTicks,
-      );
+      // WIKI (Venom): any antipoison turns venom into poison that starts at
+      // the venom's damage; a second dose cures it. An anti-venom cures it.
+      if (playerState.poisonState.poisonVarp >= VENOM_VARP_BASE && !effect.curesVenom) {
+        return {
+          ...playerState,
+          poisonState: {
+            ...playerState.poisonState,
+            poisonVarp: venomVarpToPoisonVarp(playerState.poisonState.poisonVarp),
+          },
+        };
+      }
+      return applyCurePoison(playerState, effect.immunityTicks);
     case "reduce_poison":
       return applyReducePoison(playerState, effect.amount);
     case "saturated_heart":

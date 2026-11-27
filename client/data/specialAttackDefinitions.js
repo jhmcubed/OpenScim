@@ -46,7 +46,7 @@ var abyssalTentacleSpecial = {
 };
 var zaryteCrossbowSpecial = {
   energyCost: 75,
-  animationId: 9166,
+  animationId: 9168,
 };
 var specialAttackDefinitionByWeaponId = {
   29589: {
@@ -280,8 +280,10 @@ var specialAttackDefinitionByWeaponId = {
     energyCost: 50,
     animationId: 7552,
   },
-  // Zaryte crossbow, Evoke: 75% (WIKI); animation 9166 (OBS, rsprox, as tsps
-  // server/plugins/combat/specials/ZaryteCrossbow.SpecialAttack.js).
+  // Zaryte crossbow, Evoke: 75% (WIKI, and OBS: energy 1000 -> 250 on the
+  // shot); animation 9168, the crossbow's ordinary shot (OBS: all 18 Evokes of
+  // two players in 12 recorded Nex kills, 2026). tsps had 9166 from an older
+  // rsprox transcript; no recorded Evoke plays it.
   26374: zaryteCrossbowSpecial,
   27186: zaryteCrossbowSpecial,
   12926: {

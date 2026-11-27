@@ -72,8 +72,12 @@ export class Fire {
   firesStand(tick = this.encounter.now) {
     return this.blocked !== null && tick < this.blocked.until;
   }
-  start(context) {
+  // It lets go of the player as it sets off, so it turns and walks facing its way, as in the game (the play-test of
+  // 2026-11-26: with him as its target the scene kept its heads on him, and it walked back to the middle backwards);
+  // it stays without one while it breathes (block) and takes him again as the special ends.
+  start(boss, context) {
     this.special = { stage: "walk", since: context.tick };
+    boss.combat.targetId = null;
   }
   // A step back to its spawn tile, diagonal first; a player in the way does not stop it (OBS (tsps), WIKI).
   walkStep(boss) {

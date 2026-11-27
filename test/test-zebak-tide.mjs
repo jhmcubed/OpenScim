@@ -292,3 +292,41 @@ for (const d of [-1, 1]) {
   assert.deepEqual(log.map(entry => entry.at), [[33, 32], [33, 32 + d], [33, 32 + 4 * d]]);
 }
 console.log("A second throw a tick after the first ignores the step of the dropped walk.");
+// The user's report: he sent his waves, was pushed into enrage, and the waves vanished. Enraged, the crests
+// already risen run on to the far shore; no new crest rises, and the jugs and boulders are cleared.
+for (const direction of [-1, 1]) {
+  const tiles = new Set();
+  for (let x = 22; x <= 38; x++)
+    for (let y = 22; y <= 42; y++) tiles.add([x,y].join(","));
+  const encounter = zebakDefinition({seedRandom: () => () => 0.5, walkable: () => tiles, animate() {}}).factory();
+  encounter.configureRunStart({});
+  const phases = encounter.phases;
+  const boss = {id:"zebak", alive:true, size:9, position:[14,28], vitals:{hp:100,maxHp:100}};
+  // Out of the crests' columns, so no crest strikes him.
+  const player = {alive:true, position:[22,32], previousPosition:[22,32], movementPath:[], equipment:{}};
+  const context = {tick:0, world:{actors:new Map([["zebak",boss],["player",player]])},
+    tickEvents:{emit() {}}, spawnNpc() {}, despawnNpc() {}};
+  phases.count.waves = direction > 0 ? 0 : 1;
+  phases.begin(context,"waves",encounter.settings);
+  for (context.tick = 1; context.tick <= 23; context.tick++) phases.step(context,encounter.settings,boss);
+  assert.equal(phases.waveFronts.length, 2); // the crests of ticks 15 and 22
+  const waves = phases.of("wave").length;
+  const jug = phases.spawn(context,"jug",11735,[30,32]);
+  boss.vitals.hp = 24;
+  context.tick = 24;
+  phases.step(context,encounter.settings,boss);
+  assert.equal(phases.enraged, true);
+  assert.equal(phases.active, null);
+  assert.equal(phases.actors.has(jug.actor.id), false);
+  assert.equal(phases.of("wave").length, waves);
+  const second = phases.waveFronts[1];
+  const row = second.y;
+  for (context.tick++; context.tick <= 40; context.tick++) phases.step(context,encounter.settings,boss);
+  assert.equal(phases.waveFronts.length, 1, "the first crest has reached the far shore, no third rose at 29");
+  assert.equal(phases.waveFronts[0], second);
+  assert.equal(second.y, row + direction * 16); // ticks 25 to 40, a row a tick
+  for (; context.tick <= 47; context.tick++) phases.step(context,encounter.settings,boss);
+  assert.equal(phases.waveFronts.length, 0);
+  assert.equal(phases.of("wave").length, 0);
+}
+console.log("Crests already in the water when he enrages run on to the far shore; no new crest rises.");

@@ -2770,7 +2770,7 @@ var dg = class e {
     if (!r) {
       throw new Error("main_file_cache data file not found in storage");
     }
-    const i = await a.Sm(ig, n);
+    const i = await a.hasCacheFile(ig, n);
     s.set(i ? ig : "main_file_cache.dat", r);
     const l = await a.vm(og, n);
     if (l) {
@@ -16988,7 +16988,11 @@ function yy(e, a) {
 // width: what the game's server sends, 1 + floor(29 * hp / max) thirtieths,
 // none at 0 hp (RuneLite, OpponentInfoOverlay). It is taken when a hit comes
 // (`state.healthBarVisibleUntilTick` changes) and kept until the next one: in
-// the game a heal does not move the bar.
+// the game a heal does not move the bar. It is kept only once the state drawn
+// has the hit (`hasHit`): live, a frame can take the engine's new events
+// with the application's state of the tick before, and the bar then kept the
+// hitpoints from before the hit until the next one, or for good after a
+// killing hit. A replay hands both from one frame and never had it.
 // The player's health bar sits 15 above his model as it is posed in the
 // frame drawn: the game's logical height (the observer's "healthbars"
 // lines, 2026-11-23: 199 to 201 standing, 192 to 288 attacking; the bar's
@@ -17065,9 +17069,9 @@ function scaleOverlayLayers(roots, k = 1) {
     }
   }
 }
-function shownHealthRatio(state, hp, maxHp) {
+function shownHealthRatio(state, hp, maxHp, hasHit = true) {
   if (state.shownRatioUntilTick !== state.healthBarVisibleUntilTick) {
-    state.shownRatioUntilTick = state.healthBarVisibleUntilTick;
+    state.shownRatioUntilTick = hasHit ? state.healthBarVisibleUntilTick : undefined;
     state.shownRatio = !(maxHp > 0) ? 1 : hp <= 0 ? 0 : Math.min(30, 1 + Math.floor((29 * hp) / maxHp)) / 30;
   }
   return state.shownRatio;
@@ -32142,8 +32146,10 @@ var AD = {
     projectileStartHeight: 250,
     castSpotanimHeight: 0,
   },
+  // Zaryte crossbow: its bolt leaves higher than the other crossbows' (OBS:
+  // 177 -> 146 on every shot in 12 recorded Nex kills; theirs 155 -> 146).
   26374: {
-    projectileStartHeight: 155,
+    projectileStartHeight: 177,
     projectileEndHeight: 146,
   },
   29577: {
@@ -32302,14 +32308,15 @@ var RD = {
   28688: WD(10656, 2599),
 };
 // Zaryte crossbow, Evoke: its own bolt, zcb_specialattack (OBS, rsprox
-// transcript 227/01752 via tsps: spotanim 1995, start 41, slope 5, heights
-// 44 -> 36.5 in quarters of these units).
+// transcript 227/01752 via tsps: spotanim 1995, start 41, slope 5). The
+// animation and the start height as 18 recorded Evokes in Nex kills show
+// them (OBS): the ordinary shot's 9168, and 177 -> 146.
 var zaryteEvokeVisuals = {
-  attackAnimation: 9166,
+  attackAnimation: 9168,
   castSpotanim: -1,
   castSpotanimHeight: 92,
   projectileId: 1995,
-  projectileStartHeight: 176,
+  projectileStartHeight: 177,
   projectileEndHeight: 146,
   projectileSlope: 5,
   projectileStartDelay: 41,
@@ -32380,9 +32387,14 @@ function FD(e, a, t = false) {
     const i = r && n?.category === "Thrown" && / dart(?:\(|$)/i.test(n.name);
     const l = (t === "bow" || t === "crossbow") && isAmmoCompatibleWithWeapon(s, a);
     if (i || l) {
+      // Enchanted dragon bolts fly as dragon bolts, 1468 (OBS: ruby dragon
+      // bolts (e) from a Zaryte crossbow in recorded Nex kills); enchanted gem
+      // bolts as plain bolts, 27 (OBS: ruby bolts (e) from an Armadyl crossbow).
+      const dragonBoltsE = t === "crossbow" && / dragon bolts \(e\)$/i.test(getEquipmentDefinition(a)?.name ?? "");
       const n =
         qL[a] ??
         qL[getCanonicalEquipmentId(variantArrowsByItemId[a]?.baseArrowId ?? a)] ??
+        (dragonBoltsE ? qL[21905] : undefined) ??
         (t === "crossbow" ? qL[9144] : undefined);
       if (!n) {
         return;
@@ -43481,6 +43493,7 @@ var K_ = {
   block: "block",
   poison: "poison",
   venom: "venom",
+  disease: "disease",
   doom: "doom",
   heal: "heal",
   burn: "burn",
@@ -43641,7 +43654,7 @@ var UIOverlayRenderer = class e {
     }
     const d = r - (i.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS);
     const g = Math.min(d / e.HEALTHBAR_DURATION_TICKS, 1);
-    const c = shownHealthRatio(i, n.playerHP, n.maxHP);
+    const c = shownHealthRatio(i, n.playerHP, n.maxHP, n.currentTick >= i.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS);
     a.healthBars ||= [];
     a.healthBars.push({
       screenX: o.x,
@@ -43740,7 +43753,10 @@ var UIOverlayRenderer = class e {
     }
   }
   static bL(e) {
-    const { activePrayer: activePrayer } = e;
+    // An encounter may show another icon over the player than his prayer's: its snapshot's
+    // state.playerOverheadPrayer when set (Phosani's curse, encounters/phosanis-nightmare).
+    const shown = e.encounter?.state?.playerOverheadPrayer;
+    const activePrayer = shown !== undefined ? shown : e.activePrayer;
     if (activePrayer) {
       return V_[activePrayer];
     }
@@ -43982,7 +43998,7 @@ var UIOverlayRenderer = class e {
           s - (d.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS);
         c = Math.min(a / e.HEALTHBAR_DURATION_TICKS, 1);
       }
-      const m = d ? shownHealthRatio(d, o.hp, o.maxHp) : 1;
+      const m = d ? shownHealthRatio(d, o.hp, o.maxHp, l >= d.healthBarVisibleUntilTick - e.HEALTHBAR_DURATION_TICKS) : 1;
       a.healthBars ||= [];
       a.healthBars.push({
         screenX: g.x,
@@ -54410,7 +54426,7 @@ var LobbySceneBuilder = class {
     return this.compositor.build(e, a, t);
   }
   async loadTerrain(e, a, t, n, s, r, i) {
-    const l = await this.cacheManager.rM(25, 73);
+    const l = await this.cacheManager.loadAdditionalMapSquare(25, 73);
     this.compositor.setForcedTerrain(l.terrain);
     const o = l.locations ?? undefined;
     const d = o?.map((e) => e.location);
@@ -54433,7 +54449,7 @@ var LobbySceneBuilder = class {
     // The gateways' objects are the only ones the lobby shows. Without them
     // the lobby still works, so a failure here is logged and not thrown.
     try {
-      const loader = this.cacheManager.wd();
+      const loader = this.cacheManager.getLocModelLoader();
       loader.setTextureLayerResolver(re.resolve);
       this.compositor.gatewayObjects = await loadGatewayObjects(LocRenderer, loader, this.compositor.terrainHeights);
     } catch (e) {
@@ -60104,7 +60120,9 @@ var lZ = {
   damage: "/assets/ui/hitsplat-damage.png",
   block: "/assets/ui/hitsplat-block.png",
   poison: "/assets/ui/hitsplat-poison.png",
-  venom: "/assets/ui/hitsplat-poison.png",
+  // CACHE: hitsplat 5, sprite 1632 (venom); hitsplat 4, sprite 1633 (disease).
+  venom: "/assets/ui/hitsplat-venom.png",
+  disease: "/assets/ui/hitsplat-disease.png",
   heal: "/assets/ui/hitsplat-heal.png",
   doom: "/assets/ui/hitsplat-doom-skull.png",
   burn: "/assets/ui/hitsplat-burn.png",
@@ -60504,10 +60522,6 @@ var dZ = ({
         if (r && r.getAttribute("data-sprite") !== l) {
           r.src = l;
           r.setAttribute("data-sprite", l);
-        }
-        if (r) {
-          r.style.filter =
-            n.type === "venom" ? "brightness(0.55) saturate(1.15)" : "none";
         }
         s.style.width = `${n.width}px`;
         s.style.height = `${n.height}px`;
@@ -62415,13 +62429,6 @@ var bZ = ({
           r.src = l;
           r.setAttribute("data-sprite", l);
         }
-        if (r) {
-          const e =
-            n.type === "venom" ? "brightness(0.55) saturate(1.15)" : "none";
-          if (r.style.filter !== e) {
-            r.style.filter = e;
-          }
-        }
         const o = `${n.width}px`;
         const d = `${n.height}px`;
         if (s.style.width !== o) {
@@ -63879,8 +63886,10 @@ var AZ = new Float64Array(16);
 var LZ = new Float64Array(16);
 var DZ = new Float64Array(0);
 var HZ = new Float64Array(0);
-function MZ(e, a, t, n, s, r) {
-  if (a.useBoundingBox === true) {
+// `boxOnly`: whether the pointer is over the model's box alone, the test the
+// game makes before it looks at a larger model's faces (below).
+function MZ(e, a, t, n, s, r, boxOnly = false) {
+  if (a.useBoundingBox === true || boxOnly) {
     return (function (e, a, t, n, s, r) {
       const {
         verticesX: verticesX,
@@ -63892,12 +63901,14 @@ function MZ(e, a, t, n, s, r) {
       if (verticesCount === 0) {
         return null;
       }
-      let c = Number.POSITIVE_INFINITY;
-      let m = Number.POSITIVE_INFINITY;
-      let h = Number.POSITIVE_INFINITY;
-      let f = Number.NEGATIVE_INFINITY;
-      let u = Number.NEGATIVE_INFINITY;
-      let v = Number.NEGATIVE_INFINITY;
+      // The game's box of a larger model takes in its origin: its minimum
+      // and maximum start there.
+      let c = boxOnly ? modelMatrix[12] : Number.POSITIVE_INFINITY;
+      let m = boxOnly ? modelMatrix[13] : Number.POSITIVE_INFINITY;
+      let h = boxOnly ? modelMatrix[14] : Number.POSITIVE_INFINITY;
+      let f = boxOnly ? modelMatrix[12] : Number.NEGATIVE_INFINITY;
+      let u = boxOnly ? modelMatrix[13] : Number.NEGATIVE_INFINITY;
+      let v = boxOnly ? modelMatrix[14] : Number.NEGATIVE_INFINITY;
       for (let e = 0; e < verticesCount; e++) {
         const a = verticesX[e];
         const t = verticesY[e];
@@ -63939,8 +63950,8 @@ function MZ(e, a, t, n, s, r) {
       const p = (c + f) / 2;
       const k = (m + u) / 2;
       const S = (h + v) / 2;
-      const b = Math.max((f - c) / 2, zZ) + wZ;
-      const y = Math.max((u - m) / 2, zZ) + wZ;
+      const b = Math.max((f - c) / 2, zZ) + (boxOnly ? 0 : wZ);
+      const y = Math.max((u - m) / 2, zZ) + (boxOnly ? 0 : wZ);
       const z = (v - h) / 2;
       const w = new Float64Array(16);
       for (let e = 0; e < 4; e++) {
@@ -63993,6 +64004,15 @@ function MZ(e, a, t, n, s, r) {
         return null;
       }
     })(e, a, t, n, s, r);
+  }
+  // A larger model: the game looks at its faces only when the pointer is over
+  // its box, and then takes each face's rectangle on screen, 5 pixels wider
+  // on each side (RuneLite's Perspective.getClickbox, which clips the faces'
+  // rectangles to that box). Without the box, the rectangles of the faces at
+  // a model's edge reached past it, onto tiles beside Vardorvis or Araxxor
+  // that the player should be able to click.
+  if (MZ(e, a, t, n, s, r, true) === null) {
+    return null;
   }
   const {
     verticesX: verticesX,

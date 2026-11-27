@@ -12,6 +12,11 @@
 // Phosani's Nightmare (RuneLite's combat logger: tiles, hitsplats, prayers,
 // boosted levels, NPC changes; no animations, graphics or messages). Their
 // totems and her lanes are on the tiles tsps gives.
+//
+// OBS (Outside): one Outside recording of a kill (Don Danz, 2026-11-25, kill
+// count 80: the pool, the countdown, three phases and her desperation, with
+// animations, graphics, NPC tiles and messages a tick at a time). Its tiles
+// are the world tiles tsps gives.
 export const regionOrigin = [3840, 9920];
 export const local = ([x, y]) => [x - regionOrigin[0], y - regionOrigin[1]];
 
@@ -40,6 +45,7 @@ export const playerStart = local([3873, 9948]);
 export const flowerCross = local([3872, 9951]);
 
 export const npcTypeIds = {
+  asleep: 9423, // OBS (Outside): as the player arrives, until she wakes into her first form
   // CACHE, tsps: her four phase forms, each with its weakened form (shield down, totems up).
   forms: { 9416: 9419, 11153: 11155, 9418: 9421, 9417: 9420 },
   blast: 9422, // tsps: her blast form, at the centre while the sleepwalkers come
@@ -89,11 +95,14 @@ export const sporeLayouts = [
 ].map((layout) => layout.map(local));
 
 // Sequences (tsps, as captured; CACHE: each in the cache). Her stand and walk are
-// her NPC types' own (CACHE: 8592, 8593; the blast form walks with 8603).
+// her NPC types' own. OBS (Outside): every form stands with 8593 and walks with
+// 8592, her blast form stands with 8603; asleep and dying she stands with 8613.
 export const seqIds = {
-  idle: 8592,
-  walk: 8593,
-  blastWalk: 8603,
+  idle: 8593,
+  walk: 8592,
+  blastIdle: 8603,
+  asleep: 8613,
+  wake: 8611, // OBS (Outside): as "The Nightmare has awoken!" shows
   magic: 8595,
   range: 8596,
   melee: 8594,
@@ -112,11 +121,12 @@ export const seqIds = {
   blastForm: 8610,
   blast: 8604,
   death: 8612,
-  dying: 8613, // CACHE: the stand of her dying form (9424)
+  dying: 8613, // CACHE, OBS (Outside): the stand of her dying form (9424)
   totemCharged: 8589, // CACHE: the charged totems' stand
   husk: { idle: 8562, walk: 8563, spawn: 8567, magic: 8565, range: 8564, death: 8566 },
   parasite_: { idle: 8553, spawn: 8561, cast: 8555, range: 8554, death: 8559 },
-  sleepwalker: { idle: 8534, walk: 8569, spawn: 8572, death: 8570, absorb: 8571 },
+  // OBS (Outside): they stand with 8569 and walk with 8534.
+  sleepwalker: { idle: 8569, walk: 8534, spawn: 8572, death: 8570, absorb: 8571 },
   playerBurst: 8557, // the player as the parasite bursts out
 };
 

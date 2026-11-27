@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { runScenario } from "../tools/determinism/harness.mjs";
 import { scenarios } from "../tools/determinism/scenarios/phosanis-nightmare.mjs";
-import { formCycle, surgeLanes, sleepwalkerTiles, same } from "../client/encounters/phosanis-nightmare/ids.js";
+import { formCycle, surgeLanes, sleepwalkerTiles, same, gapTo, bossSize } from "../client/encounters/phosanis-nightmare/ids.js";
 
 const BOSS = "phosanis-nightmare";
 const specialClips = ["claws", "husks", "parasite", "curse", "spores", "leave"];
@@ -73,9 +73,20 @@ for (const name of ["kill", "kill-other-forms"]) {
   const shields = stageTicks(ticks, "shield");
   const blasts = stageTicks(ticks, "blast");
   assert.equal(blasts.length, 3, name);
+  // Asleep as the run starts; the countdown, her waking, her first form on tick 27 (the Outside recording).
+  assert.equal(ticks[1].type, 9423);
+  assert.equal(ticks[1].state.stage, "asleep");
+  assert.deepEqual(messageTicks(ticks, "will awaken in 10 seconds"), [3]);
+  assert.deepEqual(messageTicks(ticks, "will awaken in 5 seconds"), [12]);
+  assert.deepEqual(messageTicks(ticks, "has awoken"), [19]);
+  assert.deepEqual(clipTicks(ticks, "wake"), [19]);
+  assert.equal(shields[0], 27);
+  const herTurns = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => [...standardClips, ...specialClips, "flowers", "clawRunStart"].includes(clip)) ? [n] : []));
   for (let phase = 0; phase < 3; phase++) {
-    const from = phase === 0 ? 1 : shields[phase];
+    const from = shields[phase];
     assert.equal(ticks[from].type, forms[phase], name + " phase " + (phase + 1));
+    // Her first turn 2 ticks after she wakes, 1 after she takes her form again after a blast (the Outside recording).
+    assert.equal(herTurns.find((tick) => tick >= from) - from, phase === 0 ? 2 : 1, name + " phase " + (phase + 1));
     const seen = specialsOf(ticks, from, blasts[phase]);
     const list = order[forms[phase]];
     assert.ok(seen.length >= 2, name + " " + seen);
@@ -109,6 +120,15 @@ for (const name of ["kill", "kill-other-forms"]) {
     const hit = damageOf(ticks, "The Nightmare's blast").find((entry) => entry.tick > form);
     const absorbed = ticks.slice(form, hit.tick).flatMap((tick) => tick.others.filter(([, clip]) => clip === "absorb")).length;
     assert.equal(hit.baseDamage, 5 + Math.floor((144 * absorbed) / (n + 2)), name);
+    // They walk from their fourth tick, after her last phase their seventh; her blast an even number of ticks after
+    // they rose (the Outside recording).
+    for (const id of risen) {
+      const from = ticks[form + 2].npcs.find((npc) => npc.id === id).position;
+      const moved = ticks.findIndex((tick, t) => t > form + 2 && tick?.npcs.some((npc) => npc.id === id && !same(npc.position, from)));
+      if (moved > 0) assert.equal(moved - (form + 2), n === 2 ? 7 : 4, name + " " + id);
+    }
+    const blastClip = clipTicks(ticks, "blast").find((tick) => tick > form);
+    assert.equal((blastClip - (form + 2)) % 2, 0, name + " blast at " + blastClip);
   }
 
   // Her claws: 50 to 65 a time; her flowers' flies 1 to 20; a surge 43 to 85.
@@ -121,6 +141,38 @@ for (const name of ["kill", "kill-other-forms"]) {
     const lane = surgeLanes.find(([a, b]) => same(a, from) || same(b, from));
     assert.ok(lane, name + " surge from " + from);
   }
+  // Cursed, the icon over him is that of the style his protection stops now (the Outside recordings); else his own.
+  const shuffled = { ProtectMagic: "ProtectRange", ProtectRange: "ProtectMelee", ProtectMelee: "ProtectMagic" };
+  const cursed = ticks.filter((tick) => tick?.state.cursed);
+  assert.ok(cursed.some((tick) => tick.prayer), name);
+  for (const tick of cursed) assert.equal(tick.state.playerOverheadPrayer, tick.prayer ? shuffled[tick.prayer] : null);
+  assert.ok(ticks.every((tick) => !tick || tick.state.cursed || tick.state.playerOverheadPrayer === undefined));
+}
+
+{
+  // His hit breaks her shield on the tick she lands at her surge's lane: no surge (Don Danz's recording). She stands
+  // at the lane's start, goes for him from the next tick, and attacks 9 ticks after her leave.
+  const ticks = await ticksOf("surge-nulled");
+  const leave = clipTicks(ticks, "leave").find((tick) => ticks[tick].state.surge);
+  assert.equal(leave, 131);
+  const fails = messageTicks(ticks, "As the Nightmare's shield fails")[0];
+  assert.equal(fails, leave + 2);
+  assert.ok(ticks[leave + 1].onBoss.length + ticks[leave + 2].onBoss.length > 0, "hit while she leaves");
+  assert.ok(surgeLanes.some(([a, b]) => same(a, ticks[leave + 2].boss) || same(b, ticks[leave + 2].boss)), "at a lane's start");
+  assert.deepEqual(clipTicks(ticks, "surge"), []);
+  assert.deepEqual(damageOf(ticks, "Surge"), []);
+  assert.equal(ticks[leave + 2].state.surge, null);
+  assert.ok(ticks.slice(leave + 3, leave + 8).some((tick) => !same(tick.boss, ticks[leave + 2].boss)), "she walks");
+  const next = ticks.findIndex((tick, n) => n > leave && tick?.clips.some((clip) => [...standardClips, ...specialClips].includes(clip)));
+  assert.equal(next, leave + 9);
+}
+
+{
+  // Broken on the tick she crosses, the surge goes on.
+  const ticks = await ticksOf("surge-crosses");
+  const leave = clipTicks(ticks, "leave").find((tick) => ticks[tick].state.surge);
+  assert.equal(messageTicks(ticks, "As the Nightmare's shield fails")[0], leave + 6);
+  assert.deepEqual(clipTicks(ticks, "surge"), [leave + 6]);
 }
 
 {
@@ -129,7 +181,7 @@ for (const name of ["kill", "kill-other-forms"]) {
   const ticks = await ticksOf("standing");
   const turns = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => [...standardClips, ...specialClips, "clawRunStart", "flowers"].includes(clip)) ? [n] : []));
   const attacks = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => standardClips.includes(clip)) ? [n] : []));
-  assert.equal(attacks[0], 2);
+  assert.equal(attacks[0], stageTicks(ticks, "shield")[0] + 2);
   for (const tick of attacks.filter((tick) => tick + 4 < ticks.length)) {
     const style = ticks[tick].clips.find((clip) => standardClips.includes(clip));
     const lands = damageOf(ticks, "Phosani's Nightmare").find((hit) => hit.tick > tick);
@@ -138,14 +190,25 @@ for (const name of ["kill", "kill-other-forms"]) {
   }
   const gaps = attacks.slice(1).map((tick, n) => tick - attacks[n]);
   assert.ok(gaps.every((gap) => gap % 6 === 0 || gap > 6), gaps.join());
-  // Her claws hurt only as they come up, 4 ticks after a set opens.
+  // Her claws hurt only as they come up, 4 ticks after a set opens; a set always has a portal under the player unless
+  // her husks hold him (the Outside recording).
   const sets = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => clip === "claws" || clip === "clawRunStart" || clip === "clawRun") ? [n] : []));
   for (const hit of damageOf(ticks, "Grasping Claws")) assert.ok(sets.includes(hit.tick - 4), "claws at " + hit.tick);
+  // None under her but her body's corners (the Outside recordings), where she stood still that tick.
+  const corner = ([x, y], [bx, by]) => (x === bx || x === bx + bossSize - 1) && (y === by || y === by + bossSize - 1);
+  for (const set of sets) {
+    const opened = ticks[set].state.claws.find((claws) => claws.at === set + 4);
+    const her = ticks[set].boss;
+    if (!ticks[set].state.held && gapTo(ticks[set].player, her) > 0) assert.ok(opened.tiles.some((tile) => same(tile, ticks[set].player)), "claws at " + set);
+    if (same(her, ticks[set - 1].boss)) assert.ok(opened.tiles.every((tile) => gapTo(tile, her) > 0 || corner(tile, her)), "claws under her at " + set);
+  }
   assert.ok(turns.length > 30);
   // Her curse: the message 2 ticks after her animation; it wears off 5 ticks after her fifth turn from then.
   for (const curse of clipTicks(ticks, "curse")) {
     assert.deepEqual(messageTicks(ticks, "has cursed you").filter((tick) => tick > curse)[0], curse + 2);
-    const fifth = turns.filter((tick) => tick > curse)[4];
+    // Her turns: her attacks and specials (a run of claws her spores or flowers start is not one).
+    const own = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => [...standardClips, ...specialClips].includes(clip)) ? [n] : []));
+    const fifth = own.filter((tick) => tick > curse)[4];
     assert.equal(messageTicks(ticks, "curse wear off").filter((tick) => tick > curse)[0], fifth + 5);
   }
   // While cursed, Protect from Melee stops her magic, Protect from Magic her ranged, Protect from Missiles her melee.
@@ -228,17 +291,20 @@ for (const name of ["kill", "kill-other-forms"]) {
 }
 
 {
-  // Her desperation: her claws in runs of five, a set every 5 ticks, without end; a sleepwalker 9 ticks in and every 8
-  // after, each hitting 15 as it reaches her, 10 ticks after it rose.
+  // Her desperation: her claws in runs of five, a set every 5 ticks, without end; a sleepwalker 2 ticks in and every 8
+  // after, each taken in a tick after it is beside her and hitting 15 4 ticks after that, 19 ticks after her form (the
+  // Outside recording).
   const ticks = await ticksOf("desperation");
   const start = stageTicks(ticks, "desperate")[0];
   assert.equal(messageTicks(ticks, "lashes out to survive")[0], start);
   const rises = ticks.flatMap((tick, n) => (tick?.others.some(([actor, clip]) => actor.includes("sleepwalker") && clip === "rise") ? [n] : []));
-  assert.equal(rises[0], start + 9);
+  assert.equal(rises[0], start + 2);
   assert.ok(rises.slice(1).every((tick, n) => tick - rises[n] === 8));
   const hits = damageOf(ticks, "Sleepwalker");
   assert.equal(hits[0].tick, start + 19);
   assert.ok(hits.every((hit, n) => hit.baseDamage === 15 && (n === 0 || hit.tick - hits[n - 1].tick === 8)));
+  const takenIn = ticks.flatMap((tick, n) => (tick?.others.some(([actor, clip]) => actor.includes("sleepwalker") && clip === "absorb") ? [n] : []));
+  assert.deepEqual(hits.map((hit) => hit.tick), takenIn.slice(0, hits.length).map((tick) => tick + 4));
   const sets = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => clip === "clawRunStart" || clip === "clawRun") ? [n] : []));
   assert.ok(sets.length >= 10);
   for (const n of [1, 2, 3, 4]) assert.equal(sets[n] - sets[n - 1], 5);

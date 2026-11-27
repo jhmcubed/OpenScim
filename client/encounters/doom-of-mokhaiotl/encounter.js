@@ -28,13 +28,16 @@
 // The Plugin Hub's Larva Tracker is in the set-up's aids (larvaTracker.js).
 //
 // ponytail: not yet: the shield's own hitpoint bar (the interface shows his
-// hitpoints), acid's venom, sounds.
+// hitpoints), acid's venom, the sounds the server sends but the rocks'
+// (audio.js).
 import { getMonsterFormulaStats } from "../../engine/monsterStats.js";
 import { canNpcActAtTick } from "../../engine/npcState.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { createCollisionMap } from "../../engine/collision.js";
 import { isDemonbaneAttack } from "../../engine/playerAttack/formula.js";
 import { isCorrectProtectionPrayer } from "../../engine/damage.js";
+import { getActiveSpell } from "../../data/weaponCategories.js";
+import { getBaseItemId } from "../../data/itemVariants.js";
 import { defineNpc, NpcDefinitionRegistry } from "../shared/npcDefinitions.js";
 import { rollNpcAttack, isNpcInAttackRange } from "../shared/npcAttack.js";
 import { buildActorVisualTarget, faceActorToward } from "../shared/npcHelpers.js";
@@ -43,6 +46,7 @@ import { delveRules, npcTypeIds, spotAnims, bossStart, bossSize, tongueMaxHit } 
 import { Rocks, Larvae, Shockwave, Acid, roomDefinitions, bossCentre, holyWater } from "./hazards.js";
 import { Burrow } from "./burrow.js";
 import { larvaTrackerToggles, larvaTrackerKeys, larvaTrackerSetting, larvaColor, larvaCounterInfobox } from "./larvaTracker.js";
+import { doomLoadouts } from "./loadouts.js";
 
 export const doomKind = "doom_of_mokhaiotl";
 // The room of the delves, below the Ruins of Mokhaiotl.
@@ -79,6 +83,22 @@ const shieldEndAttackChance = 0.5;
 const shieldPoints = 500;
 const shieldChargeTicks = 17;
 const shieldStoreCap = 50;
+// OBS: "Delve level: N" in the game's red (mes_hl_red) as each delve starts,
+// 122 of 122 delves 2 to 8, 5 or more ticks before he surfaces; delve 1's
+// comes before the recordings start (inferred). The red is the one the other
+// fights' red messages use (inferred).
+const delveMessageColor = "#ff3045";
+const eyeOfAyakItemId = 31113;
+
+// The spell of the player's next attack, a cast or the autocast; null for none.
+function playerSpellName(player) {
+  if (player.manualCastSpell) return typeof player.manualCastSpell === "string" ? player.manualCastSpell : (player.manualCastSpell.name ?? null);
+  const spell = getActiveSpell({
+    weaponId: player.equipment?.weapon, selectedStyleIndex: player.selectedAttackStyleIndex,
+    selectedSpell: player.combatSupplies?.selectedSpell, spellbook: player.combatSupplies?.spellbook ?? "standard",
+  });
+  return spell?.name ?? null;
+}
 
 const bossDefinition = defineNpc({
   id: "doom-of-mokhaiotl",
@@ -205,6 +225,8 @@ class DoomEncounter {
     this.burrow.reset();
     // He surfaces as the fight starts (captured: anim 12418 with graphic 3372).
     this.later(1, (ctx) => this.animate(ctx, "emerge", [{ spotAnimId: spotAnims.emerge, target: buildActorVisualTarget(this.boss(ctx.world)), height: 0, delayCycles: 0 }]));
+    // The game names the delve as it starts, so a restart says which one is fought.
+    this.later(1, (ctx) => ctx.tickEvents.emit({ type: "game_message", kind: "game", segments: [{ text: `Delve level: ${this.rules.delve}`, color: delveMessageColor }] }));
   }
   randomInt(low, high) {
     return low + Math.floor(this.random() * (high - low + 1));
@@ -281,6 +303,7 @@ class DoomEncounter {
   // Every tick, before the NPCs: what is due, and the acid underfoot.
   resolveHazards(context, mechanics) {
     this.now = context.tick;
+    this.world = context.world;
     this.mechanics = mechanics;
     for (let due = this.takeDueTask(); due; due = this.takeDueTask()) due.task(context);
     this.colourLarvaMenus(context.world);
@@ -317,6 +340,10 @@ class DoomEncounter {
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
     this.showOverhead(this.boss(context.world));
     this.doomed = this.doomedLarvae(context.world);
+    // One the hits on their way will kill is attacked no more: the player's
+    // attack on it ends (OBS: of the plain larvae, 2 hitpoints, that the
+    // player stayed on the tick after a shot, 111 of 118 were not shot again).
+    for (const id of this.doomed) context.world.getNpc(id).attackBlockedUntilTick = context.tick + 2;
     if (this.shieldResisted) {
       this.shieldResisted = false;
       context.tickEvents.emit({ type: "game_message", kind: "game", segments: [{ text: "The demonic shield resists your attack!" }] });
@@ -375,18 +402,39 @@ class DoomEncounter {
       validateAttack: (attackKind, targetId) => (this.charge && targetId === bossActorId && !attackKind.startsWith("melee") ? false : null),
       playerDamageOnNpc: (damage, { attacker, target, attack }) => this.playerDamage(damage, attacker, target, attack),
       playerAttackOnCooldown: (target) => this.attackOnCooldown(target),
+      playerAttackKeepsReady: (target) => this.larvae.isLarva(target) && this.larvaCostsNoTime(),
     };
   }
-  // A larva or volatile earth can be attacked while the weapon cools down, if
-  // it is not what was attacked last (wiki; TSPS). OBS, a 4-tick bow over 20
-  // runs: a new larva shot 1-3 ticks after the last attack 21 times, and the
-  // timer kept (the next attack on him came on its beat); TSPS's capture:
-  // volatile earth starts the full delay again.
+  // A larva can be attacked whether the weapon cools down or not (wiki). With
+  // a demonbane weapon or spell, or the Eye of Ayak, it costs the weapon no
+  // time: cooling down, the timer is kept; ready, none starts, so he is
+  // attacked the tick after as if the larva had not been (wiki: "no attack
+  // delay"). OBS, the Scorching bow (4 ticks) shooting him, then larvae, then
+  // him: the shot after came on the beat of the one before 159 times of 260,
+  // never sooner; of the 57 whose first larva was shot with the bow ready, 55
+  // came within 4 ticks of the last larva, 47 the tick after it. A larva the
+  // hits on their way will kill is not attacked again (processPostTick); one
+  // that lives may be, the tick after (OBS: a giant larva, 4 hitpoints, shot
+  // again the tick after 66 times of 85).
+  // Any other weapon, and volatile earth: attacked cooling down only if it is
+  // not what was attacked last (wiki; TSPS), starting the full delay again
+  // (wiki for larvae; OBS: after a halberd's hits on two larvae, him 5 and 6
+  // ticks on; TSPS's capture for the earth).
   attackOnCooldown(target) {
+    const larva = this.larvae.isLarva(target);
+    if (larva && this.larvaCostsNoTime()) return { keepCooldown: true };
     if (target.id === this.lastPlayerTargetId) return undefined;
-    if (this.larvae.isLarva(target)) return { keepCooldown: true };
-    if (this.shockwave.earth.has(target.id)) return { keepCooldown: false };
+    if (larva || this.shockwave.earth.has(target.id)) return { keepCooldown: false };
     return undefined;
+  }
+  // The player's next attack is demonbane, or the Eye of Ayak's.
+  larvaCostsNoTime() {
+    const player = this.world?.getPlayer();
+    if (!player) return false;
+    const spellId = playerSpellName(player);
+    if (spellId) return isDemonbaneAttack({ spellId });
+    const weaponId = player.equipment?.weapon;
+    return weaponId !== undefined && (isDemonbaneAttack({ weaponId }) || getBaseItemId(weaponId) === eyeOfAyakItemId);
   }
   playerDamage(damage, player, target, attack) {
     const demonbane = isDemonbaneAttack(attack);
@@ -658,6 +706,7 @@ export const doomDefinition = {
     loadsMapLocs: true,
     collision: { mode: "auto", seed: playerStart },
     victory: { title: "VICTORY", narrative: "DOOM OF MOKHAIOTL DEFEATED", accent: "blood" },
+    loadouts: doomLoadouts,
     isWorkInProgress: true,
     variants: roomVariants,
     variantLabel: "Delve",

@@ -323,8 +323,11 @@ function computeXpGains(finalStyle, combatStyle, predictedHit) {
 // forced miss: the first target when the encounter rejected the attack
 // (isAttackRejectedByEncounter), another target only when every one of its
 // hits was forced to miss. launchPlayerAttack gives the experience from
-// this number, and the xp_drop event carries it.
+// this number, and the xp_drop event carries it. An encounter whose
+// playerDamageOnNpc lowers a hit as it lands says the same at launch with
+// predictPlayerDamageOnNpc (optional, without side effects).
 function awardAttackXp(attack, hitGroups) {
+  const predictDamage = attack.deps.encounterRules?.predictPlayerDamageOnNpc;
   const predictedHit = hitGroups.reduce((total, hitGroup) => {
     let damageToTarget = 0;
     return (
@@ -338,10 +341,14 @@ function awardAttackXp(attack, hitGroups) {
           0,
           Math.floor(rolledDamage * attack.outgoingDamageMultiplier),
         );
-        const finalDamage = Math.max(
+        const multipliedDamage = Math.max(
           0,
           Math.floor(scaledDamage * attack.specialAttackDamageMultiplier),
         );
+        const finalDamage =
+          predictDamage && hitGroup.target
+            ? Math.max(0, Math.floor(predictDamage(multipliedDamage, { target: hitGroup.target, attack })))
+            : multipliedDamage;
         const remainingHp = Math.max(0, hitGroup.hpAtLaunch - damageToTarget);
         const appliedDamage = Math.min(finalDamage, remainingHp);
         damageToTarget += appliedDamage;
@@ -566,11 +573,13 @@ function launchPlayerAttack(attack) {
     }
     awardAttackXp(attack, [
       {
+        target: attack.target,
         hits: attack.hits,
         forcedMiss: forcedMiss,
         hpAtLaunch: hpAtLaunch,
       },
       ...supplementalTargets.map((supplementalTarget) => ({
+        target: supplementalTarget.target,
         hits: supplementalTarget.hits,
         forcedMiss: supplementalTarget.forcedMisses.every(Boolean),
         hpAtLaunch: supplementalTarget.hpAtLaunch,
