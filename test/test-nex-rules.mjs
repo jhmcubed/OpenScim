@@ -117,11 +117,31 @@ const phaseStarts = (ticks) => ticks.flatMap((tick, n) => (tick && n > 0 && tick
     assert.equal(chebyshev(at, ticks[n].boss), 10, `dash at ${n}: at an aisle's end, 10 tiles off (${at})`);
     assert.deepEqual(ticks[n + 6].boss, ticks[n].boss, `dash at ${n}: back where she was`);
   }
-  // Her virus: coughs every 2 ticks.
+  // OBS (27th): a member's coughs 3 ticks apart.
   const coughs = ticks.flatMap((tick, n) => (tick?.coughs.length ? [n] : []));
   assert.ok(coughs.length > 10, "coughing");
-  // As she dies, her wrath.
+  const byMember = new Map();
+  ticks.forEach((tick, n) => tick?.coughs.forEach((id) => byMember.set(id, [...(byMember.get(id) ?? []), n])));
+  for (const [id, at] of byMember) for (let index = 1; index < at.length; index++) {
+    const gap = at[index] - at[index - 1];
+    assert.ok(gap === 3 || gap > 5, `${id} coughs 3 ticks apart (${at[index - 1]}-${at[index]})`);
+  }
+
+  // OBS (27th): her Zaros forms: none until her first attack, then Soul Split (11280), Deflect Melee (11281), none
+  // (11278), four of her attacks each; 11282 as she dies.
+  const wrath = wordTicks(ticks, "Taste my wrath!")[0];
+  const forms = ticks.slice(zaros, wrath).map((tick) => tick?.type).filter((type, index, all) => type !== all[index - 1]);
+  assert.deepEqual(forms.slice(0, 4), [11278, 11280, 11281, 11278], `zaros: her forms in turn (${forms})`);
+  const firstAttack = ticks.findIndex((tick, n) => n > zaros && tick?.clips.some((clip) => standardClips.includes(clip)));
+  assert.equal(ticks[firstAttack].type, 11280, "zaros: Soul Split with her first attack");
+  assert.equal(ticks[wrath + 1].type, 11282, "her dying form");
+  // OBS (27th): under Soul Split she heals by her hits.
+  const soulHeals = ticks.slice(zaros + 1, wrath).flatMap((tick) => (tick?.onBoss ?? []).filter((hit) => hit.hitsplatType === "heal"));
+  assert.ok(soulHeals.length >= 1, "zaros: Soul Split heals her");
+  // As she dies, her wrath; then the MVP (WIKI: the most damage; OBS (27th): the game's words).
   assert.ok(wordTicks(ticks, "Taste my wrath!").length === 1, "her wrath");
+  const mvp = ticks.flatMap((tick) => (tick?.messages ?? []).filter((text) => /MVP for this fight/.test(text)));
+  assert.equal(mvp.length, 1, `the MVP, once (${mvp})`);
 }
 
 // --- alone ---------------------------------------------------------------------
@@ -132,6 +152,10 @@ const phaseStarts = (ticks) => ticks.flatMap((tick, n) => (tick && n > 0 && tick
   // Her virus has no one else to go to.
   const choke = wordTicks(ticks, "Let the virus flow through you!")[0];
   assert.ok(ticks.slice(choke + 1, choke + 6).some((tick) => tick.coughs.includes("player")), "solo: the player coughs");
+  // OBS (27th): it catches a tick after her words, the first cough a tick later, gone 15 ticks after it caught.
+  assert.ok(ticks[choke + 1].messages.includes("You become surrounded by smoke clouds!"), "solo: the virus catches a tick after her words");
+  assert.ok(ticks[choke + 2].coughs.includes("player"), "solo: the first cough a tick after");
+  assert.ok(ticks[choke + 16].messages.includes("The smoke clouds around you dissipate."), "solo: gone 15 ticks after it caught");
 }
 
 // --- standing in it, a team of five ----------------------------------------------
@@ -146,6 +170,14 @@ const phaseStarts = (ticks) => ticks.flatMap((tick, n) => (tick && n > 0 && tick
     const before = ticks.slice(n, n + 4).flatMap((tick) => tick.damage.filter((hit) => hit.source === "Shadow Smash"));
     assert.equal(before.length, 0, `shadows at ${n}: nothing before they strike`);
     assert.ok(struck.length <= 1, `shadows at ${n}: one hit on the player at most`);
+    // OBS (27th): the game's words to whoever a shadow strikes.
+    assert.equal(ticks[n + 4].messages.includes("Nex's shadow consumes you!"), struck.length === 1, `shadows at ${n}: "Nex's shadow consumes you!" with the hit`);
+  }
+  // OBS (27th): her darkness, 31 ticks from her words to "The darkness recedes." (unless her phase ends first).
+  for (const n of wordTicks(ticks, "Embrace darkness!")) {
+    assert.ok(ticks[n].messages.includes("Darkness begins to surround Nex."), `darkness at ${n}: begins with her words`);
+    const end = ticks.findIndex((tick, at) => at > n && tick?.messages.includes("The darkness recedes."));
+    if (end > 0) assert.equal(end - n, 31, `darkness at ${n}: recedes 31 ticks later`);
   }
 }
 console.log("nex rules ok");

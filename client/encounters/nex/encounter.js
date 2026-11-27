@@ -22,14 +22,22 @@
 // until it dies, and its death starts her next phase. As she dies, her wrath.
 //
 // Sources, as every number below names them: OBS the thirteen recordings of
-// seven kills (ids.js); WIKI the boss's page and its strategies page, read
-// 2026-11-26; TABLE the monster table; CACHE the game cache; inferred.
+// seven kills of 2026-11-26 and, "OBS (27th)", the twenty-two of eleven kills
+// of 2026-11-27 (ids.js); WIKI the boss's page, its strategies page and its
+// mages' pages, read 2026-11-26 and 27; TABLE the monster table; CACHE the
+// game cache; inferred.
 //
-// Not yet: Turmoil's drain of the party's stats in her Zaros phase; the
-// altar; the coughing of a virus through a spectral spirit shield (WIKI:
-// "reduces the prayer drain"); Umbra's and Fumus's barrages' own effects (the
-// drain of Attack, the poison); her MVP and drops (party.js keeps each
-// member's damage for them); people instead of teammates (party.js).
+// Not yet: the altar (OBS (27th): loc 42965 "Altar" on the east bridge,
+// local 59,17; "Pray" fills prayer to its level and 1 over, "You cannot pray
+// at the altar while in combat." otherwise, by a rule the recordings do not
+// settle; the client cannot click a loc for an encounter yet); her curses'
+// own icons over her (the client draws the three protection prayers only:
+// Deflect Melee shows as Protect from Melee, Soul Split as none); the
+// coughing of a virus through a spectral spirit shield (WIKI: "reduces the
+// prayer drain"); Fumus's poison (WIKI: 4; no recorder was poisoned, both
+// wore anti-venom); Turmoil's and Umbra's drains on teammates (they fight by
+// fixed stats); her drops (party.js keeps each member's damage for them);
+// people instead of teammates (party.js).
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { getWeaponFormulaStyle } from "../../engine/weapons.js";
@@ -39,7 +47,7 @@ import { buildActorVisualTarget, faceActorToward, getProjectileSourcePosition, h
 import { emitInfernoVisual } from "../inferno/events.js";
 import {
   mapSquare, bossSize, bossStart, playerStart, teammateStarts, npcTypeIds, spotAnims, sounds, heights, flight,
-  gapTo, chebyshev, middleOf, footprintTiles, inChamber, jumpSpots,
+  gapTo, chebyshev, middleOf, footprintTiles, inChamber, jumpSpots, colors,
 } from "./ids.js";
 import { Party, LOCAL_ID } from "./party.js";
 import { Teammates, teammateDefinition } from "./teammates.js";
@@ -78,11 +86,23 @@ const shadowMax = (distance) => Math.max(10, 65 - 5 * distance);
 const iceFreezeTicks = 15; // WIKI (ref. 6)
 const zarosPrayerDrain = 5; // WIKI: "Magic drains 5 prayer on hit"
 const meleeRun = 3; // WIKI: "three melee attacks in succession", then a spell; OBS: M M M R
-const bloodHealShare = 1 / 4; // inferred (WIKI: "heals her for a percentage of damage dealt")
-const bloodDrainShare = 1 / 4; // inferred (WIKI: "drains prayer")
-const soulSplitShare = 1 / 4; // inferred (WIKI: "a small percentage per successful hit")
-const deflectShare = 1 / 10; // inferred (WIKI: "Reflects melee damage you deal to her")
-const curseRun = 4; // WIKI: Soul Split, after 4 attacks Deflect Melee, after 4 none, after 4 Soul Split again
+// OBS (27th), 70 of her blood barrages: they heal her by the damage and a seventh again (12 -> 13, 20 -> 23, 25 -> 28),
+// and drain half the damage in prayer (7 -> 3, 12 -> 6, 14 -> 7).
+const bloodHealShare = 1.15;
+const bloodDrainShare = 1 / 2;
+// OBS (27th): under Soul Split her spells heal her by all they deal, a tick after they land (13 of 14 single hits), and
+// her blows by half, 3 ticks after (150 of 155).
+const soulSplit = { magic: { share: 1, after: 1 }, melee: { share: 1 / 2, after: 3 } };
+// OBS (27th): under Deflect Melee a melee hit on her shows 0 and comes back at the one who dealt it ("Nex deflects your
+// damage back at you!", 5 times, 4 to 16 back); how much of the roll comes back is inferred.
+const deflectShare = 1 / 4;
+// WIKI: Soul Split, after 4 attacks Deflect Melee, after 4 none, after 4 Soul Split again. OBS (27th): her form turns
+// on her attack (32 turns), the first on her first attack of the phase, until then none.
+const curseRun = 4;
+// OBS (27th): under Turmoil (all her Zaros phase), a blow of hers that hurts drains 2 from Attack, Strength, Defence,
+// Ranged and Magic at once (81 of 182 such blows on the recorders; WIKI: "drain the player's melee, range and magic
+// stats"). Her spells drain none of them (they drain prayer).
+const turmoil = { drain: 2, chance: 1 / 2 };
 const crushDefence = 35; // WIKI (20 October 2026: "reduced from +60"); TABLE has 60
 // OBS: her intro, ticks from her rising: "Fumus!" 5, "Umbra!" 9, "Cruor!" 13, "Glacies!" 17, "Fill my soul with smoke!" 21.
 const intro = { rises: 1, calls: [5, 9, 13, 17], smoke: 21 };
@@ -243,11 +263,19 @@ class NexEncounter {
   }
   processPostTick(context) {
     this.enter(context);
-    if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
+    if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) {
+      this.outcome = { ...this.outcome, phase: "victory" };
+      this.announceMvp(context);
+    }
     this.runTasks(context);
     this.watchThresholds(context);
     const boss = this.boss(context.world);
-    if (boss) boss.overheadPrayers = this.curse === "deflect" && boss.alive ? ["melee"] : undefined;
+    if (boss) {
+      boss.overheadPrayers = this.curse === "deflect" && boss.alive ? ["melee"] : undefined;
+      // OBS (27th): her form shows her curse (ids.js); as she dies, her dying form.
+      if (this.stage === "dead") boss.npcTypeId = npcTypeIds.nexDying;
+      else if (this.phase === "zaros") boss.npcTypeId = this.curse === "soulSplit" ? npcTypeIds.nexSoulSplit : this.curse === "deflect" ? npcTypeIds.nexDeflect : npcTypeIds.nex;
+    }
     return this.drainPending(context);
   }
   enter(context) {
@@ -323,15 +351,15 @@ class NexEncounter {
     this.floorHp = 0;
     this.say(context, phaseWords[phase]);
     if (phase === "zaros") {
-      // WIKI, OBS: she heals 500, with Soul Split on.
+      // WIKI, OBS: she heals 500. OBS (27th): no curse until her first attack, which turns Soul Split on (turnCurse).
       this.visual(context, {
         animations: [{ clipId: "zaros" }],
         graphics: [{ spotAnimId: spotAnims.power, target: buildActorVisualTarget(boss), height: 0, delayCycles: 0 }],
         sounds: [{ id: sounds.power, delayCycles: 30 }],
       });
       this.healBoss(boss, zarosHeal, context);
-      this.curse = "soulSplit";
-      this.curseCount = 0;
+      this.curse = null;
+      this.curseCount = curseRun - 1;
     } else {
       this.visual(context, { sounds: [{ id: sounds.call }] });
       this.minions.empower(context, phase);
@@ -427,6 +455,7 @@ class NexEncounter {
     boss.combat.nextActionTick = this.nextAttackAt;
     boss.combat.lastAttackTick = context.tick;
     this.lastFought = context.tick;
+    if (this.phase === "zaros") this.turnCurse();
     if (this.inMeleeReach(boss, targetActor.position) && this.meleeRun < meleeRun) {
       this.meleeRun++;
       this.melee(boss, target, context);
@@ -434,7 +463,6 @@ class NexEncounter {
       this.meleeRun = 0;
       this.spell(boss, target, context);
     }
-    if (this.phase === "zaros") this.turnCurse();
     return idle;
   }
   startSpecial(name, boss, context) {
@@ -471,7 +499,11 @@ class NexEncounter {
     boss.combat.attackStyle = "melee";
     this.visual(context, { animations: [{ clipId: "melee" }], sounds: [{ id: sounds.melee, delayCycles: 30 }] });
     const done = this.party.hurt(member, { damage, style: "melee", keep: zaros ? keepMeleeZaros : keepMelee, source: "Nex" }, context);
-    this.soulSplit(boss, done, context);
+    this.soulSplit(done, "melee");
+    if (zaros && done > 0 && this.random() < turmoil.chance) {
+      const drain = (stat) => stat.current - turmoil.drain;
+      this.party.drainStats(member, { attack: drain, strength: drain, defence: drain, ranged: drain, magic: drain }, context.world);
+    }
   }
   // Her spell or shots of the phase.
   spell(boss, target, context) {
@@ -524,12 +556,12 @@ class NexEncounter {
         }
         if (phase === "ice") {
           // WIKI: it freezes for 15 ticks whoever does not pray magic; it drains prayer by half the damage.
-          if (this.party.protection(member, ctx.world) !== "magic") this.party.freeze(member, iceFreezeTicks, ctx.tick);
+          if (this.party.protection(member, ctx.world) !== "magic" && this.party.freeze(member, iceFreezeTicks, ctx.tick)) this.frozenMessage(member, ctx);
           this.party.drainPrayer(member, Math.floor(done / 2), ctx.world);
         }
         if (phase === "zaros" && done > 0) {
           this.party.drainPrayer(member, zarosPrayerDrain, ctx.world);
-          if (her?.alive) this.soulSplit(her, done, ctx);
+          this.soulSplit(done, "magic");
         }
       });
     }
@@ -542,9 +574,20 @@ class NexEncounter {
     this.curseCount = 0;
     this.curse = this.curse === "soulSplit" ? "deflect" : this.curse === "deflect" ? null : "soulSplit";
   }
-  soulSplit(boss, damage, context) {
-    if (this.curse !== "soulSplit" || damage <= 0 || !boss?.alive) return;
-    this.healBoss(boss, Math.floor(damage * soulSplitShare), context);
+  // A hit of hers under Soul Split heals her, a little later (OBS (27th): `soulSplit`).
+  soulSplit(damage, style) {
+    if (this.curse !== "soulSplit" || damage <= 0) return;
+    const { share, after } = soulSplit[style];
+    const heal = Math.floor(damage * share);
+    if (heal <= 0) return;
+    this.later(after, (ctx) => {
+      const her = this.boss(ctx.world);
+      if (her?.alive && this.stage === "fight") this.healBoss(her, heal, ctx);
+    });
+  }
+  // OBS (27th): "You have been frozen!" as an ice barrage (hers, Glacies's) holds the player.
+  frozenMessage(member, context) {
+    if (this.party.isLocal(member)) this.message(context, { text: "You have been frozen!", color: colors.red });
   }
   // A special that holds her next attack back (her blood sacrifice unleashed).
   delayAttack(ticks) {
@@ -567,12 +610,16 @@ class NexEncounter {
   playerHit(damage, target, attacker) {
     const context = this.context;
     if (this.minions.isStalagmite(target)) return this.stalagmiteHit(target, attacker, context);
-    const done = this.adjustHit(LOCAL_ID, target, damage, context);
-    if (target.id === bossActorId && this.curse === "deflect" && done > 0 && attacker && isMeleeAttack(attacker) && context) {
-      // inferred share (WIKI: Deflect Melee reflects the melee damage dealt to her).
-      this.party.hurt(this.party.member(LOCAL_ID), { damage: Math.floor(done * deflectShare), style: "typeless", source: "Deflect Melee" }, context);
+    if (target.id === bossActorId && this.stage === "fight" && this.curse === "deflect" && attacker && isMeleeAttack(attacker)) {
+      // OBS (27th): her hitsplat 0, and some of it back at the player (`deflectShare`).
+      const back = Math.floor(damage * deflectShare);
+      if (back > 0 && context) {
+        this.party.hurt(this.party.member(LOCAL_ID), { damage: back, style: "typeless", source: "Deflect Melee" }, context);
+        this.message(context, { text: "Nex deflects your damage back at you!", color: colors.red });
+      }
+      return 0;
     }
-    return done;
+    return this.adjustHit(LOCAL_ID, target, damage, context);
   }
   // What a hit on one of hers does: her immunity, her siphon, a reaver's heal; the damage that counts for the member.
   adjustHit(memberId, target, damage, context) {
@@ -583,9 +630,9 @@ class NexEncounter {
         if (context && damage > 0) this.healBoss(target, damage, context);
         return 0;
       }
-      // Hits of one tick are judged before the engine applies any of them: each counts the ones before it. Her phase's
-      // floor holds from the start: hits of one tick may cross her threshold and the 170 together.
+      // Hits of one tick are judged before the engine applies any of them: each counts the ones before it.
       const hp = this.hitTick === this.now ? Math.min(target.vitals.hp, this.hpAfterHits) : target.vitals.hp;
+      // Her phase's floor holds from the start: hits of one tick may cross her threshold and the 170 together.
       const index = phaseOrder.indexOf(this.phase);
       const floor = index >= 0 && index < thresholds.length ? thresholds[index] - transitionOverflow : 0;
       const room = Math.max(0, hp - floor);
@@ -604,11 +651,14 @@ class NexEncounter {
     }
     return damage;
   }
-  // WIKI: only a stab or a crush breaks a stalagmite.
+  // WIKI: only a stab or a crush breaks a stalagmite. OBS (27th): the game's words for each.
   stalagmiteHit(target, attacker, context) {
     const style = attacker?.equipment ? getWeaponFormulaStyle(attacker.equipment.weapon, attacker.selectedAttackStyleIndex) : null;
-    if (style === "melee_stab" || style === "melee_crush") return target.vitals.hp;
-    if (context) this.message(context, "Only a stab or crush attack can break the stalagmite."); // inferred
+    if (style === "melee_stab" || style === "melee_crush") {
+      if (context) this.message(context, { text: "You manage to destroy the icicle!", color: colors.magenta });
+      return target.vitals.hp;
+    }
+    if (context) this.message(context, "Your weapon is unsuitable to break the ice.");
     return 0;
   }
   // A teammate's hit as it lands (teammates.js): the same rules as the player's, then the engine's hit.
@@ -626,6 +676,7 @@ class NexEncounter {
     const npc = context.world.getNpc(defeat.npcId);
     if (defeat.npcId === bossActorId) return this.died(defeat, context, completionOwnership);
     if (npc && this.minions.isMage(npc)) this.mageDied(context, npc);
+    if (npc && this.minions.isStalagmite(npc)) this.specials.stalagmiteGone(npc.id, context);
   }
   died(defeat, context, completionOwnership) {
     const boss = this.boss(context.world);
@@ -641,6 +692,17 @@ class NexEncounter {
       phase: "resolving", decisiveTick: defeat.tick, completionTick: defeat.tick + deathTicks.victory, primaryActorId: bossActorId,
       completionActorIds: [bossActorId, ...mages.map((spec) => mageActorId(spec.key))],
     };
+  }
+  // WIKI: the MVP is whoever dealt her the most damage. OBS (27th): "You were the MVP for this fight!" (8 kills) or
+  // "The MVP for this fight was: " and a name (the recorder hides other players' names: "a player"), as she dies.
+  announceMvp(context) {
+    let best = null;
+    for (const member of this.party.members()) {
+      const damage = this.party.contribution.get(member.id) ?? 0;
+      if (!best || damage > best.damage) best = { member, damage };
+    }
+    if (!best) return;
+    this.message(context, this.party.isLocal(best.member) ? "You were the MVP for this fight!" : `The MVP for this fight was: ${best.member.name}.`);
   }
   getOutcome() {
     return this.outcome;

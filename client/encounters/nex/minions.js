@@ -17,15 +17,18 @@ import { defineNpc } from "../shared/npcDefinitions.js";
 import { buildActorVisualTarget, faceActorToward, getProjectileSourcePosition } from "../shared/npcHelpers.js";
 import { npcTypeIds, spotAnims, mageTiles, chebyshev, middleOf, gapTo, inChamber } from "./ids.js";
 
-// The mage of each phase, and what its barrage is (OBS: graphics and projectiles; WIKI: Fumus's max hit, 29, taken
-// for all four: inferred).
+// The mage of each phase, and what its barrage is (OBS: graphics and projectiles; WIKI, each mage's page: a max hit of
+// 29 for all four).
 export const mages = [
   { name: "Fumus", key: "fumus", phase: "smoke", npcTypeId: npcTypeIds.fumus, projectile: spotAnims.smokeBarrage, impact: spotAnims.smokeBarrageImpact },
   { name: "Umbra", key: "umbra", phase: "shadow", npcTypeId: npcTypeIds.umbra, projectile: null, impact: spotAnims.shadowBarrageImpact },
   { name: "Cruor", key: "cruor", phase: "blood", npcTypeId: npcTypeIds.cruor, projectile: null, impact: spotAnims.bloodBarrageImpact },
   { name: "Glacies", key: "glacies", phase: "ice", npcTypeId: npcTypeIds.glacies, projectile: spotAnims.iceBarrage, impact: spotAnims.iceBarrageImpact },
 ];
-const mageMaxHit = 29; // WIKI (Fumus)
+const mageMaxHit = 29; // WIKI (Fumus, Umbra, Cruor, Glacies)
+// WIKI (Umbra): "can lower players' Attack levels by 15%". OBS (27th): "You have been blinded!" as it lands, Attack
+// 99 -> 84 each time (33 of 33), a hit or not.
+const umbraBlind = 0.85;
 const mageAttackTicks = 5; // OBS, WIKI
 const mageFirstAttack = 8; // OBS: Fumus's first cast 8 ticks after her call in 5 of 7 kills (5 and 10 in the others)
 const glaciesFreeze = 6; // WIKI (ref. 6): 6 ticks, through Protect from Magic
@@ -141,7 +144,11 @@ export class Minions {
       if (!this.party.alive(member, ctx.world)) return;
       this.party.hurt(member, { damage, style: "magic", keep: 0, source: spec.name }, ctx);
       // WIKI: Glacies freezes for 6 ticks, through the prayer (when the last freeze ended over 5 ticks before).
-      if (freezes && damage > 0) this.party.freeze(member, glaciesFreeze, ctx.tick);
+      if (freezes && damage > 0 && this.party.freeze(member, glaciesFreeze, ctx.tick)) this.encounter.frozenMessage(member, ctx);
+      if (spec.key === "umbra") {
+        const blinded = this.party.drainStats(member, { attack: (stat) => Math.floor(stat.max * umbraBlind) }, ctx.world);
+        if (blinded && this.party.isLocal(member)) this.encounter.message(ctx, "You have been blinded!");
+      }
     });
     return idle;
   }

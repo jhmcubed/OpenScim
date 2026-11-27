@@ -55,6 +55,7 @@ const renderConfig = {
   preloadNpcTypes: [
     nex(npcTypeIds.nexRising),
     nex(npcTypeIds.nex),
+    nex(npcTypeIds.nexSoulSplit), nex(npcTypeIds.nexDeflect), nex(npcTypeIds.nexDying),
     mage(npcTypeIds.fumus), mage(npcTypeIds.umbra), mage(npcTypeIds.cruor), mage(npcTypeIds.glacies),
     { npcTypeId: npcTypeIds.reaver, idleSeqId: seqIds.reaverIdle, walkSeqId: seqIds.reaverWalk, attackClips: { cast: seqIds.reaverCast }, deathSeqId: seqIds.reaverDeath },
     { npcTypeId: npcTypeIds.stalagmite, attackClips: {} },

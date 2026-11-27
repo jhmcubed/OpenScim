@@ -120,6 +120,23 @@ export class Party {
     if (actor.prayerState) actor.prayerState = { ...actor.prayerState, points };
     if (actor.stats?.prayer) actor.stats = { ...actor.stats, prayer: { ...actor.stats.prayer, current: points } };
   }
+  // Her drains of a member's combat stats (Turmoil, Umbra's barrage): `drains` maps a stat ("attack", "strength",
+  // "defence", "ranged", "magic") to the level it falls to, from the stat ({ current, max }); a drain never raises
+  // one. Returns whether any fell. The player's levels only: a bot fights by fixed formula stats (teammates.js).
+  drainStats(member, drains, world) {
+    const actor = this.actorOf(member, world);
+    if (!actor?.stats || member.kind === "bot") return false;
+    let stats = actor.stats;
+    for (const [name, to] of Object.entries(drains)) {
+      const stat = stats[name];
+      if (!stat) continue;
+      const level = Math.max(0, Math.min(stat.current, to(stat)));
+      if (level !== stat.current) stats = { ...stats, [name]: { ...stat, current: level } };
+    }
+    if (stats === actor.stats) return false;
+    actor.stats = stats;
+    return true;
+  }
   // Her specials that turn a protection prayer off (her drag, containment, ice prison): for the player, until a tick.
   disableProtection(member, context, untilTick) {
     const actor = this.actorOf(member, context.world);

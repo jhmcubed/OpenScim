@@ -14,7 +14,7 @@
 // strategy guide (Nex/Strategies, read 2026-11-26), or inferred.
 import { buildActorVisualTarget, faceActorToward } from "../shared/npcHelpers.js";
 import { isArenaTileWalkable } from "../../engine/arena.js";
-import { spotAnims, sounds, aisles, gapTo, chebyshev, middleOf, bossSize, key, inChamber, heights } from "./ids.js";
+import { spotAnims, sounds, aisles, gapTo, chebyshev, middleOf, bossSize, key, inChamber, heights, colors } from "./ids.js";
 
 // What comes after a special before her next attack (OBS: the ticks from the special to her next animation).
 export const holdAfter = { choke: 4, dash: 12, darkness: 4, smash: 8, siphon: 10, sacrifice: 7, containment: 7, prison: 8 };
@@ -29,22 +29,29 @@ export const phaseSpecials = {
 
 // Smoke.
 const virus = {
-  ticks: 36, // OBS: the recorder coughed from 2 ticks after it to 36 later ("The smoke clouds around you dissipate.")
-  coughEvery: 2, // OBS: "*Cough*" every 2 ticks (16 in a row)
+  catches: 1, // OBS (27th): "You become surrounded by smoke clouds!" a tick after her words (25 of 25)
+  ticks: 15, // OBS (27th): "The smoke clouds around you dissipate." 15 ticks later (23 of 25 caught once; no mask)
+  coughEvery: 3, // OBS (27th): "*Cough*" 1, 4, 7, 10 and 13 ticks after it caught (22 of 23)
   drain: 2, // WIKI: 2 prayer a cough
   masked: 0.5, // WIKI: a gas mask, facemask or slayer helmet halves it
 };
 const dash = { strikes: 5, hits: 8, maxHit: 50 }; // OBS: at the aisle's end 5 ticks after "There is...", hits 3 later; WIKI: up to 50
 const drag = { chance: 1 / 4, prayingChance: 1 / 8, reach: 6, stunTicks: 2 }; // WIKI (ref. 5); stun inferred
 // Shadow.
-const darkness = { ticks: 20, every: 2, maxHit: 10, drain: 2, reach: 1 }; // WIKI: "10 to 15 seconds" to clear it; the rest inferred
+// OBS (27th): "Darkness begins to surround Nex." with her words, "The darkness recedes." 31 ticks later (64 of 64 not cut
+// short by her phase's end). Beside her (WIKI: "constant damage"; "10-15 seconds" away from her to clear it): after 8
+// ticks there, "The darkness starts to engulf you!", then 10 to 12 a tick while one stays (3 recorders' engulfings).
+const darkness = { ticks: 31, engulfs: 8, minHit: 10, maxHit: 12, reach: 1 };
 const shadows = { strikes: 4, maxHit: 50, spentTicks: 9 }; // OBS: they strike 4 ticks after "Fear the shadow!", gone 9 after; WIKI: up to 50
 // Blood.
 const siphon = { kneel: 8 }; // WIKI: "kneels for about 8 ticks" (OBS: her next attack 10 after)
-const sacrifice = { resolves: 6, lands: 2, reach: 7, maxHit: 50, keep: 1 / 3, others: 12, prayerShare: 1 / 3, afterUnleash: 4 }; // OBS: 6 ticks to "Nex unleashes a blood sacrifice!", 2 to the hits; WIKI: the rest
+// OBS (27th): the mark with her words, its end 6 ticks later (33 of 33): escaped from 7 tiles off her; the hits 3 after.
+const sacrifice = { resolves: 6, lands: 3, reach: 7, maxHit: 50, keep: 1 / 3, others: 12, prayerShare: 1 / 3, afterUnleash: 4 }; // OBS: 6 ticks to "Nex unleashes a blood sacrifice!", 2 to the hits; WIKI: the rest
 // Ice.
 const containment = { strikes: 5, maxHit: 60, lasts: 4 }; // OBS: the icicles 5 ticks after "Contain this!"; WIKI: up to 60; lasts inferred
-const prison = { locks: 2, shatters: 7, maxHit: 75 }; // OBS: its stalagmites 2 ticks after; WIKI: "4 seconds", up to 75
+// OBS: its stalagmites 2 ticks after; WIKI: "4 seconds", up to 75. OBS (27th): "The ice prison shatters and pierces your
+// flesh!" 8 ticks after "You've been trapped in an ice prison!" (2 of 2; 25 others broken out sooner).
+const prison = { locks: 2, shatters: 8, maxHit: 75 };
 // Zaros.
 const wrath = { strikes: 4, maxHit: 50 }; // OBS: her wrath's graphics 4 ticks after her last hitsplat; WIKI: up to 50 in 5 x 5
 
@@ -87,13 +94,19 @@ export class Specials {
       graphics: [{ spotAnimId: spotAnims.virus, target: buildActorVisualTarget(boss), height: 0, delayCycles: 0 }],
       sounds: [{ id: sounds.virus }],
     });
-    if (ranked[0]) this.infect(ranked[0].member, context);
+    const victim = ranked[0]?.member;
+    if (victim) encounter.later(virus.catches, (ctx) => {
+      if (this.encounter.stage === "fight" && this.party.alive(victim, ctx.world)) this.infect(victim, ctx);
+    });
   }
-  infect(member, context) {
+  // OBS (27th): the game's words to the one who catches it, and to the one who spread it.
+  infect(member, context, from = null) {
     if (this.infected.has(member.id)) return;
     const masked = this.party.wearsVirusMask(member, context.world);
     const ticks = Math.round(virus.ticks * (masked ? virus.masked : 1));
-    this.infected.set(member.id, { until: context.tick + ticks, next: context.tick + virus.coughEvery });
+    this.infected.set(member.id, { until: context.tick + ticks, next: context.tick + 1 });
+    if (this.party.isLocal(member)) this.encounter.message(context, { text: from ? "Someone has spread some smoke clouds to you!" : "You become surrounded by smoke clouds!", color: colors.purple });
+    if (from && this.party.isLocal(from)) this.encounter.message(context, { text: "You have spread the smoke clouds to someone else!", color: colors.purple });
   }
   // Every tick: the coughs, and the virus spreading to whoever stands beside a cough (WIKI: "spreads to adjacent players").
   coughs(context) {
@@ -106,7 +119,7 @@ export class Specials {
       }
       if (now >= infection.until) {
         this.infected.delete(id);
-        if (this.party.isLocal(member)) this.encounter.message(context, { text: "The smoke clouds around you dissipate.", color: "#0dc10d" }); // OBS
+        if (this.party.isLocal(member)) this.encounter.message(context, { text: "The smoke clouds around you dissipate.", color: colors.green }); // OBS
         continue;
       }
       if (now < infection.next) continue;
@@ -117,7 +130,7 @@ export class Specials {
       const here = this.party.tile(member, context.world);
       for (const other of this.party.living(context.world)) {
         if (other.id === id || this.infected.has(other.id)) continue;
-        if (chebyshev(this.party.tile(other, context.world), here) <= 1) this.infect(other, context);
+        if (chebyshev(this.party.tile(other, context.world), here) <= 1) this.infect(other, context, member);
       }
     }
   }
@@ -170,9 +183,25 @@ export class Specials {
       her.position = [...dashing.from];
       this.dashing = null;
     });
+    // OBS (27th): "Nex dashes into you and knocks you out of the way!" 1 or 2 ticks after "NO ESCAPE!", and whoever was
+    // in her path is beside it, off the aisle (4 of 4); the hit 2 ticks after that.
+    encounter.later(1, (ctx) => {
+      for (const member of struck) {
+        if (!this.party.alive(member, ctx.world)) continue;
+        const aside = this.besideAisle(dashing, this.party.tile(member, ctx.world));
+        if (aside) this.party.moveTo(member, aside, ctx);
+        if (this.party.isLocal(member)) encounter.message(ctx, { text: "Nex dashes into you and knocks you out of the way!", color: colors.magenta });
+      }
+    });
     encounter.later(dash.hits - dash.strikes, (ctx) => {
       for (const member of struck) this.party.hurt(member, { damage: encounter.randomInt(0, dash.maxHit), style: "typeless", source: "Smoke Dash" }, ctx);
     });
+  }
+  // The nearest free tile beside an aisle, across it from where one stood in it.
+  besideAisle(dashing, tile) {
+    const box = this.aisleBox(dashing.aisle, dashing.from);
+    const across = aisles[dashing.aisle].step[0] === 0 ? [[box.minX - 1, tile[1]], [box.maxX + 1, tile[1]]] : [[tile[0], box.minY - 1], [tile[0], box.maxY + 1]];
+    return across.filter((spot) => this.walkable(spot)).sort((a, b) => chebyshev(a, tile) - chebyshev(b, tile))[0] ?? null;
   }
   // WIKI (ref. 5): with her smoke magic, a player within 6 tiles is dragged to her, stunned, his protection off: 1 in 4,
   // 1 in 8 when he prays against magic.
@@ -189,7 +218,7 @@ export class Specials {
     this.party.moveTo(member, tile, context);
     this.party.disableProtection(member, context, context.tick + drag.stunTicks);
     this.party.freeze(member, drag.stunTicks, context.tick, { ignoreGap: true });
-    if (this.party.isLocal(member)) encounter.message(context, { text: "Nex drags you towards her!", color: "#ff3045" }); // inferred
+    // OBS (27th): the game says nothing of a drag (no such message in 22 recordings).
   }
   besideHer(boss, from) {
     let best = null;
@@ -205,14 +234,16 @@ export class Specials {
     const encounter = this.encounter;
     encounter.say(context, "Embrace darkness!");
     encounter.visual(context, { animations: [{ clipId: "darkness" }], sounds: [{ id: sounds.darkness }] });
+    encounter.message(context, { text: "Darkness begins to surround Nex.", color: colors.magenta });
     this.darkness = { until: context.tick + darkness.ticks };
     this.exposure.clear();
   }
-  // Every tick of her darkness: close to her, it hurts (WIKI: "constant damage"; inferred: every 2 ticks a tile from her).
+  // Every tick of her darkness: beside her too long, it engulfs (`darkness`).
   darknessTick(context) {
     if (!this.darkness) return;
     if (context.tick >= this.darkness.until) {
       this.darkness = null;
+      this.encounter.message(context, { text: "The darkness recedes.", color: colors.green });
       return;
     }
     const boss = this.encounter.boss(context.world);
@@ -221,9 +252,9 @@ export class Specials {
       const close = gapTo(this.party.tile(member, context.world), boss.position) <= darkness.reach;
       const ticks = close ? (this.exposure.get(member.id) ?? 0) + 1 : 0;
       this.exposure.set(member.id, ticks);
-      if (ticks > 0 && ticks % darkness.every === 0) {
-        this.party.hurt(member, { damage: this.encounter.randomInt(1, darkness.maxHit), style: "typeless", source: "Embrace Darkness" }, context);
-        this.party.drainPrayer(member, darkness.drain, context.world);
+      if (ticks === darkness.engulfs && this.party.isLocal(member)) this.encounter.message(context, { text: "The darkness starts to engulf you!", color: colors.magenta });
+      if (ticks > darkness.engulfs) {
+        this.party.hurt(member, { damage: this.encounter.randomInt(darkness.minHit, darkness.maxHit), style: "typeless", source: "Embrace Darkness" }, context);
       }
     }
   }
@@ -252,6 +283,7 @@ export class Specials {
     for (const member of this.party.living(context.world)) {
       if (tiles.has(key(this.party.tile(member, context.world)))) {
         this.party.hurt(member, { damage: encounter.randomInt(0, shadows.maxHit), style: "typeless", source: "Shadow Smash" }, context);
+        if (this.party.isLocal(member)) encounter.message(context, { text: "Nex's shadow consumes you!", color: colors.purple }); // OBS (27th)
       }
     }
   }
@@ -282,7 +314,7 @@ export class Specials {
     encounter.visual(context, { sounds: [{ id: sounds.sacrifice }] });
     this.sacrificeTarget = target.id;
     this.sacrificeAt = context.tick;
-    if (this.party.isLocal(target)) encounter.message(context, { text: "Nex has marked you as a sacrifice, RUN!", color: "#ff3045" }); // inferred
+    if (this.party.isLocal(target)) encounter.message(context, { text: "Nex has marked you for a blood sacrifice! RUN!", color: colors.red }); // OBS (27th)
     encounter.later(sacrifice.resolves, (ctx) => this.sacrificeResolve(ctx, target));
   }
   sacrificeResolve(context, target) {
@@ -290,8 +322,15 @@ export class Specials {
     this.sacrificeTarget = null;
     const boss = encounter.boss(context.world);
     if (!boss?.alive || encounter.stage !== "fight" || !this.party.alive(target, context.world)) return;
-    if (gapTo(this.party.tile(target, context.world), boss.position) >= sacrifice.reach) return; // OBS: run clear, nothing
-    encounter.message(context, { text: "Nex unleashes a blood sacrifice!", color: "#ff3045" }); // OBS
+    const escaped = gapTo(this.party.tile(target, context.world), boss.position) >= sacrifice.reach;
+    // OBS (27th): the marked one is told which (33 of 33).
+    if (this.party.isLocal(target)) {
+      encounter.message(context, escaped
+        ? { text: "You managed to escape from Nex's blood sacrifice.", color: colors.green }
+        : { text: "You failed to escape from Nex's blood sacrifice!", color: colors.red });
+    }
+    if (escaped) return; // OBS: run clear, nothing
+    encounter.message(context, { text: "Nex unleashes a blood sacrifice!", color: colors.red }); // OBS
     // OBS: her next attack 4 ticks after it (3 of 4), 7 after her words when it is run clear.
     encounter.delayAttack(sacrifice.afterUnleash);
     const struck = [target, ...this.party.living(context.world).filter((member) => member.id !== target.id && gapTo(this.party.tile(member, context.world), boss.position) < sacrifice.reach)];
@@ -339,6 +378,11 @@ export class Specials {
       if (gapTo(this.party.tile(member, context.world), boss.position) > 1) continue;
       this.party.disableProtection(member, context, context.tick + 1);
       this.party.hurt(member, { damage: encounter.randomInt(0, containment.maxHit), style: "typeless", source: "Containment" }, context);
+      if (this.party.isLocal(member)) {
+        // OBS (27th): the game's words as the icicles strike (9 of 9).
+        encounter.message(context, { text: "Nex's icicles spike you to the spot!", color: colors.purple });
+        encounter.message(context, { text: "Your protection prayers have been disabled!", color: colors.red });
+      }
     }
   }
   // "Die now, in a prison of ice!": a member locked in by stalagmites on the tiles about him (OBS), his protection off,
@@ -377,6 +421,7 @@ export class Specials {
     this.prisoned = { memberId: target.id, tile, shattersAt, stalagmites: ids };
     this.party.freeze(target, prison.shatters, context.tick, { ignoreGap: true });
     this.party.disableProtection(target, context, shattersAt);
+    if (this.party.isLocal(target)) encounter.message(context, { text: "You've been trapped in an ice prison!", color: colors.magenta }); // OBS (27th)
     encounter.later(prison.shatters, (ctx) => this.shatter(ctx));
   }
   shatter(context) {
@@ -391,6 +436,7 @@ export class Specials {
     this.party.unfreeze(member, context.tick);
     if (live.length > 0 && encounter.stage !== "dead") {
       this.party.hurt(member, { damage: encounter.randomInt(0, prison.maxHit), style: "typeless", source: "Ice Prison" }, context);
+      if (this.party.isLocal(member)) encounter.message(context, { text: "The ice prison shatters and pierces your flesh!", color: colors.magenta }); // OBS (27th)
     }
   }
   liveStalagmites(world) {
@@ -401,6 +447,18 @@ export class Specials {
     const npc = context.world.getNpc(id);
     if (!npc?.alive) return;
     context.despawnNpc(id);
+    this.stalagmiteGone(id, context);
+  }
+  // OBS (27th): "You've been freed from the ice prison!" as the last of them breaks (25 of 27 prisons), its walls gone.
+  // A teammate's break (above) or the player's (encounter.js, onNpcDefeated).
+  stalagmiteGone(id, context) {
+    const prisoned = this.prisoned;
+    if (!prisoned || this.liveStalagmites(context.world).some((npc) => npc.id !== id)) return;
+    this.prisoned = null;
+    const member = this.party.member(prisoned.memberId);
+    if (!member) return;
+    this.party.unfreeze(member, context.tick);
+    if (this.party.isLocal(member)) this.encounter.message(context, { text: "You've been freed from the ice prison!", color: colors.green });
   }
   isPrisonWall(tile, world) {
     return this.liveStalagmites(world).some((npc) => npc.position[0] === tile[0] && npc.position[1] === tile[1]);

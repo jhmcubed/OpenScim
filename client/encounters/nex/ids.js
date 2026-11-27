@@ -13,6 +13,13 @@
 // every animation, graphic, projectile, hitsplat, overhead text and object of
 // the fight, a tick at a time, and both recorders' own prayers, hitpoints and
 // prayer points; the other players' tiles and overhead prayers.
+//
+// OBS also: twenty-two recordings of 2026-11-27 by the same two (twelve by
+// SendTherapy, ten by Vaerric), eleven kills of the same team of three or
+// four, each seen by both but one. With them the game's own messages of each
+// special, both recorders' combat stats tick by tick (Turmoil, Umbra's drain),
+// her heals under Soul Split, and the MVP of each kill. "OBS (27th)" marks a
+// number taken from these.
 export const regionOrigin = [2880, 5184];
 export const local = ([x, y]) => [x - regionOrigin[0], y - regionOrigin[1]];
 
@@ -55,8 +62,14 @@ export const aisles = {
 export const jumpSpots = [[44, 18], [54, 26], [34, 8], [54, 9], [34, 27]];
 
 export const npcTypeIds = {
-  nex: 11278, // CACHE, OBS: her five phases are one NPC (11280 to 11282 are not used)
+  nex: 11278, // CACHE, OBS: her five phases are one NPC, and her Zaros phase without a curse
   nexRising: 11279, // OBS: until "Fill my soul with smoke!"
+  // OBS (27th): in her Zaros phase she turns into these as her curse changes (the same model; the game draws each
+  // form's curse over her). 11280 heals her (279 heal splats, all under it); under 11281 "Nex deflects your damage
+  // back at you!" (5 of 5). 11282 from "Taste my wrath!" to her death.
+  nexSoulSplit: 11280,
+  nexDeflect: 11281,
+  nexDying: 11282,
   fumus: 11283,
   umbra: 11284,
   cruor: 11285,
@@ -183,6 +196,10 @@ export const sounds = {
   power: 5202, // "NOW, THE POWER OF ZAROS!", +1
   death: 5180, // +1
 };
+
+// OBS (27th): the game's messages come in its highlight colours (the tags mes_hl_red, mes_hl_gre, mes_hl_mag and
+// mes_hl_pur); the colours drawn for the last two are inferred.
+export const colors = { red: "#ff3045", green: "#0dc10d", magenta: "#ff40ff", purple: "#a64dff" };
 
 // Tile helpers.
 export const key = ([x, y]) => x + "," + y;
