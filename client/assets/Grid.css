@@ -3046,6 +3046,10 @@ html:not([data-panel-dragging])
   top: 0;
   left: 0;
 }
+/* A shield, shown in place of the hitpoints (Grid.js, BossHealthBarOverlay): the blue of the shield bar over the NPC. */
+.boss-hp__fill--shield {
+  background-color: #2b8fd6;
+}
 @media (prefers-reduced-motion: reduce) {
   .boss-hp__fill {
     transition: none;

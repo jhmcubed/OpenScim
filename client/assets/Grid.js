@@ -26878,8 +26878,11 @@ var BossHealthBarOverlay = ({
   if (!enabled || !eT) {
     return null;
   }
-  const f5 = Math.max(0, eT.hp);
-  const f6 = Math.max(1, eT.maxHp);
+  // A shield its encounter gives with its points (shieldBar.value and .max) is what the bar shows while it is up, in
+  // the shield's colour, as the game's boss bar does over Phosani's Nightmare; a shield bar of a ratio alone does not.
+  const shieldShown = eT.shieldBar && eT.shieldBar.max > 0 ? eT.shieldBar : null;
+  const f5 = Math.max(0, shieldShown ? shieldShown.value : eT.hp);
+  const f6 = Math.max(1, shieldShown ? shieldShown.max : eT.maxHp);
   const f7 = Math.max(0, Math.min(1, f5 / f6)) * 100;
   const f8 = showPercentage && (!(eM < fOe) || !showValues);
   const f9 = showValues || f8;
@@ -26952,7 +26955,7 @@ var BossHealthBarOverlay = ({
         (0, wn.jsx)("div", {
           className: "boss-hp__track",
           children: (0, wn.jsx)("div", {
-            className: "boss-hp__fill",
+            className: "boss-hp__fill" + (shieldShown ? " boss-hp__fill--shield" : ""),
             style: {
               width: f7 + "%",
               minWidth: f5 > 0 ? "2px" : "0",
