@@ -150,6 +150,32 @@ for (const name of ["kill", "kill-other-forms"]) {
 }
 
 {
+  // A charged totem keeps its "Charge" option; clicked, the game's message on that tick, and no attack on it (the
+  // Outside recordings of the group fight). The one he was charging stops him, without the message.
+  const ticks = [];
+  const result = await runScenario(scenarios.find((scenario) => scenario.name === "phosanis-nightmare/charged-totem"), {
+    onTick(tick, engine) {
+      const events = engine.getLastTickEvents();
+      ticks[tick] = {
+        messages: events.filter((event) => event.type === "game_message").map((event) => event.segments.map(({ text }) => text).join("")),
+        onTotems: events.filter((event) => event.type === "attack_started" && event.sourceId === "player" && event.targetId.startsWith("nightmare-totem")).map((event) => event.targetId),
+        target: engine.player().attackTarget,
+        totems: engine.getEncounterSnapshot().state.totems,
+      };
+    },
+  });
+  assert.ok(result.replayMatches);
+  const refused = messageTicks(ticks, "That totem is already charged.");
+  assert.ok(refused.length >= 3, "refused at " + refused);
+  for (const tick of refused) {
+    assert.equal(ticks[tick].target, null, "target at " + tick);
+    assert.deepEqual(ticks[tick].onTotems, [], "attack at " + tick);
+  }
+  // Never refused without a click: once per "fully charged".
+  assert.ok(refused.length <= messageTicks(ticks, "totem is fully charged.").length);
+}
+
+{
   // His hit breaks her shield on the tick she lands at her surge's lane: no surge (Don Danz's recording). She stands
   // at the lane's start, goes for him from the next tick, and attacks 9 ticks after her leave.
   const ticks = await ticksOf("surge-nulled");

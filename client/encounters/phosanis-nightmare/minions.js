@@ -18,6 +18,9 @@ export const totemCharge = 200;
 const totemMessages = {
   full: (name) => `The ${name} totem is fully charged.`,
   all: { text: "All four totems are fully charged.", color: "#ff3045" },
+  // OBS (Outside, four recordings of the Nightmare's group fight, Vaerric, 2026-11-27): a charged totem keeps its
+  // "Charge" option (the cache's 9445 and 9442 have it); clicked, this message on that tick and no attack (2 of 2).
+  already: "That totem is already charged.",
 }; // tsps, as captured
 
 // --- husks -----------------------------------------------------------------
@@ -178,7 +181,7 @@ export class Minions {
     if (!totem) return;
     const spec = totemSpecs[index];
     totem.npcTypeId = npcTypeIds.totems[spec.corner][["dormant", "ready", "charged"].indexOf(stage)];
-    totem.untargetable = stage !== "ready";
+    totem.untargetable = stage === "dormant";
     if (stage !== "charged") totem.vitals = { hp: totemCharge, maxHp: totemCharge };
   }
   wakeTotems(world) {
@@ -210,12 +213,32 @@ export class Minions {
   }
   totemFull(context, index) {
     this.setTotem(context.world, index, "charged");
+    // OBS (Outside, the four group and five Phosani recordings): the player charging it stops as it is charged, without
+    // the message (his target gone the next tick 30 times of 30, 13 of them with no click on that tick or the next).
+    const player = context.world.getPlayer();
+    if (player.attackTarget === this.totemId(index)) {
+      player.attackTarget = null;
+      player.attackInteractionActive = false;
+    }
     if (this.charged.every(Boolean)) {
       this.e.message(context, totemMessages.all);
       this.e.totemsCharged(context);
     } else {
       this.e.message(context, totemMessages.full(totemSpecs[index].name));
     }
+  }
+  // A click on a charged totem (the player's target is read before this, so a target on one now is a click of this
+  // tick): the message, and the totem blocked for this tick alone, which drops the target before he moves or attacks
+  // (as Hydra's form change does).
+  refuseCharged(context) {
+    const player = context.world.getPlayer();
+    totemSpecs.forEach((_, index) => {
+      if (!this.charged[index]) return;
+      const totem = context.world.getNpc(this.totemId(index));
+      if (!totem || totem.untargetable) return;
+      totem.attackBlockedUntilTick = context.tick + 1;
+      if (player.attackTarget === totem.id) this.e.message(context, totemMessages.already);
+    });
   }
   leastCharged() {
     let best = -1;
