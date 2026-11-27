@@ -56520,22 +56520,30 @@ var Grid = (ez) => {
                           viewportHeight: jI.height,
                           exclusionRects: lg,
                         }),
-                      // A tint over the scene, while the encounter's snapshot gives one (state.screenTint: a CSS
-                      // colour; Phosani's Nightmare's curse).
+                      // A tint over the scene, while the encounter's snapshot gives one (state.screenTint: { color,
+                      // the CSS colour at its strongest; fadeInMs, how long it takes to get there from nothing; since,
+                      // the tick it began }; Phosani's Nightmare's curse).
                       simulationState?.encounter?.state?.screenTint &&
-                        (0, wn.jsx)("div", {
-                          className: "encounter-screen-tint",
-                          style: {
-                            position: "absolute",
-                            left: l6.x,
-                            top: l6.y,
-                            width: l6.width,
-                            height: l6.height,
-                            background: simulationState.encounter.state.screenTint,
-                            boxShadow: "inset 0 0 120px 30px " + simulationState.encounter.state.screenTint,
-                            pointerEvents: "none",
+                        (0, wn.jsx)(
+                          "div",
+                          {
+                            className: "encounter-screen-tint",
+                            style: {
+                              position: "absolute",
+                              left: l6.x,
+                              top: l6.y,
+                              width: l6.width,
+                              height: l6.height,
+                              background: simulationState.encounter.state.screenTint.color,
+                              animation:
+                                "encounter-screen-tint-in " +
+                                (simulationState.encounter.state.screenTint.fadeInMs ?? 0) +
+                                "ms linear both",
+                              pointerEvents: "none",
+                            },
                           },
-                        }),
+                          "screen-tint-" + simulationState.encounter.state.screenTint.since,
+                        ),
                       (0, wn.jsx)(XpDropOverlay, {
                         overlayScale: jW?.scale ?? jA,
                         overlayOuterScale: hd,

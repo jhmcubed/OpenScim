@@ -3046,6 +3046,15 @@ html:not([data-panel-dragging])
   top: 0;
   left: 0;
 }
+/* An encounter's tint over the scene (Grid.js, state.screenTint), fading in from nothing. */
+@keyframes encounter-screen-tint-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* A shield, shown in place of the hitpoints (Grid.js, BossHealthBarOverlay): the blue of the shield bar over the NPC. */
 .boss-hp__fill--shield {
   background-color: #2b8fd6;
