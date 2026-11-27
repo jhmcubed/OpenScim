@@ -54,7 +54,7 @@ import {
   mapSquare, bossSize, bossStart, playerStart, npcTypeIds, formCycle, totems as totemSpecs, isFloor, floorBounds,
   gapTo, footprintTiles, chebyshev, spotAnims, sounds,
 } from "./ids.js";
-import { Specials, drowsyAttackDelay, runCounts } from "./specials.js";
+import { Specials, drowsyAttackDelay, runCounts, curseStops } from "./specials.js";
 import { Minions, totemDefinition, huskDefinition, parasiteDefinition, sleepwalkerDefinition, sleepwalkerCounts } from "./minions.js";
 import { phosanisNightmareLoadouts } from "./loadouts.js";
 
@@ -323,16 +323,18 @@ class PhosanisNightmareEncounter {
     if (!context.world.getPlayer().alive) return [];
     return getNpcPursuitMoves(boss, { ...context, random: this.random });
   }
-  // She leaves (her flowers and her surge start so): out of reach until she is back.
+  // She leaves (her flowers and her surge start so): still until she is back, but not out of reach. OBS (Outside, five
+  // recordings, 17 leaves for her flowers or surge): 4 times the player began an attack 1 or 2 ticks into her animation
+  // (a thrall once more) and it landed on her shield; Don Danz's broke it so 2 ticks in (her surge, 2026-11-26, 329).
   leave(context) {
     const boss = this.boss(context.world);
     if (!boss) return;
     this.away = true;
-    boss.untargetable = true;
     this.visual(context, { animations: [{ clipId: "leave" }] });
   }
-  // Back: at the centre, or at a lane's start facing along it.
-  comeBack(context, at = bossStart, facing = null) {
+  // Back: at the centre, or at a lane's start facing along it (her surge: still until she crosses), or there with her
+  // surge nulled (`free`: she goes for the player at once).
+  comeBack(context, at = bossStart, facing = null, free = false) {
     const boss = this.boss(context.world);
     if (!boss) return;
     boss.position = [...at];
@@ -340,7 +342,7 @@ class PhosanisNightmareEncounter {
     boss.movementPath = [];
     boss.untargetable = false;
     if (facing) faceActorToward(boss, { position: facing, size: bossSize });
-    this.away = facing !== null; // her surge: still until she crosses
+    this.away = facing !== null && !free;
     if (!facing) this.stillUntil = Math.max(this.stillUntil, context.tick + 4); // tsps: still until the segment animation
     this.visual(context, { animations: [{ clipId: "back" }] });
   }
@@ -441,7 +443,10 @@ class PhosanisNightmareEncounter {
     // tsps (rsprox 1148, 1156): in her third phase the protection that would stop the attack goes off on her animation,
     // any other stays on. While cursed, the shuffled one (tsps, theirs; OBS (Outside): all 4 of her cursed attacks that
     // met a protection that would stop them, Protect from Melee off as her magic came, Protect from Magic as her ranged
-    // came; the 3 that met one that would not, it stayed on). OBS (runelogs): of the protections the
+    // came; the 3 that met one that would not, it stayed on). OBS (Outside, five recordings): in her third phase the
+    // protection that would stop the attack, on the tick before her animation, was off on the tick of it 25 times of 25
+    // (9 of them cursed, each the shuffled one), and any other stayed on (34 of 34); in her first two phases it stayed on
+    // through her animation's tick 56 times of 57. OBS (runelogs): of the protections the
     // player had on that went off with none in their place, those 4 ticks before a hit on him (her magic or ranged
     // animation) or 2 before one 4 after the last (her melee): 23 of 95 in her third phase, 14 of 206 in the two before.
     if (last && player.activePrayer === protectionPrayers[stoppedBy]) context.setProtectionPrayer?.(null);
@@ -495,6 +500,7 @@ class PhosanisNightmareEncounter {
     this.minions.wakeTotems(context.world);
     this.message(context, messages.shieldFails);
     this.sound(context, sounds.shieldFails);
+    this.specials.shieldFailed(context);
   }
   totemsCharged(context) {
     if (this.stage !== "totems") return;
@@ -694,9 +700,18 @@ class PhosanisNightmareEncounter {
         melee: this.melee.filter((swing) => swing.at >= now).map((swing) => ({ ...swing, stoppedBy: this.specials.protectionFor("melee") })),
         ...this.specials.snapshot(now),
         ...this.minions.snapshot(now),
+        ...(this.specials.curse ? { playerOverheadPrayer: this.cursedOverhead() } : {}),
       },
       visuals: {},
     };
+  }
+  // Cursed, the icon over the player is that of the style his protection stops now (OBS (Outside, five recordings,
+  // 282 cursed ticks, none otherwise): Protect from Magic shows the missiles icon, Protect from Melee the magic one,
+  // Protect from Missiles the melee one). Read by the scene in place of his prayer's own (rendering.js).
+  cursedOverhead() {
+    const prayer = this.world?.getPlayer()?.activePrayer ?? null;
+    const style = Object.keys(protectionPrayers).find((key) => protectionPrayers[key] === prayer);
+    return style ? protectionPrayers[curseStops[style]] : prayer;
   }
   getNpcDamageSourceLabel(npcId) {
     if (npcId?.startsWith("nightmare-husk")) return "Husk";

@@ -304,6 +304,14 @@ export class ColosseumEncounter {
   getOutcome() {
     return this.outcome;
   }
+  // The replay's auto markers (client/replay/markers.js): the tick the wave's monsters are placed on, and that of the reinforcements.
+  getAutoMarkers() {
+    if (this.phase !== "active") {
+      return [];
+    }
+    const names = [`wave ${this.wave}`, ...(this.reinforcementsPlacedTick === null ? [] : [`wave ${this.wave} reinforcements`])];
+    return names.map((name) => ({ id: name, label: name }));
+  }
   getSnapshot() {
     return {
       kind: colosseumKind,

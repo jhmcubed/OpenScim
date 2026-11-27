@@ -48,15 +48,33 @@ try {
   const forms = [8615, 8616, 8617, 8618, 8619, 8620, 8621, 8622];
   await page.waitForFunction((forms) => forms.every((id) => scene.isNpcTypeLoaded(id)), forms, { timeout: 60000 });
 
-  // The vents erupt: each drawn as its map object with the eruption's sequence, on its own tile.
+  // Each vent is drawn once, by the scene, never also as the map's own object: two of the same model on one tile
+  // flickered as the eruption played over the map's vent (the play-test of 2026-11-26). Off, each stands in its
+  // hydra_geyser_off; erupting, it plays the eruption's sequence, on its own tile.
   await page.evaluate(() => engine.setMechanicsConfig({ ...engine.mechanicsConfig, infiniteHealth: true }));
-  const geysers = await page.evaluate(() => {
-    for (let tick = 0; tick < 12 && !engine.getEncounterSnapshot().state.erupting; tick++) engine.advanceTick(engine.player().position);
-    const encounter = engine.getEncounterSnapshot();
-    const drawn = scene.sceneObjectController.update({ state: { encounter }, interpolatedTick: engine.worldState.tick });
-    return drawn.map(({ data }) => [data.locId, data.seqId, data.localX, data.localY]).sort((a, b) => a[0] - b[0]);
+  // (The map's objects: still ones in stagedLocIds, animated ones, as the vents are, in animatedLocIds.)
+  await page.waitForFunction(() => scene.locRenderer.isLoaded(), null, { timeout: 60000 });
+  const mapVents = await page.evaluate(() => {
+    const { stagedLocIds, animatedLocIds } = scene.locRenderer;
+    const drawn = new Set([...stagedLocIds, ...animatedLocIds.values()]);
+    return [34568, 34569, 34570].filter((id) => drawn.has(id));
   });
-  assert.deepEqual(geysers, [[34568, 8279, 27, 23], [34569, 8279, 27, 32], [34570, 8279, 18, 32]]);
+  assert.deepEqual(mapVents, []);
+  const vents = await page.evaluate(() => {
+    const drawn = (erupting) => {
+      for (let tick = 0; tick < 12 && engine.getEncounterSnapshot().state.erupting !== erupting; tick++) engine.advanceTick(engine.player().position);
+      const encounter = engine.getEncounterSnapshot();
+      return scene.sceneObjectController
+        .update({ state: { encounter }, interpolatedTick: engine.worldState.tick })
+        .map(({ data }) => [data.locId, data.seqId, data.localX, data.localY])
+        .sort((a, b) => a[0] - b[0]);
+    };
+    return { off: drawn(false), erupting: drawn(true) };
+  });
+  assert.deepEqual(vents, {
+    off: [[34568, 8280, 27, 23], [34569, 8280, 27, 32], [34570, 8280, 18, 32]],
+    erupting: [[34568, 8279, 27, 23], [34569, 8279, 27, 32], [34570, 8279, 18, 32]],
+  });
 
   // The electric form (the boss hitpoints preset): drawn as its own type once the scene has caught up.
   await page.evaluate(() => {

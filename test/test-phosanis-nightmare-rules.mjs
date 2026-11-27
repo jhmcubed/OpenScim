@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { runScenario } from "../tools/determinism/harness.mjs";
 import { scenarios } from "../tools/determinism/scenarios/phosanis-nightmare.mjs";
-import { formCycle, surgeLanes, sleepwalkerTiles, same } from "../client/encounters/phosanis-nightmare/ids.js";
+import { formCycle, surgeLanes, sleepwalkerTiles, same, gapTo, bossSize } from "../client/encounters/phosanis-nightmare/ids.js";
 
 const BOSS = "phosanis-nightmare";
 const specialClips = ["claws", "husks", "parasite", "curse", "spores", "leave"];
@@ -141,6 +141,38 @@ for (const name of ["kill", "kill-other-forms"]) {
     const lane = surgeLanes.find(([a, b]) => same(a, from) || same(b, from));
     assert.ok(lane, name + " surge from " + from);
   }
+  // Cursed, the icon over him is that of the style his protection stops now (the Outside recordings); else his own.
+  const shuffled = { ProtectMagic: "ProtectRange", ProtectRange: "ProtectMelee", ProtectMelee: "ProtectMagic" };
+  const cursed = ticks.filter((tick) => tick?.state.cursed);
+  assert.ok(cursed.some((tick) => tick.prayer), name);
+  for (const tick of cursed) assert.equal(tick.state.playerOverheadPrayer, tick.prayer ? shuffled[tick.prayer] : null);
+  assert.ok(ticks.every((tick) => !tick || tick.state.cursed || tick.state.playerOverheadPrayer === undefined));
+}
+
+{
+  // His hit breaks her shield on the tick she lands at her surge's lane: no surge (Don Danz's recording). She stands
+  // at the lane's start, goes for him from the next tick, and attacks 9 ticks after her leave.
+  const ticks = await ticksOf("surge-nulled");
+  const leave = clipTicks(ticks, "leave").find((tick) => ticks[tick].state.surge);
+  assert.equal(leave, 131);
+  const fails = messageTicks(ticks, "As the Nightmare's shield fails")[0];
+  assert.equal(fails, leave + 2);
+  assert.ok(ticks[leave + 1].onBoss.length + ticks[leave + 2].onBoss.length > 0, "hit while she leaves");
+  assert.ok(surgeLanes.some(([a, b]) => same(a, ticks[leave + 2].boss) || same(b, ticks[leave + 2].boss)), "at a lane's start");
+  assert.deepEqual(clipTicks(ticks, "surge"), []);
+  assert.deepEqual(damageOf(ticks, "Surge"), []);
+  assert.equal(ticks[leave + 2].state.surge, null);
+  assert.ok(ticks.slice(leave + 3, leave + 8).some((tick) => !same(tick.boss, ticks[leave + 2].boss)), "she walks");
+  const next = ticks.findIndex((tick, n) => n > leave && tick?.clips.some((clip) => [...standardClips, ...specialClips].includes(clip)));
+  assert.equal(next, leave + 9);
+}
+
+{
+  // Broken on the tick she crosses, the surge goes on.
+  const ticks = await ticksOf("surge-crosses");
+  const leave = clipTicks(ticks, "leave").find((tick) => ticks[tick].state.surge);
+  assert.equal(messageTicks(ticks, "As the Nightmare's shield fails")[0], leave + 6);
+  assert.deepEqual(clipTicks(ticks, "surge"), [leave + 6]);
 }
 
 {
@@ -162,9 +194,13 @@ for (const name of ["kill", "kill-other-forms"]) {
   // her husks hold him (the Outside recording).
   const sets = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => clip === "claws" || clip === "clawRunStart" || clip === "clawRun") ? [n] : []));
   for (const hit of damageOf(ticks, "Grasping Claws")) assert.ok(sets.includes(hit.tick - 4), "claws at " + hit.tick);
+  // None under her but her body's corners (the Outside recordings), where she stood still that tick.
+  const corner = ([x, y], [bx, by]) => (x === bx || x === bx + bossSize - 1) && (y === by || y === by + bossSize - 1);
   for (const set of sets) {
     const opened = ticks[set].state.claws.find((claws) => claws.at === set + 4);
-    if (!ticks[set].state.held) assert.ok(opened.tiles.some((tile) => same(tile, ticks[set].player)), "claws at " + set);
+    const her = ticks[set].boss;
+    if (!ticks[set].state.held && gapTo(ticks[set].player, her) > 0) assert.ok(opened.tiles.some((tile) => same(tile, ticks[set].player)), "claws at " + set);
+    if (same(her, ticks[set - 1].boss)) assert.ok(opened.tiles.every((tile) => gapTo(tile, her) > 0 || corner(tile, her)), "claws under her at " + set);
   }
   assert.ok(turns.length > 30);
   // Her curse: the message 2 ticks after her animation; it wears off 5 ticks after her fifth turn from then.

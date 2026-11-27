@@ -3,6 +3,7 @@
 // the floor as the map objects the game uses for them (from the encounter's
 // snapshot). The ids are the game cache's (ids.js).
 import { buildScene } from "../shared/buildScene.js";
+import { maggotKingAudio } from "./audio.js";
 import { maggotKingKind, maggotKingMapSquare, bossActorId } from "./encounter.js";
 import { npcTypeIds, seqIds, spotAnims, locIds, bossStart, bossSize } from "./ids.js";
 
@@ -58,6 +59,7 @@ export const presentation = (BaseScene) => ({
   sceneBuilder: (context) => buildScene(BaseScene, renderConfig, context),
   // He is north of the floor: the camera looks north, over the player's shoulder.
   defaultCamera: { yaw: 0, pitch: -40, zoom: 380 },
+  audio: maggotKingAudio,
   presentation: {
     title: "Maggot King",
     tagline: "Vampyrium",

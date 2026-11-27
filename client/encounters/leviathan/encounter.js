@@ -712,7 +712,9 @@ class LeviathanEncounter {
       if (ctx.world.getPlayer()?.alive) hits.push({ source: "The Leviathan's roar", attackType: "typeless", baseDamage: [...this.version.roarHit], playerPosition: [...ctx.playerPos] });
     });
   }
+  // `roarRocks` on the event: with the sound recorded for a roar's rocks (audio.js).
   roarRocks(context) {
+    emitInfernoVisual(context.tickEvents, { animations: [], projectiles: [], graphics: [], roarRocks: true });
     this.dropRocks(context, context.playerPos);
     if (this.firstRoar) {
       this.firstRoar = false;
@@ -1141,6 +1143,10 @@ class LeviathanEncounter {
   }
   getOutcome() {
     return this.outcome;
+  }
+  // The replay's auto markers (client/replay/markers.js).
+  getAutoMarkers() {
+    return this.enraged ? [{ id: "enrage", label: "enrage" }] : [];
   }
   getSnapshot() {
     return {

@@ -773,6 +773,9 @@ export const vardorvisDefinition = {
     playerStart,
     loadsMapLocs: true,
     isWorkInProgress: true,
+    // No "3, 2, 1" before the fight: WIKI, he is not aggressive; OBS, his
+    // clock starts with the first hit on him (onPlayerAttackResolved).
+    fightStartCountdown: false,
     collision: { mode: "auto", seed: playerStart },
     victory: { eyebrow: "Triumphant", title: "VICTORY", narrative: "VARDORVIS DEFEATED", accent: "blood" },
     // The awakened fight is a variant kind (client/dt2/bosses.js, awakenedKind); both use the post-quest presets.

@@ -343,8 +343,11 @@ function combatXpMultiplier(target, encounterRules) {
 // hits was forced to miss. launchPlayerAttack gives the experience from
 // this number, each target's damage times its combat experience bonus
 // (combatXpMultiplier), and the xp_drop event carries the number itself:
-// the "(hit)" of the XP drop is the hit, not the experience over 4.
+// the "(hit)" of the XP drop is the hit, not the experience over 4. An
+// encounter whose playerDamageOnNpc lowers a hit as it lands says the same
+// at launch with predictPlayerDamageOnNpc (optional, without side effects).
 function awardAttackXp(attack, hitGroups) {
+  const predictDamage = attack.deps.encounterRules?.predictPlayerDamageOnNpc;
   let predictedHit = 0;
   let xpDamage = 0;
   for (const hitGroup of hitGroups) {
@@ -358,10 +361,14 @@ function awardAttackXp(attack, hitGroups) {
         0,
         Math.floor(rolledDamage * attack.outgoingDamageMultiplier),
       );
-      const finalDamage = Math.max(
+      const multipliedDamage = Math.max(
         0,
         Math.floor(scaledDamage * attack.specialAttackDamageMultiplier),
       );
+      const finalDamage =
+        predictDamage && hitGroup.target
+          ? Math.max(0, Math.floor(predictDamage(multipliedDamage, { target: hitGroup.target, attack })))
+          : multipliedDamage;
       const remainingHp = Math.max(0, hitGroup.hpAtLaunch - damageToTarget);
       damageToTarget += Math.min(finalDamage, remainingHp);
     }

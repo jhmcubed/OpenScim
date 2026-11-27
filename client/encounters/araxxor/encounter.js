@@ -376,12 +376,15 @@ function collisionWithEggs(map, blocked) {
 }
 
 export const patternKey = "araxxorEggs";
+// The colour of the first egg. Each label fits its box in the setup panel; the
+// special each one brings is in the row's info.
 const patternChoices = [
   { value: "random", label: "Any" },
-  { value: "green", label: "Green first (acid ball)" },
-  { value: "white", label: "White first (acid spray)" },
-  { value: "red", label: "Red first (acid drip)" },
+  { value: "green", label: "Green" },
+  { value: "white", label: "White" },
+  { value: "red", label: "Red" },
 ];
+const patternInfo = "The colour of the first egg to hatch, which also chooses his special: green the acid ball, white the acid spray, red the acid drip. Any leaves it to chance. Applies from your next attempt.";
 
 class AraxxorEncounter {
   constructor() {
@@ -1288,6 +1291,10 @@ class AraxxorEncounter {
   getOutcome() {
     return this.outcome;
   }
+  // The replay's auto markers (client/replay/markers.js).
+  getAutoMarkers() {
+    return this.enraged ? [{ id: "enrage", label: "enrage" }] : [];
+  }
   getSnapshot() {
     return {
       kind: this.kind,
@@ -1344,7 +1351,7 @@ export const araxxorDefinition = {
   },
   controls: {
     defaultMechanicsConfig: { [patternKey]: "random" },
-    mechanicsToggles: [{ key: patternKey, label: "Eggs", setup: true, choices: patternChoices }],
+    mechanicsToggles: [{ key: patternKey, label: "Eggs", setup: true, choices: patternChoices, info: patternInfo }],
     debugActions: [],
   },
 };

@@ -106,6 +106,13 @@ try {
         const matrix = scene.npcInstanceManager.instanceRegistry.get(jug.actor.id).currentModelMatrix;
         return window.projectTile({x:matrix[12], y:matrix[13], level:matrix[14]+0.3});
       });
+      // Hovered, a resting jug shows its first option (CACHE, NPC 11735: Push, Pull, Hit), as Zebak shows his,
+      // its name in the cyan of its cache name "<col=00ffff>Jug</col>".
+      await page.mouse.move(jugPoint.clientX, jugPoint.clientY);
+      await page.waitForFunction(() => [...document.querySelectorAll("span")].some(span =>
+        span.textContent === "Jug" && getComputedStyle(span).color === "rgb(0, 255, 255)" &&
+        span.previousElementSibling?.textContent === "Push "), null, {timeout: 3000});
+      assert.ok(!(await page.locator("body").innerText()).includes("<col="));
       if (action === "Pull") {
         await page.mouse.click(jugPoint.clientX, jugPoint.clientY, {button:"right"});
         const item = await page.getByText("Pull", {exact:true}).last().boundingBox();
@@ -209,11 +216,18 @@ try {
     const after = await page.evaluate(() => {
       const phases = engine.encounter.phases;
       return {
-        active: phases.active, queue: phases.queue, hazards: phases.actors.size,
-        models: [...scene.npcInstanceManager.instanceRegistry.values()].map(model => model.npcTypeId).sort(),
+        active: phases.active, queue: phases.queue,
+        hazards: [...new Set([...phases.actors.values()].map(object => object.kind))],
+        // A Wave (11738) or a Bloody Wave (11739) counts as a wave.
+        models: [...new Set([...scene.npcInstanceManager.instanceRegistry.values()]
+          .map(model => model.npcTypeId === 11739 ? 11738 : model.npcTypeId))].sort(),
       };
     });
-    assert.deepEqual(after, {active:null, queue:[], hazards:0, models:[11731,11732]});
+    // Enraged he starts no more specials and the jugs and boulders are cleared; the crests already in the
+    // water run on to the far shore.
+    assert.deepEqual(after, kind === "waves"
+      ? {active:null, queue:[], hazards:["wave"], models:[11731,11732,11738]}
+      : {active:null, queue:[], hazards:[], models:[11731,11732]});
     await page.evaluate(() => engine.setBossHp(0));
     await page.waitForFunction(() => !engine.worldState.actors.has("zebak-tail"));
     assert.equal(await page.evaluate(() => engine.encounter.phases.acid.size), 0);

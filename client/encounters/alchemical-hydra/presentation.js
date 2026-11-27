@@ -1,7 +1,7 @@
 // What draws the Alchemical Hydra: the default scene, with each of its forms
 // and their sequences, the spot animations of its attacks and specials, and
-// its vents erupting (the map's vents, drawn again with the eruption's
-// sequence while it lasts, from the encounter's snapshot). The ids are the
+// its vents (the map's vents, drawn by the scene instead of the map: standing
+// off, or erupting while the encounter's snapshot says so). The ids are the
 // game cache's (ids.js).
 import { buildScene } from "../shared/buildScene.js";
 import { alchemicalHydraAudio } from "./audio.js";
@@ -9,24 +9,30 @@ import { alchemicalHydraKind, alchemicalHydraMapSquare, bossActorId } from "./en
 import { npcTypeIds, seqIds, spotAnims, ventLocIds, geyserSeqIds, vents, bossStart, bossSize } from "./ids.js";
 
 const identity = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-// CACHE: a vent is a loc of shape 10, unturned, on its tile.
-const geyser = (colour, [x, y], eruptedAt) => ({
-  id: `hydra-geyser-${colour}-${eruptedAt}`,
+// CACHE: a vent is a loc of shape 10, unturned, on its tile. Off, it stands in hydra_geyser_off, as the map's does;
+// erupting, it plays hydra_geyser from the eruption's tick.
+const vent = (colour, [x, y], eruptedAt) => ({
+  id: eruptedAt === undefined ? `hydra-vent-${colour}` : `hydra-geyser-${colour}-${eruptedAt}`,
   meshId: `hydra-geyser-${colour}`,
   materialId: "osrs-npc",
   modelMatrix: identity,
   lifecycle: { kind: "sync" },
   classification: "sceneMesh",
-  data: { kind: "loc", locId: ventLocIds[colour], modelType: 10, rotation: 0, localX: x, localY: y, level: 0, seqId: geyserSeqIds.erupt, animationStartTick: eruptedAt },
+  data: {
+    kind: "loc", locId: ventLocIds[colour], modelType: 10, rotation: 0, localX: x, localY: y, level: 0,
+    ...(eruptedAt === undefined ? { seqId: geyserSeqIds.off } : { seqId: geyserSeqIds.erupt, animationStartTick: eruptedAt }),
+  },
 });
 const ventScene = () => ({
   consumeEvents() {},
   update({ state }) {
     const chamber = state.encounter?.state;
-    if (!chamber?.erupting) return [];
-    return Object.entries(vents).map(([colour, tile]) => geyser(colour, tile, chamber.eruptedAt));
+    return Object.entries(vents).map(([colour, tile]) => vent(colour, tile, chamber?.erupting ? chamber.eruptedAt : undefined));
   },
 });
+// The map's own vents are left out: the scene draws each (ventScene). Drawn by both, the eruption played over the map's
+// vent on the same tile, and the two flickered through each other (the play-test of 2026-11-26).
+const mapVents = Object.entries(vents).map(([colour, [x, y]]) => ({ localX: x, localY: y, locId: ventLocIds[colour] }));
 
 // A form that fights, phase 0 to 3; a form it passes through as a head falls (CACHE: those have no stand of their
 // own: inferred, the stand of the form before).
@@ -65,6 +71,7 @@ const lastForm = {
 
 const renderConfig = {
   terrainMapSquare: alchemicalHydraMapSquare,
+  locRender: { excludedLocs: mapVents },
   primaryNpc: { actorId: bossActorId, npcTypeId: npcTypeIds.serpentine, basePosition: bossStart, size: bossSize, deathSeqId: seqIds.death },
   preloadNpcTypes: [
     form(npcTypeIds.serpentine, 0),

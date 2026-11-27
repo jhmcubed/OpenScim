@@ -16,7 +16,7 @@ import { formatInfernoSpawnLayout } from "./spawnLayout.js";
 import { emitInfernoVisual, isOutsideZukShieldCoverage } from "./events.js";
 import { activeOutcome } from "../shared/npcHelpers.js";
 import { infernoObstacleCollisionFlags } from "./collisionFlags.js";
-import { infernoNpcTypeIds, infernoArenaBounds, zukPlayerStart, zukIntroStartTickOffset, zukIntroTeleportTickOffset, zukIntroSpawnTickOffset, zukRiseClipId, zukCavernShakeMessage, tzhaarKetKehName, zukPrisonBreakingMessage, infernoEncounterKind, infernoPlayerStart, infernoDefaultStartTile, infernoWaveMessageColor, jadHealerSpawnDistanceRange } from "./constants.js";
+import { infernoNpcTypeIds, zukMagerNpcTypeId, zukRangerNpcTypeId, zukJadNpcTypeId, zukJadHealerNpcTypeId, zukHealerNpcTypeId, infernoArenaBounds, zukPlayerStart, zukIntroStartTickOffset, zukIntroTeleportTickOffset, zukIntroSpawnTickOffset, zukRiseClipId, zukCavernShakeMessage, tzhaarKetKehName, zukPrisonBreakingMessage, infernoEncounterKind, infernoPlayerStart, infernoDefaultStartTile, infernoWaveMessageColor, jadHealerSpawnDistanceRange } from "./constants.js";
 import { chooseDistinctValues } from "./monsterHelpers.js";
 import { infernoPillars, pillarCollapseRemovalTicks, scriptedPillarCollapseRemovalTicks, getInfernoPillarTiles, buildArenaConfigWithPillars, infernoPillarNpcDefinition, infernoPillarCollapseNpcDefinition, createPillarActorRecord, createInfernoPillarActor } from "./pillars.js";
 import { buildSpawnLayoutFromSpawns, infernoJadWaveConfigs, mixInfernoWaveSeed, createWaveNpcRandom, buildInfernoWaveSpawns } from "./waves.js";
@@ -240,6 +240,16 @@ function registerZukNpcs(getZukFight, presentParentHeal) {
     }),
   ];
 }
+// What is marked when it comes (getAutoMarkers): the NPC types of actors.js.
+// 7701 is the healer of a wave's Jad; the others are of Zuk's fight.
+var autoMarkerLabels = new Map([
+  [zukMagerNpcTypeId, "Zuk's set"],
+  [zukRangerNpcTypeId, "Zuk's set"],
+  [zukJadNpcTypeId, "Zuk's Jad"],
+  [7701, "Jad's healers"],
+  [zukJadHealerNpcTypeId, "Jad's healers"],
+  [zukHealerNpcTypeId, "Zuk's healers"],
+]);
 var InfernoEncounter = class {
   constructor(runSeed = createRandomInfernoSeed(), options = {}) {
     this.kind = infernoEncounterKind;
@@ -554,6 +564,19 @@ var InfernoEncounter = class {
   }
   getOutcome() {
     return this.zuk?.getOutcome() ?? activeOutcome;
+  }
+  // The replay's auto markers (client/replay/markers.js): the tick a wave is placed on, and
+  // those on which Zuk's sets, his Jad and the healers come.
+  getAutoMarkers({ world }) {
+    const markers = this.phase === "active" ? [{ id: `wave ${this.wave}`, label: `wave ${this.wave}` }] : [];
+    for (const npc of world.getNpcs()) {
+      const label = autoMarkerLabels.get(npc.npcTypeId);
+      const id = `${label} ${npc.spawnTick}`;
+      if (label !== undefined && npc.alive && !markers.some((marker) => marker.id === id)) {
+        markers.push({ id, label });
+      }
+    }
+    return markers;
   }
   syncBossHp(bossHp, context) {
     this.zuk?.syncBossHp(bossHp, context);

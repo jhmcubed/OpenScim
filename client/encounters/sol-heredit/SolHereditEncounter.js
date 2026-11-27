@@ -212,6 +212,10 @@ var SolHereditEncounter = class {
   getOutcome() {
     return this.outcome;
   }
+  // The replay's auto markers (client/replay/markers.js): each phase after the first.
+  getAutoMarkers() {
+    return this.phase > 0 ? [{ id: `phase ${this.phase + 1}`, label: `phase ${this.phase + 1}` }] : [];
+  }
   getEngineRules() {
     return {
       ...this.modifierState.getEngineRules(),
