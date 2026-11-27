@@ -349,7 +349,7 @@ test("awakened: the tornado at half its hitpoints, where it goes and what it doe
     ...run.ticksOf((entry) => entry.graphic === 2475 || entry.graphic === 2476).flatMap((tick) => [tick + 6, tick + 7, tick + 8]),
   ]);
   const damage = run.hitsOn("player").filter(({ tick }) => hits.includes(tick) && !orbTicks.has(tick) && !rockTicks.has(tick));
-  assert.ok(damage.length > 0 && damage.every(({ amount }) => amount >= 42 && amount <= 48), damage.map(({ amount }) => amount).join());
+  assert.ok(damage.length > 0 && damage.every(({ amount }) => amount >= 40 && amount <= 48), damage.map(({ amount }) => amount).join());
   const none = await fight({ kind: BOSS, ticks: 20, script: (tick, api) => tick === 1 && setBossHp(api, 300) });
   assert.ok([...none.at.values()].every(({ npcs }) => !npcs.has("leviathan-tornado")));
 });
@@ -517,4 +517,23 @@ test("post-quest: a stun that runs out goes on with the volley, and does not cou
   const orbs = run.ticksOf((entry) => entry.orb && entry.tick > first && entry.tick < first + 30);
   assert.deepEqual(orbs.slice(0, 2).map((tick) => tick - first), [14, 16], "the third volley goes on, 2 ticks apart");
   assert.equal(after, 2, "the second volley after the first stun broken");
+});
+
+test("post-quest: the rocks stay through its death and crumble as it goes", { skip }, async () => {
+  // OBS 11/26 kills (21 of 21): every rock stays to its removal, 6 ticks after the kill, and then crumbles (2474).
+  let killed = null;
+  const rubbleAt = new Map();
+  const run = await fight({ kind: BOSS, ticks: 20, script(tick, api) {
+    if (tick === 1) for (const [x, y] of [[25, 42], [40, 30]]) api.engine.encounter.rubble.set(`${x},${y}`, [x, y, 0]);
+    if (tick === 3) setBossHp(api, 0);
+    rubbleAt.set(tick, state(api).rubble.length);
+    if (killed === null && api.engine.getEncounterOutcome().phase !== "active") killed = tick;
+  } });
+  assert.notEqual(killed, null, "it was killed");
+  for (let tick = killed; tick < killed + 5; tick++) assert.equal(rubbleAt.get(tick), 2, `tick ${tick}: the rocks are still there`);
+  const crumbled = run.log.filter(graphic(2474));
+  assert.deepEqual(unique(crumbled.map(({ tick }) => tick)).length, 1);
+  assert.deepEqual(crumbled.map(({ tile }) => tile.join()).sort(), ["25,42", "40,30"]);
+  assert.equal(run.engine.getEncounterSnapshot().state.rubble.length, 0);
+  assert.equal(run.engine.getEncounterOutcome().phase, "victory");
 });

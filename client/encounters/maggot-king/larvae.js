@@ -17,8 +17,9 @@
 // again. OBS: 1 for a first tick (twice), then 2 and 3 for a player who stayed
 // (the wiki says it starts at 3). Only kill 686 shows a leech: none past 3.
 //
-// In the air a standard ranged hit kills it, and costs the weapon no time
-// (WIKI; encounter.js's rules). The King's death kills them all.
+// In the air a standard ranged hit kills it (WIKI); it may be shot while the
+// weapon cools down, and starts its delay again (WIKI, OBS; encounter.js's
+// rules). The King's death kills them all.
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { defineNpc } from "../shared/npcDefinitions.js";
 import { healNpc } from "../shared/npcHelpers.js";

@@ -280,6 +280,11 @@ const drainShare = 0.09; // WIKI, OBS (tsps), OBS (k1 222: 3 of 37 Prayer): 9% o
 const poolDamage = [4, 5];
 const ballDamage = [14, 18]; // OBS (tsps); OBS: 17 (n7 39)
 const venom = 1_000_000; // WIKI: the acid envenoms (the engine's poisonVarp for venom)
+// WIKI: "As with all araxytes, Araxxor's attacks can inflict venom." OBS (20
+// kills, with the player no longer immune to venom): each of his 4 melee hits
+// that did damage envenomed him on the tick of the swing, and neither of his 2
+// that hit 0; each of 2 Acidic spits envenomed him on the tick it was spat
+// (here: as it lands). His magic and ranged were never seen then: not yet.
 // WIKI: the Ruptura's blast by distance from it (under it, beside it, 1 and 2
 // tiles between), in proportion to its hitpoints left. On the player (not yet
 // recorded: inferred); on Araxxor, an egg or another araxyte (OBS: 80 on him
@@ -675,7 +680,9 @@ class AraxxorEncounter {
       plan: { formulaStyle: "melee_stab", damageType: "melee", attackKind: "melee_stab", maxHit: maxHits.melee, impactDelayTicks: 0, sourceDeathPolicy: "cancel-before-impact" },
     });
     emitInfernoNpcAttack(context, { actor: boss, target: player, clipId: "attack", kind: "araxxor_melee", impactDelayTicks: 0 });
-    return { environmentalDamages: [], npcAttacks: attack ? [{ ...attack, prayerReduction: { type: "reduce", value: prayerLeaves.melee } }] : [] };
+    // The engine envenoms on an accurate hit (inferred: an accurate hit that
+    // prayer brings to 0 envenoms too; the 2 recorded 0s may have missed).
+    return { environmentalDamages: [], npcAttacks: attack ? [{ ...attack, prayerReduction: { type: "reduce", value: prayerLeaves.melee }, applyPoison: venom }] : [] };
   }
   // WIKI: magic or ranged, whichever of the player's defence rolls is lower
   // (inferred: ranged when they are equal).
@@ -1037,7 +1044,7 @@ class AraxxorEncounter {
         projectiles: [this.projectile(projectiles.acidic, middleOf(npc), buildActorVisualTarget(player), end)] });
       npc.combat.lastAttackTick = tick;
       npc.combat.nextActionTick = tick + attackTicks;
-      return { environmentalDamages: [], npcAttacks: attack ? [attack] : [] };
+      return { environmentalDamages: [], npcAttacks: attack ? [{ ...attack, applyPoison: venom }] : [] };
     }
     // The Mirrorback: its bite (a stab, inferred; TABLE max).
     if (!this.mirrorbackBite(npc, context)) return idle;
@@ -1290,6 +1297,10 @@ class AraxxorEncounter {
   }
   getOutcome() {
     return this.outcome;
+  }
+  // The replay's auto markers (client/replay/markers.js).
+  getAutoMarkers() {
+    return this.enraged ? [{ id: "enrage", label: "enrage" }] : [];
   }
   getSnapshot() {
     return {

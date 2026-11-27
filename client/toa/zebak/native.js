@@ -278,6 +278,14 @@ export function zebakDefinition({
     getOutcome() {
       return this.outcome;
     }
+    // The replay's auto markers (client/replay/markers.js): each of his specials, and the enrage.
+    getAutoMarkers() {
+      const { active, enraged } = this.phases;
+      return [
+        ...(active ? [{ id: `${active.kind} ${active.start}`, label: active.kind === "roar" ? "Great Roar" : "Tidal Waves" }] : []),
+        ...(enraged ? [{ id: "enrage", label: "enrage" }] : []),
+      ];
+    }
     getSnapshot() {
       return { kind: this.kind, state: {
         ...this.phases.snapshot(), bloodTrail: [...this.bloodTrail.values()].map(mark => mark.position),

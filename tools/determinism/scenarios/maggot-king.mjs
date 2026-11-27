@@ -51,7 +51,7 @@ function dodge(api, tick) {
   return false;
 }
 
-// A larva still in the air: a ranged weapon kills it at no cost to its timer.
+// A larva still in the air: a standard ranged weapon kills it, even while it cools down.
 const flyingLarva = (api, tick) => api.npcs().find((npc) => npc.npcTypeId === 15743 && npc.state?.landsAt > tick && !npc.state?.dying);
 
 export const scenarios = [

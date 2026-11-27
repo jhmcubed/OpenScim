@@ -22291,16 +22291,65 @@ var aA = {
     setting: "zukSetTimer",
     defaultKey: "X",
   },
+  // The replay's undo and markers (client/replay/markers.js), listed under General.
+  replayUndo: {
+    label: "Undo",
+    group: "Replay",
+    defaultKey: "Ctrl+Z",
+  },
+  replayAddMarker: {
+    label: "Add marker",
+    group: "Replay",
+    defaultKey: "F8",
+  },
+  replayLoadMarker: {
+    label: "Load marker",
+    group: "Replay",
+    defaultKey: "F9",
+  },
+  replayPreviousMarker: {
+    label: "Previous marker",
+    group: "Replay",
+    defaultKey: "F7",
+  },
+  replayNextMarker: {
+    label: "Next marker",
+    group: "Replay",
+    defaultKey: "Shift+F7",
+  },
+  replayLoadAutoMarker: {
+    label: "Load auto marker",
+    group: "Replay",
+    defaultKey: "Shift+F9",
+  },
 };
-var tA = ["zukSetTimerAdvance", "zukSetTimerReset", "zukSetTimerReveal"];
+var tA = [
+  "zukSetTimerAdvance",
+  "zukSetTimerReset",
+  "zukSetTimerReveal",
+  "replayUndo",
+  "replayAddMarker",
+  "replayLoadMarker",
+  "replayPreviousMarker",
+  "replayNextMarker",
+  "replayLoadAutoMarker",
+];
 var nA = {
   zukSetTimerAdvance: aA.zukSetTimerAdvance.defaultKey,
   zukSetTimerReset: aA.zukSetTimerReset.defaultKey,
   zukSetTimerReveal: aA.zukSetTimerReveal.defaultKey,
+  replayUndo: aA.replayUndo.defaultKey,
+  replayAddMarker: aA.replayAddMarker.defaultKey,
+  replayLoadMarker: aA.replayLoadMarker.defaultKey,
+  replayPreviousMarker: aA.replayPreviousMarker.defaultKey,
+  replayNextMarker: aA.replayNextMarker.defaultKey,
+  replayLoadAutoMarker: aA.replayLoadAutoMarker.defaultKey,
 };
 var sA = {
   "Zuk Set Timer":
     "Active during Zuk while Set Timer is on. Changes save immediately.",
+  Replay:
+    "Rewind the fight and mark its ticks, while it runs or in its replay. Changes save immediately.",
 };
 var rA = "osrs-keybinds";
 var iA = "osrs-camera-keybinds";

@@ -10,6 +10,8 @@ import { projectileOverrideOptions, projectileOverrideDefaults, updateProjectile
 import { blindfoldStore, listenForBlindfold } from "/plugins/blindfold.js";
 import { skyboxStore } from "/plugins/skybox.js";
 import { defenceTrackerStore, setDefenceTrackerEngine } from "/plugins/defenceTracker.js";
+// The replay's undo and markers: their options (Settings, Simulation) and keys.
+import { replayMarkerStore, listenForReplayKeys } from "/replay/markers.js";
 if (typeof window !== "undefined") listenForBlindfold(window);
 import { showPluginsPausedHint } from "/plugins/pluginsPausedHint.js";
 import { thrallSpells, THRALL_END_SOUND_ID } from "/engine/thralls.js";
@@ -16832,11 +16834,15 @@ var EncounterPanel = ({
   );
   const hZ = fa(encounterKind);
   const i0 = (0, React.useMemo)(
-    () =>
-      hZ
-        ? mechanicsToggles.filter((ij) => !hZ.keys.includes(ij.key))
-        : mechanicsToggles,
-    [mechanicsToggles, hZ],
+    () => {
+      const visibleToggles = mechanicsToggles.filter((toggle) =>
+        !(toggle.type === "color" && toggle.dependsOn && mechanicsConfig[toggle.dependsOn] !== true),
+      );
+      return hZ
+        ? visibleToggles.filter((ij) => !hZ.keys.includes(ij.key))
+        : visibleToggles;
+    },
+    [mechanicsToggles, hZ, mechanicsConfig],
   );
   const { unsectioned: unsectioned, sections: sections } = (0, React.useMemo)(
     () => e2(i0),
@@ -18668,7 +18674,9 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
     return null;
   }
   const h6 = (function () {
-    const { gamePanel: gamePanel, camera: camera, ui: h9 } = bw();
+    const keybinds = bw();
+    const { gamePanel: gamePanel, camera: camera, ui: h9 } = keybinds;
+    const replayKeys = bn(keybinds);
     const ha = Epe(h9.closeOverlay);
     return [
       {
@@ -18760,6 +18768,35 @@ var _pe = ({ isOpen: isOpen, onClose: onClose }) => {
           {
             keys: ha,
             description: "Exit replay",
+          },
+        ],
+      },
+      {
+        title: "Undo and Markers",
+        shortcuts: [
+          {
+            keys: Epe(replayKeys.replayUndo),
+            description: "Undo a few ticks",
+          },
+          {
+            keys: Epe(replayKeys.replayAddMarker),
+            description: "Mark this tick",
+          },
+          {
+            keys: Epe(replayKeys.replayLoadMarker),
+            description: "Load the last marker used",
+          },
+          {
+            keys: Epe(replayKeys.replayPreviousMarker),
+            description: "Go to the previous marker",
+          },
+          {
+            keys: Epe(replayKeys.replayNextMarker),
+            description: "Go to the next marker",
+          },
+          {
+            keys: Epe(replayKeys.replayLoadAutoMarker),
+            description: "Load the last auto marker",
           },
         ],
       },
@@ -20569,6 +20606,8 @@ function Dme(h2) {
 function Ome(h2) {
   return Rme(h2) || isZoomKey(h2) || Lme(h2) || Eme(h2) || Dme(h2);
 }
+// The heading of the options of client/replay/markers.js in Settings, Simulation.
+const replayMarkersTitle = "Undo and Markers";
 function Fme(h2, h3, h4) {
   return {
     id: eR(...h3),
@@ -20701,17 +20740,18 @@ function pillarAdditionsEntries(h2, h3, h4) {
 var Yme = [
   ...[
     Fme("section", ["Account"], {
-      description: "Log in or register, log out, or delete your account.",
+      description:
+        "Sign in with Discord or GitHub, log out, or delete your account.",
       keywords: [
         "login",
         "log in",
         "sign in",
-        "register",
+        "discord",
+        "github",
         "sign up",
         "log out",
         "logout",
         "delete account",
-        "password",
       ],
     }),
     {
@@ -20974,6 +21014,13 @@ var Yme = [
         "timer length",
       ],
     }),
+    Fme("section", ["Simulation", replayMarkersTitle], {
+      description: "Keys that undo a few ticks, and mark ticks of the fight and go back to them.",
+      keywords: ["quick save", "quicksave", "quick load", "quickload", "snapshot", "marker", "replay", "timeline", "bookmark", "undo", "rewind", "checkpoint", "save state", "auto marker"],
+    }),
+    ...replayMarkerStore.options.map((option) =>
+      Fme("setting", ["Simulation", replayMarkersTitle, option.label], { description: option.info, keywords: [] }),
+    ),
     Fme("setting", ["Simulation", "Auto-Advance"], {
       description: "Runs game ticks on their own instead of one per click.",
       keywords: [
@@ -24514,10 +24561,36 @@ function PluginStoreEntry({ label: label, store: store, expanded: expanded, onTo
     }),
   });
 }
+// The options of the replay's undo and markers, in Settings, Simulation.
+function ReplayMarkerSettings() {
+  const { settings } = (0, React.useSyncExternalStore)(replayMarkerStore.subscribe, replayMarkerStore.getState);
+  return (0, jsxRuntime.jsxs)("div", {
+    className: "control-group",
+    "data-search-id": eR("Simulation", replayMarkersTitle),
+    children: [
+      (0, jsxRuntime.jsx)("div", {
+        className: "group-title",
+        children: replayMarkersTitle,
+      }),
+      (0, jsxRuntime.jsx)(AttackRangesSettings, {
+        searchIdOf: (label) => eR("Simulation", replayMarkersTitle, label),
+        options: settings,
+        onChange: (changed) => replayMarkerStore.setSettings(changed),
+        defaults: replayMarkerStore.defaults,
+        optionList: replayMarkerStore.options,
+        sections: [null],
+      }),
+      (0, jsxRuntime.jsx)("div", {
+        className: "settings-hint",
+        children: "The keys are in the game panel's wrench tab, under Keybindings.",
+      }),
+    ],
+  });
+}
 // The options of a plugin that lists them as data: Attack Ranges by default,
 // Projectile Override with its own list (its options have no section), and
 // the plugins of client/plugins/pluginStore.js with theirs.
-function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange: onChange, optionList = attackRangesOptions, defaults = attackRangesDefaults, sections = ["Options", "Styles"] }) {
+function AttackRangesSettings({ pluginKey: pluginKey, searchIdOf = (label) => gs(pluginKey, label), options: options, onChange: onChange, optionList = attackRangesOptions, defaults = attackRangesDefaults, sections = ["Options", "Styles"] }) {
   const set = (key, value) => onChange({ ...options, [key]: value });
   const row = (option, label, control) =>
     (0, jsxRuntime.jsx)(
@@ -24525,7 +24598,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
       {
         isModified: options[option.key] !== defaults[option.key],
         onReset: () => set(option.key, defaults[option.key]),
-        searchId: gs(pluginKey, option.label),
+        searchId: searchIdOf(option.label),
         children: (0, jsxRuntime.jsxs)("div", {
           className: "plugin-setting-row",
           title: option.info,
@@ -24548,7 +24621,7 @@ function AttackRangesSettings({ pluginKey: pluginKey, options: options, onChange
         {
           isModified: value !== defaults[option.key],
           onReset: () => set(option.key, defaults[option.key]),
-          searchId: gs(pluginKey, option.label),
+          searchId: searchIdOf(option.label),
           children: (0, jsxRuntime.jsx)("div", {
             title: option.info,
             children: (0, jsxRuntime.jsx)(OsrsCheckbox, {
@@ -29469,6 +29542,9 @@ function $fe({ isOpen: isOpen, onClose: onClose, onLoad: onLoad }) {
         () =>
           fetch("/api/replays/" + encodeURIComponent(hA), {
             method: "DELETE",
+            headers: {
+              "X-OpenScim-Client": "1",
+            },
             credentials: "same-origin",
           }),
         async () => {},
@@ -30262,6 +30338,7 @@ var SimulationControls = ({
           }),
         ],
       }),
+      (0, jsxRuntime.jsx)(ReplayMarkerSettings, {}),
       (0, jsxRuntime.jsxs)("div", {
         className: "control-group control-group--no-border",
         children: [
@@ -31483,8 +31560,8 @@ aX();
 var Rye = (0, React.createContext)({
   user: null,
   loading: true,
-  login: async () => ({}),
-  register: async () => ({}),
+  providers: [],
+  signIn: async () => ({}),
   logout: async () => {},
   deleteAccount: async () => ({}),
 });
@@ -31503,66 +31580,97 @@ function AuthProvider({ children: children }) {
       .catch(() => {})
       .finally(() => h7(false));
   }, []);
-  const h8 = (0, React.useCallback)(async (hc, hd) => {
-    const hf = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "same-origin",
-      body: JSON.stringify({
-        username: hc,
-        password: hd,
-      }),
-    });
-    const hg = await hf.json();
-    if (hf.ok) {
-      h5(hg.user);
-      return {};
-    } else {
-      return {
-        error: hg.error ?? "Login failed",
-      };
+  // OAuth sign-in (docs/backend 01 §2.3 E1). The buttons show only when a
+  // server answers /api/auth/providers with JSON; a static site shows none.
+  const [providers, setProviders] = (0, React.useState)([]);
+  // A failed OAuth callback redirects back with #auth_error=<code> (01 §6).
+  const [authError, setAuthError] = (0, React.useState)("");
+  (0, React.useEffect)(() => {
+    const hc = new URLSearchParams(location.hash.slice(1)).get("auth_error");
+    if (hc === null) {
+      return;
     }
+    setAuthError(
+      {
+        denied: "Sign-in was cancelled.",
+        expired: "Sign-in took too long. Please try again.",
+        identity_in_use: "That account is already linked to another player.",
+        provider_error: "The sign-in provider failed. Please try again.",
+        banned: "This account cannot sign in.",
+      }[hc] ?? "Sign-in failed. Please try again.",
+    );
+    history.replaceState(
+      history.state,
+      "",
+      location.pathname + location.search,
+    );
   }, []);
-  const h9 = (0, React.useCallback)(async (hc, hd) => {
-    const hf = await fetch("/api/auth/register", {
+  (0, React.useEffect)(() => {
+    fetch("/api/auth/providers", {
+      credentials: "same-origin",
+    })
+      .then((hc) =>
+        hc.ok && /json/.test(hc.headers.get("Content-Type") ?? "")
+          ? hc.json()
+          : null,
+      )
+      .then((hc) =>
+        setProviders(
+          Array.isArray(hc?.providers)
+            ? hc.providers.filter((hd) => hd === "discord" || hd === "github")
+            : [],
+        ),
+      )
+      .catch(() => {});
+  }, []);
+  const h8 = (0, React.useCallback)(async (hc) => {
+    const hd = await fetch("/api/auth/" + hc + "/start", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-OpenScim-Client": "1",
       },
       credentials: "same-origin",
       body: JSON.stringify({
-        username: hc,
-        password: hd,
+        intent: "login",
+        // Exactly one leading slash: "//host/x" would read as another site.
+        return_to: "/" + location.pathname.replace(/^[/\\]+/, "") + location.search,
       }),
     });
-    const hg = await hf.json();
-    if (hf.ok) {
-      h5(hg.user);
+    const hf = await hd.json();
+    if (
+      hd.ok &&
+      typeof hf.authorize_url === "string" &&
+      /^https?:\/\//i.test(hf.authorize_url)
+    ) {
+      location.assign(hf.authorize_url);
       return {};
     } else {
       return {
-        error: hg.error ?? "Registration failed",
+        error: hf.error ?? "Sign-in failed",
       };
     }
   }, []);
   const ha = (0, React.useCallback)(async () => {
     await fetch("/api/auth/logout", {
       method: "POST",
+      headers: {
+        "X-OpenScim-Client": "1",
+      },
       credentials: "same-origin",
     });
     h5(null);
   }, []);
-  const hb = (0, React.useCallback)(async (hc) => {
+  const hb = (0, React.useCallback)(async () => {
     const hd = await fetch("/api/auth/account", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        "X-OpenScim-Client": "1",
       },
       credentials: "same-origin",
       body: JSON.stringify({
-        password: hc,
+        confirm: "delete",
       }),
     });
     const hf = await hd.json();
@@ -31579,8 +31687,9 @@ function AuthProvider({ children: children }) {
     value: {
       user: h4,
       loading: h6,
-      login: h8,
-      register: h9,
+      providers: providers,
+      authError: authError,
+      signIn: h8,
       logout: ha,
       deleteAccount: hb,
     },
@@ -31638,7 +31747,7 @@ function Dye({ panelVisible: h2 = true }) {
             hb("");
             hd(true);
             try {
-              const hl = await deleteAccount(h8);
+              const hl = await deleteAccount();
               if (hg.current !== hk) {
                 return;
               }
@@ -31673,14 +31782,18 @@ function Dye({ panelVisible: h2 = true }) {
                 (0, jsxRuntime.jsx)("label", {
                   className: "login-delete__label",
                   htmlFor: hh,
-                  children: "Confirm your password",
+                  children: "Type DELETE to confirm",
                 }),
                 (0, jsxRuntime.jsx)("input", {
                   id: hh,
                   ref: hf,
-                  type: "password",
+                  type: "text",
                   className: "login-input",
-                  autoComplete: "current-password",
+                  autoComplete: "off",
+                  autoCapitalize: "characters",
+                  autoCorrect: "off",
+                  spellCheck: false,
+                  placeholder: "DELETE",
                   value: h8,
                   disabled: hc,
                   onChange: (hj) => h9(hj.target.value),
@@ -31705,7 +31818,7 @@ function Dye({ panelVisible: h2 = true }) {
                 (0, jsxRuntime.jsx)(OsrsButton, {
                   variant: "danger",
                   type: "submit",
-                  disabled: hc || "" === h8,
+                  disabled: hc || "DELETE" !== h8.trim(),
                   children: hc ? "Deleting…" : "Delete Permanently",
                 }),
               ],
@@ -31719,14 +31832,17 @@ function Oye({ panelVisible: h2 = true }) {
   const {
     user: user,
     loading: loading,
-    login: login,
-    register: register,
+    providers: providers,
+    authError: authError,
+    signIn: signIn,
     logout: logout,
   } = Lye();
-  const [h9, ha] = (0, React.useState)("");
-  const [hb, hc] = (0, React.useState)("");
   const [hd, hf] = (0, React.useState)("");
-  const [hg, hh] = (0, React.useState)(false);
+  // One start request at a time: a second would replace the first's state.
+  const [pending, setPending] = (0, React.useState)(false);
+  // The redirect's error shows until the next attempt.
+  const [tried, setTried] = (0, React.useState)(false);
+  const shownError = hd || (tried ? "" : authError);
   if (loading) {
     return null;
   }
@@ -31760,72 +31876,47 @@ function Oye({ panelVisible: h2 = true }) {
         }),
       ],
     });
+  } else if (providers.length === 0) {
+    return null;
   } else {
-    return (0, jsxRuntime.jsxs)("form", {
-      onSubmit: async (hi) => {
-        hi.preventDefault();
-        hf("");
-        try {
-          const hj = await (hg ? register : login)(h9, hb);
-          if (hj.error) {
-            hf(hj.error);
-          } else {
-            ha("");
-            hc("");
-          }
-        } catch (hk) {
-          if (!(hk instanceof Error)) {
-            throw hk;
-          }
-          hf(
-            hg
-              ? "Registration failed. Please try again."
-              : "Login failed. Please try again.",
-          );
-        }
-      },
+    return (0, jsxRuntime.jsxs)("div", {
       className: "login-section",
       children: [
-        (0, jsxRuntime.jsx)("input", {
-          type: "text",
-          placeholder: "Username",
-          value: h9,
-          onChange: (hi) => ha(hi.target.value),
-          className: "login-input",
-          autoComplete: "username",
-        }),
-        (0, jsxRuntime.jsx)("input", {
-          type: "password",
-          placeholder: "Password",
-          value: hb,
-          onChange: (hi) => hc(hi.target.value),
-          className: "login-input",
-          autoComplete: hg ? "new-password" : "current-password",
-        }),
-        hg &&
-          (0, jsxRuntime.jsx)("div", {
-            className: "login-disclaimer",
-            children: "Use a throwaway password, not your RS one.",
-          }),
-        hd &&
+        ...providers.map((hi) =>
+          (0, jsxRuntime.jsx)(
+            OsrsButton,
+            {
+              fullWidth: true,
+              disabled: pending,
+              onClick: async () => {
+                hf("");
+                setTried(true);
+                setPending(true);
+                try {
+                  const hj = await signIn(hi);
+                  if (hj.error) {
+                    hf(hj.error);
+                    setPending(false);
+                  }
+                } catch (hk) {
+                  setPending(false);
+                  if (!(hk instanceof Error)) {
+                    throw hk;
+                  }
+                  hf("Sign-in failed. Please try again.");
+                }
+              },
+              children:
+                hi === "discord" ? "Sign in with Discord" : "Sign in with GitHub",
+            },
+            hi,
+          ),
+        ),
+        shownError &&
           (0, jsxRuntime.jsx)("span", {
             className: "login-error",
-            children: hd,
+            children: shownError,
           }),
-        (0, jsxRuntime.jsx)(OsrsButton, {
-          fullWidth: true,
-          type: "submit",
-          children: hg ? "Register" : "Log In",
-        }),
-        (0, jsxRuntime.jsx)("button", {
-          type: "button",
-          className: "login-text-link login-mode-toggle",
-          onClick: () => {
-            hh(!hg);
-            hf("");
-          },
-          children: hg ? "Have an account? Log In" : "Create Account",
-        }),
       ],
     });
   }
@@ -33182,6 +33273,7 @@ function Gye({
             credentials: "same-origin",
             headers: {
               "Content-Type": "application/gzip",
+              "X-OpenScim-Client": "1",
             },
             body: new Blob([i5], {
               type: "application/gzip",
@@ -50975,6 +51067,18 @@ function AppShell({ devHarness: devHarness } = {}) {
     showShortcutHints: showShortcutHints,
     updateDisabledShortcutHints: (sP) => hS("disabledShortcutHints", sP),
   });
+  const markerActionsRef = (0, React.useRef)(replay.markerActions);
+  markerActionsRef.current = replay.markerActions;
+  (0, React.useEffect)(
+    () =>
+      listenForReplayKeys(document, {
+        getKeybinds: () => bn(bw()),
+        matches: cv,
+        isBlocked: (event) => handleOverlayClose(event) || aO(),
+        getActions: () => markerActionsRef.current,
+      }),
+    [],
+  );
   const [rj, rk] = (0, React.useState)(null);
   const {
     handleTileClick: handleTileClick,

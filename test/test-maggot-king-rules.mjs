@@ -39,10 +39,11 @@ const landings = (ticks) => [...new Set(ticks.flatMap((tick) => (tick?.phase ===
 }
 {
   // A player under his body two columns off his middle, hitting him each
-  // slam (the recorded kills): he does not move from his first slam until
-  // his screech.
+  // slam (the recorded kills): from the first slam the player meets in place
+  // he does not move until his screech. (Opened near at once, he follows
+  // the player who dodges his first slams on the way there.)
   const ticks = await ticksOf("near-punish");
-  const [first, ...rest] = landings(ticks);
-  assert.ok(rest.length >= 3, "slams after the first: " + rest.length);
+  const [first, ...rest] = landings(ticks).filter((n, i, all) => all.slice(0, i + 1).some((m) => ticks[m].player[0] === ticks[m].boss[0]));
+  assert.ok(rest.length >= 3, "slams after the first in place: " + rest.length);
   for (let n = first; n <= rest.at(-1); n++) assert.deepEqual(ticks[n].boss, ticks[first].boss, "he stands still on tick " + n);
 }

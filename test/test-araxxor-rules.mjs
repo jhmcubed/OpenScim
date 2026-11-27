@@ -239,5 +239,32 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.ok(ticks[killed + 1].clips.includes("araxxor-egg-0 crumble"));
   assert.deepEqual([4, 5].map((n) => ticks[killed + n].outcome), ["resolving", "victory"]);
 }
+{
+  // Venom (OBS): each of his melee hits that does damage envenoms the player, and so does each of the Acidic's spits
+  // that does; as before, his acid ball and the acid on the floor. The venom is taken off again after every tick,
+  // so that each tick shows whether its own hits envenomed.
+  const ticks = [];
+  await runScenario(scenarios.find((scenario) => scenario.name === "araxxor/acidic-near"), {
+    onTick(tick, engine) {
+      const player = engine.player();
+      const hits = engine.damageHistory.filter((hit) => hit.tick === tick && hit.targetId === "player" && hit.effectiveDamage > 0).map((hit) => hit.source);
+      ticks[tick] = { hits, envenomed: player.poisonState.poisonVarp >= 1_000_000 };
+      player.poisonState = { ...player.poisonState, poisonVarp: 0 };
+    },
+  });
+  const by = (source) => ticks.filter((tick) => tick?.hits.length === 1 && tick.hits[0] === source);
+  for (const source of ["Araxxor", "Acidic Araxyte", "Araxxor's acid ball", "Acid pool"]) {
+    assert.ok(by(source).length > 0, source + " hits the player");
+    assert.ok(by(source).every((tick) => tick.envenomed), source + " envenoms");
+  }
+}
+{
+  // The guide's extended anti-venom+ in every default loadout (the client had no anti-venom, and an antidote++ stood in).
+  const { araxxorLoadouts } = await import("../client/encounters/araxxor/loadouts.js");
+  for (const [name, loadout] of Object.entries(araxxorLoadouts)) {
+    assert.ok(loadout.inventory.includes(29824), name);
+    assert.ok(!loadout.inventory.includes(5952), name);
+  }
+}
 console.log("Araxxor's rules are as recorded");
 process.exit(0);

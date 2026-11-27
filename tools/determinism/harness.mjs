@@ -197,8 +197,11 @@ const inventoryOf = (ids = []) => Array.from({ length: 28 }, (_, slot) => (ids[s
 /**
  * Runs one scenario. Returns { digests, final, ticks, outcome, unseeded,
  * rebuilt } and calls onTick(tick, engine, text) after every tick.
+ * onRecorded({ recording, frames, engine, rebuild, skip }) is handed the
+ * recording of the run (of the last one, where it restarts) when it is over;
+ * rebuild(index) is the replay's rebuild at one of its frames.
  */
-export async function runScenario(scenario, { onTick, wantText } = {}) {
+export async function runScenario(scenario, { onTick, onRecorded, wantText } = {}) {
   const { engineModule, objTypeLoader, prepareArena, registry, controlsOf, rendering } = await loadEnvironment();
   if (scenario.pure) {
     // Not a fight: the value of a function of the engine chunk's exports (and of the encounter registry, the controls,
@@ -357,6 +360,7 @@ export async function runScenario(scenario, { onTick, wantText } = {}) {
       for (const action of frames[index].actions) rebuiltEngine.injectAction(action);
       rebuiltEngine.advanceTick(frames[index].input);
     }
+    onRecorded?.({ recording, frames, engine, skip, rebuild: (index) => engineModule.rebuildEngineAtReplayFrame(recording, frames, index, objTypeLoader) });
     const digests = texts.map(sha256);
     return {
       digests,
