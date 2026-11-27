@@ -101,6 +101,41 @@ try {
   await page.waitForFunction(() => document.querySelector(".boss-hp__values")?.textContent.replace(/\s/g, "") === "362/400", null, { timeout: 15000 });
   assert.deepEqual(await bossBar(), { values: "362/400", shield: true });
 
+  // Drawn a frame at a time as the application's loop plays them: her surge slides her along the lane (no jump to its
+  // end) with her surge animation; a run of her claws holds its run animation (9103) from its second set to its end,
+  // never standing up between sets (the Outside recordings).
+  const watch = (start, ticks) => page.evaluate(async ({ start, ticks }) => {
+    const encounter = engine.encounter;
+    const context = () => ({ tick: engine.worldState.tick, world: engine.worldState, tickEvents: engine.tickEvents });
+    encounter.untilSpecial = 1000; // no special of her own meanwhile
+    encounter.nextAttackAt = engine.worldState.tick + 1000;
+    encounter.specials.interrupt();
+    encounter.specials[start](context());
+    const until = engine.worldState.tick + ticks;
+    const frames = [];
+    await new Promise((done) => {
+      const sample = () => {
+        const instance = scene.npcInstanceManager.instanceRegistry.get(scene.getNpcRenderInstanceId("phosanis-nightmare"));
+        frames.push({ tick: engine.worldState.tick, at: instance?.lastRenderPosition && [...instance.lastRenderPosition], seq: instance?.animController?.Fw()?.seqId });
+        if (engine.worldState.tick >= until) done();
+        else requestAnimationFrame(sample);
+      };
+      sample();
+    });
+    return { frames, surge: encounter.getSnapshot().state.surge };
+  }, { start, ticks });
+  const surge = await watch("startSurge", 10);
+  const xs = surge.frames.filter((frame) => frame.seq === 8597).map((frame) => frame.at);
+  assert.ok(xs.length > 3, JSON.stringify(surge.frames.map((frame) => frame.seq)));
+  const between = xs.filter(([x, y], n) => n > 0 && (x !== xs[0][0] || y !== xs[0][1]) && (x !== xs.at(-1)[0] || y !== xs.at(-1)[1]));
+  assert.ok(between.length > 0, "slid: " + JSON.stringify(xs));
+  const run = await watch("startSpores", 6 + 5 * 6 + 2);
+  const seqs = run.frames.map((frame) => frame.seq);
+  const from = seqs.indexOf(9103);
+  const to = seqs.indexOf(9104);
+  assert.ok(from > 0 && to > from, JSON.stringify([...new Set(seqs)]));
+  assert.ok(seqs.slice(from, to).every((seq) => seq === 9103), "held: " + JSON.stringify([...new Set(seqs.slice(from, to))]));
+
   // Cursed, the icon over the player is that of the style his protection stops now (the Outside recordings): Protect
   // from Magic shows the missiles icon; the curse gone, the magic one again.
   const overhead = (name) => page.waitForFunction((name) => [...document.querySelectorAll("img")].some((img) => img.getAttribute("src")?.endsWith("/overhead_" + name + ".png")), name, { timeout: 15000 });
