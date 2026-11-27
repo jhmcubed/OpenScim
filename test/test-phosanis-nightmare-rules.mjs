@@ -23,6 +23,7 @@ async function ticksOf(name) {
       const player = engine.player();
       ticks[tick] = {
         boss: boss && [...boss.position], type: boss?.npcTypeId, hp: boss?.vitals.hp,
+        locked: boss?.lockedFacing, facing: boss?.facing, crawl: boss?.crawlMovement && structuredClone(boss.crawlMovement),
         clips: visuals.flatMap((event) => event.animations.filter((a) => a.actorId === BOSS).map((a) => a.clipId)),
         others: visuals.flatMap((event) => event.animations.filter((a) => a.actorId !== BOSS).map((a) => [a.actorId, a.clipId])),
         player: [...player.position], prayer: player.activePrayer, points: player.prayerState.points, run: player.isRunEnabled,
@@ -44,6 +45,9 @@ async function ticksOf(name) {
 const clipTicks = (ticks, clip) => ticks.flatMap((tick, n) => (tick?.clips.includes(clip) ? [n] : []));
 const messageTicks = (ticks, text) => ticks.flatMap((tick, n) => (tick?.messages.some((message) => message.includes(text)) ? [n] : []));
 const damageOf = (ticks, source) => ticks.flatMap((tick, n) => (tick?.damage ?? []).filter((hit) => hit.source === source).map((hit) => ({ tick: n, ...hit })));
+// The ticks a set of her claws opened: a set that comes up 4 ticks later appears in the snapshot (in a run, only the
+// first two sets come with an animation of hers).
+const clawSetTicks = (ticks) => ticks.flatMap((tick, n) => (tick?.state.claws.some((set) => set.at === n + 4) ? [n] : []));
 const stageTicks = (ticks, stage) => ticks.flatMap((tick, n) => (tick?.state.stage === stage && ticks[n - 1]?.state.stage !== stage ? [n] : []));
 const specialsOf = (ticks, from, to) => {
   const seen = [];
@@ -120,21 +124,31 @@ for (const name of ["kill", "kill-other-forms"]) {
     const hit = damageOf(ticks, "The Nightmare's blast").find((entry) => entry.tick > form);
     const absorbed = ticks.slice(form, hit.tick).flatMap((tick) => tick.others.filter(([, clip]) => clip === "absorb")).length;
     assert.equal(hit.baseDamage, 5 + Math.floor((144 * absorbed) / (n + 2)), name);
-    // They walk from their fourth tick, after her last phase their seventh; her blast an even number of ticks after
-    // they rose (the Outside recording).
+    // They walk from their fourth tick, after her last phase their seventh; her blast 2 ticks after the last is gone,
+    // killed or taken in (the Outside recordings).
+    const gone = [];
     for (const id of risen) {
       const from = ticks[form + 2].npcs.find((npc) => npc.id === id).position;
       const moved = ticks.findIndex((tick, t) => t > form + 2 && tick?.npcs.some((npc) => npc.id === id && !same(npc.position, from)));
       if (moved > 0) assert.equal(moved - (form + 2), n === 2 ? 7 : 4, name + " " + id);
+      const takenIn = ticks.findIndex((tick, t) => t > form && tick?.others.some(([actor, clip]) => actor === id && clip === "absorb"));
+      gone.push(takenIn > 0 ? takenIn : ticks.findIndex((tick, t) => t > form + 2 && !tick?.npcs.some((npc) => npc.id === id)));
     }
     const blastClip = clipTicks(ticks, "blast").find((tick) => tick > form);
-    assert.equal((blastClip - (form + 2)) % 2, 0, name + " blast at " + blastClip);
+    assert.equal(blastClip, Math.max(...gone) + 2, name + " blast at " + blastClip + ", gone " + gone);
   }
 
   // Her claws: 50 to 65 a time; her flowers' flies 1 to 20; a surge 43 to 85.
   for (const hit of damageOf(ticks, "Grasping Claws")) assert.ok(hit.baseDamage >= 50 && hit.baseDamage <= 65);
   for (const hit of damageOf(ticks, "Corpse flowers")) assert.ok(hit.baseDamage >= 1 && hit.baseDamage <= 20);
   for (const hit of damageOf(ticks, "Surge")) assert.ok(hit.baseDamage >= 43 && hit.baseDamage <= 85);
+  // Her surge: she slides along the lane (the scene over 2 ticks), facing along it from her landing at its start to 3
+  // ticks after (the Outside recordings).
+  for (const cross of clipTicks(ticks, "surge")) {
+    const from = ticks[cross - 1].boss;
+    assert.deepEqual(ticks[cross].crawl, { from, to: ticks[cross].boss, startTick: cross }, name + " surge at " + cross);
+    for (let n = cross - 4; n <= cross + 2; n++) assert.equal(ticks[n].locked, ticks[cross].facing, name + " surge facing at " + n);
+  }
   // A surge crosses one of the lanes, end to end, 6 ticks after she leaves.
   for (const leave of clipTicks(ticks, "surge")) {
     const from = ticks[leave - 1].boss;
@@ -146,7 +160,70 @@ for (const name of ["kill", "kill-other-forms"]) {
   const cursed = ticks.filter((tick) => tick?.state.cursed);
   assert.ok(cursed.some((tick) => tick.prayer), name);
   for (const tick of cursed) assert.equal(tick.state.playerOverheadPrayer, tick.prayer ? shuffled[tick.prayer] : null);
+  // As the curse lands, a pink glow over the scene for 2 ticks (the wiki; a player's video), not the whole curse; the
+  // prayer markers only with their practice aid (off here).
+  const cursings = messageTicks(ticks, "has cursed you");
+  assert.ok(cursings.length > 0, name);
+  for (const [n, tick] of ticks.entries()) {
+    if (!tick) continue;
+    const from = cursings.find((at) => n === at || n === at + 1);
+    assert.equal(tick.state.screenTint?.since, from, name + " glow at " + n);
+  }
+  assert.ok(ticks.every((tick) => !tick || tick.state.prayerMarkers === undefined));
   assert.ok(ticks.every((tick) => !tick || tick.state.cursed || tick.state.playerOverheadPrayer === undefined));
+
+  // Asleep she faces south and does not turn to the player (the Outside recordings).
+  for (let n = 1; n < 27; n++) assert.equal(ticks[n].locked, 0, name + " asleep at " + n);
+  assert.equal(ticks[28].locked, undefined, name + " awake");
+  // After each animation she takes no step, and keeps her facing, for a while (the Outside recordings): her magic and
+  // ranged 5 ticks, her melee 4, her claws 9, her curse, spores, husks and parasite 5.
+  const root = { magic: 5, range: 5, melee: 4, claws: 9, curse: 5, spores: 5, husks: 5, parasite: 5 };
+  let checked = 0;
+  for (const [n, tick] of ticks.entries()) {
+    const clip = tick?.clips.find((each) => root[each]);
+    if (!clip || !["shield", "totems"].includes(tick.state.stage)) continue;
+    const span = ticks.slice(n, n + root[clip]);
+    if (span.some((later) => later.state.stage !== tick.state.stage || later.clips.includes("leave"))) continue;
+    for (const later of span) assert.deepEqual(later.boss, tick.boss, name + " " + clip + " at " + n);
+    for (const later of span.slice(0, -1)) assert.equal(later.locked, tick.facing, name + " " + clip + " facing at " + n);
+    checked++;
+  }
+  assert.ok(checked > 40, name + " " + checked);
+  // A run of her claws: the start with its first set; the run held from the start's end to the run's (the game loops
+  // it; the scene plays a clip once, so it comes again every 4 ticks).
+  for (const start of clipTicks(ticks, "clawRunStart")) {
+    // To its end, or to her blast that cuts it short: the tick the snapshot no longer has it.
+    const end = ticks.findIndex((tick, n) => n > start && !tick?.state.clawRun);
+    const held = clipTicks(ticks, "clawRun").filter((tick) => tick > start && tick < end);
+    assert.deepEqual(held, held.map((_, n) => start + 4 * (n + 1)), name + " run at " + start);
+    assert.ok(held.length > 0 && end - held.at(-1) <= 4, name + " run at " + start + ": " + held + " to " + end);
+  }
+}
+
+{
+  // A charged totem keeps its "Charge" option; clicked, the game's message on that tick, and no attack on it (the
+  // Outside recordings of the group fight). The one he was charging stops him, without the message.
+  const ticks = [];
+  const result = await runScenario(scenarios.find((scenario) => scenario.name === "phosanis-nightmare/charged-totem"), {
+    onTick(tick, engine) {
+      const events = engine.getLastTickEvents();
+      ticks[tick] = {
+        messages: events.filter((event) => event.type === "game_message").map((event) => event.segments.map(({ text }) => text).join("")),
+        onTotems: events.filter((event) => event.type === "attack_started" && event.sourceId === "player" && event.targetId.startsWith("nightmare-totem")).map((event) => event.targetId),
+        target: engine.player().attackTarget,
+        totems: engine.getEncounterSnapshot().state.totems,
+      };
+    },
+  });
+  assert.ok(result.replayMatches);
+  const refused = messageTicks(ticks, "That totem is already charged.");
+  assert.ok(refused.length >= 3, "refused at " + refused);
+  for (const tick of refused) {
+    assert.equal(ticks[tick].target, null, "target at " + tick);
+    assert.deepEqual(ticks[tick].onTotems, [], "attack at " + tick);
+  }
+  // Never refused without a click: once per "fully charged".
+  assert.ok(refused.length <= messageTicks(ticks, "totem is fully charged.").length);
 }
 
 {
@@ -192,7 +269,7 @@ for (const name of ["kill", "kill-other-forms"]) {
   assert.ok(gaps.every((gap) => gap % 6 === 0 || gap > 6), gaps.join());
   // Her claws hurt only as they come up, 4 ticks after a set opens; a set always has a portal under the player unless
   // her husks hold him (the Outside recording).
-  const sets = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => clip === "claws" || clip === "clawRunStart" || clip === "clawRun") ? [n] : []));
+  const sets = clawSetTicks(ticks);
   for (const hit of damageOf(ticks, "Grasping Claws")) assert.ok(sets.includes(hit.tick - 4), "claws at " + hit.tick);
   // None under her but her body's corners (the Outside recordings), where she stood still that tick.
   const corner = ([x, y], [bx, by]) => (x === bx || x === bx + bossSize - 1) && (y === by || y === by + bossSize - 1);
@@ -305,9 +382,16 @@ for (const name of ["kill", "kill-other-forms"]) {
   assert.ok(hits.every((hit, n) => hit.baseDamage === 15 && (n === 0 || hit.tick - hits[n - 1].tick === 8)));
   const takenIn = ticks.flatMap((tick, n) => (tick?.others.some(([actor, clip]) => actor.includes("sleepwalker") && clip === "absorb") ? [n] : []));
   assert.deepEqual(hits.map((hit) => hit.tick), takenIn.slice(0, hits.length).map((tick) => tick + 4));
-  const sets = ticks.flatMap((tick, n) => (tick?.clips.some((clip) => clip === "clawRunStart" || clip === "clawRun") ? [n] : []));
+  const sets = clawSetTicks(ticks);
   assert.ok(sets.length >= 10);
-  for (const n of [1, 2, 3, 4]) assert.equal(sets[n] - sets[n - 1], 5);
+  assert.ok(sets.slice(1).every((tick, n) => tick - sets[n] === 5), sets.join());
+  // One run without end: her start animation once, her run's held from then on, no end, and she stands (the Outside
+  // recordings).
+  assert.deepEqual(clipTicks(ticks, "clawRunStart"), [sets[0]]);
+  const held = clipTicks(ticks, "clawRun");
+  assert.ok(held.length > 5 && held.every((tick, n) => tick === sets[0] + 4 * (n + 1)), held.join());
+  assert.deepEqual(clipTicks(ticks, "clawRunEnd"), []);
+  assert.ok(ticks.slice(start).every((tick) => same(tick.boss, ticks[start].boss)));
 }
 
 console.log("Phosani's Nightmare: its rules hold on its scenarios");

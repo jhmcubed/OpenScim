@@ -7,12 +7,10 @@
 // test/test-phosanis-nightmare-rules.mjs.
 import assert from "node:assert/strict";
 import { chromium } from "playwright-core";
+import { browserOptions } from "../tools/browser.mjs";
 
 const origin = process.env.TEST_ORIGIN;
-const browser = await chromium.launch({
-  executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe",
-  args: ["--enable-unsafe-swiftshader"],
-});
+const browser = await chromium.launch(browserOptions);
 
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 850 } });
@@ -88,19 +86,88 @@ try {
     { timeout: 30000 },
   );
 
+  // Her shield up, the boss bar at the top shows it out of 400 in the shield's blue (the Outside recording), not her
+  // hitpoints; in her desperation, her hitpoints again.
+  const bossBar = () => page.evaluate(() => {
+    const values = document.querySelector(".boss-hp__values")?.textContent.replace(/\s/g, "");
+    return { values, shield: !!document.querySelector(".boss-hp__fill--shield") };
+  });
+  await page.evaluate(() => {
+    engine.encounter.shield = 362;
+    engine.advanceTick(engine.player().position);
+  });
+  await page.waitForFunction(() => document.querySelector(".boss-hp__values")?.textContent.replace(/\s/g, "") === "362/400", null, { timeout: 15000 });
+  assert.deepEqual(await bossBar(), { values: "362/400", shield: true });
+
+  // Drawn a frame at a time as the application's loop plays them: her surge slides her along the lane (no jump to its
+  // end) with her surge animation; a run of her claws holds its run animation (9103) from its second set to its end,
+  // never standing up between sets (the Outside recordings).
+  const watch = (start, ticks) => page.evaluate(async ({ start, ticks }) => {
+    const encounter = engine.encounter;
+    const context = () => ({ tick: engine.worldState.tick, world: engine.worldState, tickEvents: engine.tickEvents });
+    encounter.untilSpecial = 1000; // no special of her own meanwhile
+    encounter.nextAttackAt = engine.worldState.tick + 1000;
+    encounter.specials.interrupt();
+    encounter.specials[start](context());
+    const until = engine.worldState.tick + ticks;
+    const frames = [];
+    await new Promise((done) => {
+      const sample = () => {
+        const instance = scene.npcInstanceManager.instanceRegistry.get(scene.getNpcRenderInstanceId("phosanis-nightmare"));
+        frames.push({ tick: engine.worldState.tick, at: instance?.lastRenderPosition && [...instance.lastRenderPosition], seq: instance?.animController?.Fw()?.seqId });
+        if (engine.worldState.tick >= until) done();
+        else requestAnimationFrame(sample);
+      };
+      sample();
+    });
+    return { frames, surge: encounter.getSnapshot().state.surge };
+  }, { start, ticks });
+  const surge = await watch("startSurge", 10);
+  const xs = surge.frames.filter((frame) => frame.seq === 8597).map((frame) => frame.at);
+  assert.ok(xs.length > 3, JSON.stringify(surge.frames.map((frame) => frame.seq)));
+  const between = xs.filter(([x, y], n) => n > 0 && (x !== xs[0][0] || y !== xs[0][1]) && (x !== xs.at(-1)[0] || y !== xs.at(-1)[1]));
+  assert.ok(between.length > 0, "slid: " + JSON.stringify(xs));
+  const run = await watch("startSpores", 6 + 5 * 6 + 2);
+  const seqs = run.frames.map((frame) => frame.seq);
+  const from = seqs.indexOf(9103);
+  const to = seqs.indexOf(9104);
+  assert.ok(from > 0 && to > from, JSON.stringify([...new Set(seqs)]));
+  assert.ok(seqs.slice(from, to).every((seq) => seq === 9103), "held: " + JSON.stringify([...new Set(seqs.slice(from, to))]));
+
   // Cursed, the icon over the player is that of the style his protection stops now (the Outside recordings): Protect
   // from Magic shows the missiles icon; the curse gone, the magic one again.
   const overhead = (name) => page.waitForFunction((name) => [...document.querySelectorAll("img")].some((img) => img.getAttribute("src")?.endsWith("/overhead_" + name + ".png")), name, { timeout: 15000 });
   await page.evaluate(() => {
-    engine.encounter.specials.curse = { turns: 5, endsAt: null };
+    engine.encounter.specials.curse = { turns: 5, endsAt: null, since: engine.worldState.tick };
     engine.player().activePrayer = "ProtectMagic";
   });
   await overhead("missiles");
+  // As the curse lands, a pink glow over the scene (the wiki; a player's video): hot pink, fading in, gone 2 ticks on
+  // though the curse goes on. With the practice aid Curse Prayer Markers, each protection prayer outlined in the colour
+  // of what it stops now: Protect from Magic green (ranged), Protect from Missiles red (melee), Protect from Melee blue
+  // (magic).
+  await page.getByRole("button", { name: "Prayer (F5)" }).click();
+  await page.locator(".encounter-screen-tint").waitFor({ state: "attached", timeout: 15000 });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".encounter-screen-tint")).backgroundColor), "rgba(243, 0, 98, 0.53)");
+  // On request, a picture of the glow at its strongest: the last taken while it is still there.
+  while (process.env.PHOSANI_CURSE_SHOT) {
+    const shot = await page.screenshot();
+    if (!(await page.locator(".encounter-screen-tint").count())) break;
+    (await import("node:fs")).writeFileSync(process.env.PHOSANI_CURSE_SHOT, shot);
+  }
+  await page.locator(".encounter-screen-tint").waitFor({ state: "detached", timeout: 15000 });
+  assert.ok(await page.evaluate(() => engine.encounter.specials.curse !== null), "still cursed");
+  assert.equal(await page.locator(".prayer-marker").count(), 0, "markers only with the aid");
+  await page.evaluate(() => engine.setMechanicsConfig({ ...engine.mechanicsConfig, phosaniCurseMarkers: true }));
+  await page.waitForFunction(() => document.querySelectorAll(".prayer-marker").length === 3, null, { timeout: 15000 });
+  const markers = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".prayer-marker")].map((marker) => [marker.dataset.prayer, getComputedStyle(marker).borderTopColor])));
+  assert.deepEqual(markers, { ProtectMagic: "rgb(32, 224, 32)", ProtectRange: "rgb(255, 48, 48)", ProtectMelee: "rgb(47, 143, 255)" });
   await page.evaluate(() => {
     engine.encounter.specials.curse = null;
     engine.player().activePrayer = "ProtectMagic";
   });
   await overhead("magic");
+  await page.waitForFunction(() => !document.querySelector(".prayer-marker"), null, { timeout: 15000 });
 
   // Her desperation, then her death; the application's own loop plays it and ends the fight.
   await page.evaluate(() => {
@@ -108,6 +175,8 @@ try {
     engine.advanceTick(engine.player().position);
   });
   assert.equal(await page.evaluate(() => engine.worldState.getNpc("phosanis-nightmare").npcTypeId), 11154);
+  await page.waitForFunction(() => document.querySelector(".boss-hp__values")?.textContent.replace(/\s/g, "") === "150/3200", null, { timeout: 15000 });
+  assert.equal((await bossBar()).shield, false);
   await page.evaluate(() => engine.setBossHp(0));
   await page.waitForFunction(() => engine.getEncounterOutcome().phase === "victory" && document.body.innerText.includes("PHOSANI'S NIGHTMARE DEFEATED"), null, { timeout: 120000 });
   assert.deepEqual(errors, []);

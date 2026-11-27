@@ -1695,7 +1695,9 @@ var SimulationEngine = class {
   //     (runPlayerUpkeep).
   //  6. A target that can no longer be attacked is dropped. A ground item
   //     the player had ordered picked up is taken if he stands on its
-  //     tile. The player steps, unless his input is locked: toward his
+  //     tile. The player steps, unless his input is locked or the rule
+  //     playerMovementLocked holds him (a freeze: he keeps his target and
+  //     attacks what he can reach, and eats and prays): toward his
   //     target NPC while it is out of range or he stands under it, and
   //     without a target toward targetTile; the encounter may move him
   //     instead (moveDisplacedPlayer). Then he attacks if he can
@@ -1779,7 +1781,9 @@ var SimulationEngine = class {
     const attackTargetActor = player.attackTarget
       ? this.worldState.actors.get(player.attackTarget)
       : undefined;
-    if (inputLocked) {
+    // Optional; read here, after the NPCs, so that a freeze landed this tick holds this tick's step.
+    const movementLocked = resolveValueOrCallback(encounterRules?.playerMovementLocked, this.buildRulesContext()) === true;
+    if (inputLocked || movementLocked) {
       playerStep = {
         position: [...player.position],
         stepTiles: [],

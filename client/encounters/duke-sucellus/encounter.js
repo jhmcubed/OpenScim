@@ -570,6 +570,9 @@ export const dukeDefinition = {
     playerStart,
     loadsMapLocs: true,
     isWorkInProgress: true,
+    // No "3, 2, 1" before the fight: he sleeps until the player wakes him
+    // (WIKI; OBS 11/24, his first attack 5 ticks after he wakes).
+    fightStartCountdown: false,
     collision: { mode: "auto", seed: arenaSeed },
     victory: { eyebrow: "Triumphant", title: "VICTORY", narrative: "DUKE SUCELLUS DEFEATED", accent: "gold" },
     // The awakened fight is a variant kind (client/dt2/bosses.js, awakenedKind).

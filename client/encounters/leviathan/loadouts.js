@@ -1,6 +1,8 @@
 // The Leviathan's default loadouts (the descriptor's `loadouts`, encounters/registry.js), from the wiki's strategy
-// guide (The Leviathan/Strategies): its Range and Mage tables' best of each slot that the client has (no ascension
-// crossbows, no Zorya's tome) and its inventory. Its webweaver bow's special does not exist here: the other weapon of
+// guide (The Leviathan/Strategies): its Range and Mage tables' best of each slot that the client had before the
+// Fractured Archive, and its inventory. Its first ranged weapon is the Ascension crossbows with diamond ascension bolts
+// (e), and its Mage table's first special Zorya's tome: the "Beta:" setups at the end (after the defaults, the first
+// staying a player's start) are those. Its webweaver bow's special does not exist here: the other weapon of
 // the two ranged sets takes its place. Its Ring of shadows and house tablet, for the way back, are food; its cheap
 // prayer is a super restore and its cheap food an anglerfish (one of the five it chooses from, the one that can be
 // eaten here). Its rune pouch casts Shadow Rush.
@@ -93,6 +95,68 @@ export const leviathanLoadouts = {
       13441, 13441, 13441, 13441,
       13441, 13441, 13441, 13441,
       13441, 13441, 13441, 27281, // Anglerfish, the divine rune pouch
+    ],
+    supplies: {
+      equippedAmmo: { id: 22947 }, // Rada's blessing 4
+      quiverAmmo: null,
+      runePouch,
+      blowpipe: null,
+      selectedSpell: null,
+      spellbook: "ancient",
+    },
+  },
+  beta_ascension_crossbows: {
+    name: "Beta: Ranged (Ascension crossbows)",
+    equipment: {
+      head: 27235, // As the Zaryte crossbow's, without its buckler: the crossbows are two-handed (WIKI)
+      cape: 28951,
+      amulet: 33639,
+      weapon: 34681, // Ascension crossbows
+      body: 27238,
+      legs: 27241,
+      hands: 26235,
+      boots: 31097,
+      ring: 25975,
+    },
+    inventory: [
+      26374, 12926, 13441, 13441, // As the twisted bow's: the Zaryte crossbow, the toxic blowpipe, anglerfish
+      3024, 3024, 3024, 3024,
+      23733, 23733, 13441, 13441,
+      13441, 13441, 13441, 13441,
+      13441, 13441, 13441, 13441,
+      13441, 13441, 13441, 13441,
+      13441, 13441, 13441, 27281,
+    ],
+    supplies: {
+      equippedAmmo: { id: 34696 }, // Diamond ascension bolts (e)
+      quiverAmmo: { id: 21944 }, // Ruby dragon bolts (e), for the Zaryte crossbow
+      runePouch,
+      blowpipe: { id: 11230 }, // Dragon dart
+      selectedSpell: null,
+      spellbook: "ancient",
+    },
+  },
+  beta_zoryas_tome: {
+    name: "Beta: Tumeken's shadow (Zorya's tome)",
+    equipment: {
+      head: 21018, // As Tumeken's shadow's
+      cape: 21791,
+      amulet: 12002,
+      weapon: 27275, // Tumeken's shadow
+      body: 21021,
+      legs: 21024,
+      hands: 31106,
+      boots: 31097,
+      ring: 28313,
+    },
+    inventory: [
+      34725, 27641, 13441, 13441, // Zorya's tome, the Mage table's first special, in the sceptre's place; saturated heart
+      3024, 3024, 3024, 3024,
+      13441, 13441, 13441, 13441,
+      13441, 13441, 13441, 13441,
+      13441, 13441, 13441, 13441,
+      13441, 13441, 13441, 13441,
+      13441, 13441, 13441, 27281,
     ],
     supplies: {
       equippedAmmo: { id: 22947 }, // Rada's blessing 4

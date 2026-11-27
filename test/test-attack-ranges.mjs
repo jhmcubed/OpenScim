@@ -3,11 +3,11 @@
 // the stored settings and drag protection. With no arena loaded every tile is
 // in sight.
 import assert from "node:assert/strict";
-import { register } from "node:module";
+import { installHooks } from "../tools/determinism/node-hooks.mjs";
 
 // The weapons' table reaches the application's vendor chunk, which imports a
 // stylesheet: the determinism harness's hooks let Node load it.
-register("../tools/determinism/node-hooks.mjs", import.meta.url);
+installHooks();
 globalThis.self ??= globalThis;
 const {
   attackRangesDefaults,

@@ -28,9 +28,10 @@ import { getWeaponCategoryDefinition } from "../data/weaponCategories.js";
 import { mitigateRondacheHit } from "./rondache.js";
 // The attack animation and graphic of a player's attack that has its own: the attack's (the Ascension crossbows'
 // left and right shots, launch.js), else its weapon style's (the Obligator's Thrust and Smash, weaponCategories.js).
-// None for a special attack, whose animation is the special's.
+// None for a special attack, whose animation is the special's, nor for a spell, whose animation and graphics are
+// the spell's (#132: a spell cast holding the Obligator on Thrust took the Thrust's chain).
 function getPlayerAttackStyle(attacker, attack) {
-  if (attacker.kind !== "player" || attack.usingSpecialAttack || attack.weaponId === undefined) {
+  if (attacker.kind !== "player" || attack.usingSpecialAttack || attack.spellId !== undefined || attack.weaponId === undefined) {
     return undefined;
   }
   return getWeaponCategoryDefinition(attack.weaponId).styles[attacker.selectedAttackStyleIndex ?? 0];

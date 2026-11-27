@@ -1,8 +1,10 @@
 // The Maggot King's default loadouts (the descriptor's `loadouts`, encounters/registry.js), from the wiki's strategy
 // guide (Maggot King/Strategies). The fight wants a melee switch for his near rotations, so each loadout is one of the
 // guide's distant setups worn, with the melee table's best the client has in the inventory.
-// - Ranged: the guide's best are the ascension crossbows with diamond ascension bolts, which the client lacks; the
-//   Zaryte crossbow (its special attack weapon, the next on the table) and ruby dragon bolts (e) take their place.
+// - Ranged: the guide's best are the ascension crossbows with diamond ascension bolts (e); the default keeps the
+//   Zaryte crossbow (its special attack weapon, the next on the table) and ruby dragon bolts (e).
+// - Beta (at the end, after the defaults, the first staying a player's start): the Fractured Archive's: the ascension
+//   crossbows and diamond ascension bolts (e), and the Obligator, the melee table's first weapon, as the switch.
 // - Magic: the harmonised Nightmare staff with Fire Surge, the guide's strongest; the client has no searing page or
 //   fragment of burning fire, so a Tome of fire is the off-hand.
 // - Melee switch: Inquisitor's mace with the Inquisitor's set is the guide's best only with a 4-tick punish cycle, so the
@@ -14,6 +16,8 @@ const meleeSwitch = [
   scythe, 26382, 26384, 26386, // Scythe of Vitur, Torva full helm, platebody, platelegs
   29801, 21295, 22981, 28307, // Amulet of rancour, infernal cape, ferocious gloves, Ultor ring
 ];
+// The beta's switch: the Obligator in the scythe's place.
+const obligatorSwitch = [34715, ...meleeSwitch.slice(1)];
 const potions = [23685, 10925, 3024, 3024]; // Divine super combat (4), Sanfew serum (4), two super restores (4)
 const anglerfish = 13441;
 const food = (n) => Array.from({ length: n }, () => anglerfish);
@@ -66,6 +70,30 @@ export const maggotKingLoadouts = {
     supplies: {
       runePouch: { kind: "divine", slots: [{ id: 554 }, { id: 556 }, { id: 21880 }] }, // Fire, air, wrath
       selectedSpell: "Fire Surge",
+      spellbook: "standard",
+    },
+  },
+  beta_ascension_crossbows: {
+    name: "Beta: Ranged and melee (Ascension crossbows)",
+    equipment: {
+      head: 27235, // As the Zaryte crossbow's, without its buckler: the crossbows are two-handed (WIKI)
+      cape: 28951,
+      amulet: 19547,
+      weapon: 34681, // Ascension crossbows
+      body: 27238,
+      legs: 27241,
+      hands: 26235,
+      boots: 31097,
+      ring: 28310,
+    },
+    inventory: [
+      ...obligatorSwitch,
+      23733, ...potions, 3024, // As the Zaryte crossbow's
+      ...food(14),
+    ],
+    supplies: {
+      equippedAmmo: { id: 34696 }, // Diamond ascension bolts (e)
+      selectedSpell: null,
       spellbook: "standard",
     },
   },

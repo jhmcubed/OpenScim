@@ -30,9 +30,9 @@
 // player, and the cache loader beyond items and arenas.
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { register } from "node:module";
 import { dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { installHooks } from "./node-hooks.mjs";
 
 export const digestDirectory = "test/determinism-digests";
 export const cacheZip = "client/osrs-cache/disk.zip";
@@ -44,7 +44,7 @@ const cacheManifest = "client/osrs-cache/manifest.json";
 let environment;
 export function loadEnvironment() {
   return (environment ??= (async () => {
-    register("./node-hooks.mjs", import.meta.url);
+    installHooks();
     globalThis.self ??= globalThis; // PicoGL reads `self` when it loads
     globalThis.location ??= { pathname: "/" }; // the cache loader reads the route
     // The Zebak modules fetch their map groups by web-root path.
@@ -97,7 +97,7 @@ export function loadEnvironment() {
       rendering.registerArenaConfig(descriptor.kind, arena);
     }
     // getEncounterControls: the controls of an encounter kind (mechanics toggles, debug actions), as the menus read them.
-    return { engineModule, objTypeLoader: cacheManager.getObjTypeLoader(), prepareArena, registry, controlsOf: rendering.getEncounterControls, rendering };
+    return { engineModule, objTypeLoader: cacheManager.getObjTypeLoader(), npcTypeLoader: cacheManager.getNpcTypeLoader(), prepareArena, registry, controlsOf: rendering.getEncounterControls, rendering };
   })());
 }
 

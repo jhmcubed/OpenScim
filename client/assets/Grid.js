@@ -4,6 +4,10 @@ import { attackRangesDefaults, readAttackRangesSettings, isAttackDragProtected }
 import { projectileOverrideDefaults, readProjectileOverrideSettings } from "/plugins/projectileOverride.js";
 import { getDefenceTrackerInfoboxes } from "/plugins/defenceTracker.js";
 import { pickLobbyObject } from "/lobby/gateways.js";
+import { lobbyBeforeTick, lobbyAfterTick, followRemotePlayer, lobbyLink, lobbyFollowFacing } from "/net/lobbyLink.js";
+import { startBackgroundBeat } from "/net/backgroundBeat.js";
+import { subscribeLobbyChat, getLobbyChatSnapshot, setLobbyChatDraft, sendLobbyChat, chatKeyStartsTyping, createChatboxMerge, PUBLIC_CHAT_MODES, setLobbyChatFilter, CHAT_VIEW_TABS, setLobbyChatTab, chatboxTabLines, clearLobbyChatHistory } from "/net/lobbyChat.js";
+import { combatLevelColor } from "/util/combatLevelColor.js";
 import { replayMarkerStore, findUndoFrameIndex, addMarker, isOnTimeline, pickMarker, pickAutoMarker, nameNewAutoMarkers, describeMarker, isRollbackHeld, holdAfterRollback, releaseRollback, showReplayMessage } from "/replay/markers.js";
 import { createTickLogPanel } from "/replay/tickLogPanel.js";
 import { createTraceStrip } from "/replay/traceStrip.js";
@@ -8064,7 +8068,13 @@ document.addEventListener(
   "error",
   (event) => {
     const image = event.target;
-    if (!(image instanceof HTMLImageElement) || image.dataset.remoteIcon) {
+    if (!(image instanceof HTMLImageElement)) {
+      return;
+    }
+    // The host's icon failed too: hide the image rather than show a broken one. An image's own onError can't do
+    // this, since this listener (capture) has already set the host's URL when the first error reaches it (#104).
+    if (image.dataset.remoteIcon) {
+      image.style.display = "none";
       return;
     }
     const match = /\/assets\/items\/(\d+)\.png$/.exec(image.src);
@@ -12690,7 +12700,7 @@ var MechanicsSettings = ({
     if (type === "color" && fv) return null;
     if (type === "color") {
       const color = typeof fq === "string" && /^#[0-9a-f]{6}$/i.test(fq) ? fq : (fr || "#ffffff");
-      const colorSetting = (0, wn.jsx)(Coe, {
+      const colorSetting = (0, wn.jsx)(SettingRow, {
         searchId: null,
         isModified: fs,
         hideReset: null == defaultConfig,
@@ -20571,7 +20581,9 @@ function useSimulationWiring({
     QNxeW: "entry",
     UZLUJ: "holding",
   };
-  const fg = Iae(pauseWhenUnfocused);
+  // In the lobby with the other players (client/net/lobbyLink.js) the game goes on unfocused or hidden: the others
+  // still see this player. Read when the focus changes, which is when this renders.
+  const fg = Iae(pauseWhenUnfocused) && !lobbyLink.active;
   const fh = (0, pn.useRef)(fg);
   fh.current = fg;
   (0, pn.useLayoutEffect)(() => {
@@ -21875,6 +21887,7 @@ function useSimulationWiring({
     });
     let hK = null;
     let hL = true;
+    let lobbyBeatAt = performance.now(); // when the loop below last ran
     const hN = dF.clock.now();
     const current42 = fm.current;
     const current43 = gR.current;
@@ -21948,7 +21961,9 @@ function useSimulationWiring({
         return;
       }
       const i0 = performance.now();
-      if ("hidden" === document.visibilityState) {
+      lobbyBeatAt = i0;
+      // Hidden, the game waits; not in the lobby with the other players, where the beat below runs it.
+      if ("hidden" === document.visibilityState && !lobbyLink.active) {
         hH = null;
         hK = dF.request(hW);
         return;
@@ -21983,8 +21998,21 @@ function useSimulationWiring({
         h5();
         gd.current.flush(i2);
         const state11 = current44.getState();
+        // Follow in the lobby (client/net/lobbyLink.js): the leader's tile each tick, by the click-to-walk
+        // path; once a null tile when Follow ends (stop where it is). Null in every other scene, and in the
+        // lobby when not following.
+        const lobbyFollow = lobbyBeforeTick(current44.getEncounterKind(), state11);
+        if (lobbyFollow) {
+          fE.current = lobbyFollow.tile;
+        }
         const i7 = fE.current ?? state11.playerPosition;
         current44.advanceTick(i7);
+        // A follower faces its leader (client/net/lobbyLink.js); null when not following.
+        const lobbyFace = lobbyFollowFacing(current44.getState().playerPosition);
+        const lobbyFollower = lobbyFace !== null && current44.player?.();
+        if (lobbyFollower) {
+          lobbyFollower.facing = lobbyFace;
+        }
         if (current44.isLastTickInputLocked()) {
           fE.current = null;
         }
@@ -22089,6 +22117,15 @@ function useSimulationWiring({
         hE.fwbxk(gx);
         gK(state12);
         rse.publish(state12.currentTick, i9);
+        // The lobby's presence (client/net/lobbyLink.js): the local player after this tick; a no-op
+        // outside the lobby and without a presence.
+        lobbyAfterTick(
+          encounterKind2,
+          state11,
+          state12,
+          playerConfig.appearance,
+          state12.stats ? getCombatLevel(state12.stats) : undefined,
+        );
         ERe.QN(state12.currentTick, i2, hG);
         gM.recordFrameTiming({
           lateByMs: i2 - i4,
@@ -22113,7 +22150,19 @@ function useSimulationWiring({
     } else {
       hW(performance.now());
     }
+    // In the lobby with the other players (client/net/lobbyLink.js) the game goes on in a window that is hidden or
+    // covered, where the browser sends no frames: a beat runs the loop when no frame has for a quarter of a second.
+    const stopLobbyBeat = startBackgroundBeat(() => {
+      if (!hL || !lobbyLink.active || dF.suspended || performance.now() - lobbyBeatAt < 250) {
+        return;
+      }
+      if (null !== hK) {
+        dF.cancel(hK);
+      }
+      hW(performance.now());
+    }, 100);
     return () => {
+      stopLobbyBeat();
       hL = false;
       const hX = dF.clock.now();
       gi.current = {
@@ -26849,8 +26898,11 @@ var BossHealthBarOverlay = ({
   if (!enabled || !eT) {
     return null;
   }
-  const f5 = Math.max(0, eT.hp);
-  const f6 = Math.max(1, eT.maxHp);
+  // A shield its encounter gives with its points (shieldBar.value and .max) is what the bar shows while it is up, in
+  // the shield's colour, as the game's boss bar does over Phosani's Nightmare; a shield bar of a ratio alone does not.
+  const shieldShown = eT.shieldBar && eT.shieldBar.max > 0 ? eT.shieldBar : null;
+  const f5 = Math.max(0, shieldShown ? shieldShown.value : eT.hp);
+  const f6 = Math.max(1, shieldShown ? shieldShown.max : eT.maxHp);
   const f7 = Math.max(0, Math.min(1, f5 / f6)) * 100;
   const f8 = showPercentage && (!(eM < fOe) || !showValues);
   const f9 = showValues || f8;
@@ -26923,7 +26975,7 @@ var BossHealthBarOverlay = ({
         (0, wn.jsx)("div", {
           className: "boss-hp__track",
           children: (0, wn.jsx)("div", {
-            className: "boss-hp__fill",
+            className: "boss-hp__fill" + (shieldShown ? " boss-hp__fill--shield" : ""),
             style: {
               width: f7 + "%",
               minWidth: f5 > 0 ? "2px" : "0",
@@ -27219,6 +27271,98 @@ function EOe(ez) {
     };
   }
 }
+// The input line of the lobby's public chat (client/net/lobbyChat.js), signed in: "<name>: <typed>*" as the game
+// draws it, the account's own name in the message colour, the typed text and the star in the caret's. While the
+// server's chat is on, a real input under it takes the keys: a character no keybind uses, Enter or Backspace pressed
+// outside any field goes to it; Enter sends, Escape leaves it. Its keys stop at the input (F1-F12 excepted), so no
+// hotkey of the page sees them.
+function LobbyChatInput({ chat: chat, ink: ink, width: width }) {
+  const input = (0, pn.useRef)(null);
+  const latest = (0, pn.useRef)(chat);
+  latest.current = chat;
+  (0, pn.useEffect)(() => {
+    if (!chat.available) {
+      return;
+    }
+    const onKeyDown = (event) => {
+      const el = input.current;
+      if (!el || event.defaultPrevented || event.isComposing || bg() || aK(event.target) || aK(document.activeElement)) {
+        return;
+      }
+      const draft = latest.current.draft;
+      const plain = !event.ctrlKey && !event.altKey && !event.metaKey;
+      if (plain && !event.shiftKey && event.key === "Enter") {
+        if (draft.trim() === "") {
+          el.focus();
+        } else {
+          sendLobbyChat();
+        }
+      } else if (plain && event.key === "Backspace" && draft !== "") {
+        setLobbyChatDraft([...draft].slice(0, -1).join(""));
+        el.focus();
+      } else if (chatKeyStartsTyping(event, ck())) {
+        setLobbyChatDraft(draft + event.key);
+        el.focus();
+      } else {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [chat.available]);
+  return (0, wn.jsxs)("span", {
+    className: "chatbox__typing",
+    // A line longer than the chatbox keeps its end, the star, in view: the start scrolls out to the left.
+    style: { maxWidth: width },
+    children: [
+      (0, wn.jsxs)("span", {
+        className: "chatbox__typing-line",
+        children: [
+          (0, wn.jsx)("bdi", { children: chat.name }),
+          ": ",
+          (0, wn.jsxs)("span", {
+            className: "chatbox__typed",
+            style: { color: ink.caret },
+            children: [(0, wn.jsx)("bdi", { children: chat.available ? chat.draft : "" }), "*"],
+          }),
+        ],
+      }),
+      chat.available &&
+        (0, wn.jsx)("input", {
+          ref: input,
+          className: "chatbox__field",
+          "aria-label": "Public chat",
+          autoComplete: "off",
+          spellCheck: false,
+          enterKeyHint: "send",
+          value: chat.draft,
+          style: { width: width },
+          onChange: (event) => setLobbyChatDraft(event.target.value),
+          onKeyDown: (event) => {
+            if (/^F\d{1,2}$/.test(event.key)) {
+              return;
+            }
+            event.stopPropagation();
+            if (event.nativeEvent.isComposing) {
+              return;
+            }
+            if (event.key === "Enter") {
+              event.preventDefault();
+              sendLobbyChat();
+              event.currentTarget.blur();
+            } else if (event.key === "Escape") {
+              event.preventDefault();
+              event.currentTarget.blur();
+            } else if (event.key === "Tab") {
+              event.preventDefault();
+            }
+          },
+        }),
+    ],
+  });
+}
 var Chatbox = (0, pn.memo)(function ({
   rect: rect,
   scale: scale,
@@ -27228,6 +27372,7 @@ var Chatbox = (0, pn.memo)(function ({
   sceneRef: sceneRef,
   onToggle: onToggle,
   messages: messages,
+  lobbyChat: lobbyChat,
 }) {
   const eI = {
     CqpJr: function (fB, fD) {
@@ -27353,6 +27498,21 @@ var Chatbox = (0, pn.memo)(function ({
   };
   const eK = eC ? TRANSPARENT_INK : OPAQUE_INK;
   const eM = eC && eD;
+  // The Public stone's menu (client/net/lobbyChat.js): one entry a mode, as the game's.
+  const publicChatMenu = useContextMenu().bindContextMenu(() => ({
+    entries: [
+      ...PUBLIC_CHAT_MODES.map((entry) => ({
+        action: entry.entry,
+        target: "Public",
+        onClick: () => setLobbyChatFilter(entry.mode),
+      })),
+      {
+        action: "Clear history",
+        target: "Public",
+        onClick: () => clearLobbyChatHistory("public"),
+      },
+    ],
+  }));
   const eN = (0, pn.useRef)(null);
   const eO = (0, pn.useRef)(null);
   const eQ = (0, pn.useRef)(null);
@@ -27792,15 +27952,27 @@ var Chatbox = (0, pn.memo)(function ({
             color: eK.message,
             textShadow: textShadow(eK, scale),
           },
-          children: [
-            "Player: ",
-            (0, wn.jsx)("span", {
-              style: {
-                color: eK.caret,
-              },
-              children: "*",
-            }),
-          ],
+          children: lobbyChat?.name
+            ? [
+                (0, wn.jsx)(
+                  LobbyChatInput,
+                  {
+                    chat: lobbyChat,
+                    ink: eK,
+                    width: (XCe.width - 3) * scale,
+                  },
+                  "lobby-chat",
+                ),
+              ]
+            : [
+                "Player: ",
+                (0, wn.jsx)("span", {
+                  style: {
+                    color: eK.caret,
+                  },
+                  children: "*",
+                }),
+              ],
         }),
       (0, wn.jsx)("div", {
         className: "chatbox__controls",
@@ -27811,6 +27983,7 @@ var Chatbox = (0, pn.memo)(function ({
         },
       }),
       FIXED_CHAT_TAB_SLOT_X.map((fB, fD) => {
+        const publicChatMode = lobbyChat?.name ? PUBLIC_CHAT_MODES.find((entry) => entry.mode === lobbyChat.filter) : undefined;
         const fE = {
           left: fB * scale,
           top: f8 * scale,
@@ -27828,12 +28001,37 @@ var Chatbox = (0, pn.memo)(function ({
             fD >= 1 &&
               (0, wn.jsx)("span", {
                 style: {
-                  color: "#0dc10d",
+                  color: (2 === fD && publicChatMode?.colour) || "#0dc10d",
                 },
-                children: "On",
+                children: (2 === fD && publicChatMode?.label) || "On",
               }),
           ],
         });
+        // With the lobby's chat (client/net/lobbyChat.js) a click on a stone shows that stone's lines, and a click
+        // on the stone that is shown folds the chatbox, as the game's stones do; a right click on Public opens
+        // its modes. The stone that is shown is lit (inferred: the game draws another sprite for it).
+        if (publicChatMode) {
+          const view = CHAT_VIEW_TABS[fD];
+          const shown = lobbyChat.tab === view;
+          return (0, wn.jsx)(
+            "div",
+            {
+              className: "chatbox__tab",
+              "data-chat-tab": view,
+              "data-chat-tab-shown": shown ? "true" : undefined,
+              style: {
+                ...fE,
+                pointerEvents: "auto",
+                cursor: "pointer",
+                background: shown ? "rgba(255, 255, 255, 0.14)" : undefined,
+              },
+              ...(2 === fD ? publicChatMenu : {}),
+              onClick: () => (shown || !visible ? onToggle() : undefined, setLobbyChatTab(view)),
+              children: fF,
+            },
+            CHAT_TABS[fD],
+          );
+        }
         if (0 === fD) {
           return (0, wn.jsx)(
             "button",
@@ -28412,6 +28610,8 @@ var TooltipCard = pn.forwardRef(
                     fontSize: Math.round(eA * 18) + "px",
                     color: eE.color,
                     textShadow: "1px 1px 0 rgba(0, 0, 0, 0.7)",
+                    // Optional: text another player chose, kept from reordering the line around it.
+                    ...(eE.isolate ? { unicodeBidi: "isolate" } : {}),
                   },
                   children: eE.text,
                 },
@@ -29843,8 +30043,25 @@ var ContextMenuOverlay = () => {
                               : (fz.targetColor ?? fx.target),
                             textShadow: "1px 1px 0 rgba(0, 0, 0, 0.7)",
                             marginLeft: Math.round(f0 * 4) + "px",
+                            // A name another player chose cannot reorder the entry around it.
+                            unicodeBidi: "isolate",
                           },
                           children: fz.target,
+                        }),
+                      // Optional: a part of the target in a colour of its own (a lobby player's "(level-N)").
+                      fz.target &&
+                        fz.targetSuffix &&
+                        (0, wn.jsx)("span", {
+                          style: {
+                            fontFamily: '"RuneScape Bold 12", sans-serif',
+                            fontSize: Math.round(18 * f0) + "px",
+                            color: disabled2
+                              ? fx.disabled
+                              : (fz.targetSuffixColor ?? fz.targetColor ?? fx.target),
+                            textShadow: "1px 1px 0 rgba(0, 0, 0, 0.7)",
+                            marginLeft: Math.round(f0 * 4) + "px",
+                          },
+                          children: fz.targetSuffix,
                         }),
                       fz.submenu &&
                         fz.submenu.length > 0 &&
@@ -29869,6 +30086,7 @@ var ContextMenuOverlay = () => {
                   fz.action +
                     ":" +
                     (fz.target ?? "") +
+                    (fz.targetSuffix ?? "") +
                     ":" +
                     (fz.targetColor ?? "") +
                     ":" +
@@ -30143,7 +30361,7 @@ function nLe(ez, eA, eB, eC, eD, eE, eG) {
   }
   return eN >= Math.max(eM, 0);
 }
-function oLe(ez, eA) {
+function oLe(ez, eA, playerPosition) {
   for (const { location: location, locType: locType } of eA) {
     if (0 !== location.level) {
       continue;
@@ -30165,9 +30383,19 @@ function oLe(ez, eA) {
     const eK =
       1 === rotation2 || 3 === rotation2 ? locType.sizeX : locType.sizeY;
     if (nLe(ez, localX2, localY2, tLe, localX2 + eI, localY2 + eK, 2)) {
+      let coord = [localX2, localY2];
+      if (eI > 1 || eK > 1) {
+        if (Array.isArray(playerPosition) && playerPosition.length >= 2) {
+          const targetX = Math.min(Math.max(playerPosition[0], localX2), localX2 + eI - 1);
+          const targetY = Math.min(Math.max(playerPosition[1], localY2), localY2 + eK - 1);
+          coord = [targetX, targetY];
+        } else {
+          coord = [localX2 + (eI >> 1), localY2 + (eK >> 1)];
+        }
+      }
       return {
         locType: locType,
-        coord: [localX2, localY2],
+        coord: coord,
       };
     }
   }
@@ -30240,6 +30468,7 @@ function rLe(ez) {
   } = ez;
   const eN = [];
   const eO = [];
+  let remotePlayersPicked = 0;
   if (entityContext) {
     sLe(
       (function (eS, eT, eU, eV, eW, eX, eY, eZ) {
@@ -30318,6 +30547,30 @@ function rLe(ez) {
       eN,
       eO,
     );
+    // The lobby's other players (client/net/remotePlayers.js), nearest first: "Walk here <name> (level-N)" then
+    // "Follow <name> (level-N)" for each, in place of the plain "Walk here" (maintainer, 2026-11-27; in OSRS
+    // "Walk here" names no target). The name is another player's text: a plain string child of the menu,
+    // never parsed for <col> tags (lLe), drawn white as the game draws a player's name (inferred); the level
+    // is coloured by its difference to the local player's (combatLevelColor), and left out when unknown.
+    if (eE && screenPx && entityContext.pickRemotePlayers) {
+      const remotes = entityContext.pickRemotePlayers(eE, screenPx);
+      remotePlayersPicked = remotes.length;
+      sLe(
+        remotes.flatMap(({ id: id, name: name, combat: combat, levelColor: levelColor }) => {
+          const named = {
+            target: name,
+            targetColor: "#ffffff",
+            ...(combat == null ? {} : { targetSuffix: "(level-" + combat + ")", targetSuffixColor: levelColor }),
+          };
+          return [
+            { action: "Walk here", ...named, onClick: tile ? () => onTileClick?.(tile) : undefined, clickType: "yellow" },
+            { action: "Follow", ...named, onClick: () => entityContext.onFollowRemotePlayer?.(id), clickType: "red" },
+          ];
+        }),
+        eN,
+        eO,
+      );
+    }
     sLe(
       (function (eS, eT, eU, eV) {
         if (!eU.locs || 0 === eU.locs.length) {
@@ -30353,7 +30606,17 @@ function rLe(ez) {
             f6 = false;
           }
           if (f6) {
-            const f9 = [localX3, localY3];
+            let f9 = [localX3, localY3];
+            if (f4 > 1 || f5 > 1) {
+              const referencePos = eT ?? entityContext?.playerPosition;
+              if (Array.isArray(referencePos) && referencePos.length >= 2) {
+                const targetX = Math.min(Math.max(referencePos[0], localX3), localX3 + f4 - 1);
+                const targetY = Math.min(Math.max(referencePos[1], localY3), localY3 + f5 - 1);
+                f9 = [targetX, targetY];
+              } else {
+                f9 = [localX3 + (f4 >> 1), localY3 + (f5 >> 1)];
+              }
+            }
             eW.push(...dLe(locType, f9, eV));
           }
         }
@@ -30407,7 +30670,8 @@ function rLe(ez) {
       eO,
     );
   }
-  const eQ = tile
+  // Over another player of the lobby, its own "Walk here <name>" stands for this one.
+  const eQ = tile && remotePlayersPicked === 0
     ? {
         action: "Walk here",
         onClick: () => onTileClick?.(tile),
@@ -36196,6 +36460,7 @@ var PrayerContent = ({
   offensivePrayer: offensivePrayer,
   independentPrayers: independentPrayers,
   prayerVisualOverrides: prayerVisualOverrides,
+  prayerMarkers: prayerMarkers,
   onPrayerChange: onPrayerChange,
   onOffensivePrayerChange: onOffensivePrayerChange,
   onIndependentPrayerChange: onIndependentPrayerChange,
@@ -36654,6 +36919,38 @@ var PrayerContent = ({
         height: 275,
         sprites: fy,
       }),
+      // An outline in a colour on a prayer, where the encounter's snapshot gives one (state.prayerMarkers, by prayer:
+      // Phosani's Nightmare's curse markers), as a player's screen markers would.
+      !f3.jevhN(filterViewOpen, filteringEnabled) &&
+        prayerMarkers &&
+        fl.flatMap((fA, fB) => {
+          const color = fA.prayer ? prayerMarkers[fA.prayer] : undefined;
+          if (!color) {
+            return [];
+          }
+          const at = fs(fi.get(fA.icon) ?? fB);
+          return [
+            (0, wn.jsx)(
+              "div",
+              {
+                className: "prayer-marker",
+                "data-prayer": fA.prayer,
+                style: {
+                  position: "absolute",
+                  left: at.x,
+                  top: at.y,
+                  width: XDe,
+                  height: XDe,
+                  boxSizing: "border-box",
+                  border: "2px solid " + color,
+                  pointerEvents: "none",
+                  zIndex: 1,
+                },
+              },
+              "prayer-marker-" + fA.icon,
+            ),
+          ];
+        }),
       f3.jevhN(filterViewOpen, filteringEnabled)
         ? (0, wn.jsx)(FilterMenu, {
             rows: fz,
@@ -52440,6 +52737,7 @@ var GamePanel = Q$e(
               offensivePrayer: offensivePrayer ?? null,
               independentPrayers: independentPrayers,
               prayerVisualOverrides: prayerVisualOverrides,
+              prayerMarkers: simulationState?.encounter?.state?.prayerMarkers,
               onPrayerChange: onPrayerChange,
               onOffensivePrayerChange: onOffensivePrayerChange,
               onIndependentPrayerChange: onIndependentPrayerChange,
@@ -52935,9 +53233,15 @@ var wBe = (0, pn.memo)(function (ez) {
     }, [eB, eC]);
     return (0, pn.useSyncExternalStore)(eB?.subscribe ?? MLe, eD);
   })();
+  // The lobby's public chat (client/net/lobbyChat.js): its lines merged in by time and its input line; without it
+  // (signed out, out of the lobby) the game lines alone, as before.
+  const lobbyChat = (0, pn.useSyncExternalStore)(subscribeLobbyChat, getLobbyChatSnapshot);
+  const [mergeLines] = (0, pn.useState)(() => createChatboxMerge());
+  const messages = (0, pn.useMemo)(() => chatboxTabLines(mergeLines(eA, lobbyChat.lines), lobbyChat.name ? lobbyChat.tab : "all"), [mergeLines, eA, lobbyChat.lines, lobbyChat.name, lobbyChat.tab]);
   return (0, wn.jsx)(Chatbox, {
     ...ez,
-    messages: eA,
+    messages: messages,
+    lobbyChat: lobbyChat,
   });
 });
 var uZ = {
@@ -53459,6 +53763,27 @@ var ViewportEntityBridge = ({
           return;
         }
         eW("npc-no-action:" + picked.actorId, null, "yellow", null);
+        return;
+      }
+      // Over another player of the lobby: its menu's first entry, "Walk here <name> (level-N)", as text.
+      const remote = entityContext.pickRemotePlayers?.(eX, eV)[0];
+      if (remote) {
+        eW(
+          "remote:" + remote.id + ":" + remote.name + ":" + remote.combat + ":" + remote.levelColor,
+          {
+            lines: [
+              {
+                spans: [
+                  { text: "Walk here ", color: TOOLTIP_COLORS.action },
+                  { text: remote.name, color: "#ffffff", isolate: true },
+                  ...(remote.combat == null ? [] : [{ text: " (level-" + remote.combat + ")", color: remote.levelColor }]),
+                ],
+              },
+            ],
+          },
+          "yellow",
+          null,
+        );
         return;
       }
       const f2 = (entityContext.pickGroundItems?.(eV) ?? [])[0];
@@ -55004,6 +55329,33 @@ var Grid = (ez) => {
       lT,
     ],
   );
+  // The lobby's other players under the pointer (client/net/remotePlayers.js), nearest first: [{ id, name }].
+  const pickRemotePlayers = (0, pn.useCallback)(
+    (n2, n3) => {
+      const n5 = lm.getRemotePlayerHitTestData?.() ?? [];
+      if (n5.length === 0) {
+        return [];
+      }
+      const players = new Map(n5.map((n6) => [n6.actorId, n6]));
+      // The local player's level, from its base levels (playerState.js getCombatLevel).
+      const ownLevel = simulationState.stats ? getCombatLevel(simulationState.stats) : undefined;
+      const current154 = lp.current;
+      return ct(
+        n3,
+        n2,
+        n5,
+        current154.getViewMatrix(),
+        current154.getProjectionMatrix(),
+        current154.viewport.width,
+        current154.viewport.height,
+        (n6) => ({ actorId: n6 }),
+      ).map((n6) => {
+        const { name: name, combat: combat } = players.get(n6.actorId);
+        return { id: n6.actorId, name: name, combat: combat, levelColor: combat == null ? undefined : combatLevelColor(ownLevel, combat) };
+      });
+    },
+    [lm, simulationState.stats],
+  );
   const lW = (0, pn.useCallback)(
     (n2) => {
       const n3 = lm.getAllGroundItemHitTestData?.() ?? [];
@@ -55140,6 +55492,7 @@ var Grid = (ez) => {
   );
   const m5 = (0, pn.useMemo)(
     () => ({
+      playerPosition: simulationState.playerPosition,
       npcPosition: lS ? simulationState.primaryNpcPosition : undefined,
       npcSize: lS ? simulationState.primaryNpcSize : undefined,
       npcTypeLoader: npcTypeLoader,
@@ -55147,6 +55500,8 @@ var Grid = (ez) => {
       npcActorId: lQ,
       locs: m4,
       pickNpcs: lV,
+      pickRemotePlayers: pickRemotePlayers,
+      onFollowRemotePlayer: followRemotePlayer,
       attackTargetActorId: simulationState.attackTarget,
       pickGroundItems: lX,
       objTypeLoader: objTypeLoader,
@@ -55164,9 +55519,11 @@ var Grid = (ez) => {
       lQ,
       m4,
       lV,
+      pickRemotePlayers,
       simulationState.attackTarget,
       lX,
       objTypeLoader,
+      simulationState.playerPosition,
       m1,
     ],
   );
@@ -55214,7 +55571,7 @@ var Grid = (ez) => {
         const n7 = onTakeGroundItem ? lY(n6 ? [n6.x, n6.y] : null, n2) : [];
         const n8 = iLe({
           tile: n6 ? [n6.x, n6.y] : null,
-          onTileClick: (n9) => m8(n9, n3),
+          onTileClick: (n9) => m8(n9, n3, null),
           entityContext: m5,
           ray: n4,
           screenPx: n2,
@@ -55286,9 +55643,9 @@ var Grid = (ez) => {
         }
       }
       if (m5.locs && m5.locs.length > 0) {
-        const nb = oLe(n4, m5.locs);
+        const nb = oLe(n4, m5.locs, simulationState.playerPosition);
         if (nb) {
-          m8(nb.coord, n3);
+          m8(nb.coord, n3, null);
           return true;
         }
       }
@@ -56357,6 +56714,30 @@ var Grid = (ez) => {
                           viewportHeight: jI.height,
                           exclusionRects: lg,
                         }),
+                      // A tint over the scene, while the encounter's snapshot gives one (state.screenTint: { color,
+                      // the CSS colour at its strongest; fadeInMs, how long it takes to get there from nothing; since,
+                      // the tick it began }; Phosani's Nightmare's curse).
+                      simulationState?.encounter?.state?.screenTint &&
+                        (0, wn.jsx)(
+                          "div",
+                          {
+                            className: "encounter-screen-tint",
+                            style: {
+                              position: "absolute",
+                              left: l6.x,
+                              top: l6.y,
+                              width: l6.width,
+                              height: l6.height,
+                              background: simulationState.encounter.state.screenTint.color,
+                              animation:
+                                "encounter-screen-tint-in " +
+                                (simulationState.encounter.state.screenTint.fadeInMs ?? 0) +
+                                "ms linear both",
+                              pointerEvents: "none",
+                            },
+                          },
+                          "screen-tint-" + simulationState.encounter.state.screenTint.since,
+                        ),
                       (0, wn.jsx)(XpDropOverlay, {
                         overlayScale: jW?.scale ?? jA,
                         overlayOuterScale: hd,

@@ -202,7 +202,7 @@ function decodeNpc(bytes) {
     else if (op === 62) r.skipList(4);
     // The client does not know opcode 130 and reads on from the next byte; every
     // NPC that has it (the Maggot King, 15742) decodes to its last byte that way.
-    else if ([93, 99, 107, 109, 111, 112, 122, 123, 130, 141, 143, 145, 158, 159, 161, 162].includes(op)) {}
+    else if ([93, 99, 107, 109, 111, 112, 122, 123, 130, 141, 143, 145, 147, 158, 159, 161, 162].includes(op)) {}
     else if ([100, 101, 119, 125, 128, 140, 163, 165, 168].includes(op)) r.o += 1;
     else if ([18, 44, 45, 95, 97, 98, 103, 124, 127, 137, 138, 139, 142, 144, 146].includes(op) || (op >= 74 && op <= 79) || (op >= 170 && op < 176)) r.o += 2;
     else if (op === 135 || op === 136) r.o += 3;
@@ -220,6 +220,11 @@ function decodeNpc(bytes) {
       for (let i = 0; i <= n; i++) d.transforms.push(r.u16());
     }
     else if (op === 121) r.skipList(4);
+    // Menu options (RuneLite's EntityOpsLoader): 251 a sub-option (index, sub-id, text); 252 one shown while a game
+    // variable is in a range (index, varp, varbit, min, max, text); 253 both (index, a u16 sub-id, then as 252).
+    else if (op === 251) { r.o += 2; r.string(); }
+    else if (op === 252) { r.o += 1 + 2 + 2 + 4 + 4; r.string(); }
+    else if (op === 253) { r.o += 1 + 2 + 2 + 2 + 4 + 4; r.string(); }
     else if (op === 249) { const n = r.u8(); for (let i = 0; i < n; i++) { const text = r.u8(); r.u24(); if (text) r.string(); else r.i32(); } }
     else throw new Error("unknown NPC opcode " + op);
   }

@@ -5,11 +5,11 @@
 // that box a click just beside the model's edge went to the NPC, and tiles
 // beside Araxxor and Vardorvis could not be clicked. No browser, no cache.
 import assert from "node:assert/strict";
-import { register } from "node:module";
 import { test } from "node:test";
 import { pathToFileURL } from "node:url";
+import { installHooks } from "../tools/determinism/node-hooks.mjs";
 
-register(pathToFileURL(process.cwd() + "/tools/determinism/node-hooks.mjs").href, import.meta.url);
+installHooks();
 globalThis.self ??= globalThis; // PicoGL reads `self` when it loads
 const { CZ: pickNpcs } = await import(pathToFileURL(process.cwd() + "/client/assets/rendering.js").href);
 

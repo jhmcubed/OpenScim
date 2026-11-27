@@ -463,6 +463,39 @@ var consumableDefinitionByItemId = {
       curesVenom: true,
     },
   ]),
+  // Antifire potions (WIKI: Antifire potion, Extended antifire, Super antifire
+  // potion, Extended super antifire): protection from dragonfire for a time,
+  // as a timed effect a fight reads (getDragonfireProtection). WIKI: 6 and 12
+  // minutes of antifire, 3 and 6 of super antifire. Item ids: the game's (the
+  // wiki's item list); the antifires step by 2, the super antifires by 3.
+  ...createSteppedDoseConsumableEntries(2452, 2, 229, "potion", 3, () => [ // Antifire potion(4)
+    {
+      op: "apply_timed_effect",
+      effectType: "antifire",
+      durationTicks: 600,
+    },
+  ]),
+  ...createSteppedDoseConsumableEntries(11951, 2, 229, "potion", 3, () => [ // Extended antifire(4)
+    {
+      op: "apply_timed_effect",
+      effectType: "antifire",
+      durationTicks: 1200,
+    },
+  ]),
+  ...createSteppedDoseConsumableEntries(21978, 3, 229, "potion", 3, () => [ // Super antifire potion(4)
+    {
+      op: "apply_timed_effect",
+      effectType: "super_antifire",
+      durationTicks: 300,
+    },
+  ]),
+  ...createSteppedDoseConsumableEntries(22209, 3, 229, "potion", 3, () => [ // Extended super antifire(4)
+    {
+      op: "apply_timed_effect",
+      effectType: "super_antifire",
+      durationTicks: 600,
+    },
+  ]),
   ...createSteppedDoseConsumableEntries(31638, 3, 229, "potion", 3, () => [ // Extended stamina potion(4)
     {
       op: "restore_run",
@@ -1019,7 +1052,16 @@ function applyConsumableEffects(effects, playerState, effectModifiers) {
   }
   return syncHitpointsStat(newState);
 }
+// The dragonfire protection the player's potions give now: "super" (a super
+// antifire), "antifire" or "none". A super antifire and an antifire can both
+// run; the super's is what counts (WIKI: dragonfire).
+function getDragonfireProtection(activeEffects) {
+  if (activeEffects?.some((effect) => effect.type === "super_antifire")) return "super";
+  if (activeEffects?.some((effect) => effect.type === "antifire")) return "antifire";
+  return "none";
+}
 export {
+  getDragonfireProtection,
   ATTACK_DELAY_TICKS_BY_CONSUMABLE_TRACK,
   consumableDefinitionByItemId,
   getConsumableDefinition,

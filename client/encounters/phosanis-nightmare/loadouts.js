@@ -3,7 +3,10 @@
 // client has, with a magic weapon to charge the totems ("magic accuracy is useless against totems because they have
 // no stats", and melee upgrades come first).
 // - Inquisitor's: its set and mace, the guide's crush weapon (crush always hits husks and weakened parasites for its
-//   most). Its first weapon, the Obligator, and its husk weapon, the Hallowfell, are not in the client's cache.
+//   most). Its first weapon is the Obligator, and its weapon for the husks and parasites the Hallowfell: the defaults
+//   keep the mace; the "Beta:" setup at the end (after the defaults, the first staying a player's start) wears the
+//   Obligator (two-handed, WIKI: no defender) and carries the Hallowfell for them. The Hallowfell's own passive (a hit
+//   on more than one target) is not in the client: it is a two-handed sword here.
 // - Scythe: the Scythe of Vitur, the guide's next weapon, in the same armour.
 // Both carry Tumeken's shadow for the totems, the Voidwaker for her desperation (the guide's next special after the
 // Crimson kisten, which the client has no special attack for), sanfew serums for her parasites (WIKI: a dose weakens
@@ -46,6 +49,12 @@ export const phosanisNightmareLoadouts = {
     name: "Melee (Scythe of Vitur)",
     equipment: { ...withoutShield, weapon: 22325 }, // Scythe of Vitur (two-handed: no defender)
     inventory: inventory(24417), // with the mace for the husks and parasites
+    supplies,
+  },
+  beta_obligator: {
+    name: "Beta: Melee (Obligator)",
+    equipment: { ...withoutShield, weapon: 34715 }, // Obligator (two-handed: no defender)
+    inventory: inventory(34027), // with the Hallowfell for the husks and parasites
     supplies,
   },
 };

@@ -3046,6 +3046,19 @@ html:not([data-panel-dragging])
   top: 0;
   left: 0;
 }
+/* An encounter's tint over the scene (Grid.js, state.screenTint), fading in from nothing. */
+@keyframes encounter-screen-tint-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* A shield, shown in place of the hitpoints (Grid.js, BossHealthBarOverlay): the blue of the shield bar over the NPC. */
+.boss-hp__fill--shield {
+  background-color: #2b8fd6;
+}
 @media (prefers-reduced-motion: reduce) {
   .boss-hp__fill {
     transition: none;
@@ -3087,6 +3100,11 @@ html:not([data-panel-dragging])
   flex: 1 1 0;
   min-width: 0;
 }
+/* A player's name and text, each in a bidi isolate: neither reorders the other or the ": " (lobby chat). */
+.chatbox__speaker,
+.chatbox__said {
+  unicode-bidi: isolate;
+}
 .chatbox__scrollbar {
   position: absolute;
 }
@@ -3113,6 +3131,28 @@ html:not([data-panel-dragging])
   font-family: "RuneScape Plain 12", sans-serif;
   display: flex;
   position: absolute;
+}
+/* The lobby's public chat input line (Grid.js LobbyChatInput): the text as drawn, a real input under it. */
+.chatbox__typing {
+  white-space: pre;
+  display: inline-flex;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+.chatbox__typing-line {
+  flex: none;
+}
+.chatbox__field {
+  pointer-events: auto;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
 }
 .chatbox__tab,
 .chatbox__report {

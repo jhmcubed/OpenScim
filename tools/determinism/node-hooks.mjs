@@ -12,6 +12,7 @@
 //                            (test/fixtures/register.mjs says which)
 //   import.meta.glob(...)    Vite's glob import, by which the registry finds
 //                            the encounters, is written out (import-glob.mjs)
+import module from "node:module";
 import { dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { fixtureDirectory, fixtureUrlPrefix, registerFixture } from "../../test/fixtures/register.mjs";
@@ -20,23 +21,50 @@ import { expandImportGlobs } from "./import-glob.mjs";
 const clientRoot = pathToFileURL(process.cwd() + "/client/").href;
 const bzip2 = "determinism:bzip2";
 
-export async function resolve(specifier, context, nextResolve) {
+function resolveHook(specifier, context, nextResolve) {
   if (specifier === "@foxglove/wasm-bz2/wasm/module.js") return { url: bzip2, shortCircuit: true };
   if (specifier.startsWith(fixtureUrlPrefix)) return nextResolve(new URL(specifier.slice(fixtureUrlPrefix.length), fixtureDirectory).href, context);
   if (specifier.startsWith("/")) return nextResolve(clientRoot + specifier.slice(1), context);
   return nextResolve(specifier, context);
 }
 
+// A client module as loaded, with the fixture's lines and the glob imports written out.
+function rewritten(url, loaded) {
+  if (loaded.source === undefined || loaded.source === null) return loaded;
+  const source = String(loaded.source);
+  const registered = expandImportGlobs(registerFixture(url.slice(clientRoot.length), source), dirname(fileURLToPath(url)));
+  return registered === source ? loaded : { ...loaded, source: registered };
+}
+
+function loadHook(url, context, nextLoad) {
+  if (url.endsWith(".css")) return { format: "module", source: "", shortCircuit: true };
+  if (url.startsWith(clientRoot)) return rewritten(url, nextLoad(url, context));
+  if (url !== bzip2) return nextLoad(url, context);
+  return bzip2Module();
+}
+
+// The hooks of module.register (a loader thread, asynchronous), for a Node without module.registerHooks.
+export async function resolve(specifier, context, nextResolve) {
+  return resolveHook(specifier, context, nextResolve);
+}
 export async function load(url, context, nextLoad) {
   if (url.endsWith(".css")) return { format: "module", source: "", shortCircuit: true };
-  if (url.startsWith(clientRoot)) {
-    const loaded = await nextLoad(url, context);
-    if (loaded.source === undefined || loaded.source === null) return loaded;
-    const source = String(loaded.source);
-    const registered = expandImportGlobs(registerFixture(url.slice(clientRoot.length), source), dirname(fileURLToPath(url)));
-    return registered === source ? loaded : { ...loaded, source: registered };
-  }
+  if (url.startsWith(clientRoot)) return rewritten(url, await nextLoad(url, context));
   if (url !== bzip2) return nextLoad(url, context);
+  return bzip2Module();
+}
+
+// Installs the hooks, once. module.register() is deprecated from Node 26 (DEP0205): module.registerHooks() (Node
+// 22.15, 23.5) runs the same hooks synchronously, on the thread that imports; module.register() only where it's missing.
+let installed = false;
+export function installHooks() {
+  if (installed) return;
+  installed = true;
+  if (typeof module.registerHooks === "function") module.registerHooks({ resolve: resolveHook, load: loadHook });
+  else module.register(import.meta.url);
+}
+
+function bzip2Module() {
   // client/bzip2-module.js is a CommonJS script; run it with a module object
   // and hand the factory the wasm bytes, as the browser branch does.
   const root = JSON.stringify(clientRoot);

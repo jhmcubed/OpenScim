@@ -1,49 +1,62 @@
-// The Maggot King's rules as the recorded kills and the wiki have them,
-// asserted on the determinism harness's scenarios
-// (tools/determinism/scenarios/maggot-king.mjs). Their digests say that
-// nothing changed; this says what it is.
+// The Maggot King's poison and disease on the player (client/encounters/maggot-king/), run on the determinism
+// harness: a player who stands still in the middle of the floor, unprayed, with infinite health, so that every
+// spit hits him and its bile lands under him.
+// OBS 15 kills: sticky bile is the game's disease hitsplat (hitsplat 4, 20 of 20) of 2 to 4, that much off
+// hitpoints and off Attack, Strength or Defence, once; poisonous bile is the poison hitsplat. WIKI, and OBS from a
+// player's own fights: the ranged spit poisons, through prayer too.
 import assert from "node:assert/strict";
 import { runScenario } from "../tools/determinism/harness.mjs";
-import { scenarios } from "../tools/determinism/scenarios/maggot-king.mjs";
+import { rangedGear } from "../tools/determinism/scenarios/common.mjs";
 
-// Each tick: his tile, the player's, the phase, the slam coming down and the slams that hit.
-async function ticksOf(name) {
-  const ticks = [];
-  await runScenario(scenarios.find((scenario) => scenario.name === "maggot-king/" + name), {
+const ticks = [];
+await runScenario(
+  { name: "maggot-king/standing-still", kind: "maggot_king", seed: 3, ticks: 120, mechanics: { infiniteHealth: true }, start: [31, 35], ...rangedGear },
+  {
     onTick(tick, engine) {
-      const { state } = engine.getEncounterSnapshot();
+      const player = engine.player();
       ticks[tick] = {
-        boss: [...engine.worldState.getNpc("maggot-king").position], player: [...engine.player().position], phase: state.phase, slam: state.slam?.landsAt ?? null,
-        slammed: engine.damageHistory.some((hit) => hit.tick === tick && hit.source === "Head slam"),
+        varp: player.poisonState.poisonVarp,
+        drainable: ["attack", "strength", "defence"].reduce((sum, stat) => sum + player.stats[stat].current, 0),
+        hits: engine.damageHistory.filter((hit) => hit.tick === tick && hit.targetId === "player").map(({ source, attackType, effectiveDamage }) => ({ source, attackType, effectiveDamage })),
+        hitsplats: engine.getLastTickEvents().filter((event) => event.type === "hitsplat_spawned" && event.targetId === "player").map(({ amount, hitsplatType }) => [amount, hitsplatType]),
       };
     },
-  });
-  return ticks;
-}
-const middle = (tick) => tick.boss[0] + 2;
-// The ticks his slams land on, in the first near rotation.
-const landings = (ticks) => [...new Set(ticks.flatMap((tick) => (tick?.phase === "melee" && tick.slam !== null ? [tick.slam] : [])))].filter((n) => ticks[n]?.phase === "melee");
+  },
+);
 
 {
-  // A player who steps out of the first slam and then stands without hitting
-  // him: he walks his middle back over the player's column, and every slam
-  // after the first lands on the player.
-  const ticks = await ticksOf("near-afk");
-  const [first, ...rest] = landings(ticks);
-  assert.ok(rest.length >= 3, "slams after the first: " + rest.length);
-  assert.notEqual(middle(ticks[first]), ticks[first].player[0]);
-  for (const n of rest) {
-    assert.equal(middle(ticks[n]), ticks[n].player[0], "his middle over the player at the slam on tick " + n);
-    assert.ok(ticks[n].slammed, "the slam on tick " + n + " hits the player");
+  // Sticky bile: a disease hitsplat of what it takes, the same off one of the three stats.
+  const sticky = ticks.flatMap((tick, n) => (tick?.hits.some((hit) => hit.source === "Sticky bile") ? [n] : []));
+  assert.ok(sticky.length >= 3, "the player stands in sticky bile");
+  for (const n of sticky) {
+    const { effectiveDamage } = ticks[n].hits.find((hit) => hit.source === "Sticky bile");
+    assert.ok(effectiveDamage >= 2 && effectiveDamage <= 4);
+    assert.deepEqual(ticks[n].hitsplats, [[effectiveDamage, "disease"]], "tick " + n);
+    assert.equal(ticks[n - 1].drainable - ticks[n].drainable, effectiveDamage, "tick " + n);
   }
 }
 {
-  // A player under his body two columns off his middle, hitting him each
-  // slam (the recorded kills): from the first slam the player meets in place
-  // he does not move until his screech. (Opened near at once, he follows
-  // the player who dodges his first slams on the way there.)
-  const ticks = await ticksOf("near-punish");
-  const [first, ...rest] = landings(ticks).filter((n, i, all) => all.slice(0, i + 1).some((m) => ticks[m].player[0] === ticks[m].boss[0]));
-  assert.ok(rest.length >= 3, "slams after the first in place: " + rest.length);
-  for (let n = first; n <= rest.at(-1); n++) assert.deepEqual(ticks[n].boss, ticks[first].boss, "he stands still on tick " + n);
+  // The ranged spit poisons him (40: hits of 8, WIKI), before any bile does; poisonous bile is the poison hitsplat
+  // as he steps in (OBS); the poison then hits for 8.
+  const poisoned = ticks.findIndex((tick) => tick?.varp > 0);
+  assert.equal(ticks[poisoned].varp, 40);
+  assert.deepEqual(ticks[poisoned].hits.map(({ source, attackType }) => [source, attackType]), [["Maggot King", "range"]]);
+  const contact = ticks.find((tick) => tick?.hits.some((hit) => hit.source === "Poisonous bile"));
+  assert.deepEqual(contact.hitsplats.map(([, type]) => type), ["poison"]);
+  const pulse = ticks.find((tick) => tick?.hits.some((hit) => hit.source === "Poison"));
+  assert.deepEqual(pulse.hitsplats, [[8, "poison"]]);
 }
+{
+  // Through Protect from Missiles too (OBS, a player's own fights): the praying scenario's first spit poisons him
+  // for a hit of 0.
+  const { scenarios } = await import("../tools/determinism/scenarios/maggot-king.mjs");
+  let poisoned = null;
+  await runScenario(scenarios.find((scenario) => scenario.name === "maggot-king/crossbow-and-bow"), {
+    onTick(tick, engine) {
+      if (poisoned || engine.player().poisonState.poisonVarp <= 0) return;
+      poisoned = { prayer: engine.player().activePrayer, hits: engine.damageHistory.filter((hit) => hit.tick === tick && hit.targetId === "player").map(({ source, effectiveDamage }) => [source, effectiveDamage]) };
+    },
+  });
+  assert.deepEqual(poisoned, { prayer: "ProtectRange", hits: [["Maggot King", 0]] });
+}
+console.log("The Maggot King's poison and disease are as recorded");

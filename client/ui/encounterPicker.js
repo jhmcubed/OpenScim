@@ -28,7 +28,7 @@
 import React from "react";
 import { encounterDefinitions } from "../engine/encounterKinds.js";
 import { encounterCatalog, encounterCategories } from "../encounters/catalog.js";
-import { drawPortrait } from "./portraits.js";
+import { drawPortrait, holdPortraits } from "./portraits.js";
 import { buildEncounterEntries, groupEncounters, groupVariants, searchEncounters } from "./encounterCatalog.js";
 
 const { createElement: h, useEffect, useLayoutEffect, useMemo, useRef, useState } = React;
@@ -438,7 +438,13 @@ export function EncounterPicker({
         { className: "ep-body" },
         h(
           "div",
-          { className: "ep-list", ref: listRef },
+          {
+            className: "ep-list",
+            ref: listRef,
+            // A boss's picture is not drawn while the list moves (portraits.js).
+            onScroll: holdPortraits,
+            onWheel: holdPortraits,
+          },
           sections.length === 0 && h("div", { className: "ep-empty" }, searching ? `No encounters match "${query.trim()}".` : "No encounters found."),
           sections.map((section) =>
             h(

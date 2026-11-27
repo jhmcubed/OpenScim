@@ -1,17 +1,17 @@
 import assert from "node:assert/strict";
-import { register } from "node:module";
 import { awakenedKind, bosses } from "../client/dt2/bosses.js";
 import * as dt2 from "../client/dt2/gateway.js";
 import * as toa from "../client/toa/gateway.js";
 import * as sandbox from "../client/encounters/sandbox/gateway.js";
 import * as book from "../client/lobby/book.js";
 import { gatewayPortals } from "../client/lobby/gateways.js";
+import { installHooks } from "../tools/determinism/node-hooks.mjs";
 
 // The four bosses, one ancient element each.
 assert.deepEqual(bosses.map((boss) => boss.element), ["blood", "ice", "shadow", "smoke"]);
 // The engine knows every boss and its awakened variant, and gives a route to those that have a fight. Its table of
 // kinds reads the registry, which Node loads through the determinism harness's hooks.
-register("../tools/determinism/node-hooks.mjs", import.meta.url);
+installHooks();
 globalThis.self ??= globalThis;
 const { encounterDefinitions } = await import("../client/engine/encounterKinds.js");
 const { encounterRegistry } = await import("../client/encounters/registry.js");

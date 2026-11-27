@@ -18,7 +18,10 @@ var purgingStaffSpecialIdSet = new Set([29594]);
 var scorchingBowIdSet = new Set([29591]);
 var burningClawsIdSet = new Set([29577]);
 var abyssalBludgeonIdSet = new Set([13263]);
-var dragonHunterWeaponIdSet = new Set([21012, 22978, 25916, 25918, 30070]);
+// The dragon hunter weapons whose bonus against dragons is not modelled: an
+// attack with one on a dragon is refused (no profile). The crossbow and the
+// lance have theirs in formula.js (getDragonHunterStages).
+var dragonHunterWeaponIdSet = new Set([30070]); // Dragon hunter wand
 var eclipseAtlatlIdSet = new Set([29000, 29851]);
 var zaryteCrossbowIdSet = new Set([26374, 27186]); // Zaryte crossbow, and its Last Man Standing copy
 // Enchanted bolts against monsters (WIKI: Enchanted bolts, and each bolt's

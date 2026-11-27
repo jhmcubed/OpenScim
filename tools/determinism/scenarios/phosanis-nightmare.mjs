@@ -123,7 +123,9 @@ function fight(tick, api) {
   // In her desperation a sleepwalker costs 15: he keeps on her.
   const walker = s.stage === "desperate" ? null : pick((npc) => npc.id.startsWith("nightmare-sleepwalker") && !npc.untargetable);
   const parasite = pick((npc) => npc.id.startsWith("nightmare-parasite"));
-  const totem = s.stage === "totems" ? pick((npc) => npc.id.startsWith("nightmare-totem") && !npc.untargetable) : null;
+  // A charged totem keeps its option (clicked, it refuses): the ones still to charge.
+  const charged = (npc) => s.totems.some((totem) => npc.id === "nightmare-totem-" + totem.corner && totem.charged);
+  const totem = s.stage === "totems" ? pick((npc) => npc.id.startsWith("nightmare-totem") && !npc.untargetable && !charged(npc)) : null;
   const target = husk ?? walker ?? parasite ?? totem ?? (s.stage === "shield" || s.stage === "desperate" ? boss(api) : null);
   if (target && me.attackTarget !== target.id) attack(api, target.id);
 }
@@ -156,6 +158,26 @@ export const scenarios = [
     mechanics: health,
     ...gear,
     script: fight,
+  },
+  {
+    // The fight as in "kill", but on the tick after each "... totem is fully charged." the player clicks a charged
+    // totem: it refuses, with the game's message, and he attacks nothing that tick.
+    name: "phosanis-nightmare/charged-totem",
+    kind: KIND,
+    seed: 11,
+    ticks: 400,
+    mechanics: health,
+    ...gear,
+    script(tick, api) {
+      const s = state(api);
+      const justCharged = api.engine.getLastTickEvents().some((event) => event.type === "game_message" && event.segments.some(({ text }) => text.endsWith("totem is fully charged.")));
+      const full = s.totems.find((totem) => totem.charged);
+      if (s.stage === "totems" && justCharged && full) {
+        attack(api, "nightmare-totem-" + full.corner);
+        return;
+      }
+      fight(tick, api);
+    },
   },
   {
     // The player stands where he starts, attacks her and prays nothing: her

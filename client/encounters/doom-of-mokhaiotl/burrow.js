@@ -74,6 +74,15 @@ const surfaceAfterEye = 9;
 const chargeTicks = 20; // TSPS: 600 cycles
 const centreRockChance = 57 / 135;
 const eyeTicks = (delve) => (delve === 5 ? [8, 22] : delve === 6 ? [8, 24, 37] : [8, 23, 36]);
+// WIKI: the burrowed form (14709) is immune to freezes, 100%. A bind on him (the scorching bow's special) ends as he
+// burrows, and one that lands while he's burrowed doesn't hold him: the engine keeps a bound NPC in place, which left
+// him in the centre for the whole burrow (#145).
+const unbind = (boss) => {
+  if (boss.debuffs) {
+    delete boss.debuffs.boundFromTick;
+    delete boss.debuffs.boundUntilTick;
+  }
+};
 
 export class Burrow {
   constructor(doom) {
@@ -122,6 +131,7 @@ export class Burrow {
     this.active.burrowed = true;
     this.active.chargeFrom = context.tick;
     boss.npcTypeId = npcTypeIds.burrowed;
+    unbind(boss);
     doom.setChargeAccuracy(boss, true);
   }
   // A hit on him restarts the charge.
@@ -175,6 +185,7 @@ export class Burrow {
   }
   // The boss's movement hook: a zoom's tiles for this tick.
   move(boss, context) {
+    if (this.burrowed) unbind(boss);
     const zoom = this.active?.zoom;
     if (!this.burrowed || !zoom || zoom.arrivedAt !== null || context.tick < zoom.setsOff) return [];
     const path = [];

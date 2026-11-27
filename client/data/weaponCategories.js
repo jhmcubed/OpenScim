@@ -682,6 +682,9 @@ var weaponCategoryByItemId = {
   9185: "crossbow",
   11785: "crossbow",
   26374: "crossbow",
+  21012: "crossbow", // Dragon hunter crossbow
+  25916: "crossbow", // Dragon hunter crossbow (t)
+  25918: "crossbow", // Dragon hunter crossbow (b)
   11905: "powered_staff",
   11907: "powered_staff",
   12899: "powered_staff",

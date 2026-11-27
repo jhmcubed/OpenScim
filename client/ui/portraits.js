@@ -12,7 +12,25 @@ const portraitBackground = { r: 10 / 255, g: 8 / 255, b: 5 / 255, a: 1 };
 const drawn = new Map();
 let last = Promise.resolve();
 
-const idle = (work) => (typeof requestIdleCallback === "function" ? requestIdleCallback(work, { timeout: 1500 }) : setTimeout(work, 0));
+// Drawing one takes the page's main thread for a moment (a WebGL context, its
+// shaders, the model, the read back), long enough to stall a scroll. So while
+// the picker's list is being scrolled the next picture waits, and it is drawn
+// once the list has been still for `quietMs`.
+const quietMs = 300;
+let heldUntil = 0;
+export function holdPortraits() {
+  heldUntil = performance.now() + quietMs;
+}
+
+const idle = (work) => {
+  const run = () => {
+    const wait = heldUntil - performance.now();
+    if (wait > 0) setTimeout(() => idle(work), wait);
+    else work();
+  };
+  if (typeof requestIdleCallback === "function") requestIdleCallback(run, { timeout: 1500 });
+  else setTimeout(run, 0);
+};
 
 // The picture of a portrait as the URL of an image, or null when it cannot be
 // drawn (its model is not in the cache, or the page has lost its graphics).

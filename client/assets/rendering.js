@@ -8806,6 +8806,27 @@ var NpcType = class extends Type {
         a.readUnsignedByte();
       } else if (e >= 170 && e < 176) {
         a.readUnsignedShort();
+      } else if (e === 130 || e === 147) {
+        // Flags with no operands (RuneLite's NpcLoader: 147, zbuf off); nothing here reads them (#148).
+      } else if (e === 251 || e === 252 || e === 253) {
+        // A menu option: 251 one under another (u8 index, u8 sub-id, string), 252 one shown while a game variable is
+        // in a range (u8 index, u16 varp, u16 varbit, i32 min, i32 max, string), 253 both (u8 index, u16 sub-id,
+        // u16 varp, u16 varbit, i32 min, i32 max, string) (RuneLite's EntityOpsLoader). Nothing here shows them; read
+        // so that what follows is (before, they were read as opcodes and cut 9 NPCs short, #148).
+        const op = { opcode: e, index: a.readUnsignedByte() };
+        if (e === 251) {
+          op.subId = a.readUnsignedByte();
+        } else {
+          if (e === 253) {
+            op.subId = a.readUnsignedShort();
+          }
+          op.varp = a.readUnsignedShort();
+          op.varbit = a.readUnsignedShort();
+          op.min = a.readInt();
+          op.max = a.readInt();
+        }
+        op.text = this.readString(a);
+        (this.extraOps ??= []).push(op);
       } else if (e === 249) {
         this.params = Type.readParamsMap(a, this.params);
       } else {
@@ -9130,6 +9151,17 @@ var ObjType = class extends Type {
       a.readInt();
       a.readInt();
       this.readString(a);
+    } else if (e === 15 || e === 160 || e === 251) {
+      // Flags with no operands (RuneLite's ItemLoader: not tradeable, stackable 2, bronzeman); nothing here reads
+      // them. Before, each was skipped as unknown (#140).
+    } else if (e === 161) {
+      // A u16 count, then that many u16 (RuneLite's ItemLoader: holdingWhitelist; the Obligator's and Zorya's tome's
+      // are animation ids). Before, its operands were read as opcodes and the item cut short (#140).
+      const n = a.readUnsignedShort();
+      this.holdingWhitelist = [];
+      for (let t = 0; t < n; t++) {
+        this.holdingWhitelist.push(a.readUnsignedShort());
+      }
     } else if (e === 249) {
       this.params = Type.readParamsMap(a, this.params);
     } else {
@@ -17042,7 +17074,7 @@ function withThrallRenderConfig(config) {
 // Measured at a 3x interface: observer crops doom-20261123-192925 and
 // Pictures/hp_test.png, the 30x5 bar drawn 90x15, the 25 px prayer 75.
 var OVERLAY_LAYER_SELECTOR =
-  "[data-overhead-icons],[data-tick-counters],[data-overhead-texts],[data-hitsplats],[data-healthbars],[data-timerbars]";
+  "[data-overhead-icons],[data-tick-counters],[data-overhead-texts],[data-overhead-bitmap],[data-hitsplats],[data-healthbars],[data-timerbars]";
 // The camera the overlay renderer projects with: screen points in game
 // pixels. Only the 3D camera (it has a viewport) projects like the game.
 function overlayCamera(camera, model, gameScale) {
@@ -19560,6 +19592,17 @@ var PicoGLRenderer = class {
       const c = a.modelMatrix[14] - d;
       return i * i + g * g + c * c - (n * n + s * s + r * r);
     });
+    // The sorted meshes (the players' bodies) are coloured without writing depth, one after the other: with more
+    // than one, the farthest from the camera first, so that a nearer player covers a farther one.
+    if (sorted.length > 1) {
+      const far = (e) => {
+        const x = e.modelMatrix[12] - l;
+        const y = e.modelMatrix[13] - o;
+        const z = e.modelMatrix[14] - d;
+        return x * x + y * y + z * z;
+      };
+      sorted.sort((e, a) => far(a) - far(e));
+    }
     const opaqueRuns2 = this.opaqueRuns;
     const transparentRuns2 = this.transparentRuns;
     opaqueRuns2.length = 0;
@@ -22367,11 +22410,12 @@ var dA = {
 var gA = {
   closeOverlay: "Escape",
 };
+// The camera turns by the arrow keys, as in the game: every letter is free for the chat.
 var cA = {
-  orbitRotateLeft: "a",
-  orbitRotateRight: "d",
-  orbitTiltUp: "w",
-  orbitTiltDown: "s",
+  orbitRotateLeft: "ArrowLeft",
+  orbitRotateRight: "ArrowRight",
+  orbitTiltUp: "ArrowUp",
+  orbitTiltDown: "ArrowDown",
   freeformForward: "w",
   freeformBackward: "s",
   freeformLeft: "a",
@@ -22464,11 +22508,38 @@ function vA(e) {
   cS(rA, e.gamePanel);
   cS(iA, e.camera);
 }
+// The camera's first default keys. Stored keys that are still exactly these move to the arrow keys, once
+// (they were saved on the first visit, chosen or not); keys set after that are kept.
+var cameraLetterKeys = {
+  orbitRotateLeft: "a",
+  orbitRotateRight: "d",
+  orbitTiltUp: "w",
+  orbitTiltDown: "s",
+};
+function cameraKeysToArrows(e) {
+  if (!e || gS("osrs-camera-arrow-keys")) {
+    return e;
+  }
+  cS("osrs-camera-arrow-keys", true);
+  if (!mA.every((a) => e[a] === cameraLetterKeys[a])) {
+    return e;
+  }
+  const a = {
+    ...e,
+  };
+  for (const e of mA) {
+    a[e] = cA[e];
+  }
+  return a;
+}
 function pA() {
-  const e = gS(lA);
+  const stored = gS(lA);
+  const storedCamera = cameraKeysToArrows(stored?.camera);
+  const e = stored && storedCamera !== stored.camera ? { ...stored, camera: storedCamera } : stored;
   if (e) {
     const a = uA(e);
     if (
+      e !== stored ||
       Object.keys(e.plugins ?? {}).some((e) => !Object.hasOwn(nA, e)) ||
       Object.keys(e.ui ?? {}).some((e) => !Object.hasOwn(gA, e)) ||
       yA.some((t) => e[t.domain]?.[t.action] !== wA(a, t))
@@ -22479,7 +22550,7 @@ function pA() {
   }
   const a = uA({
     gamePanel: gS(rA) ?? undefined,
-    camera: gS(iA) ?? undefined,
+    camera: cameraKeysToArrows(gS(iA) ?? undefined),
   });
   vA(a);
   return a;
@@ -35687,7 +35758,8 @@ var PlayerVisualTracker = class {
   }
   computeMovementSpeed(e) {
     let a = 4;
-    if (this.currentTurnTarget() !== this._renderAngle && this.turnSpeed !== 0 && !this.isEffectivelyInteracting()) {
+    // OBS (the game's client): half speed while the drawn angle is not yet the step's direction, only without a target.
+    if (this._targetAngle !== this._renderAngle && this.turnSpeed !== 0 && !this.isEffectivelyInteracting()) {
       a = 2;
     }
     if (this.pathLength > 2) {
@@ -35744,7 +35816,9 @@ var PlayerVisualTracker = class {
     if (this.pathLength === 0) {
       return null;
     }
-    const e = (this.currentTurnTarget() - this._renderAngle) & zW;
+    // OBS (the game's client): the walk, sideways or backward sequence is chosen by the step's direction
+    // against the drawn angle, not by a faced target's: a player stepping away from its target walks back.
+    const e = (this._targetAngle - this._renderAngle) & zW;
     const a = e > wW ? e - yW : e;
     if (a >= -256 && a <= 256) {
       return "walk";
@@ -43760,6 +43834,17 @@ var UIOverlayRenderer = class e {
     const a = this.playerBarAnchor(t, s, posedModelHeight);
     return a && { x: a.x, y: a.y - 5 - 2 };
   }
+  // Where a player's overhead chat stands: the top of the model as it is drawn. OBS (the game's client): an actor's
+  // overhead text hangs from the top of its posed model. `lift`: how far the scene raises the model off the
+  // ground when it draws it (its lowest point, and the stance's own offset); the top is that much higher than
+  // the posed height says. Without it the text stood in the head.
+  playerChatAnchor(t, s, posedModelHeight, lift = 0) {
+    return t.tileToScreen({
+      x: s[0] + 0.5,
+      y: s[1] + 0.5,
+      level: -Nb(this.terrainHeights, s[0], s[1]) / 128 + ((posedModelHeight || playerLogicalHeight) + lift) / 128,
+    });
+  }
   SL(a, t, n, s, posedModelHeight) {
     const r = e.bL(n);
     if (!r) {
@@ -46287,177 +46372,16 @@ var SceneCompositor = class e {
       this.spotAnimRenderer.loadById(this.spotAnimModelLoader, i.projectileId);
     }
     try {
-      const a = e.loadPlayerModel(n, s);
-      const t = this.playerAnimController?.QL() ?? null;
+      const a = this.buildPlayerRig(
+        e,
+        n,
+        s,
+        this.playerAnimController,
+        () => this.playerAnimController?.buildPlayerAnimatedMesh() ?? null,
+        (e) => this.RD(e),
+      );
       if (a) {
-        a.mergedModel.calculateBounds();
-        const minHeight2 = a.mergedModel.minHeight;
-        let r = null;
-        if (this.playerAnimationSystem) {
-          const e = new Int32Array(a.mergedModel.verticesX);
-          const n = new Int32Array(a.mergedModel.verticesY);
-          const i = new Int32Array(a.mergedModel.verticesZ);
-          const l = a.mergedModel.faceAlphas
-            ? new Int8Array(a.mergedModel.faceAlphas)
-            : null;
-          const o = lD(s.weapon);
-          const d = {
-            idle: this.loadFrameBasedSeq(o, "idle"),
-            walk: this.loadFrameBasedSeq(o, "walk"),
-            run: this.loadFrameBasedSeq(o, "run"),
-            turnLeft: this.loadFrameBasedSeq(o, "turnLeft"),
-            turnRight: this.loadFrameBasedSeq(o, "turnRight"),
-            walkBack: this.loadFrameBasedSeq(o, "turn180"),
-            idleTurnLeft: this.loadFrameBasedSeq(o, "standTurn"),
-            idleTurnRight: this.loadFrameBasedSeq(o, "standTurn"),
-          };
-          d.eat = this.BD(829);
-          d.attack = this.loadFrameBasedSeq(o, "attack");
-          d.block = this.createFirstAvailableSequence(cD(s.weapon, s.shield));
-          const g = [ZL];
-          d.unarmed = {
-            idle: this.loadFrameBasedSeq(g, "idle"),
-            walk: this.loadFrameBasedSeq(g, "walk"),
-            run: this.loadFrameBasedSeq(g, "run"),
-            turnLeft: this.loadFrameBasedSeq(g, "turnLeft"),
-            turnRight: this.loadFrameBasedSeq(g, "turnRight"),
-            walkBack: this.loadFrameBasedSeq(g, "turn180"),
-            idleTurnLeft: this.loadFrameBasedSeq(g, "standTurn"),
-            idleTurnRight: this.loadFrameBasedSeq(g, "standTurn"),
-          };
-          // Optional: the other stances an encounter's render config names (`playerStances`: a name to the
-          // sequence of each slot). Its state's `playerStance` picks one each frame; no fight without the
-          // field is changed.
-          const stances = this.encounterRenderConfig?.playerStances;
-          if (stances) {
-            d.stances = {};
-            for (const [name, slots] of Object.entries(stances)) {
-              d.stances[name] = Object.fromEntries(
-                Object.entries(slots).map(([slot, seqId]) => [slot, this.BD(seqId)]),
-              );
-            }
-          }
-          const c = new PlayerModelAdapter(
-            a.mergedModel,
-            e,
-            n,
-            i,
-            l,
-            this.playerAnimationSystem,
-            () => this.playerAnimController?.buildPlayerAnimatedMesh() ?? null,
-            (e) => this.RD(e),
-          );
-          if (this.playerAnimController) {
-            this.playerAnimController.OL({
-              playerModelData: a,
-              animationSet: d,
-              modelAdapter: c,
-            });
-            r = this.playerAnimController;
-          } else {
-            r = new PlayerAnimationController({
-              playerModelData: a,
-              animationSet: d,
-              modelAdapter: c,
-              resolveTextureLayer: re.resolve,
-            });
-            if (t) {
-              try {
-                r.restoreConsumeAnim(t);
-              } catch (e) {
-                logger.warn(
-                  "SceneBuilder",
-                  "Failed to restore consume animation, continuing without it",
-                  e,
-                );
-              }
-            }
-          }
-        }
-        const i = (function (e, a, t) {
-          const mergedModel9 = e.mergedModel;
-          const {
-            faceColors1: faceColors1,
-            faceColors2: faceColors2,
-            faceColors3: faceColors3,
-          } = e.litColors;
-          const l = [];
-          const o = [];
-          const d = [];
-          const g = [];
-          const c = [];
-          mergedModel9.calculateVertexNormals();
-          const m = a;
-          const h = m ? m.length : mergedModel9.faceCount;
-          const f =
-            t !== undefined &&
-            Lm(mergedModel9.faceTextures, mergedModel9.faceCount);
-          const u = f ? [] : undefined;
-          const v = f ? [] : undefined;
-          const p = new Float32Array(6);
-          for (let e = 0; e < h; e++) {
-            const a = m ? m[e] : e;
-            const h = faceColors1[a];
-            let k = faceColors2[a];
-            let S = faceColors3[a];
-            if (S === -2) {
-              continue;
-            }
-            if (S === -1) {
-              S = k = h;
-            }
-            const b = mergedModel9.indices1[a];
-            const y = mergedModel9.indices2[a];
-            const z = mergedModel9.indices3[a];
-            const w = mergedModel9.faceAlphas
-              ? (255 - (mergedModel9.faceAlphas[a] & 255)) / 255
-              : 1;
-            const A = mergedModel9.faceBias
-              ? mergedModel9.faceBias[a] === -1
-                ? 0
-                : mergedModel9.faceBias[a] & 255
-              : 0;
-            const L = [b, y, z];
-            const D = [h, k, S];
-            let H = 0;
-            if (f) {
-              H = Dm(mergedModel9.faceTextures, a, t);
-              if (H > 0) {
-                Mm(mergedModel9, a, p, 0);
-              } else {
-                p.fill(0);
-              }
-            }
-            for (let e = 0; e < 3; e++) {
-              const a = L[e];
-              l.push(mergedModel9.verticesX[a]);
-              l.push(mergedModel9.verticesY[a]);
-              l.push(mergedModel9.verticesZ[a]);
-              bm(mergedModel9.normals, a, Ph, 0);
-              g.push(Ph[0], Ph[1], Ph[2]);
-              o.push(D[e] & 65535);
-              d.push(w);
-              c.push(A);
-              if (u && v) {
-                u.push(p[e * 2], p[e * 2 + 1]);
-                v.push(H);
-              }
-            }
-          }
-          return {
-            positions: new Float32Array(l),
-            hslColors: new Float32Array(o),
-            alphas: new Float32Array(d),
-            normals: new Float32Array(g),
-            faceBias: new Float32Array(c),
-            ...(u && v
-              ? {
-                  uvs: new Float32Array(u),
-                  textureIds: new Float32Array(v),
-                }
-              : {}),
-          };
-        })(a, undefined, re.resolve);
+        const { minHeight: minHeight2, controller: r, meshData: i } = a;
         const l = this.PD(i);
         this.playerAppearance = n;
         this.playerEquipment = s;
@@ -46480,6 +46404,193 @@ var SceneCompositor = class e {
     } finally {
       this.playerLoading = false;
     }
+  }
+  // One player's rig, built from explicit inputs: the model of an appearance and equipment (`e` the
+  // player model loader, `n` the appearance, `s` the equipment), its animation set, the adapter and the
+  // controller that animate it, and the mesh data of its first pose. `playerAnimController` is a
+  // controller to reuse (the local player's, kept across a reload; it is given the new model) or null
+  // for a new one; the adapter takes `buildAnimatedMesh` and `uploadAnimatedMesh` as its mesh source
+  // and sink. No field of the compositor is written. Returns null when the loader builds no model.
+  buildPlayerRig(e, n, s, playerAnimController, buildAnimatedMesh, uploadAnimatedMesh) {
+    const a = e.loadPlayerModel(n, s);
+    const t = playerAnimController?.QL() ?? null;
+    if (a) {
+      a.mergedModel.calculateBounds();
+      const minHeight2 = a.mergedModel.minHeight;
+      let r = null;
+      if (this.playerAnimationSystem) {
+        const e = new Int32Array(a.mergedModel.verticesX);
+        const n = new Int32Array(a.mergedModel.verticesY);
+        const i = new Int32Array(a.mergedModel.verticesZ);
+        const l = a.mergedModel.faceAlphas
+          ? new Int8Array(a.mergedModel.faceAlphas)
+          : null;
+        const o = lD(s.weapon);
+        const d = {
+          idle: this.loadFrameBasedSeq(o, "idle"),
+          walk: this.loadFrameBasedSeq(o, "walk"),
+          run: this.loadFrameBasedSeq(o, "run"),
+          turnLeft: this.loadFrameBasedSeq(o, "turnLeft"),
+          turnRight: this.loadFrameBasedSeq(o, "turnRight"),
+          walkBack: this.loadFrameBasedSeq(o, "turn180"),
+          idleTurnLeft: this.loadFrameBasedSeq(o, "standTurn"),
+          idleTurnRight: this.loadFrameBasedSeq(o, "standTurn"),
+        };
+        d.eat = this.BD(829);
+        d.attack = this.loadFrameBasedSeq(o, "attack");
+        d.block = this.createFirstAvailableSequence(cD(s.weapon, s.shield));
+        const g = [ZL];
+        d.unarmed = {
+          idle: this.loadFrameBasedSeq(g, "idle"),
+          walk: this.loadFrameBasedSeq(g, "walk"),
+          run: this.loadFrameBasedSeq(g, "run"),
+          turnLeft: this.loadFrameBasedSeq(g, "turnLeft"),
+          turnRight: this.loadFrameBasedSeq(g, "turnRight"),
+          walkBack: this.loadFrameBasedSeq(g, "turn180"),
+          idleTurnLeft: this.loadFrameBasedSeq(g, "standTurn"),
+          idleTurnRight: this.loadFrameBasedSeq(g, "standTurn"),
+        };
+        // Optional: the other stances an encounter's render config names (`playerStances`: a name to the
+        // sequence of each slot). Its state's `playerStance` picks one each frame; no fight without the
+        // field is changed.
+        const stances = this.encounterRenderConfig?.playerStances;
+        if (stances) {
+          d.stances = {};
+          for (const [name, slots] of Object.entries(stances)) {
+            d.stances[name] = Object.fromEntries(
+              Object.entries(slots).map(([slot, seqId]) => [slot, this.BD(seqId)]),
+            );
+          }
+        }
+        const c = new PlayerModelAdapter(
+          a.mergedModel,
+          e,
+          n,
+          i,
+          l,
+          this.playerAnimationSystem,
+          buildAnimatedMesh,
+          uploadAnimatedMesh,
+        );
+        if (playerAnimController) {
+          playerAnimController.OL({
+            playerModelData: a,
+            animationSet: d,
+            modelAdapter: c,
+          });
+          r = playerAnimController;
+        } else {
+          r = new PlayerAnimationController({
+            playerModelData: a,
+            animationSet: d,
+            modelAdapter: c,
+            resolveTextureLayer: re.resolve,
+          });
+          if (t) {
+            try {
+              r.restoreConsumeAnim(t);
+            } catch (e) {
+              logger.warn(
+                "SceneBuilder",
+                "Failed to restore consume animation, continuing without it",
+                e,
+              );
+            }
+          }
+        }
+      }
+      const i = (function (e, a, t) {
+        const mergedModel9 = e.mergedModel;
+        const {
+          faceColors1: faceColors1,
+          faceColors2: faceColors2,
+          faceColors3: faceColors3,
+        } = e.litColors;
+        const l = [];
+        const o = [];
+        const d = [];
+        const g = [];
+        const c = [];
+        mergedModel9.calculateVertexNormals();
+        const m = a;
+        const h = m ? m.length : mergedModel9.faceCount;
+        const f =
+          t !== undefined &&
+          Lm(mergedModel9.faceTextures, mergedModel9.faceCount);
+        const u = f ? [] : undefined;
+        const v = f ? [] : undefined;
+        const p = new Float32Array(6);
+        for (let e = 0; e < h; e++) {
+          const a = m ? m[e] : e;
+          const h = faceColors1[a];
+          let k = faceColors2[a];
+          let S = faceColors3[a];
+          if (S === -2) {
+            continue;
+          }
+          if (S === -1) {
+            S = k = h;
+          }
+          const b = mergedModel9.indices1[a];
+          const y = mergedModel9.indices2[a];
+          const z = mergedModel9.indices3[a];
+          const w = mergedModel9.faceAlphas
+            ? (255 - (mergedModel9.faceAlphas[a] & 255)) / 255
+            : 1;
+          const A = mergedModel9.faceBias
+            ? mergedModel9.faceBias[a] === -1
+              ? 0
+              : mergedModel9.faceBias[a] & 255
+            : 0;
+          const L = [b, y, z];
+          const D = [h, k, S];
+          let H = 0;
+          if (f) {
+            H = Dm(mergedModel9.faceTextures, a, t);
+            if (H > 0) {
+              Mm(mergedModel9, a, p, 0);
+            } else {
+              p.fill(0);
+            }
+          }
+          for (let e = 0; e < 3; e++) {
+            const a = L[e];
+            l.push(mergedModel9.verticesX[a]);
+            l.push(mergedModel9.verticesY[a]);
+            l.push(mergedModel9.verticesZ[a]);
+            bm(mergedModel9.normals, a, Ph, 0);
+            g.push(Ph[0], Ph[1], Ph[2]);
+            o.push(D[e] & 65535);
+            d.push(w);
+            c.push(A);
+            if (u && v) {
+              u.push(p[e * 2], p[e * 2 + 1]);
+              v.push(H);
+            }
+          }
+        }
+        return {
+          positions: new Float32Array(l),
+          hslColors: new Float32Array(o),
+          alphas: new Float32Array(d),
+          normals: new Float32Array(g),
+          faceBias: new Float32Array(c),
+          ...(u && v
+            ? {
+                uvs: new Float32Array(u),
+                textureIds: new Float32Array(v),
+              }
+            : {}),
+        };
+      })(a, undefined, re.resolve);
+      return {
+        modelData: a,
+        minHeight: minHeight2,
+        controller: r,
+        meshData: i,
+      };
+    }
+    return null;
   }
   loadFrameBasedSeq(e, a) {
     if (!this.playerAnimationSystem) {
@@ -46582,9 +46693,10 @@ var SceneCompositor = class e {
   GD() {
     return this.lastPlayerVisualCenter ?? [0, 0];
   }
-  RD(e) {
-    if (this.cachedPlayerMeshes.length !== 0) {
-      for (const a of this.cachedPlayerMeshes) {
+  // `meshes`: the local player's by default; a remote player of the lobby passes its own.
+  RD(e, meshes = this.cachedPlayerMeshes) {
+    if (meshes.length !== 0) {
+      for (const a of meshes) {
         a.uploadVersion = ++meshUploadVersion;
         const t = a.meshId.endsWith("-opaque") ? e.opaque : e.transparent;
         if (t) {
@@ -47048,7 +47160,8 @@ var SceneCompositor = class e {
     }
     return a;
   }
-  PD(e) {
+  // `meshIdPrefix`: the local player's ids by default; a remote player of the lobby passes its own.
+  PD(e, meshIdPrefix = `player-model-v${this.playerMeshVersion}`) {
     const a = 1 / 128;
     const t = new Float32Array([
       a,
@@ -47082,7 +47195,7 @@ var SceneCompositor = class e {
     if (s.opaque) {
       r.push({
         kind: "mesh3d",
-        meshId: `player-model-v${this.playerMeshVersion}-opaque`,
+        meshId: `${meshIdPrefix}-opaque`,
         materialId: "osrs-npc",
         modelMatrix: t,
         positions: s.opaque.positions,
@@ -47101,7 +47214,7 @@ var SceneCompositor = class e {
     if (s.transparent) {
       r.push({
         kind: "mesh3d",
-        meshId: `player-model-v${this.playerMeshVersion}-transparent`,
+        meshId: `${meshIdPrefix}-transparent`,
         materialId: "osrs-npc",
         modelMatrix: t,
         positions: s.transparent.positions,
@@ -47120,12 +47233,13 @@ var SceneCompositor = class e {
     }
     return r;
   }
-  createPlayerModelMatrix(e, a, t, n, s) {
+  // `out`: the local player's matrix by default; a remote player of the lobby passes its own.
+  createPlayerModelMatrix(e, a, t, n, s, out = this.playerModelMatrix) {
     const r = e;
     const i = (s / 2048) * 2 * Math.PI;
     const l = Math.cos(i);
     const o = Math.sin(i);
-    const playerModelMatrix2 = this.playerModelMatrix;
+    const playerModelMatrix2 = out;
     playerModelMatrix2[0] = r * l;
     playerModelMatrix2[1] = -r * o;
     playerModelMatrix2[2] = 0;
@@ -47767,6 +47881,8 @@ var SceneCompositor = class e {
           pitchSin: g,
           pitchCos: d,
         };
+        // The camera's part of the projection, kept for the lobby's remote players (LobbySceneCompositor).
+        this.sorterCamera = p;
         this.playerAnimController?.setSorterProjection({
           cameraX: p.cameraX,
           cameraY: p.cameraY,
@@ -47799,6 +47915,7 @@ var SceneCompositor = class e {
           pitchCos: p.pitchCos,
         });
       } else {
+        this.sorterCamera = null;
         this.playerAnimController?.setSorterProjection(null);
         this.npcInstanceManager.setSorterProjection(null);
         this.spotAnimRenderer.setSorterProjection(null);
@@ -54234,7 +54351,7 @@ var LobbyArenaRenderer = class {
 };
 function ME(e) {
   if (
-    !e.meshId.startsWith("player-model-") ||
+    !(e.meshId.startsWith("player-model-") || e.meshId.startsWith("remote-player-")) ||
     !e.meshId.endsWith("-transparent")
   ) {
     return e;
@@ -54315,6 +54432,7 @@ var LobbySceneCompositor = class extends SceneCompositor {
   }
   dispose() {
     super.dispose();
+    this.remotePlayers?.clear();
     this.forcedTerrain = null;
     this.celShadedCache.clear();
     this.footprintCache.clear();
@@ -54522,10 +54640,198 @@ var LobbySceneCompositor = class extends SceneCompositor {
       }
     })(this.npcInstanceManager, this.celShadedCache, this.footprintCache);
     this.renderNpcModels(n);
+    this.drawLobbyChat(n, e, a, this.drawRemotePlayers(n, e, a));
     if (e.options.showNpcClickbox) {
       this.FH(n);
     }
     return n;
+  }
+  // The other players of the lobby (client/net/remotePlayers.js): asked of the source each frame, none
+  // without one. Each has its own rig, built as the local player's is (buildPlayerRig), its own mesh ids,
+  // tracker and model matrix, and is drawn and sorted as the local player is.
+  drawRemotePlayers(n, e, a) {
+    const source = getRemotePlayersSource();
+    if (!source || !this.remotePlayerLoader || !this.playerAnimationSystem) {
+      this.remotePlayers?.clear();
+      return [];
+    }
+    this.remotePlayers ??= createRemotePlayers({
+      buildRig: (appearance, equipment, id) => this.buildRemotePlayerRig(appearance, equipment, id),
+      makeTracker: (x, y) => new PlayerVisualTracker(x, y),
+      isValidKit: (kit, bodyPart) => {
+        const k = this.remotePlayerLoader.identKitLoader.load(kit);
+        return !!k && k.bodyPartId >= 0 && k.bodyPartId % 7 === bodyPart && k.models.length > 0;
+      },
+      // A rig not drawn any more: its meshes are not pushed again, and the renderer frees their buffers when
+      // they go stale (its only release: no scene frees a mesh explicitly, NPC instances included).
+      releaseRig: (rig) => rig.release(),
+      now: () => performance.now(),
+      onError: (error, id) => logger.warn("Lobby", "A remote player could not be drawn" + (id === undefined ? "" : " (id " + id + ")"), error),
+    });
+    const deltaMs = e.frameDeltaMs ?? 0;
+    const local = this.playerModelMatrix;
+    const drawn = this.remotePlayers.update(source.list(), {
+      localPosition: e.simulationState.playerPosition,
+      deltaMs: deltaMs,
+      // For the remotes that keep facing us (Follow).
+      ownId: source.ownId ?? null,
+      localVisual: local ? [local[12] - 0.5, local[13] - 0.5] : null,
+    });
+    const camera = this.sorterCamera;
+    const uiCamera = overlayCamera(a, n, e.options?.overlayGameScale);
+    // The tiles a standing player was drawn on this frame, the local player's first.
+    const standingTiles = new Set();
+    if (local && Number.isInteger(local[12] - 0.5) && Number.isInteger(local[13] - 0.5)) {
+      standingTiles.add(local[12] - 0.5 + "," + (local[13] - 0.5));
+    }
+    for (const r of drawn) {
+      // One remote that fails is dropped (remotePlayers.js markBroken), never the frame.
+      try {
+        this.drawRemotePlayer(n, r, camera, uiCamera, deltaMs, standingTiles);
+      } catch (error) {
+        this.remotePlayers.markBroken(r.id, error);
+      }
+    }
+    return drawn;
+  }
+  // The lobby's public chat above the speakers' heads (client/net/lobbyChat.js): ours and the drawn remote
+  // players', as the overlay's other overhead texts, each frame; none without the lobby's chat.
+  drawLobbyChat(n, e, a, drawn) {
+    const uiCamera = overlayCamera(a, n, e.options?.overlayGameScale);
+    if (!uiCamera) {
+      return;
+    }
+    const now = Date.now();
+    const push = (key, point, text) => {
+      if (!point || !text) {
+        return;
+      }
+      n.overheadTexts ||= [];
+      // OBS (the game's client, drawActor2d): the text's baseline is 2 px under the point of the model's top. The
+      // overlay hangs the bottom of a 16 px line (baseline 4 px above it) on its point, so the point is 6 px lower;
+      // whole pixels, so the letters and their shadow are not smeared.
+      // bitmap: drawn as the game's client draws it, 1-bit glyphs with a hard shadow (client/net/overheadBitmap.js).
+      // inferred: 10 game pixels higher than that rule puts it (the maintainer's, 2026-11-27: the text stood too
+      // close to the head against the game). Not measured: to be replaced by a distance taken from a recording.
+      n.overheadTexts.push({ screenX: Math.round(point.x), screenY: Math.round(point.y) + 6 - 10, ...text, fontSize: UIOverlayRenderer.OSRS_OVERHEAD_TEXT_FONT_SIZE, key: key, bitmap: true });
+    };
+    // OBS (the game's client): the other players' texts first, then our own; a later one that overlaps is pushed up.
+    for (const r of drawn) {
+      push("lobby-chat-" + r.id, r.chatAnchor, lobbyChatOverheadText(r.id, now));
+    }
+    const own = lobbyChatOverheadText(null, now);
+    const center = this.lastPlayerVisualCenter;
+    if (own && center) {
+      push("lobby-chat-local", this.uiOverlayRenderer.playerChatAnchor(uiCamera, [center[0] - 0.5, center[1] - 0.5], this.playerAnimController?.posedModelHeight, this.xH() * 128), own);
+    }
+  }
+  drawRemotePlayer(n, r, camera, uiCamera, deltaMs, standingTiles) {
+    const { rig: rig, state: s } = r;
+    const ctrl = rig.controller;
+    const x = r.position[0] + 0.5;
+    const y = r.position[1] + 0.5;
+    const ground = -Nb(this.terrainHeights, x, y) / 128;
+    const angle = s?.facingAngle ?? r.facing;
+    if (ctrl) {
+      ctrl.stanceName = null;
+      ctrl.setSorterProjection(
+        camera
+          ? {
+              cameraX: camera.cameraX,
+              cameraY: camera.cameraY,
+              cameraZ: camera.cameraZ,
+              yawSin: camera.yawSin,
+              yawCos: camera.yawCos,
+              pitchSin: camera.pitchSin,
+              pitchCos: camera.pitchCos,
+              orientation: angle,
+              modelX: x * 128,
+              modelY: -(ground + (rig.minHeight + ctrl._w()) / 128) * 128,
+              modelZ: y * 128,
+            }
+          : null,
+      );
+      ctrl.updatePlayerAnimation({
+        deltaMs: deltaMs,
+        isMoving: !!s?.isVisuallyMoving,
+        simIsMoving: !!s?.simIsMoving,
+        isRunning: !!s?.isRunning,
+        locomotionState: s?.locomotionState ?? null,
+        visualAngle: angle,
+        targetAngle: s?.targetAngle ?? angle,
+        speedMultiplier: 1,
+        isTurning: !!s?.isTurning,
+      });
+    }
+    const z = ground + (rig.minHeight + (ctrl?._w() ?? 0)) / 128;
+    ctrl?.ZL(-z * 128);
+    this.createPlayerModelMatrix(1 / 128, x, y, z, angle, r.modelMatrix);
+    // OBS (the game's client, addPlayerToScene): a player standing on the middle of a tile is not drawn when another
+    // was drawn there this frame, the local player first; a player that is moving is always drawn. A player not
+    // drawn stays in the menu (its matrix and hit data are kept).
+    const standing = Number.isInteger(r.position[0]) && Number.isInteger(r.position[1]);
+    const key = r.position[0] + "," + r.position[1];
+    r.covered = standing && standingTiles.has(key);
+    if (standing) {
+      standingTiles.add(key);
+    }
+    if (!r.covered) {
+      for (const m of rig.meshCommands) {
+        n.commands.push(ME({ ...m, modelMatrix: r.modelMatrix }));
+      }
+    }
+    r.overheadAnchor = uiCamera
+      ? this.uiOverlayRenderer.playerOverheadBase(uiCamera, r.position, ctrl?.posedModelHeight)
+      : null;
+    r.chatAnchor = uiCamera ? this.uiOverlayRenderer.playerChatAnchor(uiCamera, r.position, ctrl?.posedModelHeight, rig.minHeight + (ctrl?._w() ?? 0)) : null;
+    // The screen point of the middle of the body (a pointer aimed at this player, as the tests aim).
+    r.screenCenter = uiCamera
+      ? uiCamera.tileToScreen({ x: x, y: y, level: ground + (ctrl?.posedModelHeight || 200) / 256 })
+      : null;
+  }
+  // One remote player's rig (buildPlayerRig with no controller to reuse), its meshes under its own ids.
+  buildRemotePlayerRig(appearance, equipment, id) {
+    const holder = { meshes: [], controller: null };
+    const rig = this.buildPlayerRig(
+      this.remotePlayerLoader,
+      appearance,
+      equipment,
+      null,
+      () => holder.controller?.buildPlayerAnimatedMesh() ?? null,
+      (e) => this.RD(e, holder.meshes),
+    );
+    if (!rig) {
+      return null;
+    }
+    this.remotePlayerMeshVersion = (this.remotePlayerMeshVersion ?? 0) + 1;
+    holder.meshes = this.PD(rig.meshData, `remote-player-${id}-v${this.remotePlayerMeshVersion}`);
+    holder.controller = rig.controller;
+    rig.controller?.applyInitialAnimationFrame();
+    const model = rig.modelData.mergedModel;
+    return {
+      meshCommands: holder.meshes,
+      controller: rig.controller,
+      minHeight: rig.minHeight,
+      // Nothing of this rig is uploaded or drawn again.
+      release: () => {
+        holder.controller = null;
+        holder.meshes = [];
+      },
+      hitModel: {
+        verticesX: model.verticesX,
+        verticesY: model.verticesY,
+        verticesZ: model.verticesZ,
+        verticesCount: model.verticesCount,
+        indices1: model.indices1,
+        indices2: model.indices2,
+        indices3: model.indices3,
+        faceCount: model.faceCount,
+        faceColors3: null,
+      },
+    };
+  }
+  getRemotePlayerHitTestData() {
+    return this.remotePlayers?.hitTestData() ?? [];
   }
   getAllNpcHitTestData() {
     return super
@@ -54652,6 +54958,13 @@ var LobbySceneBuilder = class {
     return this.npcLoaded;
   }
   async loadPlayer(e, a, t) {
+    // The remote players' rigs are built by a loader of their own over the same cache loaders, so their
+    // looks never take the local player's models out of its loader's model cache.
+    if (this.compositor.remotePlayerLoaderSource !== e) {
+      this.compositor.remotePlayerLoaderSource = e;
+      this.compositor.remotePlayerLoader =
+        e instanceof Rh ? new Rh(e.objTypeLoader, e.identKitLoader, e.modelLoader) : e;
+    }
     await this.compositor.loadPlayer(e, a, t);
   }
   isPlayerLoaded() {
@@ -54665,6 +54978,9 @@ var LobbySceneBuilder = class {
   }
   getResidentMeshSources() {
     return this.compositor.getResidentMeshSources();
+  }
+  getRemotePlayerHitTestData() {
+    return this.compositor.getRemotePlayerHitTestData();
   }
   async loadLocs(e, a) {}
   isLocsLoaded() {
@@ -57928,6 +58244,9 @@ var iV = {
 import { presentationBuilders } from "../encounters/presentations.js";
 import {scaleToaAccuracyRoll} from "/toa/zebak/rules.js";
 import {gatewayMeshes, gatewayPortals, gatewayCovers, gatewayFloor, extendLobbyArena, loadGatewayObjects, drawGatewayObjects} from "/lobby/gateways.js";
+import {createRemotePlayers, getRemotePlayersSource, localFaceAngle} from "/net/remotePlayers.js";
+import {lobbyChatOverheadText} from "/net/lobbyChat.js";
+import {drawOverheadBitmapTexts} from "/net/overheadBitmap.js";
 import {toaFragmentShader} from "/toa/shader.js";
 import {getAttackRangeOverlay} from "/plugins/attackRanges.js";
 import {overrideProjectile} from "/plugins/projectileOverride.js";
@@ -60269,7 +60588,7 @@ var rZ = class {
 function iZ(e, a) {
   const t = a.segments && a.segments.length > 0 ? a.segments : null;
   const n = t
-    ? `s:${t.map((e) => `${e.color ?? ""}\0${e.icon ?? ""}\0${e.text}`).join("")}`
+    ? `s:${t.map((e) => `${e.color ?? ""}\0${e.icon ?? ""}\0${e.dx ?? ""},${e.dy ?? ""}\0${e.text}`).join("")}`
     : `t:${a.text}`;
   if (e.dataset.content !== n) {
     e.dataset.content = n;
@@ -60288,6 +60607,12 @@ function iZ(e, a) {
         t.textContent = a.text;
         if (a.color) {
           t.style.color = a.color;
+        }
+        // A character moved off its place (the lobby's chat effects, client/net/chatEffects.js).
+        if (a.dx || a.dy) {
+          t.style.position = "relative";
+          t.style.left = `${a.dx ?? 0}px`;
+          t.style.top = `${a.dy ?? 0}px`;
         }
         e.appendChild(t);
       }
@@ -60590,6 +60915,8 @@ var dZ = ({
       return;
     }
     let t = current21.querySelector("[data-overhead-texts]");
+    // The lobby's chat is drawn on a canvas (client/net/overheadBitmap.js); its spans stay, unseen, while it is.
+    const bitmapDrawn = drawOverheadBitmapTexts(current21, e, Hy);
     if (e.length !== 0) {
       for (
         t ||
@@ -60631,6 +60958,8 @@ var dZ = ({
         s.style.color = n.textColor;
         s.style.fontSize = `${n.fontSize}px`;
         s.style.transform = n.transform ?? "translate(-50%, -100%)"; // Defence Tracker says how its text hangs from its point
+        s.style.clipPath = n.clipPath ?? ""; // the lobby's chat effects cut their text to a window
+        s.style.visibility = n.bitmap && bitmapDrawn ? "hidden" : "";
         iZ(s, n);
       }
     } else if (t) {
@@ -62487,6 +62816,8 @@ var bZ = ({
       return;
     }
     let t = current49.querySelector("[data-overhead-texts]");
+    // The lobby's chat is drawn on a canvas (client/net/overheadBitmap.js); its spans stay, unseen, while it is.
+    const bitmapDrawn = drawOverheadBitmapTexts(current49, e, Hy);
     if (e.length !== 0) {
       for (
         t ||
@@ -62528,6 +62859,8 @@ var bZ = ({
         s.style.color = n.textColor;
         s.style.fontSize = `${n.fontSize}px`;
         s.style.transform = n.transform ?? "translate(-50%, -100%)"; // Defence Tracker says how its text hangs from its point
+        s.style.clipPath = n.clipPath ?? ""; // the lobby's chat effects cut their text to a window
+        s.style.visibility = n.bitmap && bitmapDrawn ? "hidden" : "";
         iZ(s, n);
       }
     } else if (t) {
@@ -63079,6 +63412,18 @@ var bZ = ({
         tracker2.setForcedFacingAngle(h.attackTarget ? h.playerFacingAngle : null);
       } else if (R) {
         P = tracker2.snapToUnwalkedPlacement(h.playerPosition, h.playerFacingAngle);
+      }
+      // Follow in the lobby (client/net/remotePlayers.js localFaceAngle): the follower faces its leader
+      // every frame, walking too, and is not slowed while it turns; null everywhere else.
+      const lobbyFace = n ? null : localFaceAngle([tracker2.worldXFloat / 128, tracker2.worldYFloat / 128], tracker2.currentTurnTarget());
+      if (lobbyFace !== null) {
+        aa.current.lobbyFacing = true;
+        tracker2.setInteracting(true);
+        tracker2.setForcedFacingAngle(lobbyFace);
+      } else if (aa.current.lobbyFacing) {
+        aa.current.lobbyFacing = false;
+        tracker2.setInteracting(!!h.attackTarget);
+        tracker2.setForcedFacingAngle(h.attackTarget ? h.playerFacingAngle : null);
       }
       const _ = Qe.current.getPrimaryAnimMovementBlock?.() ?? {
         blocksRunning: false,

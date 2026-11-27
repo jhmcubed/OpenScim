@@ -3,12 +3,12 @@
 // projectile of a pair; no other visual of the fight answers, and every sound is
 // in the trimmed cache's list (docs/ADDING-AN-ENCOUNTER.md, section 7).
 import assert from "node:assert/strict";
-import { register } from "node:module";
 import { readCacheGroups } from "../tools/assets/cache-groups.mjs";
+import { installHooks } from "../tools/determinism/node-hooks.mjs";
 
 // The rules take the head's ids from the encounter, which reaches the engine's
 // web-root imports: the determinism harness's hooks let Node load them.
-register("../tools/determinism/node-hooks.mjs", import.meta.url);
+installHooks();
 globalThis.self ??= globalThis;
 const { vardorvisAudio } = await import("../client/encounters/vardorvis/audio.js");
 

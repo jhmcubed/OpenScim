@@ -353,8 +353,15 @@ function applySpecialAttackEffects(attacker, target, damage, specialEffects, tic
         if ("on-hit" === trigger && isNpcBindImmuneAtTick(target, tick)) {
           break;
         }
+        // A bind is a freeze: its length scales with the target's freeze resistance as the freeze's does above, and a
+        // target immune to freezes (100%) isn't bound (#145: the scorching bow's special held the Doom's burrowed form,
+        // which the monster table and the wiki list as immune).
+        const bindTicks = Math.floor((specialEffect.durationTicks * Math.max(0, 100 - (target.formulaStats?.freezeResistance ?? 0))) / 100);
+        if (bindTicks <= 0) {
+          break;
+        }
         const bindFromTick = tick + (specialEffect.delayTicks ?? 0);
-        const bindUntilTick = bindFromTick + specialEffect.durationTicks;
+        const bindUntilTick = bindFromTick + bindTicks;
         const boundFromTick = target.debuffs.boundFromTick;
         const boundUntilTick = target.debuffs.boundUntilTick;
         const overlapsExistingBind =

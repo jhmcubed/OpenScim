@@ -34,9 +34,18 @@ const clawNearChance = 0.4; // tsps
 const clawFarChance = 0.09; // tsps
 // tsps: a run of claws, a set every 5 ticks: five with her flowers, six with
 // her spores, without end in her desperation; her start animation (12 cycles
-// late), one between, and her end animation 5 ticks after the last set.
+// late), one between, and her end animation 5 ticks after the last set. OBS
+// (Outside, five recordings): the start (9102) with the first set and the
+// run (9103) with the second, each once, 9103 held through the sets that
+// follow; in her desperation no end. CACHE: 9102 is 4 ticks and loops its
+// last 2 frames, 9103 4 ticks looping whole (frame step 24 of 24 frames).
+// The scene plays an attack clip once, then her stand: here 9103 follows
+// 9102's end at once (a tick before the game's, which holds 9102 meanwhile)
+// and is played again every 4 ticks to the run's end, as its loop does.
 const runEvery = 5;
 const runStartDelayCycles = 12;
+const runEndRoot = 5;
+const runClipTicks = 4; // CACHE: 9102 and 9103, 120 cycles each
 export const runCounts = { flowers: 5, spores: 6 };
 
 // --- Corpse flowers --------------------------------------------------------
@@ -147,26 +156,38 @@ export class Specials {
       graphics: tiles.map((position) => ({ spotAnimId: spotAnims.claw, target: { kind: "tile", position: [...position] }, height: 0, delayCycles: 0 })),
     });
   }
-  // A run of `count` sets; `again`: one after another (her desperation).
-  startRun(context, count, again = false) {
+  // A run of `count` sets (Infinity: her desperation's).
+  startRun(context, count) {
     if (this.run) return;
-    this.run = { left: count, count, next: context.tick, again };
+    this.run = { left: count, done: 0, next: context.tick };
     this.stepRun(context);
   }
   stepRun(context) {
     const run = this.run;
     if (!run || context.tick < run.next) return;
-    const first = run.left === run.count;
-    this.claws(context, first ? "clawRunStart" : "clawRun", first ? runStartDelayCycles : 0);
+    const first = run.done === 0;
+    this.claws(context, first ? "clawRunStart" : null, first ? runStartDelayCycles : 0);
+    const epoch = this.e.epoch;
+    if (first) {
+      const loop = (ctx) => {
+        if (this.e.epoch !== epoch || this.run !== run || ctx.tick >= (run.endAt ?? Infinity)) return;
+        this.e.visual(ctx, { animations: [{ clipId: "clawRun", delayCycles: runStartDelayCycles }] });
+        this.e.later(runClipTicks, loop);
+      };
+      this.e.later(runClipTicks, loop);
+    }
+    run.done++;
     run.left--;
     run.next = context.tick + runEvery;
     if (run.left > 0) return;
-    this.run = null;
-    const epoch = this.e.epoch;
+    // OBS (Outside): her end animation 5 ticks after the last set, her first step 5 after that (15 of 15).
+    run.endAt = context.tick + runEvery;
     this.e.later(runEvery, (ctx) => {
-      if (this.e.epoch !== epoch) return;
+      if (this.e.epoch !== epoch || this.run !== run) return;
+      this.run = null;
       this.e.visual(ctx, { animations: [{ clipId: "clawRunEnd" }] });
-      if (run.again) this.e.later(1, (next) => this.e.epoch === epoch && this.e.stage === "desperate" && this.startRun(next, run.count, true));
+      const boss = this.e.boss(ctx.world);
+      if (boss) this.e.root(boss, ctx.tick, runEndRoot);
     });
   }
   // Who stands on a portal or under her (WIKI: but her corners) as the claws come up.
@@ -206,6 +227,9 @@ export class Specials {
       if (!live()) return;
       state.stage = "segment";
       e.visual(ctx, { animations: [{ clipId: "flowers" }] });
+      // OBS (Outside): still from it to her claws (no step sooner than 7 ticks in 8).
+      const boss = e.boss(ctx.world);
+      if (boss) e.root(boss, ctx.tick, flowerClawsAfter);
     });
     e.later(flowerBack + flowerSegment + flowerTimes.planted, () => live() && (state.stage = "planted"));
     e.later(flowerBack + flowerSegment + flowerTimes.message, (ctx) => live() && e.message(ctx, messages.flowers));
@@ -357,7 +381,7 @@ export class Specials {
       if (e.epoch !== epoch) return;
       e.message(ctx, messages.cursed);
       e.sound(ctx, sounds.cursed);
-      this.curse = { turns: curseTurns, endsAt: null };
+      this.curse = { turns: curseTurns, endsAt: null, since: ctx.tick };
     });
     return null;
   }

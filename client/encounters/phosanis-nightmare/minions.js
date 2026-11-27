@@ -18,6 +18,9 @@ export const totemCharge = 200;
 const totemMessages = {
   full: (name) => `The ${name} totem is fully charged.`,
   all: { text: "All four totems are fully charged.", color: "#ff3045" },
+  // OBS (Outside, four recordings of the Nightmare's group fight, Vaerric, 2026-11-27): a charged totem keeps its
+  // "Charge" option (the cache's 9445 and 9442 have it); clicked, this message on that tick and no attack (2 of 2).
+  already: "That totem is already charged.",
 }; // tsps, as captured
 
 // --- husks -----------------------------------------------------------------
@@ -84,9 +87,10 @@ export const parasiteMessages = {
 // one of three).
 // OBS (Outside, one kill): they rose 2 ticks after her blast form, and walked
 // from their fourth tick after her first two phases but their seventh after
-// her last. Her blast came 2 or 3 ticks after the last one's death (254 after
-// 251, 481 after 478, 717 after 715): an even number of ticks after they rose,
-// at least 2 after the death.
+// her last. OBS (Outside, five recordings of 2026-11-25 and 26, 15 blasts): her
+// blast animation 2 ticks after the last one's death in 12 (3 in the other 3),
+// and 2 after the last was taken in (1 of 1, tsps: 3). The rule that it came an
+// even number of ticks after they rose, from the first recording, holds for 7.
 //
 // Her desperation (WIKI, tsps): one at a time, each that reaches her a hit of
 // 15, the next ones 8 apart. OBS (Outside): the first rises 2 ticks after her
@@ -99,9 +103,8 @@ const riseTicks = 2;
 const walkAfter = { early: 4, last: 7 };
 const latestBlast = 16;
 const absorbGoneTicks = 2;
-const blastAfterAbsorb = 3;
+const blastAfterAbsorb = 2;
 const blastAfterDeath = 2;
-const blastEvery = 2;
 const blastImpactTicks = 4;
 const blastHitTicks = 2;
 const nextFormTicks = 9;
@@ -178,7 +181,7 @@ export class Minions {
     if (!totem) return;
     const spec = totemSpecs[index];
     totem.npcTypeId = npcTypeIds.totems[spec.corner][["dormant", "ready", "charged"].indexOf(stage)];
-    totem.untargetable = stage !== "ready";
+    totem.untargetable = stage === "dormant";
     if (stage !== "charged") totem.vitals = { hp: totemCharge, maxHp: totemCharge };
   }
   wakeTotems(world) {
@@ -210,12 +213,32 @@ export class Minions {
   }
   totemFull(context, index) {
     this.setTotem(context.world, index, "charged");
+    // OBS (Outside, the four group and five Phosani recordings): the player charging it stops as it is charged, without
+    // the message (his target gone the next tick 30 times of 30, 13 of them with no click on that tick or the next).
+    const player = context.world.getPlayer();
+    if (player.attackTarget === this.totemId(index)) {
+      player.attackTarget = null;
+      player.attackInteractionActive = false;
+    }
     if (this.charged.every(Boolean)) {
       this.e.message(context, totemMessages.all);
       this.e.totemsCharged(context);
     } else {
       this.e.message(context, totemMessages.full(totemSpecs[index].name));
     }
+  }
+  // A click on a charged totem (the player's target is read before this, so a target on one now is a click of this
+  // tick): the message, and the totem blocked for this tick alone, which drops the target before he moves or attacks
+  // (as Hydra's form change does).
+  refuseCharged(context) {
+    const player = context.world.getPlayer();
+    totemSpecs.forEach((_, index) => {
+      if (!this.charged[index]) return;
+      const totem = context.world.getNpc(this.totemId(index));
+      if (!totem || totem.untargetable) return;
+      totem.attackBlockedUntilTick = context.tick + 1;
+      if (player.attackTarget === totem.id) this.e.message(context, totemMessages.already);
+    });
   }
   leastCharged() {
     let best = -1;
@@ -518,7 +541,6 @@ export class Minions {
   blastWhenClear(context) {
     const state = this.walk;
     if (!state || !state.risen || state.blasted || this.walkers.size > 0 || context.tick < state.readyAt) return;
-    if ((context.tick - state.risenAt) % blastEvery !== 0) return;
     state.blasted = true;
     const e = this.e;
     const epoch = e.epoch;

@@ -2,7 +2,9 @@
 // parts the determinism scenarios do not pin down on their own.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { loadEnvironment } from "../tools/determinism/harness.mjs";
+import { loadEnvironment, runScenario } from "../tools/determinism/harness.mjs";
+import { scenarios as engineScenarios } from "../tools/determinism/scenarios/engine.mjs";
+import { castOn, attack } from "../tools/determinism/scenarios/common.mjs";
 
 await loadEnvironment();
 const { isAmmoCompatibleWithWeapon, weaponRequiresAmmo } = await import("../client/engine/ammunition.js");
@@ -137,4 +139,36 @@ test("Shield Slam is the Rondache's special unless the weapon has one; x + x% da
   // A Slayer helmet raises it by a sixth, as any melee hit.
   const helmed = selectPlayerAttackProfile({ weaponId: 22324, headId: 11864 /* Slayer helmet */, isSpecialAttack: true, shieldSlamCharges: 20, formulaStyle: "melee_crush", targetAttributes: [] });
   assert.deepEqual(helmed.hit.damage, { kind: "fixed", damage: 28 });
+});
+
+test("a spell cast holding the Obligator on Thrust is the spell's alone (#132)", async () => {
+  // The Obligator scenario's player, on Thrust, casts Wind Strike by hand, then thrusts.
+  const base = engineScenarios.find((scenario) => scenario.name === "engine/obligator");
+  const started = [];
+  await runScenario(
+    {
+      ...base,
+      name: "obligator/spell-cast",
+      ticks: 20,
+      supplies: { ...base.supplies, runePouch: { kind: "standard", slots: [{ id: 556 }, { id: 558 }] }, spellbook: "standard" },
+      script(tick, api) {
+        const target = api.npcs().find((npc) => npc.role === "boss") ?? api.npcs()[0];
+        if (tick === 2) castOn(api, target.id, "Wind Strike");
+        if (tick === 12) attack(api, target.id);
+      },
+    },
+    {
+      onTick(tick, engine) {
+        for (const event of engine.getLastTickEvents()) if (event.type === "attack_started" && event.sourceId === "player") started.push(event);
+      },
+    },
+  );
+  const cast = started.find((event) => event.spellId === "Wind Strike");
+  const thrust = started.find((event) => event.spellId === undefined);
+  assert.ok(cast && thrust);
+  // The spell takes neither the Thrust's animation nor its chain; the thrust after it has both.
+  assert.equal(cast.attackAnimationId, undefined);
+  assert.equal(cast.attackGraphicId, undefined);
+  assert.equal(thrust.attackAnimationId, 15123);
+  assert.equal(thrust.attackGraphicId, 4423);
 });
