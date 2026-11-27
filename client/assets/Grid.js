@@ -12694,7 +12694,7 @@ var MechanicsSettings = ({
     if (type === "color" && fv) return null;
     if (type === "color") {
       const color = typeof fq === "string" && /^#[0-9a-f]{6}$/i.test(fq) ? fq : (fr || "#ffffff");
-      const colorSetting = (0, wn.jsx)(Coe, {
+      const colorSetting = (0, wn.jsx)(SettingRow, {
         searchId: null,
         isModified: fs,
         hideReset: null == defaultConfig,
