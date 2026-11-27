@@ -88,6 +88,19 @@ try {
     { timeout: 30000 },
   );
 
+  // Her shield up, the boss bar at the top shows it out of 400 in the shield's blue (the Outside recording), not her
+  // hitpoints; in her desperation, her hitpoints again.
+  const bossBar = () => page.evaluate(() => {
+    const values = document.querySelector(".boss-hp__values")?.textContent.replace(/\s/g, "");
+    return { values, shield: !!document.querySelector(".boss-hp__fill--shield") };
+  });
+  await page.evaluate(() => {
+    engine.encounter.shield = 362;
+    engine.advanceTick(engine.player().position);
+  });
+  await page.waitForFunction(() => document.querySelector(".boss-hp__values")?.textContent.replace(/\s/g, "") === "362/400", null, { timeout: 15000 });
+  assert.deepEqual(await bossBar(), { values: "362/400", shield: true });
+
   // Cursed, the icon over the player is that of the style his protection stops now (the Outside recordings): Protect
   // from Magic shows the missiles icon; the curse gone, the magic one again.
   const overhead = (name) => page.waitForFunction((name) => [...document.querySelectorAll("img")].some((img) => img.getAttribute("src")?.endsWith("/overhead_" + name + ".png")), name, { timeout: 15000 });
@@ -108,6 +121,8 @@ try {
     engine.advanceTick(engine.player().position);
   });
   assert.equal(await page.evaluate(() => engine.worldState.getNpc("phosanis-nightmare").npcTypeId), 11154);
+  await page.waitForFunction(() => document.querySelector(".boss-hp__values")?.textContent.replace(/\s/g, "") === "150/3200", null, { timeout: 15000 });
+  assert.equal((await bossBar()).shield, false);
   await page.evaluate(() => engine.setBossHp(0));
   await page.waitForFunction(() => engine.getEncounterOutcome().phase === "victory" && document.body.innerText.includes("PHOSANI'S NIGHTMARE DEFEATED"), null, { timeout: 120000 });
   assert.deepEqual(errors, []);

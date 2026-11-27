@@ -36,11 +36,7 @@
 //
 // Not yet: the Pool of Nightmares in the Sanctuary (the run starts in the
 // dream, as the player arrives); the totems' overlay (OBS (Outside): interface
-// 413, open from her shield failing to her blast form); her bar in the boss
-// interface, which shows her shield out of 400 while it is up (OBS (Outside):
-// the game's boss bar and the bar over her both do), here her hitpoints (her
-// shield is the blue bar over her, a totem's charge left to go its own bar);
-// the flies' and the flowers' heal on a totem; a team's fight; the hitsplats of her shield and of a totem's charge
+// 413, open from her shield failing to her blast form); the flies' and the flowers' heal on a totem; a team's fight; the hitsplats of her shield and of a totem's charge
 // (OBS (Outside): the game's own, 18 and 22 for the player's, not the damage one; the engine draws damage).
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
@@ -278,7 +274,9 @@ class PhosanisNightmareEncounter {
       this.specials.flies(context);
     }
     const boss = this.boss(context.world);
-    if (boss) boss.shieldBar = this.stage === "shield" && boss.alive ? { ratio: this.shield / shieldMax } : undefined;
+    // The blue bar over her, and with its points the boss bar's (OBS (Outside): the game's boss bar shows her shield
+    // out of 400 while it is up).
+    if (boss) boss.shieldBar = this.stage === "shield" && boss.alive ? { ratio: this.shield / shieldMax, value: this.shield, max: shieldMax } : undefined;
     return this.drainPending(context);
   }
   runTasks(context) {
