@@ -6,6 +6,7 @@ import {
   computePlayerCombatParams,
   getWeaponFormulaStyle,
 } from "../weapons.js";
+import { combatXpBonusByNpcTypeId } from "../../data/combatXpBonus.js";
 import { getCanonicalEquipmentId } from "../../data/equipment.js";
 import { getSpellDefinition } from "../../data/combatSpells.js";
 import { getBaseItemId } from "../../data/itemVariants.js";
@@ -319,6 +320,23 @@ function computeXpGains(finalStyle, combatStyle, predictedHit) {
   });
   return xpGains;
 }
+// What a point of damage to the target is worth in combat experience, the
+// normal being 1: 1 + its bonus / 100, the bonus being the encounter's for
+// the NPC type (engine rule combatXpBonusOverrides, for a fight of another
+// version than the table keeps) or the monster's (WIKI,
+// client/data/combatXpBonus.js). It multiplies every combat skill and
+// Hitpoints alike (WIKI, Combat, "PvM bonus experience").
+function combatXpMultiplier(target, encounterRules) {
+  const npcTypeId = target?.npcTypeId;
+  if (npcTypeId === undefined) {
+    return 1;
+  }
+  const bonus =
+    encounterRules?.combatXpBonusOverrides?.[npcTypeId] ??
+    combatXpBonusByNpcTypeId.get(npcTypeId) ??
+    0;
+  return (100 + bonus) / 100;
+}
 // predictedHit is the damage the attack will deal as far as it is known at
 // launch: for each target the accurate hits, at least 1 each, after the
 // encounter's two multipliers, and together no more than the target's
@@ -326,39 +344,40 @@ function computeXpGains(finalStyle, combatStyle, predictedHit) {
 // forced miss: the first target when the encounter rejected the attack
 // (isAttackRejectedByEncounter), another target only when every one of its
 // hits was forced to miss. launchPlayerAttack gives the experience from
-// this number, and the xp_drop event carries it. An encounter whose
-// playerDamageOnNpc lowers a hit as it lands says the same at launch with
-// predictPlayerDamageOnNpc (optional, without side effects).
+// this number, each target's damage times its combat experience bonus
+// (combatXpMultiplier), and the xp_drop event carries the number itself:
+// the "(hit)" of the XP drop is the hit, not the experience over 4. An
+// encounter whose playerDamageOnNpc lowers a hit as it lands says the same
+// at launch with predictPlayerDamageOnNpc (optional, without side effects).
 function awardAttackXp(attack, hitGroups) {
   const predictDamage = attack.deps.encounterRules?.predictPlayerDamageOnNpc;
-  const predictedHit = hitGroups.reduce((total, hitGroup) => {
+  let predictedHit = 0;
+  let xpDamage = 0;
+  for (const hitGroup of hitGroups) {
     let damageToTarget = 0;
-    return (
-      total +
-      hitGroup.hits.reduce((groupTotal, hit) => {
-        if (hitGroup.forcedMiss || !hit.accurate) {
-          return groupTotal;
-        }
-        const rolledDamage = Math.max(1, Math.max(0, Math.floor(hit.damage)));
-        const scaledDamage = Math.max(
-          0,
-          Math.floor(rolledDamage * attack.outgoingDamageMultiplier),
-        );
-        const multipliedDamage = Math.max(
-          0,
-          Math.floor(scaledDamage * attack.specialAttackDamageMultiplier),
-        );
-        const finalDamage =
-          predictDamage && hitGroup.target
-            ? Math.max(0, Math.floor(predictDamage(multipliedDamage, { target: hitGroup.target, attack })))
-            : multipliedDamage;
-        const remainingHp = Math.max(0, hitGroup.hpAtLaunch - damageToTarget);
-        const appliedDamage = Math.min(finalDamage, remainingHp);
-        damageToTarget += appliedDamage;
-        return groupTotal + appliedDamage;
-      }, 0)
-    );
-  }, 0);
+    for (const hit of hitGroup.hits) {
+      if (hitGroup.forcedMiss || !hit.accurate) {
+        continue;
+      }
+      const rolledDamage = Math.max(1, Math.max(0, Math.floor(hit.damage)));
+      const scaledDamage = Math.max(
+        0,
+        Math.floor(rolledDamage * attack.outgoingDamageMultiplier),
+      );
+      const multipliedDamage = Math.max(
+        0,
+        Math.floor(scaledDamage * attack.specialAttackDamageMultiplier),
+      );
+      const finalDamage =
+        predictDamage && hitGroup.target
+          ? Math.max(0, Math.floor(predictDamage(multipliedDamage, { target: hitGroup.target, attack })))
+          : multipliedDamage;
+      const remainingHp = Math.max(0, hitGroup.hpAtLaunch - damageToTarget);
+      damageToTarget += Math.min(finalDamage, remainingHp);
+    }
+    predictedHit += damageToTarget;
+    xpDamage += damageToTarget * combatXpMultiplier(hitGroup.target, attack.deps.encounterRules);
+  }
   if (predictedHit === 0) {
     return;
   }
@@ -366,7 +385,7 @@ function awardAttackXp(attack, hitGroups) {
   const combatStyle = (styles[attack.styleIndex] ?? styles[0]).combatStyle;
   const xpDrops = applyXpGains(
     attack.player.xpCounters,
-    computeXpGains(attack.finalStyle, combatStyle, predictedHit),
+    computeXpGains(attack.finalStyle, combatStyle, xpDamage),
   );
   if (xpDrops.length > 0) {
     attack.deps.tickEvents.emit({

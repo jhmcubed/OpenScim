@@ -186,6 +186,7 @@ export const versions = {
   postQuest: {
     tableVersion: "Post-quest", // TABLE
     maxHp: 700, // WIKI, TABLE
+    combatXpBonus: 55, // WIKI, percent; client/data/combatXpBonus.js keeps it too
     enrageHp: 231, // WIKI, OBS: a third
     specialsHp: 570, // WIKI: head, darts and strangle below this
     // WIKI: Strength 270 to 360 and Defence 215 to 145 in step with his lost
@@ -215,6 +216,7 @@ export const versions = {
   awakened: {
     tableVersion: "Awakened", // TABLE: 1400 hitpoints, Attack 420
     maxHp: 1400, // WIKI, TABLE
+    combatXpBonus: 95, // WIKI, percent
     enrageHp: 462, // WIKI: four axes below 462, a third
     specialsHp: 1140, // inferred: the post-quest 570 of 700
     // WIKI: Strength 391 to 522 and Defence 268 to 181. With his +10 strength
@@ -640,6 +642,8 @@ class VardorvisEncounter {
   // --- the rest --------------------------------------------------------
   getEngineRules() {
     return {
+      // The version's combat experience bonus: the NPC id is the same in both.
+      combatXpBonusOverrides: { [ids.boss]: this.version.combatXpBonus },
       onPlayerDamageTaken: (hit) => {
         const boss = this.boss;
         // WIKI: he heals half, rounded down, of what his slashes and specials
