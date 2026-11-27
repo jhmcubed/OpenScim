@@ -134,6 +134,8 @@ class NexEncounter {
     this.phase = "smoke";
     this.called = [false, false, false, false];
     this.floorHp = 0; // while her mage lives: what her hitpoints cannot fall below
+    this.hitTick = -1; // the tick of the hits on her judged last, and her hitpoints after them (adjustHit)
+    this.hpAfterHits = 0;
     this.nextAttackAt = Infinity;
     this.untilSpecial = specialEvery;
     this.specialTurn = 0;
@@ -581,8 +583,15 @@ class NexEncounter {
         if (context && damage > 0) this.healBoss(target, damage, context);
         return 0;
       }
-      const room = this.floorHp > 0 ? Math.max(0, target.vitals.hp - this.floorHp) : target.vitals.hp;
+      // Hits of one tick are judged before the engine applies any of them: each counts the ones before it. Her phase's
+      // floor holds from the start: hits of one tick may cross her threshold and the 170 together.
+      const hp = this.hitTick === this.now ? Math.min(target.vitals.hp, this.hpAfterHits) : target.vitals.hp;
+      const index = phaseOrder.indexOf(this.phase);
+      const floor = index >= 0 && index < thresholds.length ? thresholds[index] - transitionOverflow : 0;
+      const room = Math.max(0, hp - floor);
       const done = Math.min(damage, room);
+      this.hitTick = this.now;
+      this.hpAfterHits = hp - done;
       if (this.floorHp > 0 && room === 0 && context && memberId === LOCAL_ID) this.message(context, "Nex is immune to your attacks!"); // OBS
       this.party.credit(memberId, done);
       return done;
