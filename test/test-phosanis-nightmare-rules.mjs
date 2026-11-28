@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { runScenario } from "../tools/determinism/harness.mjs";
 import { scenarios } from "../tools/determinism/scenarios/phosanis-nightmare.mjs";
-import { formCycle, surgeLanes, sleepwalkerTiles, sleepwalkerRings, walkerTiles, totems, totemSize, same, gapTo, bossSize } from "../client/encounters/phosanis-nightmare/ids.js";
+import { formCycle, surgeLanes, sleepwalkerTiles, sleepwalkerRings, walkerTiles, totems, totemSize, same, gapTo, bossSize, spotAnims } from "../client/encounters/phosanis-nightmare/ids.js";
 
 const BOSS = "phosanis-nightmare";
 const specialClips = ["claws", "husks", "parasite", "curse", "spores", "leave"];
@@ -24,6 +24,7 @@ async function ticksOf(name) {
       ticks[tick] = {
         boss: boss && [...boss.position], type: boss?.npcTypeId, hp: boss?.vitals.hp,
         locked: boss?.lockedFacing, facing: boss?.facing, crawl: boss?.crawlMovement && structuredClone(boss.crawlMovement),
+        clawGraphics: visuals.flatMap((event) => event.graphics.filter((graphic) => graphic.spotAnimId === spotAnims.claw)),
         clips: visuals.flatMap((event) => event.animations.filter((a) => a.actorId === BOSS).map((a) => a.clipId)),
         others: visuals.flatMap((event) => event.animations.filter((a) => a.actorId !== BOSS).map((a) => [a.actorId, a.clipId])),
         player: [...player.position], prayer: player.activePrayer, points: player.prayerState.points, run: player.isRunEnabled,
@@ -417,6 +418,14 @@ for (const name of ["kill", "kill-other-forms"]) {
       if (count === 2) assert.deepEqual([tiles[0][0] + tiles[1][0], tiles[0][1] + tiles[1][1]], [64, 62]);
     }
   }
+}
+
+{
+  // Her claws' portals lie on the floor, drawn over it (onGround), as the other fights' tile graphics are.
+  const ticks = await ticksOf("kill");
+  const portals = ticks.flatMap((tick) => tick?.clawGraphics ?? []);
+  assert.ok(portals.length > 20);
+  assert.ok(portals.every((portal) => portal.onGround === true && portal.height === 0 && portal.target.kind === "tile"));
 }
 
 console.log("Phosani's Nightmare: its rules hold on its scenarios");
