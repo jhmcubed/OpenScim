@@ -206,7 +206,7 @@ export class Rocks {
       // The orb follows the player, as the boss's own do. They all leave
       // together, at every delve (OBS: from delve 7, cycles 0-30, 0-60, 0-90).
       animate(context, null, null, [], [{ ...projectile(spotAnims.orb[current], from, player.position, 0, end, 100, 100), target: buildActorVisualTarget(player) }]);
-      doom.orbImpact(current, impactDelayTicks);
+      doom.orbImpact(current, impactDelayTicks, { evenPrayed: true });
       this.orbsLandAt = Math.max(this.orbsLandAt, context.tick + impactDelayTicks);
     }
   }

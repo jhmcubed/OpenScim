@@ -1,8 +1,8 @@
 // The Doom of Mokhaiotl's sounds that the game's server sends: a thrown rock
 // bursting and each of its pieces landing, heard from their tiles with the
 // recorded ranges and delays; his own orbs as they leave him (not a rock's),
-// an orb's burst on the player, his shield breaking, and a hit that hurts him
-// from his middle tile; nothing for what is not his. Every sound the rules
+// an orb's burst on the player (a rock's prayed against or not, his own only
+// unprayed), his shield breaking, and a hit that hurts him from his middle tile; nothing for what is not his. Every sound the rules
 // name is in the trimmed cache's list. A sound that is not in it
 // throws nothing: it is silent (docs/ADDING-AN-ENCOUNTER.md, section 7). In
 // fights of the harness each comes on the tick of what it goes with.
@@ -69,6 +69,45 @@ assert.deepEqual(visual.resolve({ ...none, animations: [{ actorId: "doom", clipI
 assert.deepEqual(hit.resolve({ targetId: "doom", targetPosition: [30, 35], damage: 12 }), { kind: "play", sound: [{ id: 10345, range: 10, channel: "area", position: [32, 37] }] });
 assert.deepEqual(hit.resolve({ targetId: "doom", targetPosition: [30, 35], damage: 0 }), pass);
 assert.deepEqual(hit.resolve({ targetId: "player", targetPosition: [30, 30], damage: 12 }), pass);
+
+// The encounter draws the bursts these sounds go with: a rock's orbs burst on
+// the player prayed against or not, his own only unprayed (OBS).
+{
+  const { doomDefinition, doomDeepKind } = await import("../client/encounters/doom-of-mokhaiotl/encounter.js");
+  const { Prayer } = await import("../client/engine/prayerTables.js");
+  const doom = doomDefinition.variantFactories[doomDeepKind]();
+  doom.reset({ encounterSeed: 3 });
+  const npcs = new Map(doom.createNpcs().map((npc) => [npc.id, npc]));
+  const player = { id: "player", kind: "player", alive: true, position: [31, 26], activePrayer: Prayer.ProtectMagic };
+  const events = [];
+  const context = {
+    tick: 0,
+    world: { getPlayer: () => player, getNpc: (id) => npcs.get(id), getNpcs: () => [...npcs.values()], actors: npcs },
+    tickEvents: { emit: (event) => events.push(event) },
+    spawnNpc: (npc) => npcs.set(npc.id, npc),
+    despawnNpc: (id) => npcs.delete(id),
+    teleportPlayer: (tile) => (player.position = [...tile]),
+    queueNpcHit: () => {},
+  };
+  doom.configureRunStart({ doomDelve: "2" }, context);
+  doom.now = 0;
+  doom.world = context.world;
+  doom.rollOrb = () => ({}); // the hits are not looked at here
+  const burstsOnPlayer = (run) => {
+    events.length = 0;
+    doom.tasks = []; // only what this schedules
+    run();
+    for (const end = doom.now + 20; doom.now < end; doom.now++) for (let due; (due = doom.takeDueTask()); ) due.task(context);
+    return events.flatMap((event) => (event.type === "inferno_visual" ? event.graphics : []))
+      .filter(({ target }) => target.kind === "actor" && target.actorId === "player").map(({ spotAnimId }) => spotAnimId).sort();
+  };
+  // A rock's two orbs, magic and ranged, with Protect from Magic on: both burst.
+  assert.deepEqual(burstsOnPlayer(() => doom.rocks.burst([31, 31], "magic", context, 0)), [2490, 2492]);
+  // His own magic orb, prayed against: none; unprayed: its burst.
+  assert.deepEqual(burstsOnPlayer(() => doom.orbImpact("magic", 3)), []);
+  player.activePrayer = Prayer.ProtectRange;
+  assert.deepEqual(burstsOnPlayer(() => doom.orbImpact("magic", 3)), [2492]);
+}
 
 // Both rooms play them.
 for (const presentation of [doomPresentation, doomDeepPresentation]) assert.equal(presentation(class {}).audio, doomAudio);

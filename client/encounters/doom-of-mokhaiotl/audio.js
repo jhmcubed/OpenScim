@@ -28,9 +28,9 @@ const hurtSound = { id: 10345, range: 10, channel: "area" };
 // An orb of his own, as it leaves him: 55 cycles into his orb attack, at once
 // from under the ground (95 of 95). A rock's orbs have none of their own.
 const orbSounds = { magic: 10375, range: 10341, melee: 10367 };
-// An orb's burst on the player, as it is drawn: magic 61 of 61, ranged 60 of
-// 60. No melee orb burst on the player was recorded: 7025 is the Leviathan's
-// for the same graphic (leviathan/audio.js).
+// An orb's burst on the player, as it is drawn: a rock's prayed or not, his
+// own only unprayed (encounter.js, orbImpact). OBS, 19 recorded runs: magic
+// 836 of 836, ranged 866 of 866, melee 2 of 2 (only his own are melee).
 const impactSounds = { magic: 7023, range: 7026, melee: 7025 };
 // His shield breaking, with the animation (7 of 7).
 const shieldBreakSounds = [{ id: 10303 }, { id: 10301, delayCycles: 45 }, { id: 10372, delayCycles: 160 }];

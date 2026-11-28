@@ -619,11 +619,14 @@ class DoomEncounter {
       startDelayCycles: 55, endDelayCycles: end, slope: 30, startOffset: 0, startHeight: 200, endHeight: 100,
     }]);
   }
-  // An orb that lands unprayed bursts on the player (captured: no burst when prayed against).
-  orbImpact(style, ticks) {
+  // An orb of his own bursts on the player only when it lands unprayed; a
+  // rock's orbs burst prayed or not (OBS: 19 recorded runs. A rock's: 1,697
+  // of 1,697 that hit burst. His own: 1,209 of 1,212 prayed did not, the 7
+  // that hurt did).
+  orbImpact(style, ticks, { evenPrayed = false } = {}) {
     this.later(ticks, (ctx) => {
       const player = ctx.world.getPlayer();
-      if (!player.alive || isCorrectProtectionPrayer(style, player.activePrayer)) return;
+      if (!player.alive || (!evenPrayed && isCorrectProtectionPrayer(style, player.activePrayer))) return;
       emitInfernoVisual(ctx.tickEvents, { animations: [], projectiles: [], graphics: [{ spotAnimId: spotAnims.orbImpact[style], target: buildActorVisualTarget(player), height: 100, delayCycles: 0 }] });
     });
   }
