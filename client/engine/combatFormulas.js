@@ -1,6 +1,55 @@
 import { scaleToaAccuracyRoll } from "/toa/zebak/rules.js";
 import { getWeaponCategoryDefinition } from "../data/weaponCategories.js";
+// WIKI (Prayer, "Prayers list").
 var prayerMultipliersByPrayer = {
+  ThickSkin: {
+    defence: 1.05,
+  },
+  RockSkin: {
+    defence: 1.1,
+  },
+  SteelSkin: {
+    defence: 1.15,
+  },
+  BurstOfStrength: {
+    strength: 1.05,
+  },
+  SuperhumanStrength: {
+    strength: 1.1,
+  },
+  UltimateStrength: {
+    strength: 1.15,
+  },
+  ClarityOfThought: {
+    attack: 1.05,
+  },
+  ImprovedReflexes: {
+    attack: 1.1,
+  },
+  IncredibleReflexes: {
+    attack: 1.15,
+  },
+  SharpEye: {
+    ranged: 1.05,
+    rangedStrength: 1.05,
+  },
+  HawkEye: {
+    ranged: 1.1,
+    rangedStrength: 1.1,
+  },
+  // "Magic Attack and Defence": the magic level, which also sets magic defence.
+  MysticWill: {
+    magic: 1.05,
+  },
+  MysticLore: {
+    magic: 1.1,
+    magicDamage: 1.01,
+  },
+  Chivalry: {
+    attack: 1.15,
+    strength: 1.18,
+    defence: 1.2,
+  },
   Piety: {
     attack: 1.2,
     strength: 1.23,
@@ -289,8 +338,10 @@ function combinePrayerMultipliers(prayers) {
   }
   return combinedMultipliers;
 }
-function getPrayerMultipliers(activePrayer, offensivePrayer) {
-  return combinePrayerMultipliers([activePrayer, offensivePrayer]);
+// independentPrayers holds the lower-tier prayers (Steel Skin, Ultimate
+// Strength and so on), which can be on beside the offensive prayer.
+function getPrayerMultipliers(activePrayer, offensivePrayer, independentPrayers = []) {
+  return combinePrayerMultipliers([activePrayer, offensivePrayer, ...independentPrayers]);
 }
 function getNpcMaxHit(attacker, formulaStyle) {
   switch (formulaStyle) {

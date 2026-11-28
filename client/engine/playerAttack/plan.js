@@ -640,7 +640,11 @@ function buildPlayerAttackPlan(planInput) {
     target: formulaTarget,
     formulaStyle: planInput.formulaStyle,
     equipmentStats: equipmentStats,
-    prayerMultipliers: getPrayerMultipliers(planInput.player.activePrayer, planInput.player.offensivePrayer),
+    prayerMultipliers: getPrayerMultipliers(
+      planInput.player.activePrayer,
+      planInput.player.offensivePrayer,
+      planInput.player.independentPrayers,
+    ),
     attackSpeedTicks: planInput.attackSpeedTicks,
     delivery: planInput.delivery,
     application: planInput.application,

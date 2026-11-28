@@ -331,7 +331,7 @@ function rollYamaAccuracy(actor, style, environment) {
         getPlayerFormulaStats(player),
         formulaStyle,
         player.equipmentStats,
-        getPrayerMultipliers(player.activePrayer, player.offensivePrayer),
+        getPrayerMultipliers(player.activePrayer, player.offensivePrayer, player.independentPrayers),
       );
   return environment.config.accuracyRandom() < hitChance;
 }
