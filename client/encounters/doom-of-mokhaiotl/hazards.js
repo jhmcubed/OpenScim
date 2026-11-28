@@ -157,15 +157,20 @@ export class Rocks {
   }
   burst(at, style, context, index) {
     const doom = this.doom;
-    const marked = [...context.world.getPlayer().position];
-    // Delve 8: the second rock's debris never falls on the first's (wiki).
+    const here = [...context.world.getPlayer().position];
+    // Delve 8: the second rock's debris never falls on the first's (wiki),
+    // its marked tile neither: a player still on one of the first's shadows
+    // as it bursts gets the rock on a tile near them instead (OBS: 0 of 12
+    // such bursts marked the player's tile, against 94 of 99 otherwise; the
+    // rock stood 1 to 3 tiles away).
     const avoid = index === 1 ? this.firstPieces : undefined;
+    const marked = avoid?.has(key(here)) ? (this.nearestFree(here, avoid) ?? here) : here;
     const pieces = [marked, ...this.debrisTiles(marked, doom.rules.rockPieces - 1, avoid)];
     if (doom.rules.rocks > 1 && index === 0) this.firstPieces = new Set(pieces.map(key));
     const ends = pieces.map((tile) => 60 + 3 * chebyshev(at, tile));
     animate(context, null, null, [graphic(spotAnims.rockSplit[style], at), ...pieces.map((tile) => graphic(spotAnims.debrisShadow, tile))],
       pieces.map((tile, piece) => projectile(spotAnims.debris[piece % spotAnims.debris.length], at, tile, 0, ends[piece], 500, 0)));
-    doom.pendingDamages.push({ baseDamage: 0, attackType: "typeless", source: "Rock", playerPosition: marked, disablesProtectionPrayersForTicks: 1 });
+    doom.pendingDamages.push({ baseDamage: 0, attackType: "typeless", source: "Rock", playerPosition: here, disablesProtectionPrayersForTicks: 1 });
     doom.later(2, (ctx) => animate(ctx, null, null, pieces.map((tile, piece) => graphic(spotAnims.debrisImpact, tile, Math.max(0, ends[piece] - 60)))));
     doom.later(3, (ctx) => this.land(marked, pieces, style, ctx, index));
   }
@@ -181,6 +186,19 @@ export class Rocks {
       tiles.push(tile);
     }
     return tiles;
+  }
+  // The floor tiles nearest `centre` (out to four) outside `avoid` with no rock, one of them at random.
+  nearestFree(centre, avoid) {
+    for (let ring = 1; ring <= 4; ring++) {
+      const tiles = [];
+      for (let dx = -ring; dx <= ring; dx++)
+        for (let dy = -ring; dy <= ring; dy++) {
+          const tile = [centre[0] + dx, centre[1] + dy];
+          if (chebyshev(tile, centre) === ring && onFloor(tile) && !avoid.has(key(tile)) && !this.has(tile)) tiles.push(tile);
+        }
+      if (tiles.length) return tiles[this.doom.randomInt(0, tiles.length - 1)];
+    }
+    return null;
   }
   land(marked, pieces, style, context, index) {
     const doom = this.doom;
