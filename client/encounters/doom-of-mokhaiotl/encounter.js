@@ -645,9 +645,12 @@ class DoomEncounter {
     if (!attack) throw new TypeError("Missing formula stats for the Doom of Mokhaiotl");
     return attack;
   }
+  // Not while the volatile earth is up (wiki: never with the throws before
+  // the shockwaves): from delve 5 a throw 5 ticks after he surfaces would
+  // otherwise charge a tick after the earth comes up.
   startCharge(context) {
     const boss = this.boss(context.world);
-    if (this.phase !== "attacks" || this.charge || !boss?.alive) return;
+    if (this.phase !== "attacks" || this.charge || this.shockwave.active || !boss?.alive) return;
     this.charge = { firesAt: context.tick + charge.ticks };
     this.setChargeAccuracy(boss, true);
     this.animate(context, "beamCharge", [{ spotAnimId: spotAnims.beamCharge, target: buildActorVisualTarget(boss), height: 0, delayCycles: 0 }]);
