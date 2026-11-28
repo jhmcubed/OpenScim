@@ -32791,14 +32791,7 @@ var xH = zObject({
 })
   .strict()
   .readonly();
-var WH = new Set([
-  "yama_p3",
-  "yama_p3_divine",
-  "yama_p3_forfeit_breath",
-  "yama_p3_sensory",
-  "yama_p3_bloodied",
-  "yama_p3_glyphic",
-]);
+var WH = new Set(yamaSceneKinds);
 function RH(e) {
   return WH.has(e.kind);
 }
@@ -35616,21 +35609,37 @@ var PlayerVisualTracker = class {
     this._primaryAnimBlocksRunning = e;
     this._primaryAnimBlocksWalking = a;
   }
-  enqueueTickMovement(e, a = [], t) {
+  enqueueTickMovement(e, a = [], t, forcedMoveCycles, forcedMoveSteps) {
     if (e !== this.lastProcessedTick) {
       this.lastProcessedTick = e;
-      this.enqueueSteps(a, t);
+      this.enqueueSteps(a, t, forcedMoveCycles, forcedMoveSteps);
     }
   }
-  enqueueSteps(e, a) {
+  enqueueSteps(e, a, forcedMoveCycles, forcedMoveSteps) {
     for (const [t, n] of e) {
+      // A forced move (an encounter's optional `forcedMoveCycles`, Yama's stone jumps; OBS: solo 1 ticks
+      // 274-279): the step is covered in that many client cycles, from the end of the route, in no walk or run.
+      const from = this.pathLength > 0 ? this.pathQueue[this.pathQueue.length - 1] : null;
+      const forcedSpeed = forcedMoveCycles > 0
+        ? Math.max(1, Math.abs(t * bW - (from ? from.x * bW : this.worldXFloat)), Math.abs(n * bW - (from ? from.y * bW : this.worldYFloat))) / forcedMoveCycles
+        : undefined;
       this.pathQueue.push({
         x: t,
         y: n,
         isRunning: a,
+        ...(forcedSpeed ? { forcedSpeed } : {}),
+        // With `forcedMoveSteps` (the cycles of the move its drawn place changes on), the place holds between them
+        // and then takes its share of the way, as the game's client draws a forced move: only as a frame of the
+        // actor's sequence ends (Yama's stone jumps, 12196).
+        ...(forcedSpeed && forcedMoveSteps?.length
+          ? { forcedSteps: forcedMoveSteps, forcedCycles: forcedMoveCycles, forcedElapsed: 0, forcedFrom: from ? [from.x * bW, from.y * bW] : [this.worldXFloat, this.worldYFloat] }
+          : {}),
       });
     }
     this.retargetToPathHead();
+  }
+  get forcedHead() {
+    return this.pathLength > 0 && !!this.pathQueue[this.pathHead].forcedSpeed;
   }
   snapToUnwalkedPlacement([e, a], t) {
     if (this.routeEndsOn([e, a])) {
@@ -35667,8 +35676,8 @@ var PlayerVisualTracker = class {
       const n = a - this.worldXFloat;
       const s = t - this.worldYFloat;
       this._targetAngle = SW(n, s, this._targetAngle);
-      this._isRunning = this.computeMovementSpeed(e) >= 8;
-      if (Math.max(Math.abs(n), Math.abs(s)) > 288) {
+      this._isRunning = this.computeMovementSpeed(e) >= 8 && !e.forcedSpeed;
+      if (Math.max(Math.abs(n), Math.abs(s)) > 288 && !e.forcedSpeed) {
         this.worldX = a;
         this.worldY = t;
         this.worldXFloat = a;
@@ -35708,14 +35717,14 @@ var PlayerVisualTracker = class {
     if (!this.isMovementBlockedByAnim()) {
       this.interpolateAlongPath(n);
     }
-    this._isMoving = this.pathLength > 0;
+    this._isMoving = this.pathLength > 0 && !this.forcedHead;
     if (!this._isMoving) {
       this._isRunning = false;
     }
     return this.buildState();
   }
   isMovementBlockedByAnim() {
-    if (this.pathLength === 0) {
+    if (this.pathLength === 0 || this.forcedHead) {
       return false;
     }
     const e = this.pathQueue[this.pathHead];
@@ -35739,6 +35748,21 @@ var PlayerVisualTracker = class {
     while (this.pathLength > 0 && e > 0) {
       const a = e;
       const t = this.pathQueue[this.pathHead];
+      if (t.forcedSteps) {
+        t.forcedElapsed += e;
+        e = Math.max(0, t.forcedElapsed - t.forcedCycles);
+        const shown = t.forcedElapsed >= t.forcedCycles ? t.forcedCycles : t.forcedSteps.filter((cycle) => cycle <= t.forcedElapsed).at(-1) ?? 0;
+        this.worldXFloat = t.forcedFrom[0] + ((t.x * bW - t.forcedFrom[0]) * shown) / t.forcedCycles;
+        this.worldYFloat = t.forcedFrom[1] + ((t.y * bW - t.forcedFrom[1]) * shown) / t.forcedCycles;
+        this.worldX = Math.trunc(this.worldXFloat);
+        this.worldY = Math.trunc(this.worldYFloat);
+        if (shown === t.forcedCycles) {
+          this.consumePathHead();
+          const next = this.pathQueue[this.pathHead];
+          if (next) this._targetAngle = SW(next.x * bW - this.worldXFloat, next.y * bW - this.worldYFloat, this._targetAngle);
+        }
+        continue;
+      }
       const worldXFloat2 = this.worldXFloat;
       const worldYFloat2 = this.worldYFloat;
       const r = t.x * bW;
@@ -35778,7 +35802,7 @@ var PlayerVisualTracker = class {
       this.worldX = Math.trunc(this.worldXFloat);
       this.worldY = Math.trunc(this.worldYFloat);
       if (l !== 0 || o !== 0) {
-        this._isRunning = d >= 8;
+        this._isRunning = d >= 8 && !t.forcedSpeed;
       }
       if (r === this.worldX && i === this.worldY) {
         this.worldXFloat = r;
@@ -35792,6 +35816,9 @@ var PlayerVisualTracker = class {
     }
   }
   computeMovementSpeed(e) {
+    if (e.forcedSpeed) {
+      return e.forcedSpeed;
+    }
     let a = 4;
     // OBS (the game's client): half speed while the drawn angle is not yet the step's direction, only without a target.
     if (this._targetAngle !== this._renderAngle && this.turnSpeed !== 0 && !this.isEffectivelyInteracting()) {
@@ -35836,12 +35863,12 @@ var PlayerVisualTracker = class {
     return {
       position: [this.worldXFloat / bW, this.worldYFloat / bW],
       isVisuallyMoving: this._isMoving,
-      simIsMoving: this.pathLength > 0,
-      locomotionState: this.gz(),
+      simIsMoving: this.pathLength > 0 && !this.forcedHead,
+      locomotionState: this.forcedHead ? null : this.gz(),
       isRunning: this._isRunning,
       facingAngle: this._renderAngle,
       targetAngle: e,
-      isTurning: this._renderAngle !== e,
+      isTurning: this._renderAngle !== e && !this.forcedHead, // OBS: no turn pose under a forced move, 1702 throughout
     };
   }
   currentTurnTarget() {
@@ -36130,7 +36157,7 @@ function jW(e) {
   return e === "fire" || e === "shadow";
 }
 var OW = spotAnimIds.VFX_VOIDFLARE_EXPLODE_BLUE;
-var $W = [OW, spotAnimIds.VFX_VOIDFLARE_HUMAN_IMPACT_BLUE];
+var $W = [OW, spotAnimIds.VFX_VOIDFLARE_EXPLODE_RED, spotAnimIds.VFX_VOIDFLARE_HUMAN_IMPACT_BLUE];
 var VoidFlareController = class {
   constructor(e) {
     ce(this, "explodingFlares", []);
@@ -36185,12 +36212,14 @@ var VoidFlareController = class {
     };
     for (const e of npcs) {
       if (e.archetypeId === "voidflare" && e.alive && o(e.id)) {
-        this.Az(n, s, e.position, CW(e, t));
+        this.Az(n, s, e.position, CW(e, t), e.noTileFill); // noTileFill: set by its encounter (SimulationEngine.js snapshot)
       }
     }
     const d = t * 30;
-    const g = xW(e, OW, 50);
     this.explodingFlares = this.explodingFlares.filter((a) => {
+      // OBS (solo 1, tick 149): a red (fire) flare's blast is spot 3237, a blue (shadow) one's 3238.
+      const spot = a.variant === "fire" ? spotAnimIds.VFX_VOIDFLARE_EXPLODE_RED : OW;
+      const g = xW(e, spot, 50);
       const t = `voidflare-explode-${a.flareId}`;
       const i = a.explodeTick * 30;
       if (d >= i + g) {
@@ -36202,7 +36231,7 @@ var VoidFlareController = class {
             e,
             {
               instanceId: t,
-              spotAnimId: OW,
+              spotAnimId: spot,
               startCycle: i,
               transformSource: {
                 kind: "static",
@@ -36239,8 +36268,8 @@ var VoidFlareController = class {
     }
     this.explodingFlares = [];
   }
-  Az(e, a, t, n) {
-    for (let n = 0; n < 2; n++) {
+  Az(e, a, t, n, noTileFill) {
+    for (let n = 0; n < (noTileFill ? 0 : 2); n++) {
       for (let s = 0; s < 2; s++) {
         const r = {
           x: t[0] + n,
@@ -43861,6 +43890,7 @@ var K_ = {
   heal: "heal",
   burn: "burn",
   bleed: "bleed",
+  absorb: "absorb",
 };
 var q_ = [7, 4, 7, 6, 5, 6, 7, 6, 7, 7];
 var Z_ = [9, 7, 9, 8, 8, 8, 9, 7, 9, 9];
@@ -44358,7 +44388,8 @@ var UIOverlayRenderer = class e {
   }
   BL(a, t, n, s, r, i = 0, l = s - i) {
     for (const o of n) {
-      if (!canNpcShowHealthBarAtTick(o, s)) {
+      // noHealthBar: set by its encounter (SimulationEngine.js snapshot): never a hitpoints bar, also after a hit.
+      if (!canNpcShowHealthBarAtTick(o, s) || o.noHealthBar) {
         continue;
       }
       const n = o.alwaysShowHealthBar === true;
@@ -47553,7 +47584,9 @@ var SceneCompositor = class e {
       if (
         !replayHistory3 &&
         e.type === "hit_applied" &&
-        a.targetId === "player"
+        a.targetId === "player" &&
+        // An encounter's hit the player does not raise his guard for (Yama's cavern shake, SimulationEngine.js).
+        !a.noBlockAnimation
       ) {
         this.playerAnimController?.KL();
       }
@@ -56481,8 +56514,13 @@ var WaveController = class {
     const d = i?.minY ?? 0;
     const g = i?.maxY ?? 64;
     const c = Math.floor(t);
-    const m = t - c;
-    const h = getYamaWaveTiles(c, l, o, d, g, r);
+    // OBS (solo 1, ticks 47 and 111): the game sends 3265 on the line that moves to the north-east (x + y, "R")
+    // and 3266 on the one that moves to the north-west (y - x, "L"), unrotated, a diagonal every 15 cycles, and
+    // each tile's graphic plays its whole sequence (CACHE: 12123, 12124) from its start: the lower layer of a
+    // tick starts with it, the upper 15 cycles later. So the tiles of the ticks before are drawn while they play.
+    const spotOf = (tile) => (tile.waveType === "R" ? spotAnimIds.VFX_SHADOW_WALL_02 : spotAnimIds.VFX_SHADOW_WALL_03);
+    const cycle = t * 30;
+    const back = Math.ceil(Math.max(xW(e, spotAnimIds.VFX_SHADOW_WALL_02, 15), xW(e, spotAnimIds.VFX_SHADOW_WALL_03, 15)) / 30);
     const f = new Set();
     if (s) {
       const e = getYamaWaveTiles(a + 1, l, o, d, g, r);
@@ -56492,6 +56530,8 @@ var WaveController = class {
         }
       }
     }
+    for (let k = c - back; k <= c; k++) {
+    const h = getYamaWaveTiles(k, l, o, d, g, r);
     for (let a = 0; a < h.length; a++) {
       const t = h[a];
       if (!isArenaTileWalkable(t.x, t.y)) {
@@ -56500,24 +56540,18 @@ var WaveController = class {
       if (isYamaSealedRow(t.y)) {
         continue;
       }
-      let n;
-      if (t.layer === 0) {
-        if (m >= 0.5) {
-          continue;
-        }
-        n = m * 2;
-      } else {
-        if (m < 0.5) {
-          continue;
-        }
-        n = (m - 0.5) * 2;
+      const start = k * 30 + t.layer * 15;
+      const length = xW(e, spotOf(t), 15);
+      if (cycle < start || cycle >= start + length) {
+        continue;
       }
-      const s = `wave-${c}-${a}`;
+      const n = (cycle - start) / length;
+      const s = `wave-${k}-${a}`;
       f.add(s);
       e.upsert({
         instanceId: s,
         groupId: EN,
-        spotAnimId: spotAnimIds.VFX_SHADOW_WALL_01,
+        spotAnimId: spotOf(t),
         transform: {
           kind: "static",
           value: {
@@ -56526,7 +56560,6 @@ var WaveController = class {
               t.y + 0.5,
               Gb(this.terrainHeights, t.x, t.y, 1, 1),
             ],
-            yaw2048: t.waveType === "L" ? 1792 : 256,
           },
         },
         lifecycle: {
@@ -56537,6 +56570,7 @@ var WaveController = class {
         },
         frameProgress: n,
       });
+    }
     }
     for (const a of this.activeWaveIds) {
       if (!f.has(a)) {
@@ -56843,7 +56877,8 @@ var YamaSceneCompositor = class extends SceneCompositor {
       if (!npc || !TR(npc, cue.cycle)) continue;
       if (this.encounterRenderConfig?.preloadNpcTypes?.find((entry) => entry.npcTypeId === npc.npcTypeId)?.attackClips?.[cue.cue.clipId] === undefined) continue;
       this.advanceNpcAnimationClock(cue.cycle);
-      this.npcInstanceManager.PA(0, 1, [{ actorId: this.getNpcRenderInstanceId(cue.cue.actorId), trigger: "attack", clipId: cue.cue.clipId, tick: cue.cycle / 30 }]);
+      // An optional `durationCycles` holds a one-shot clip's last frame that long (Yama's throne, encounters/yama).
+      this.npcInstanceManager.PA(0, 1, [{ actorId: this.getNpcRenderInstanceId(cue.cue.actorId), trigger: "attack", clipId: cue.cue.clipId, tick: cue.cycle / 30, ...(cue.cue.durationCycles ? { durationGameTicks: cue.cue.durationCycles / 30 } : {}) }]);
       played = true;
     }
     if (played) this.advanceNpcAnimationClock(cycle);
@@ -58477,6 +58512,7 @@ import {
   isYamaSealedRow,
   yamaSpawnFireballCommand,
   yamaSpawnVoidFlareCommand,
+  yamaSceneKinds,
 } from "../encounters/yama/sceneConstants.js";
 import {
   defaultYamaFireballBeats,
@@ -60746,6 +60782,9 @@ var lZ = {
   burn: "/assets/ui/hitsplat-burn.png",
   // CACHE: hitsplat 67, sprite 4564 (Vardorvis' bleed).
   bleed: "/assets/ui/hitsplat-bleed.png",
+  // CACHE: hitsplat 44 (OBS: type 44 in recordings), sprite 4556 (a hit absorbed by one of Yama's glyphs);
+  // 44 picks hitsplat 51 by varbit 14196, as 2 does for 70; 0 is the new style, like burn's 4767.
+  absorb: "/assets/ui/hitsplat-absorb.png",
 };
 function oZ() {
   return (
@@ -63516,13 +63555,14 @@ var bZ = ({
       ];
       let P = false;
       if (h.currentTick !== tracker2.lastProcessedTick) {
-        tracker2.enqueueTickMovement(h.currentTick, T, h.playerIsRunning);
+        tracker2.enqueueTickMovement(h.currentTick, T, h.playerIsRunning, h.encounter?.state?.forcedMoveCycles, h.encounter?.state?.forcedMoveSteps);
         P = tracker2.snapToUnwalkedPlacement(h.playerPosition, h.playerFacingAngle);
         if (T.length === 0) {
           tracker2.setTargetAngle(h.playerFacingAngle);
         }
         tracker2.setInteracting(!!h.attackTarget);
-        tracker2.setForcedFacingAngle(h.attackTarget ? h.playerFacingAngle : null);
+        // A forced move faces the engine's facing (the angle of the jump), not the eight-way one of the step.
+        tracker2.setForcedFacingAngle(h.attackTarget || h.encounter?.state?.forcedMoveCycles ? h.playerFacingAngle : null);
       } else if (R) {
         P = tracker2.snapToUnwalkedPlacement(h.playerPosition, h.playerFacingAngle);
       }

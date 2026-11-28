@@ -46,6 +46,8 @@ function getYamaWaveRandomOffset(seed, waveIndex, delta, cycleNum) {
 // inside the diamond of isInsideYamaWaveDiamond count. In every period of
 // `periodTicks` one wave starts for each entry of `deltas`, that many ticks
 // into the period; in the first period only those of `firstCycleDeltas`.
+// `lines`, when given, names for each entry of `deltas` the one line its wave
+// has, "L" or "R" (the waves of phases 1 and 2 come from one side).
 function getYamaWaveTiles(tick, minX, maxX, minY, maxY, waveConfig) {
   const waveTiles = [];
   const periodTicks = waveConfig?.periodTicks ?? 70;
@@ -68,8 +70,9 @@ function getYamaWaveTiles(tick, minX, maxX, minY, maxY, waveConfig) {
       leftWaveStart += randomOffset[0];
       rightWaveStart += randomOffset[1];
     }
+    const onlyLine = waveConfig?.lines?.[waveIndex];
     const leftDiagonalDifference = leftWaveStart + tilesTravelled;
-    for (let x = minX; x <= maxX; x++) {
+    for (let x = onlyLine === "R" ? maxX + 1 : minX; x <= maxX; x++) {
       const lowerY = x + leftDiagonalDifference;
       const upperY = lowerY + 1;
       if (lowerY >= minY && lowerY <= maxY && isInsideYamaWaveDiamond(lowerY - x, x + lowerY)) {
@@ -92,7 +95,7 @@ function getYamaWaveTiles(tick, minX, maxX, minY, maxY, waveConfig) {
       }
     }
     const rightDiagonalSum = rightWaveStart + tilesTravelled;
-    for (let x = minX; x <= maxX; x++) {
+    for (let x = onlyLine === "L" ? maxX + 1 : minX; x <= maxX; x++) {
       const lowerY = rightDiagonalSum - x;
       const upperY = lowerY + 1;
       if (lowerY >= minY && lowerY <= maxY && isInsideYamaWaveDiamond(lowerY - x, x + lowerY)) {

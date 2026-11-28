@@ -40,6 +40,7 @@ export const encounterCatalog = {
   alchemical_hydra: { category: "slayer", aliases: ["hydra", "karuulm", "konar"] },
   araxxor: { category: "slayer", aliases: ["rax", "spider", "araxyte", "morytania"] },
   yama_p3: { category: "boss", aliases: ["yama", "contracts", "oathplate", "chasm of fire"] },
+  yama_full: { category: "boss", aliases: ["yama", "judge of yama", "glyphs", "chasm of fire"] },
   doom_of_mokhaiotl: { category: "boss", aliases: ["doom", "delve", "mokhaiotl", "delves"] },
   maggot_king: { category: "boss", aliases: ["maggot"] },
   mad_angel: { category: "boss", aliases: ["angel", "golem", "ardeaglais", "wyrmscraig", "fallen from grace"] },

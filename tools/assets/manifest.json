@@ -531,6 +531,7 @@
 {"path":"assets/ui/healthbar/yellow_front_40px.png","bytes":273,"sha256":"3595cce01a0211c9bdb4d9310d4bb980d775546095ac061cc9293620a6e3ae01","source":null,"standIn":"tint:assets/ui/healthbar/default_front_40px.png:-:1"},
 {"path":"assets/ui/healthbar/yellow_front_60px.png","bytes":291,"sha256":"350fc66b2d11c17a15db9ff81372a2b04b71ac8fb228c83492f6f2fcdc8ac793","source":null,"standIn":"tint:assets/ui/healthbar/default_front_60px.png:-:1"},
 {"path":"assets/ui/healthbar/yellow_front_80px.png","bytes":304,"sha256":"bb412200f053ef51c1c7f490d422008e06aee215b581a48072928f81d49d5642","source":null,"standIn":"tint:assets/ui/healthbar/default_front_80px.png:-:1"},
+{"path":"assets/ui/hitsplat-absorb.png","pixels":"dc48b2ee4ac683b62a48deba4c87dc329c9406527135156159f9da904adcd481","source":"sprite:8/4556/0"},
 {"path":"assets/ui/hitsplat-block.png","bytes":270,"sha256":"25f7a084eb46a27f816a9117033923c6ef513e975af784925724d43e32193606","source":null,"standIn":"sprite:8/1358/0"},
 {"path":"assets/ui/hitsplat-bleed.png","pixels":"a970a760147114a7b5e9030b3f17bad1307a7106cfa27bce663bcf2ca190a242","source":"sprite:8/4564/0"},
 {"path":"assets/ui/hitsplat-burn.png","bytes":267,"sha256":"dabd0651a4dc194a4f4dbb904cdb82f9c36c329a1e40dc8f2b1619719beadcac","source":null,"standIn":"sprite:8/4767/0"},

@@ -56,8 +56,10 @@ var voidFlareNpcDefinition = defineNpc({
       damage: damage,
     });
     const boss = config.getBoss(context);
+    // `healsOnImpact()` true: the encounter heals him as the blast lands, if it
+    // does (the whole fight's glyphs take blasts).
     const heal =
-      config.explosionDamage === "lethal"
+      config.explosionDamage === "lethal" || config.healsOnImpact?.()
         ? 0
         : healNpc(
             boss,
@@ -141,7 +143,7 @@ function createVoidFlareActor(flareOptions) {
   return voidFlareNpcDefinition.createActor(baseActor, {
     damageRollIndex: flareOptions.damageRollIndex,
     explodeTick: flareOptions.spawnTick + flareOptions.chargeTicks,
-    variant: "shadow",
+    variant: flareOptions.variant ?? "shadow",
     lifecycle: "charging",
   });
 }
@@ -265,13 +267,14 @@ var VoidFlareCoordinator = class {
       chargeTicks: this.config.chargeTicks,
       currentHp: spawn.hp,
       guaranteedPlayerMaximum: this.config.guaranteedPlayerMaximum,
+      variant: spawn.variant,
     });
     context.spawnNpc(flare);
     return {
       type: "voidflare_spawned",
       flareId: flareId,
       position: spawn.position,
-      variant: "shadow",
+      variant: spawn.variant ?? "shadow",
     };
   }
   pickSpawnTile(voidFlares, playerPos, flareTiles) {
@@ -297,4 +300,4 @@ var VoidFlareCoordinator = class {
     );
   }
 };
-export { voidFlareNpcDefinition, VoidFlareCoordinator };
+export { voidFlareNpcDefinition, VoidFlareCoordinator, destroyVoidFlare, getExplosionHeal };

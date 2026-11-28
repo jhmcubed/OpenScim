@@ -29,7 +29,7 @@ export const kindColors = {
   supply: "#ef93bf",
   message: "#d8c8a8",
 };
-const splatColors = { damage: "#a8261c", block: "#2f5aa8", poison: "#2f7d32", venom: "#1f6f62", bleed: "#7a1212", burn: "#c2601a", heal: "#7d3f9e" };
+const splatColors = { damage: "#a8261c", block: "#2f5aa8", poison: "#2f7d32", venom: "#1f6f62", bleed: "#7a1212", burn: "#c2601a", heal: "#7d3f9e", absorb: "#2fb5a8" };
 
 const styleId = "replay-tick-log-style";
 const css = `

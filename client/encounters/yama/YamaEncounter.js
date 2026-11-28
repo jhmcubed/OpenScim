@@ -304,12 +304,13 @@ function isPlayerOnYamaWave(playerX, playerY, tick, waveConfig) {
     if (!isInsideYamaWaveDiamond(diagonalDifference, diagonalSum)) {
       continue;
     }
+    const onlyLine = waveConfig?.lines?.[waveIndex];
     const leftWaveLine = diagonalDifference - tilesTravelled;
-    if (leftWaveLine === leftWaveStart || leftWaveLine === leftWaveStart + 1) {
+    if (onlyLine !== "R" && (leftWaveLine === leftWaveStart || leftWaveLine === leftWaveStart + 1)) {
       return true;
     }
     const rightWaveLine = diagonalSum - tilesTravelled;
-    if (rightWaveLine === rightWaveStart || rightWaveLine === rightWaveStart + 1) {
+    if (onlyLine !== "L" && (rightWaveLine === rightWaveStart || rightWaveLine === rightWaveStart + 1)) {
       return true;
     }
   }
@@ -448,17 +449,12 @@ var YamaEncounter = class {
       return [];
     }
     const damages = [];
-    const waveDamage = this.resolvedConfig.waves.damage;
     if (
       mechanics.waves &&
       context.tick !== this.state.fireballs.shadowWaveImmunityTick &&
       isPlayerOnYamaWave(context.playerPos[0], context.playerPos[1], context.tick, this.state.run.waveConfig)
     ) {
-      damages.push({
-        baseDamage: waveDamage,
-        attackType: "typeless",
-        source: "Waves",
-      });
+      this.waveHit(context, damages);
     }
     this.voidFlareCoordinator.resolvePendingImpacts(this.state.voidFlares, context, damages);
     if (context.world.getPlayer()?.alive) {
@@ -472,6 +468,14 @@ var YamaEncounter = class {
       damages: damages,
     });
     return damages;
+  }
+  // A wave touches the player (the whole fight, YamaFullEncounter.js, has its own).
+  waveHit(context, damages) {
+    damages.push({
+      baseDamage: this.resolvedConfig.waves.damage,
+      attackType: "typeless",
+      source: "Waves",
+    });
   }
   processNpcTick(npc, context, mechanics) {
     if (npc.id !== yamaActorId || this.state.lifecycle.defeated) {
@@ -517,25 +521,7 @@ var YamaEncounter = class {
     }
     const bossState = boss ? getYamaState(boss) : null;
     if (mechanics.waves) {
-      const bounds = this.getArenaConfig().bounds ?? getArenaBounds() ?? fallbackYamaArenaBounds;
-      const waveTiles = getYamaWaveTiles(
-        context.tick,
-        bounds.minX,
-        bounds.maxX,
-        bounds.minY,
-        bounds.maxY,
-        this.state.run.waveConfig,
-      );
-      if (waveTiles.length > 0) {
-        const wavePositions = waveTiles.map((waveTile) => [waveTile.x, waveTile.y]);
-        // Emitted on every tick that has a wave tile in the arena, not once
-        // per wave. The scenes know the event by this name.
-        context.tickEvents.emit({
-          type: "wave_activated",
-          position: getNearestPosition(context.playerPos, wavePositions),
-          wavePositions: wavePositions,
-        });
-      }
+      this.emitWaveActivated(context);
     }
     if (
       this.fireballRuntime.processPostTick(this.state.fireballs, context, {
@@ -553,6 +539,27 @@ var YamaEncounter = class {
       didPlanMelee: bossState?.didPlanMelee === true,
     });
     return [];
+  }
+  emitWaveActivated(context) {
+    const bounds = this.getArenaConfig().bounds ?? getArenaBounds() ?? fallbackYamaArenaBounds;
+    const waveTiles = getYamaWaveTiles(
+      context.tick,
+      bounds.minX,
+      bounds.maxX,
+      bounds.minY,
+      bounds.maxY,
+      this.state.run.waveConfig,
+    );
+    if (waveTiles.length > 0) {
+      const wavePositions = waveTiles.map((waveTile) => [waveTile.x, waveTile.y]);
+      // Emitted on every tick that has a wave tile in the arena, not once
+      // per wave. The scenes know the event by this name.
+      context.tickEvents.emit({
+        type: "wave_activated",
+        position: getNearestPosition(context.playerPos, wavePositions),
+        wavePositions: wavePositions,
+      });
+    }
   }
   getSnapshot(request) {
     const bossState = this.yamaActor ? getYamaState(this.yamaActor) : null;
@@ -581,6 +588,19 @@ var YamaEncounter = class {
     this.fireballRuntime.clearFireballs(this.state.fireballs);
     this.voidFlareCoordinator.clearFlares(this.state.voidFlares, context, defeat.tick);
     context.world.removePendingHitsFromSource(yamaActorId);
+    this.emitDefeatLine(context);
+    if (completionOwnership === "encounter-owned") {
+      this.state.lifecycle.outcome = {
+        phase: "resolving",
+        decisiveTick: defeat.tick,
+        completionTick: defeat.tick + 7,
+        primaryActorId: yamaActorId,
+        completionActorIds: [yamaActorId],
+      };
+    }
+  }
+  // His line at his death (the whole fight has the throne NPC say it later).
+  emitDefeatLine(context) {
     const random = createSeededRandom(this.state.run.encounterSeed ^ 1497451841);
     const overheadTextIndex = Math.floor(random() * yamaDefeatOverheadTexts.length);
     context.tickEvents.emit({
@@ -592,15 +612,6 @@ var YamaEncounter = class {
       overheadText: yamaDefeatOverheadTexts[overheadTextIndex],
       overheadCycle: 7, // the text stays for 7 ticks
     });
-    if (completionOwnership === "encounter-owned") {
-      this.state.lifecycle.outcome = {
-        phase: "resolving",
-        decisiveTick: defeat.tick,
-        completionTick: defeat.tick + 7,
-        primaryActorId: yamaActorId,
-        completionActorIds: [yamaActorId],
-      };
-    }
   }
   getEngineRules() {
     return this.contract.engineRules;
@@ -680,7 +691,10 @@ var YamaEncounter = class {
     }
   }
   createNpcDefinitions() {
-    return new NpcDefinitionRegistry([
+    return new NpcDefinitionRegistry(this.npcDefinitionEntries());
+  }
+  npcDefinitionEntries() {
+    return [
       yamaNpcDefinition.register({
         attackPattern: this.resolvedConfig.attackPattern,
         meleeDamage: this.resolvedConfig.autoAttacks.meleeDamage,
@@ -691,15 +705,17 @@ var YamaEncounter = class {
           this.resolvedConfig.autoAttacks.rangedMagicPrayerReduction,
         wretchedStrength: this.resolvedConfig.autoAttacks.wretchedStrength,
         accuracyRandom: this.state.run.accuracyRng,
+        autoPoison: () => this.autoPoison?.(), // the whole fight's (YamaFullEncounter.js); none here
         getMechanics: () => this.attackMechanics,
       }),
       voidFlareNpcDefinition.register({
         damageSeed: this.state.fireballs.seed,
         explosionDamage: this.resolvedConfig.voidFlares.explosionDamage,
+        healsOnImpact: () => this.flareHealsOnImpact === true, // set by the whole fight only
         getBoss: ({ world: world }) => world.getNpc(yamaActorId),
         scheduleImpact: (impact) => this.state.voidFlares.pendingImpacts.push(impact),
       }),
-    ]);
+    ];
   }
   updateAttackMechanics(mechanics) {
     this.attackMechanics = {
@@ -714,4 +730,4 @@ var YamaEncounter = class {
     };
   }
 };
-export { YamaEncounter };
+export { YamaEncounter, createYamaActor, isPlayerOnYamaWave, yamaActorId, yamaPursuitMovement };

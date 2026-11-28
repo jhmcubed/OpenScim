@@ -709,6 +709,10 @@ function buildEngineState(worldState, engine) {
               healthBarWhenUntargetable: true,
             }
           : {}),
+        // Set by its encounter: no hitpoints bar, even after a hit, and no tile fill under a void flare
+        // (rendering.js, UIOverlayRenderer.BL and VoidFlareController): Yama's whole fight, whose flares show a timer only.
+        ...(npc.noHealthBar ? { noHealthBar: true } : {}),
+        ...(npc.noTileFill ? { noTileFill: true } : {}),
         ...(undefined === npc.spawnOrigin
           ? {}
           : {
@@ -4490,6 +4494,8 @@ var SimulationEngine = class {
       hit.prayerReduction,
       hit.playerPosition,
       hit.hitsplatType,
+      // `noBlockAnimation`: the player does not raise his guard for it (Yama's cavern shake, a burn).
+      hit.noBlockAnimation === true,
     );
     const disablesProtectionPrayersForTicks =
       hit.disablesProtectionPrayersForTicks;
@@ -4506,7 +4512,7 @@ var SimulationEngine = class {
       this.deactivateProtectionPrayer(tick);
     }
   }
-  applyDirectDamageToPlayer(baseDamage, attackType, source, tick, prayerReduction, playerPosition, damageOverTime) {
+  applyDirectDamageToPlayer(baseDamage, attackType, source, tick, prayerReduction, playerPosition, damageOverTime, noBlockAnimation = false) {
     const player = this.player();
     let rolledDamage = Math.max(0, Math.floor(resolveRolledDamage(baseDamage, this.rollCombat)));
     const encounterRules = this.getEncounterRules();
@@ -4558,6 +4564,7 @@ var SimulationEngine = class {
       damage: effectiveDamage,
       blocked: effectiveDamage === 0,
       prayedCorrectly: prayedCorrectly,
+      ...(noBlockAnimation ? { noBlockAnimation: true } : {}),
       attackKind:
         "typeless" === attackType
           ? "typeless"

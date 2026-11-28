@@ -288,6 +288,9 @@ var yamaMeleePoisonSeverity = 100;
 function buildYamaAttack(actor, attack, environment) {
   const { config: config } = environment;
   const isMelee = attack.style === "melee";
+  // `autoPoison`, set by the whole fight only (YamaFullEncounter.js): a magic or ranged attack's poison, or
+  // undefined. It poisons whether the attack hits or not (fullFightData.js, autoPoison).
+  const autoPoison = isMelee ? undefined : config.autoPoison?.();
   return {
     attackerId: actor.id,
     targetId: "player",
@@ -301,7 +304,8 @@ function buildYamaAttack(actor, attack, environment) {
       : undefined,
     accuracySucceeded: rollYamaAccuracy(actor, attack.style, environment),
     impactDelayTicks: isMelee ? 1 : 0,
-    applyPoison: isMelee ? yamaMeleePoisonSeverity : undefined,
+    applyPoison: isMelee ? yamaMeleePoisonSeverity : autoPoison,
+    ...(autoPoison === undefined ? {} : { poisonsOnMiss: true }),
     prayerReduction: isMelee
       ? config.meleePrayerReduction
       : config.rangedMagicPrayerReduction,
@@ -335,4 +339,4 @@ function rollYamaAccuracy(actor, style, environment) {
       );
   return environment.config.accuracyRandom() < hitChance;
 }
-export { createYamaAttackPolicyState, yamaNpcDefinition, getYamaState };
+export { createYamaAttackPolicyState, yamaNpcDefinition, getYamaState, buildYamaAttack };

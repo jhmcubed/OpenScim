@@ -1,6 +1,7 @@
-// Yama, phase 3: what the registry has of him (encounters/registry.js says
-// what a definition holds). Each contract is a variant kind with a factory
-// and controls of its own.
+// Yama: what the registry has of him (encounters/registry.js says what a
+// definition holds). Two encounters: phase 3, where each contract is a variant
+// kind with a factory and controls of its own, and the whole fight from the
+// challenge on (YamaFullEncounter.js).
 import {
   divineSeveranceContract,
   forfeitBreathContract,
@@ -11,8 +12,11 @@ import {
 } from "./contracts.js";
 import { buildYamaControls } from "./controls.js";
 import { YamaEncounter } from "./YamaEncounter.js";
+import { YamaFullEncounter, yamaFullControls } from "./YamaFullEncounter.js";
+import { yamaFullKind } from "./fullFightData.js";
+import { yamaFullLoadouts } from "./loadouts.js";
 
-export const definition = {
+const definition = {
   kind: "yama_p3",
   slug: "yama",
   factory: () => new YamaEncounter(),
@@ -67,4 +71,24 @@ export const definition = {
     yama_p3_glyphic: buildYamaControls(glyphicAttenuationContract),
   },
 };
+const fullDefinition = {
+  kind: yamaFullKind,
+  factory: () => new YamaFullEncounter(),
+  descriptor: {
+    kind: yamaFullKind,
+    displayName: "Yama - Full Fight",
+    description: "Challenge Yama on his throne: phases 1 and 2, his Judge, then phase 3",
+    isWorkInProgress: true,
+    mapSquare: definition.descriptor.mapSquare,
+    playerStart: [32, 37],
+    loadsMapLocs: true,
+    // He waits on his throne: there is nothing to count down to.
+    fightStartCountdown: false,
+    collision: definition.descriptor.collision,
+    victory: definition.descriptor.victory,
+    loadouts: yamaFullLoadouts,
+  },
+  controls: yamaFullControls,
+};
+export const definitions = [definition, fullDefinition];
 export const order = 30;

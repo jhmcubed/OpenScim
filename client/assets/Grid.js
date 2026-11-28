@@ -9692,6 +9692,17 @@ var UNe = zUnion([
     encounter: zLiteral("colosseum"),
     type: zLiteral("talk-to-minimus"),
   }),
+  // An NPC's option that its encounter takes (Yama on his throne: "Challenge"), and that fight's debug action.
+  zObject({
+    encounter: zString(),
+    type: zLiteral("npc-option"),
+    actorId: zString(),
+    option: zString(),
+  }),
+  zObject({
+    encounter: zLiteral("yama_full"),
+    type: zLiteral("challenge"),
+  }),
   // A click on a spore of Vardorvis' strangle (client/encounters/vardorvis/).
   zObject({
     encounter: zLiteral("vardorvis"),
@@ -22651,6 +22662,13 @@ function useSimulationWiring({
     window.addEventListener("vardorvis-command",handle);
     return () => window.removeEventListener("vardorvis-command",handle);
   },[fo.encounter.kind,hs]);
+  // An NPC's option that its encounter takes (cLe, acceptsNpcOption), of any kind.
+  pn.useEffect(() => {
+    acceptsNpcOption = (actorId, option) => !gM.replayMode && fm.current.acceptsInput({ kind: "npcOption", actorId, option });
+    const handle = event => { hs({ encounter: fm.current.encounter.kind, type: "npc-option", ...event.detail }); };
+    window.addEventListener("npc-option",handle);
+    return () => { acceptsNpcOption = () => false; window.removeEventListener("npc-option",handle); };
+  },[gM.replayMode,hs]);
   const hu = gM.replayMode ? null : infernoSession(fo.encounter, hs);
   const hv = () => {
     if (hu) {
@@ -31000,6 +31018,14 @@ function interactWithZebakJug(id, action) {
     detail: { encounter: "zebak", action: action === "Attack" ? "Hit" : action, id },
   }));
 }
+// An option that is neither an attack nor one of the two above is its
+// encounter's when the encounter takes it (acceptsInput, kind "npcOption"):
+// "Challenge" on Yama on his throne. It is sent as a command of the encounter,
+// queued and recorded like a debug action (the "npc-option" listener).
+let acceptsNpcOption = () => false;
+function sendNpcOption(actorId, option) {
+  window.dispatchEvent(new CustomEvent("npc-option", { detail: { actorId, option } }));
+}
 function cLe(ez, eA, eB, eC, eD, eE = false, actorId) {
   const eG = {
     MxgYK: function (eN, eO, eQ) {
@@ -31027,7 +31053,7 @@ function cLe(ez, eA, eB, eC, eD, eE = false, actorId) {
     }
     const jugAction = actorId?.startsWith("zebak-jug-") && ["Push", "Pull", "Hit", "Attack"].includes(eN);
     const minimusAction = actorId === colosseumMinimusActorId && eN === "Start-wave";
-    const eO = jugAction ? () => interactWithZebakJug(actorId, eN) : minimusAction ? talkToColosseumMinimus : isNpcAttackOption(eN) ? (eD ?? eC) : undefined;
+    const eO = jugAction ? () => interactWithZebakJug(actorId, eN) : minimusAction ? talkToColosseumMinimus : isNpcAttackOption(eN) ? (eD ?? eC) : actorId && acceptsNpcOption(actorId, eN) ? () => sendNpcOption(actorId, eN) : undefined;
     eH.push({
       action: eN,
       target: eM,

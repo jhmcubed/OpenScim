@@ -68,6 +68,7 @@ export const curatedNpcCatalog = [
 // catalog does not hold: a new encounter gives its monsters entries in its
 // own sandbox.js, or reasons here.
 export const sandboxCatalogExclusions = {
+  14180: "the Judge of Yama stands still at the end of his stones, sends fire down their lanes and prays against two styles by the last hit: he is fought in Yama's whole fight",
   9035: "the Corrupted Hunllef, the form that turns melee away: its three types are its protection prayers, and its style switch, tornadoes and floor are its room's: it is fought in its own room",
   9036: "the Corrupted Hunllef, the form that turns ranged away: as above",
   9037: "the Corrupted Hunllef, the form that turns magic away: as above",

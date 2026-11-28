@@ -96,7 +96,7 @@ const attackStyle = (attack) => {
   return word === "range" ? "ranged" : word;
 };
 const sumXp = (skills) => skills.reduce((total, { amount }) => total + amount, 0);
-const splatWords = { poison: "poison", venom: "venom", bleed: "bleeding", burn: "burn" };
+const splatWords = { poison: "poison", venom: "venom", bleed: "bleeding", burn: "burn", absorb: "absorbed by a glyph" };
 
 /**
  * What happened on the tick of `frame`, `previous` being the frame before
