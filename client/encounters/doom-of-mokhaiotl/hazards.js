@@ -36,8 +36,12 @@ const projectile = (spotAnimId, from, to, startDelayCycles, endDelayCycles, star
 });
 
 // An NPC of the room that is not in the monster table: stats of its own.
+// The player's hits on larvae and volatile earth all land (OBS, 18 recorded
+// runs: none of about 1,000 hits of the style they take missed; every one of
+// 228 on volatile earth hit; wiki: the earth takes a player's maximum hit).
 function ownFormulaStats({ defence = 1, magic = 1 } = {}) {
   return {
+    alwaysAccuratePlayerHit: true,
     burnImmunity: null, freezeResistance: 0, poisonResistance: 100,
     attributes: ["demon"],
     levels: { attack: 1, strength: 1, defence, ranged: 1, magic },
@@ -401,11 +405,14 @@ export class Larvae {
     return [{ baseDamage: Math.min(times * this.charge, cap), attackType: "typeless", source: "Demonic larva", playerPosition: [...context.world.getPlayer().position] }];
   }
   // A hit on a larva: nothing through its prayer (a coloured one prays the
-  // other two styles), 1 unless demonbane.
+  // other two styles); 2 from demonbane or the Eye of Ayak, killing a larva
+  // and taking a giant in two (wiki; OBS, 18 runs with the Scorching bow and
+  // the Eye: every larva hit was a 2, every giant took 2 and 2), otherwise at
+  // most 1 (wiki).
   damage(larva, damage, attack, demonbane) {
     const { prayer, style } = larva.state;
     if ((prayer && prayer === attack.style) || (style && style !== attack.style)) return 0;
-    return demonbane ? damage : Math.min(1, damage);
+    return demonbane ? 2 : Math.min(1, damage);
   }
   killed(larva, context) {
     const doom = this.doom;
