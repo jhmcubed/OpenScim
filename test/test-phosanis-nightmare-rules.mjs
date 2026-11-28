@@ -428,4 +428,14 @@ for (const name of ["kill", "kill-other-forms"]) {
   assert.ok(portals.every((portal) => portal.onGround === true && portal.height === 0 && portal.target.kind === "tile"));
 }
 
+{
+  // A parasite growing: the hitpoints orb pink from "impregnated" until a cure weakens it (varbit 10151 in the
+  // Outside recordings) or, with none drunk here, until it bursts out fully grown; not before or after.
+  const ticks = await ticksOf("parasite");
+  const ends = [...messageTicks(ticks, "The parasite within you has been weakened."), ...messageTicks(ticks, "bursts out of you, fully grown")];
+  const growing = messageTicks(ticks, "impregnated you with a deadly parasite").map((from) => [from, Math.min(...ends.filter((end) => end > from))]);
+  assert.ok(growing.length > 0 && growing.every(([from, to]) => to > from && to < Infinity), JSON.stringify(growing));
+  ticks.forEach((tick, n) => tick && assert.equal(tick.state.hitpointsOrb, growing.some(([from, to]) => n >= from && n < to) ? "parasite" : undefined, "orb at " + n));
+}
+
 console.log("Phosani's Nightmare: its rules hold on its scenarios");
