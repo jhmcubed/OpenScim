@@ -3,15 +3,17 @@
 //
 // She wakes as the fight starts and walks after the player. Her standard
 // attack is melee, every 6 ticks, up to 31; Protect from Melee leaves up to 5
-// of it. After three standard attacks she does a special, in turn:
+// of it. After three standard attacks she does a special: each round of the
+// three in an order of its own, never one twice in a row:
 // - blast: a ball of light thrown to a tile; standing on the tile bounces it
 //   back to her, three times; one that lands explodes over the whole nave.
 //   Her standard attacks go on meanwhile.
 // - sweep: she draws her sword to a side and cleaves, four times (six
 //   enraged), the side the player is on and the side she drew from.
 // - smite: lightning, once (three strikes enraged), for Protect from Magic.
-// At 350 hitpoints she enrages ("...!"): her specials come quicker, and from
-// then on one after another, the three of them first.
+// At 350 hitpoints she enrages ("...!") at her next turn, a ball in flight or
+// not: her specials come quicker, and from then on one after another, a fresh
+// round of the three first.
 //
 // Her mechanics are whole: a cleave dodged to her side earns the player's
 // next attack a sure hit of at least half his maximum, a perfect prayer
@@ -20,7 +22,11 @@
 // Sources: WIKI Mad Angel and Mad Angel/Strategies; TABLE her stats
 // (client/data/monsters.js, 16305); CACHE her ids (ids.js); OBS one kill
 // recorded with the Encounter Recorder (2026-11-26, 248 ticks), which gives
-// the ticks. Numbers no source gives are marked inferred.
+// the ticks; OBS 19 kills: one player's (sburb's) 20 Outside recordings of
+// 2026-11-28 (format 6, revision 243: 19 kills and a fight cut short), read
+// tick by tick: 176 swings, 28 sweeps (131 cleaves), 29 blasts (78 throws, 69
+// bounces, 6 explosions), 29 smites (43 strikes), 19 enrages, their ticks read
+// as the one kill's are. Numbers no source gives are marked inferred.
 import { getMonsterFormulaStats, getMonsterHitpoints } from "../../engine/monsterStats.js";
 import { createSeededRandom } from "../../engine/random.js";
 import { defineNpc, NpcDefinitionRegistry } from "../shared/npcDefinitions.js";
@@ -40,7 +46,10 @@ const awakeAfterTicks = 3; // OBS: 16307 on the wake's tick, 16305 three ticks l
 const firstAttackAfterTicks = 4; // OBS: the wake t2, her first swing t6
 const attackSpeed = 6; // TABLE, WIKI, OBS: swings 6 ticks apart
 const standardsBetweenSpecials = 3; // WIKI, OBS: three standard attacks after a special, then the next
-const specialOrder = ["blast", "sweep", "smite"]; // OBS: blast t24, sweep t66, smite t114, and again (one kill)
+// OBS 19 kills: each round has all three, in an order of its own (14 of the 15 runs of three within a phase; the one
+// kill had blast, sweep, smite twice), and none comes twice in a row (67 of 67, the enrage's fresh round included). One
+// enraged run broke the rounds (sweep, smite, sweep): not modelled.
+const specials = ["blast", "sweep", "smite"];
 // The setup menu's switches, one a special, all on: one switched off is skipped and the next one on comes instead; with
 // none on she only swings, enraged too. For practising one special at a time.
 const specialKeys = { blast: "madAngelBlast", sweep: "madAngelSweep", smite: "madAngelSmite" };
@@ -51,11 +60,15 @@ const specialToggles = [
   { key: specialKeys.smite, label: "Smite", info: "Her lightning: Protect from Magic on the tick it strikes." },
 ].map((toggle) => ({ ...toggle, section: "Specials", setup: true }));
 const meleeMaxHit = 31; // WIKI: "will reduce the max hit of its standard attacks from 31 to 5"
-const meleePrayedShare = 5 / 31; // WIKI; OBS: prayed hits of 0 to 5
+// WIKI; OBS: prayed hits of 0 to 5. OBS 19 kills: 5 about as often as 1 to 4. The engine rounds a share to hundredths:
+// 5/31 is 0.16, which leaves at most 4; 0.19 leaves 0 to 5 about evenly.
+const meleePrayedShare = 0.19;
 const meleeImpactTicks = 2; // OBS: each hitsplat 2 ticks after her swing
-const enrageHitpoints = 350; // WIKI: "Upon reaching 350 Hitpoints (~45%)"
+// WIKI: "Upon reaching 350 Hitpoints (~45%)". OBS 19 kills: at a turn, a swing of a blast standing in for it while
+// a ball flew (2 of 19); the blast goes on.
+const enrageHitpoints = 350;
 const enrageToSpecialTicks = 4; // OBS: "...!" t144, her first enraged special t148
-const deathTicks = 5; // inferred: her death animation t249, the recording stopped by hand at t256
+const deathTicks = 8; // OBS 19 kills: her remains (16308) 8 ticks after the killing hit (18 of 18)
 
 // The specials' timing (OBS), in ticks from the special's start.
 const blast = {
@@ -69,7 +82,7 @@ const blast = {
   reach: 2, // OBS: every throw within 2 tiles of the player; WIKI: since 19 August 2026 it can be his own tile
   bounceDamage: [18, 22], // WIKI; OBS 19, 20, 18
   bounceHitTicks: 2, // OBS: her hitsplat 2 ticks after the ball comes back (t30 -> t32, t36 -> t38, t42 -> t44)
-  explosionDamage: [30, 35], // WIKI "30+"; OBS 33, 32 unprotected. inferred: 35 at most
+  explosionDamage: [27, 33], // WIKI "30+"; OBS 33, 32 unprotected; OBS 19 kills: 27 to 33 (7 of 7)
   explosionPrayedShare: 0.5, // WIKI: "can be reduced by ~50% with Protect from Magic"
 };
 const sweep = {
@@ -77,11 +90,13 @@ const sweep = {
   cleavesEnraged: 6, // WIKI, OBS
   everyTicks: 6, // OBS: t66 drawn, cleaves t72, t78, t84, t90
   everyTicksEnraged: 4, // OBS: t160 drawn, cleaves t164 to t184
-  // OBS (15 cleaves, graphic 2184 on each tile swept): a cleave sweeps the half of the nave in front of her and on her
-  // sword's side, cut along a diagonal through her middle tile; the tiles on the diagonal by this margin (0 within 2
-  // tiles of the recording, the enraged ones 1).
-  margin: 0,
-  marginEnraged: 1,
+  // OBS 19 kills (131 cleaves, graphic 2184 on each tile swept): a cleave sweeps the half of the nave in front of her
+  // and on her sword's side, cut along a diagonal through her middle tile, her own tiles too; of the diagonal itself,
+  // the half counter-clockwise of her middle (RSPSApp/tsps's sweepTiles). 126 of the 131 fit it tile for tile (the
+  // margin of the one kill, 0 or 1 on the diagonal, none), with her facing as below.
+  // OBS 19 kills: between cleaves the sword stays or crosses to her other side about evenly, wherever the player is
+  // (with him on her other side, 51 stayed and 44 crossed).
+  acrossChance: 0.5,
   damage: [22, 28], // inferred: OBS 11 to 14 through Protect from Melee, which WIKI halves it
   prayedShare: 0.5, // WIKI: "Protect from Melee will reduce the damage from being caught in this attack by ~50%"
   // WIKI: "If an attack is successfully dodged to the side (not behind it), the player's next attack will be 100%
@@ -102,7 +117,11 @@ const smite = {
   strikesEnraged: [6, 10, 12],
   impactLeadTicks: 1, // OBS: the impact graphic on the player the tick before each strike (t119, t195, t199, t201)
   damage: [28, 32], // inferred: OBS 29 to 32 unprayed; WIKI her max hit 32
-  prayedShare: 0.25, // WIKI: "Simply having the prayer overhead will reduce the damage by ~75%"
+  // WIKI: "Simply having the prayer overhead will reduce the damage by ~75%". OBS 19 kills: on since the tick before
+  // the strike, 7 or 8 (9 of 9: a quarter); on longer, 14 to 16 (3 of 3: a half); switched on on the strike's tick,
+  // nothing (22 of 22).
+  prayedShare: 0.25,
+  prayedEarlyShare: 0.5,
 };
 // Her next turn, from the tick a special ends: the tick after its last cleave or its last strike.
 // OBS: the last cleave t90 -> t96, the smite's hit t120 -> t126; inferred the blast (t158 -> t160, t223 -> t226).
@@ -140,13 +159,17 @@ class MadAngelEncounter {
     this.phase = "waking"; // "waking" | "fighting" | "dead"
     this.nextAt = wakeTick + firstAttackAfterTicks;
     this.standards = 0; // standard attacks since the last special ended
-    this.nextSpecial = 0; // its index in specialOrder
+    this.round = []; // the specials left of the round, in its order
+    this.lastSpecial = null;
     this.special = null; // { name, startedAt, endsAt, ... }
     this.magicPrayedLastTick = false; // Protect from Magic on at the end of the last tick
+    this.magicPrayedTwoTicksAgo = false; // and at the end of the one before
+    this.startPosition = null; // the player's tile as this tick began, before his move
     this.maxHitEarned = false; // a perfect prayer against a smite: the player's next attack is a maximum hit
     this.sideDodged = false; // a cleave dodged to her side: the player's next attack is sure, and at least half his maximum
     this.enraged = false;
     this.enrageAnnounced = false;
+    this.drawRound();
   }
   later(ticks, task) {
     this.tasks.push({ tick: this.now + ticks, task });
@@ -226,6 +249,8 @@ class MadAngelEncounter {
     if (mechanics) this.mechanics = mechanics;
     this.now = context.tick;
     this.context = context;
+    const player = context.world.getPlayer();
+    this.startPosition = player ? [...player.position] : null;
     for (let due = this.takeDueTask(); due; due = this.takeDueTask()) due.task(context);
     return [];
   }
@@ -236,6 +261,7 @@ class MadAngelEncounter {
       this.postTasks.splice(index, 1)[0].task(context);
     }
     if (this.outcome.phase === "resolving" && context.tick >= this.outcome.completionTick) this.outcome = { ...this.outcome, phase: "victory" };
+    this.magicPrayedTwoTicksAgo = this.magicPrayedLastTick;
     this.magicPrayedLastTick = this.praysMagic(context.world.getPlayer());
     const damages = this.pending;
     this.pending = [];
@@ -273,7 +299,8 @@ class MadAngelEncounter {
     if (context.tick < this.nextAt || !player.alive) return none;
     // The blast lets her standard attacks go on; the others hold them till they end.
     if (this.special && this.special.name !== "blast") return none;
-    if (!this.special && !this.enraged && boss.vitals.hp <= enrageHitpoints) return this.enrage(boss, context);
+    if (!this.enraged && boss.vitals.hp <= enrageHitpoints) return this.enrage(boss, context);
+    if (!this.special) this.drawRound();
     const next = this.special ? null : this.nextEnabledSpecial();
     if (next && (this.enraged || this.standards >= standardsBetweenSpecials)) {
       this.startSpecial(next, boss, player, context);
@@ -288,7 +315,9 @@ class MadAngelEncounter {
     this.enraged = true;
     context.tickEvents.emit({ type: "overhead_text", anchor: { kind: "actor", actorId: bossActorId }, overheadText: "...!", overheadCycle: 90 });
     this.nextAt = context.tick + enrageToSpecialTicks;
-    this.nextSpecial = 0; // WIKI: all three of her specials, one after another, the blast first (OBS)
+    // WIKI: all three of her specials, one after another. OBS 19 kills: a fresh round, the first of it not the special
+    // she used last (19 of 19); the one kill's began with the blast.
+    this.round = [];
     return { environmentalDamages: [] };
   }
   melee(boss, player, context) {
@@ -304,16 +333,33 @@ class MadAngelEncounter {
   }
 
   // --- her specials -------------------------------------------------------------------
-  // Her next special in turn that the setup has on, or none.
+  enabled(name) {
+    return this.mechanics?.[specialKeys[name]] !== false;
+  }
+  // Her next special that the setup has on, or none: the next of the round that is on. Asked by the snapshot too, so it
+  // draws nothing: the round is drawn on her turn (drawRound).
   nextEnabledSpecial() {
-    for (let n = 0; n < specialOrder.length; n++) {
-      const name = specialOrder[(this.nextSpecial + n) % specialOrder.length];
-      if (this.mechanics?.[specialKeys[name]] !== false) return name;
+    return this.round.find((name) => this.enabled(name)) ?? null;
+  }
+  // A new round when the one going has none left that is on: the specials on, in an order of its own that does not
+  // begin with the special she used last (when another is on).
+  drawRound() {
+    const on = specials.filter((name) => this.enabled(name));
+    this.round = this.round.filter((name) => this.enabled(name));
+    if (this.round.length === 0 && on.length > 0) {
+      const order = [...on];
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(this.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      if (order.length > 1 && order[0] === this.lastSpecial) order.push(order.shift());
+      this.round = order;
     }
-    return null;
   }
   startSpecial(name, boss, player, context) {
-    this.nextSpecial = (specialOrder.indexOf(name) + 1) % specialOrder.length;
+    this.round = this.round.filter((each) => each !== name);
+    this.lastSpecial = name;
+    this.drawRound(); // the next is known from now on (the snapshot's nextSpecial)
     this.standards = 0;
     if (name === "blast") this.startBlast(boss, player, context);
     else if (name === "sweep") this.startSweep(boss, player, context);
@@ -370,7 +416,10 @@ class MadAngelEncounter {
     if (!boss?.alive || special?.name !== "blast" || !special.ball) return;
     const { tile } = special.ball;
     special.ball = null;
-    if (player.alive && player.position[0] === tile[0] && player.position[1] === tile[1]) {
+    // OBS 19 kills: it bounces with the player on its tile as the tick began or after his move of it (of the landings
+    // that bounced, 48 both, 10 only before, 8 only after; none of the 6 that exploded had him on it either time).
+    const onIt = (position) => position && position[0] === tile[0] && position[1] === tile[1];
+    if (player.alive && (onIt(player.position) || onIt(this.startPosition))) {
       // OBS: back to her in 30 cycles, the bounce graphic on her as it arrives, her hitsplat 2 ticks on.
       this.animate(
         context,
@@ -427,24 +476,36 @@ class MadAngelEncounter {
     // CACHE: enraged she has her own draw, cleave and across, and the reset of her calm sweep (OBS: 14432 at t184).
     return step !== "reset" && this.enraged ? `sweep_${side}Enraged_${step}` : `sweep_${side}_${step}`;
   }
+  ownTiles(boss) {
+    const tiles = [];
+    for (let dx = 0; dx < bossSize; dx++) for (let dy = 0; dy < bossSize; dy++) tiles.push([boss.position[0] + dx, boss.position[1] + dy]);
+    return tiles;
+  }
   // Her middle tile, and the player from it.
   offsetOf(boss, player) {
     const [cx, cy] = centreOf(boss.position);
     return [player.position[0] - cx, player.position[1] - cy];
   }
-  quadrantOf(boss, player) {
-    const [u, v] = this.offsetOf(boss, player);
-    if (Math.abs(u) > Math.abs(v)) return u > 0 ? "E" : "W";
-    return v > 0 ? "N" : "S";
+  // The way from her middle to the player, by the larger axis; level, east or west (OBS 19 kills, the fit above).
+  quadrantOf(boss, player, position = player.position) {
+    const [cx, cy] = centreOf(boss.position);
+    const [u, v] = [position[0] - cx, position[1] - cy];
+    if (Math.abs(u) >= Math.abs(v)) return u >= 0 ? "E" : "W";
+    return v >= 0 ? "N" : "S";
   }
-  // The half a cleave sweeps: in front of her and on her sword's side.
+  // The half a cleave sweeps: in front of her and on her sword's side, her middle tile and the counter-clockwise half of
+  // the diagonal through it included (sweep.acrossChance's comment).
   sweptBy(boss, facing, side) {
     const front = directions[facing];
     const left = leftOf(front);
     const toSide = side === "left" ? left : [-left[0], -left[1]];
-    const margin = this.enraged ? sweep.marginEnraged : sweep.margin;
+    const [sx, sy] = [front[0] + toSide[0], front[1] + toSide[1]];
     const [cx, cy] = centreOf(boss.position);
-    return (tile) => (tile[0] - cx) * (front[0] + toSide[0]) + (tile[1] - cy) * (front[1] + toSide[1]) >= margin;
+    return ([x, y]) => {
+      const along = (x - cx) * sx + (y - cy) * sy;
+      const counterClockwise = sx * (y - cy) - sy * (x - cx);
+      return along > 0 || (along === 0 && (counterClockwise > 0 || (x === cx && y === cy)));
+    };
   }
   cleave(context, n) {
     const boss = this.boss(context.world);
@@ -452,20 +513,20 @@ class MadAngelEncounter {
     const special = this.special;
     if (!boss?.alive || special?.name !== "sweep") return;
     const inHalf = this.sweptBy(boss, special.facing, special.side);
+    // OBS 19 kills: the dust on her own tiles too.
     const underBoss = (tile) => tile[0] >= boss.position[0] && tile[0] < boss.position[0] + bossSize && tile[1] >= boss.position[1] && tile[1] < boss.position[1] + bossSize;
-    const swept = this.arena().filter((tile) => inHalf(tile) && !underBoss(tile));
+    const swept = [...this.arena(), ...this.ownTiles(boss)].filter((tile) => inHalf(tile));
     special.swept = swept;
-    // Across when he is on her other side; the last cleave is her reset.
-    const left = leftOf(directions[special.facing]);
-    const [u, v] = this.offsetOf(boss, player);
-    const lateral = u * left[0] + v * left[1];
-    const across = lateral !== 0 && (lateral > 0 ? "left" : "right") !== special.side;
+    // The sword stays or goes across, at random; the last cleave is her reset.
+    const across = n < special.cleaves && this.random() < sweep.acrossChance;
     const clip = n === special.cleaves ? this.sweepClip(special.side, "reset") : this.sweepClip(special.side, across ? "across" : "cleave");
     this.animate(context, clip, swept.map((tile) => onTile(spotAnims.cleave, tile)));
-    if (player.alive && inHalf(player.position)) this.hurt("Sweep", sweep.damage, "melee", sweep.prayedShare);
+    if (player.alive && inHalf(player.position) && !underBoss(player.position)) this.hurt("Sweep", sweep.damage, "melee", sweep.prayedShare);
     else if (player.alive && this.isBeside(boss, player, special.facing)) this.sideDodged = true;
     if (across) special.side = special.side === "left" ? "right" : "left";
-    special.facing = this.quadrantOf(boss, player);
+    // OBS 19 kills: the next cleave's way is the player's as this tick began, before his move (126 of 131; with his tile
+    // after the move, 82).
+    special.facing = this.quadrantOf(boss, player, this.startPosition ?? player.position);
     if (n < special.cleaves) this.holdFacing(boss, special.facing);
   }
   // Lightning: once, or three strikes enraged (WIKI, OBS). Each strike is judged on its tick: Protect from Magic switched
@@ -494,7 +555,8 @@ class MadAngelEncounter {
     const prayed = this.praysMagic(player);
     const perfect = prayed && !this.magicPrayedLastTick;
     const roll = this.randomInt(smite.damage);
-    const damage = perfect ? 0 : prayed ? Math.floor(roll * smite.prayedShare) : roll;
+    const share = this.magicPrayedTwoTicksAgo ? smite.prayedEarlyShare : smite.prayedShare;
+    const damage = perfect ? 0 : prayed ? Math.floor(roll * share) : roll;
     if (perfect) this.maxHitEarned = true;
     this.hurtFixed("Smite", damage);
   }

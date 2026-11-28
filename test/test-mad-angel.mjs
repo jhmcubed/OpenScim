@@ -1,12 +1,13 @@
 // The Mad Angel's foundation (client/encounters/mad-angel/), asserted on the
 // determinism harness's scenarios (tools/determinism/scenarios/mad-angel.mjs)
 // against the recorded kill (OBS, 2026-11-26) and the wiki: her waking, her
-// standard attack every 6 ticks, three of them between her specials in the
-// order blast, sweep, smite, each special's timing, the blast letting her
+// standard attack every 6 ticks, three of them between her specials in rounds
+// of the three (never one twice in a row), each special's timing, the blast letting her
 // standard attacks go on, her enrage at 350 and her death; the blast's ball
 // bounced back to her from its tile or exploding over the nave, and the
 // sweep's cleaves over the half of the nave in front of her and on her
-// sword's side. The recording's
+// sword's side; the smite's prayer, on the tick, a tick early or held. The
+// 19 recorded kills of 2026-11-28 (OBS 19 kills, encounter.js) for the rest. The recording's
 // ticks are one later than the harness's: it began a tick before the fight.
 import assert from "node:assert/strict";
 import { runScenario, loadEnvironment } from "../tools/determinism/harness.mjs";
@@ -53,15 +54,21 @@ const clipTicks = (ticks, clip) => ticksWith(ticks, (tick) => tick.clips.include
   assert.ok(ticks[1].graphics.includes(4010));
   const swings = clipTicks(ticks, "melee");
   assert.deepEqual(swings.slice(0, 3), [5, 11, 17]);
-  // OBS: three standard attacks, then the blast; its ball leaves a tick after the throw, its shadow on its tile, and
-  // lands 5 ticks on. He stands his ground: it explodes over the whole nave (102 tiles) for 30 to 35 (WIKI "30+", OBS 33,
-  // 32), Protect from Melee no help, and nothing is thrown after it.
+  // OBS 19 kills: her specials in rounds of the three, each in an order of its own, never one twice in a row.
+  const specialsUsed = ticksWith(ticks, (tick) => tick.clips.some((clip) => clip === "blast" || /^smite/.test(clip) || /_draw$/.test(clip)))
+    .map((tick) => ticks[tick].clips.find((clip) => clip === "blast" || /^smite/.test(clip) || /_draw$/.test(clip)).split("_")[0]);
+  assert.ok(specialsUsed.length >= 6);
+  assert.equal(new Set(specialsUsed.slice(0, 3)).size, 3, "the first round has all three: " + specialsUsed);
+  assert.ok(specialsUsed.every((name, n) => n === 0 || name !== specialsUsed[n - 1]), "none twice in a row: " + specialsUsed);
+  // OBS: three standard attacks, then the blast (this seed's round begins with it); its ball leaves a tick after the throw, its shadow on its tile, and
+  // lands 5 ticks on. He stands his ground: it explodes over the whole nave (102 tiles) for 27 to 33 (WIKI "30+", OBS 33,
+  // 32; OBS 19 kills 27 to 33), Protect from Melee no help, and nothing is thrown after it.
   assert.deepEqual(clipTicks(ticks, "blast")[0], 23);
   assert.deepEqual(ticksWith(ticks, (tick) => tick.projectiles.includes(4015)).slice(0, 1), [24]);
   assert.ok(ticks[24].tiles.some(([id]) => id === 1448), "the shadow on the ball's tile");
   assert.equal(ticks[29].tiles.filter(([id]) => id === 4016).length, 102);
   assert.deepEqual(ticks[29].sounds.map((sound) => sound.id), [12054], "the explosion heard (OBS)");
-  assert.ok(ticks[29].hits.length === 1 && ticks[29].hits[0] >= 30 && ticks[29].hits[0] <= 35);
+  assert.ok(ticks[29].hits.length === 1 && ticks[29].hits[0] >= 27 && ticks[29].hits[0] <= 33);
   assert.ok(!ticks.slice(25, 40).some((tick) => tick?.projectiles.includes(4015)));
   // OBS: her standard attacks go on through the blast and are not counted: three more after it, then the sweep.
   assert.deepEqual(swings.slice(3, 7), [29, 35, 41, 47]);
@@ -75,16 +82,18 @@ const clipTicks = (ticks, clip) => ticksWith(ticks, (tick) => tick.clips.include
   assert.ok(!swings.some((tick) => tick > firstSweep && tick <= 77));
   // Protect from Melee: what is left of a standard attack is up to 5 (WIKI: "from 31 to 5").
   assert.ok(swings.every((tick) => ticks[tick + 2].hits.every((damage) => damage <= 5)));
-  // WIKI: at 350 she enrages at her next turn, "...!"; OBS: the blast 4 ticks after it, and the specials one after another.
+  // WIKI: at 350 she enrages at her next turn, "...!"; OBS: her next special 4 ticks after it (19 of 19 kills), and the
+  // specials one after another.
   const enragedAt = ticksWith(ticks, (tick) => tick.said.includes("...!"));
   assert.equal(enragedAt.length, 1);
   assert.ok(ticks[enragedAt[0]].hp <= 350);
-  assert.equal(clipTicks(ticks, "blast")[1], enragedAt[0] + 4);
+  assert.ok(ticks[enragedAt[0] + 4].clips.some((clip) => clip === "blast" || /^smite/.test(clip) || /_draw$/.test(clip)));
   // OBS: enraged, the ball lands 4 ticks after it leaves, and the sweep's cleaves are 4 ticks apart.
   const enragedBall = ticksWith(ticks, (tick) => tick.projectiles.includes(4015)).find((tick) => tick > enragedAt[0]);
   assert.ok(ticks[enragedBall + 4].tiles.some(([id]) => id === 4016), "it explodes 4 ticks after it leaves");
-  const enragedSweep = ticksWith(ticks, (tick) => tick.clips.some((clip) => /Enraged_cleave$/.test(clip)));
-  assert.ok(enragedSweep.length >= 2 && enragedSweep.slice(1).every((tick, n) => tick - enragedSweep[n] === 4));
+  const enragedDraw = ticksWith(ticks, (tick) => tick.clips.some((clip) => /Enraged_draw$/.test(clip)))[0];
+  const enragedSweep = ticksWith(ticks, (tick) => tick.tiles.some(([id]) => id === 2184)).filter((tick) => tick > enragedDraw && tick <= enragedDraw + 24);
+  assert.ok(enragedSweep.length === 6 && enragedSweep.every((tick, n) => tick - (enragedSweep[n - 1] ?? enragedDraw) === 4), "six cleaves 4 apart: " + enragedSweep);
   // She dies, and the fight is won.
   assert.equal(ticks.at(-1).outcome, "victory");
 }
@@ -162,10 +171,23 @@ const clipTicks = (ticks, clip) => ticksWith(ticks, (tick) => tick.clips.include
 }
 
 {
-  // Protect from Magic already on: ~75% off (WIKI), not negated (it was on before the strike), and no maximum hit.
+  // Protect from Magic held long before the strike: half off (OBS 19 kills: 14 to 16), not negated, and no maximum hit.
   const ticks = await ticksOf("magic-prayer");
   const smite = clipTicks(ticks, "smite")[0];
   assert.ok(smite > 0, "a smite within the scenario");
+  const hit = ticks[smite + 6].hits.filter((damage) => damage >= 14 && damage <= 16);
+  assert.equal(hit.length, 1, "a half of 28 to 32");
+  assert.ok(ticks.slice(smite).every((tick) => !tick || !tick.state.maxHitEarned));
+}
+
+{
+  // Protect from Magic switched on the tick before the strike: ~75% off (WIKI; OBS 19 kills: 7 or 8, 9 of 9), not
+  // negated, and no maximum hit.
+  const ticks = await ticksOf("magic-late");
+  const smite = clipTicks(ticks, "smite")[0];
+  assert.ok(smite > 0, "a smite within the scenario");
+  assert.equal(ticks[smite + 5].prayer, "ProtectMagic");
+  assert.notEqual(ticks[smite + 4].prayer, "ProtectMagic");
   const hit = ticks[smite + 6].hits.filter((damage) => damage <= 8);
   assert.equal(hit.length, 1);
   assert.ok(hit[0] >= 7 && hit[0] <= 8, "a quarter of 28 to 32");
@@ -187,7 +209,7 @@ const clipTicks = (ticks, clip) => ticksWith(ticks, (tick) => tick.clips.include
   const ticks = await ticksOf("start");
   assert.equal(ticks[1].state.phase, "waking");
   assert.equal(ticks[4].state.phase, "fighting");
-  assert.equal(ticks[4].state.nextSpecial, "blast");
+  assert.ok(["blast", "sweep", "smite"].includes(ticks[4].state.nextSpecial));
 }
 
 {
@@ -202,4 +224,4 @@ const clipTicks = (ticks, clip) => ticksWith(ticks, (tick) => tick.clips.include
   assert.deepEqual(rule.resolve({ hydraSounds: [{ id: 4106 }] }), { kind: "pass" });
 }
 
-console.log("The Mad Angel wakes, swings every 6 ticks, and runs her blast, sweep and smite in turn as recorded; she enrages at 350.");
+console.log("The Mad Angel wakes, swings every 6 ticks, and runs her blast, sweep and smite in rounds as recorded; she enrages at 350.");
