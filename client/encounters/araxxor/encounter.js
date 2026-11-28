@@ -688,7 +688,7 @@ class AraxxorEncounter {
   // (inferred: ranged when they are equal).
   distantStyle(player) {
     const stats = getPlayerFormulaStats(player);
-    const prayers = getPrayerMultipliers(player.activePrayer, player.offensivePrayer);
+    const prayers = getPrayerMultipliers(player.activePrayer, player.offensivePrayer, player.independentPrayers);
     const ranged = getPlayerDefenceRoll(stats, "ranged", player.equipmentStats, prayers);
     const magic = getPlayerDefenceRoll(stats, "magic", player.equipmentStats, prayers);
     return magic < ranged ? "magic" : "range";

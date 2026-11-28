@@ -40,6 +40,7 @@ import {
   prayerDrainEffects,
   redemptionHealFraction,
   prayerSlotByPrayer,
+  isLowerTierBoostPrayer,
   createPrayerState,
 } from "./prayerTables.js";
 import { resolveRolledDamage, applyPrayerReduction, isCorrectProtectionPrayer } from "./damage.js";
@@ -3314,8 +3315,34 @@ var SimulationEngine = class {
     }
     if ("blocked" === encounterRules?.prayerRestrictions?.offensive) {
       this.deactivateOffensivePrayer(tick);
+      this.deactivateLowerTierBoostPrayers(tick);
     }
     this.clearQuickPrayersActiveIfNoPrayers();
+  }
+  deactivateLowerTierBoostPrayers(tick) {
+    const player = this.player();
+    const blockedPrayers = player.independentPrayers.filter(isLowerTierBoostPrayer);
+    if (blockedPrayers.length === 0) {
+      return;
+    }
+    player.independentPrayers = player.independentPrayers.filter((prayer) => !isLowerTierBoostPrayer(prayer));
+    this.clearQuickPrayersActiveIfNoPrayers();
+    this.syncActivePrayerList();
+    for (const prayer of blockedPrayers) {
+      this.logEvent({
+        tick: tick,
+        type: LogEventType.PRAYER_CHANGE,
+        from: prayer,
+        to: null,
+      });
+      this.tickEvents.setCurrentTick(tick);
+      this.tickEvents.emit({
+        type: "prayer_changed",
+        actorId: player.id,
+        from: prayer,
+        to: null,
+      });
+    }
   }
   deactivateOffensivePrayer(tick) {
     const player = this.player();
@@ -3341,14 +3368,16 @@ var SimulationEngine = class {
   }
   executePrayerOp(inputOp, tick, prayerFailureReported) {
     const isPrayerUnlocked = (prayer) => isPrayerUnlockedByMechanics(prayer, this.mechanicsConfig);
-    if ("quickPrayers" !== inputOp.type && null !== inputOp.prayer && !isPrayerUnlocked(inputOp.prayer)) {
+    const offensiveBlocked = "blocked" === this.getEncounterRules()?.prayerRestrictions?.offensive;
+    const isPrayerAllowed = (prayer) => isPrayerUnlocked(prayer) && !(offensiveBlocked && isLowerTierBoostPrayer(prayer));
+    if ("quickPrayers" !== inputOp.type && null !== inputOp.prayer && !isPrayerAllowed(inputOp.prayer)) {
       return prayerFailureReported;
     }
     const filteredInputOp =
       inputOp.type === "quickPrayers"
         ? {
             ...inputOp,
-            selections: inputOp.selections.filter(isPrayerUnlocked),
+            selections: inputOp.selections.filter(isPrayerAllowed),
           }
         : inputOp;
     const player = this.player();

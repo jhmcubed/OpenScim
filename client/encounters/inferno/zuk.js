@@ -245,7 +245,7 @@ var zukNpcDefinition = defineNpc({
       attacker: formulaStats,
       target: getPlayerFormulaStats(player),
       targetEquipmentStats: player.equipmentStats,
-      targetPrayerMultipliers: getPrayerMultipliers(player.activePrayer, player.offensivePrayer),
+      targetPrayerMultipliers: getPrayerMultipliers(player.activePrayer, player.offensivePrayer, player.independentPrayers),
       random: context.random,
     });
     return {

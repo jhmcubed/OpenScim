@@ -1,4 +1,12 @@
-import { prayerSlotByPrayer } from "./prayerTables.js";
+import { prayerSlotByPrayer, prayersConflict } from "./prayerTables.js";
+// Removes, in place, every prayer in the list that the given one turns off.
+function removeConflicting(prayers, prayer) {
+  for (let index = prayers.length - 1; index >= 0; index--) {
+    if (prayersConflict(prayers[index], prayer)) {
+      prayers.splice(index, 1);
+    }
+  }
+}
 function groupPrayersBySlot(prayers) {
   let protectionPrayer = null;
   let offensivePrayer = null;
@@ -9,7 +17,12 @@ function groupPrayersBySlot(prayers) {
       protectionPrayer = prayer;
     } else if (prayerSlot === "offensive") {
       offensivePrayer = prayer;
+      removeConflicting(independentPrayers, prayer);
     } else if ("independent" === prayerSlot && !independentPrayers.includes(prayer)) {
+      removeConflicting(independentPrayers, prayer);
+      if (offensivePrayer !== null && prayersConflict(offensivePrayer, prayer)) {
+        offensivePrayer = null;
+      }
       independentPrayers.push(prayer);
     }
   }
@@ -98,6 +111,10 @@ function applyPrayerActionEntries(startingPrayers, actionEntries) {
       } else if (hasPrayerPoints) {
         markActivated(offensivePrayer, action.prayer);
         setOffensivePrayer(action.prayer);
+        if (independentPrayers.some((prayer) => prayersConflict(prayer, action.prayer))) {
+          independentTouched = true;
+          setIndependentPrayers(independentPrayers.filter((prayer) => !prayersConflict(prayer, action.prayer)));
+        }
       } else {
         rejectedPrayers.push(action.prayer);
       }
@@ -110,7 +127,14 @@ function applyPrayerActionEntries(startingPrayers, actionEntries) {
         setIndependentPrayers(independentPrayers.filter((prayer) => prayer !== action.prayer));
       } else if (hasPrayerPoints) {
         activatedPrayers.add(action.prayer);
-        setIndependentPrayers([...independentPrayers, action.prayer]);
+        if (offensivePrayer !== null && prayersConflict(offensivePrayer, action.prayer)) {
+          offensiveTouched = true;
+          setOffensivePrayer(null);
+        }
+        setIndependentPrayers([
+          ...independentPrayers.filter((prayer) => !prayersConflict(prayer, action.prayer)),
+          action.prayer,
+        ]);
       } else {
         rejectedPrayers.push(action.prayer);
       }

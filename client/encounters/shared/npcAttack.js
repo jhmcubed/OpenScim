@@ -118,6 +118,7 @@ function rollNpcAttack(attackOptions) {
           targetPrayerMultipliers: getPrayerMultipliers(
             target.activePrayer,
             target.offensivePrayer,
+            target.independentPrayers,
           ),
           style: plan.formulaStyle,
           random: random,
