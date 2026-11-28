@@ -72,11 +72,11 @@ export const scenarios = [
     },
   },
   {
-    // The whole fight with the Obligator, Protect from Melee on from the start: her three specials in turn, her
-    // enrage at 350 and her death. Infinite health: to the end.
+    // The whole fight with the Obligator, Protect from Melee on from the start: her rounds of specials (this seed's
+    // first: blast, sweep, smite), her enrage at 350 and her death. Infinite health: to the end.
     name: "mad-angel/obligator-kill",
     kind: KIND,
-    seed: 3,
+    seed: 5,
     ticks: 600,
     mechanics: { infiniteHealth: true, infinitePrayer: true },
     ...obligator,
@@ -98,7 +98,8 @@ export const scenarios = [
     },
   },
   {
-    // Protect from Magic held from the start: her smite is cut by ~75%, never negated, and earns nothing.
+    // Protect from Magic held from the start: her smite is cut by half (OBS 19 kills: on longer than the tick before the
+    // strike), never negated, and earns nothing.
     name: "mad-angel/magic-prayer",
     kind: KIND,
     seed: 8,
@@ -107,6 +108,22 @@ export const scenarios = [
     ...graniteHammer,
     script(tick, api) {
       if (tick === 1) protect(api, "ProtectMagic");
+      if (api.player().attackTarget !== BOSS) attack(api, BOSS);
+    },
+  },
+  {
+    // Protect from Magic switched on the tick before each strike, off after it: cut by ~75% (WIKI; OBS 19 kills: a
+    // quarter), not negated, and earns nothing. Protect from Melee the rest of the time.
+    name: "mad-angel/magic-late",
+    kind: KIND,
+    seed: 8,
+    ticks: 130,
+    mechanics: { infiniteHealth: true, infinitePrayer: true },
+    ...graniteHammer,
+    script(tick, api) {
+      const strikes = state(api).special?.strikes ?? [];
+      const want = strikes.some((at) => tick === at - 1 || tick === at) ? "ProtectMagic" : "ProtectMelee";
+      if (api.player().activePrayer !== want) protect(api, want);
       if (api.player().attackTarget !== BOSS) attack(api, BOSS);
     },
   },
