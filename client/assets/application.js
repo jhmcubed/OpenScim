@@ -37355,6 +37355,22 @@ var fve = {
   [Prayer.Preserve]: 2679,
   [Prayer.RapidRestore]: 2679,
   [Prayer.RapidHeal]: 2678,
+  // CACHE sound ids, named as in RuneLite's SoundEffectID. Sharp Eye shares
+  // Rigour's sound and Mystic Will shares Augury's.
+  [Prayer.ThickSkin]: 2690,
+  [Prayer.BurstOfStrength]: 2688,
+  [Prayer.ClarityOfThought]: 2664,
+  [Prayer.SharpEye]: 2685,
+  [Prayer.MysticWill]: 2670,
+  [Prayer.RockSkin]: 2684,
+  [Prayer.SuperhumanStrength]: 2689,
+  [Prayer.ImprovedReflexes]: 2662,
+  [Prayer.HawkEye]: 2666,
+  [Prayer.MysticLore]: 2668,
+  [Prayer.SteelSkin]: 2687,
+  [Prayer.UltimateStrength]: 2691,
+  [Prayer.IncredibleReflexes]: 2667,
+  [Prayer.Chivalry]: 3826,
 };
 var yve = 2672;
 var bve = 2401;
