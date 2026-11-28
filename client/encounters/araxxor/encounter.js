@@ -559,7 +559,13 @@ class AraxxorEncounter {
     const dx = px < x ? -1 : px > x + bossSize - 1 ? 1 : 0, dy = py < y ? -1 : py > y + bossSize - 1 ? 1 : 0;
     if ((dx === 0 || dy === 0) && isNpcInAttackRange(boss, player, 1)) return [];
     const isFree = createOccupancyStepCheck(context.world.occupancy);
-    const step = [[x + dx, y + dy], [x + dx, y], [x, y + dy]].find((to) => gapTo(player.position, to, bossSize) > 0 &&
+    // Straight at the player, he steps forward and to the side when an egg is
+    // in his way, and not onto it (the user's play of the game, 28 November
+    // 2026; not in the recordings). Which side first: the player's, west (or
+    // south) when the player is level with his middle (inferred).
+    const side = Math.sign(dx === 0 ? px - middleOf(boss)[0] : py - middleOf(boss)[1]) || -1;
+    const ahead = dx === 0 ? [[x, y + dy], [x + side, y + dy], [x - side, y + dy]] : [[x + dx, y], [x + dx, y + side], [x + dx, y - side]];
+    const step = (dx === 0 || dy === 0 ? ahead : [[x + dx, y + dy], [x + dx, y], [x, y + dy]]).find((to) => gapTo(player.position, to, bossSize) > 0 &&
       canFootprintStepInArena(boss.position, to, { width: bossSize, height: bossSize }) && isFree(boss.position, to, bossSize));
     return step ? [{ npcId: boss.id, path: [step] }] : [];
   }

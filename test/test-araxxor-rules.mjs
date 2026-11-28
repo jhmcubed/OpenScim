@@ -41,6 +41,11 @@ const newPools = (ticks, n) => ticks[n].pools.filter((tile) => !ticks[n - 1].poo
   assert.ok(!ticks[55].clips.includes("araxxor attack"));
 }
 {
+  // Straight south of him with an egg in his way: forward and to the side, not onto it and not standing still.
+  const ticks = await ticksOf("past-egg");
+  assert.deepEqual([ticks[12].boss, ticks[13].boss, ticks[20].boss], [[47, 13], [48, 12], [48, 12]]);
+}
+{
   // The ball: from his edge in one of eight directions; at a player at 51,29 north, from 50,28.
   const ticks = await ticksOf("ball-north");
   const thrown = first(ticks, "araxxor ball");

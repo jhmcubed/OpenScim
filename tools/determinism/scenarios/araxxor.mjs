@@ -77,6 +77,18 @@ export const scenarios = [
     },
   },
   {
+    // Straight south of him, past the two south eggs: he walks south until
+    // the egg at 46,11 is in his way, then steps forward and to the east
+    // (the user's play of the game, 28 November 2026).
+    name: "araxxor/past-egg",
+    kind: KIND,
+    seed: 3,
+    ticks: 30,
+    mechanics: { araxxorEggs: "red", infiniteHealth: true },
+    start: [50, 8],
+    ...meleeGear,
+  },
+  {
     // A tile back the tick before he attacks: magic from 2 tiles away, and a
     // step straight up to the player in the same tick (BigSneezi's red eggs,
     // t 218).
