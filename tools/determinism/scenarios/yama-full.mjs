@@ -143,6 +143,25 @@ export const scenarios = [
     },
   },
 
+  // Protect from Magic on at prayer level 2, then onto a lit Glyph of Shadow: its drain (2 or more) empties them and
+  // switches every prayer off; Yama's magic is then unprotected.
+  {
+    name: "yama-full/glyph-empties-prayer",
+    kind: "yama_full",
+    seed: 7,
+    ticks: 60,
+    mechanics: { infiniteHealth: true },
+    ...mage,
+    stats: { ...Object.fromEntries(["attack", "strength", "defence", "ranged", "magic", "hitpoints", "agility"].map((skill) => [skill, { current: 99, max: 99 }])), prayer: { current: 2, max: 2 } },
+    script(tick, api) {
+      if (tick === 1) challenge(api);
+      const glyph = snapshot(api).state.glyphs.find((candidate) => candidate.element === "shadow" && candidate.state === "lit");
+      if (phase(api) !== "p1" || !glyph) return;
+      if (api.player().prayerState.points > 0 && api.player().activePrayer !== "ProtectMagic") return protect(api, "ProtectMagic");
+      walkTo(api, [glyph.tile[0] + 1, glyph.tile[1] + 1]);
+    },
+  },
+
   // Kept down to his first Judge, the player waits on the stones of y 43 until the Judge's 6th attack: every attack
   // until then sends spells, and his fireballs begin once the player is on the platform. One spell walks over him.
   {

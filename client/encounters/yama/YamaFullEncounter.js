@@ -555,7 +555,7 @@ export class YamaFullEncounter extends YamaEncounter {
         onPlayer(effect.element === "shadow" ? spots.p1ShadowImpact : spots.p1FireImpact);
         if (this.glyphActive(effect.element, tick)) return this.absorb(context, effect.element);
         damages.push({ baseDamage: p1Special.damage, attackType: "typeless", source: effect.element === "shadow" ? "Yama's shadow" : "Yama's fire" });
-        if (effect.element === "shadow") player.prayerState.points = Math.max(0, player.prayerState.points - p1Special.shadowPrayerDrain);
+        if (effect.element === "shadow") this.drainPrayer(context, p1Special.shadowPrayerDrain);
         else this.schedule(tick + p1Burn.delayTicks, { type: "burn", left: p1Burn.hits });
         return;
       case "burn":
@@ -578,7 +578,7 @@ export class YamaFullEncounter extends YamaEncounter {
         damages.push({ baseDamage: shadowStomp.damage, attackType: "typeless", source: "Shadow Stomp", noBlockAnimation: true }); // OBS: solo 1, 476: no block (one sample)
         f.rootedUntil = tick + shadowStomp.rootTicks;
         this.holdRun(player, tick + shadowStomp.runOffTicks);
-        player.prayerState.points = Math.max(0, player.prayerState.points - shadowStomp.prayerDrain);
+        this.drainPrayer(context, shadowStomp.prayerDrain);
         return;
       case "meteorMark": {
         this.say(context, "Yama conjures a fire-based attack at you.", glyphColor.fire);
@@ -651,9 +651,19 @@ export class YamaFullEncounter extends YamaEncounter {
       this.say(context, `You absorb a Glyph of ${glyphName[glyph.element]}.`, glyphColor[glyph.element], "spam");
       const distance = getDistanceToFootprint(player.position[0], player.position[1], boss.position[0], boss.position[1], yamaSize);
       if (glyph.element === "fire") damages.push({ baseDamage: glyphFireDamage(distance), attackType: "typeless", source: "Glyph of Fire" });
-      else player.prayerState.points = Math.max(0, player.prayerState.points - glyphShadowDrain(distance));
+      else this.drainPrayer(context, glyphShadowDrain(distance));
       this.visual(context, { graphics: [{ spotAnimId: glyph.element === "fire" ? spots.glyphFire : spots.glyphShadow, actorId: "player", delayCycles: 0 }], sounds: sounds.glyphTaken });
     }
+  }
+
+  // A drain of his prayer points. The engine switches prayers off only when its own drain empties them
+  // (drainPrayerPoints): one that empties them here switches them off too, as Phosani's yawn does (specials.js).
+  drainPrayer(context, amount) {
+    const player = context.world.getPlayer();
+    const points = player.prayerState.points;
+    const left = Math.max(0, points - amount);
+    player.prayerState = { ...player.prayerState, points: left };
+    if (points > 0 && left === 0) context.deactivateAllPrayers?.();
   }
 
   // --- Fire streaks ------------------------------------------------------------
