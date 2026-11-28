@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { runScenario } from "../tools/determinism/harness.mjs";
 import { scenarios } from "../tools/determinism/scenarios/phosanis-nightmare.mjs";
-import { formCycle, surgeLanes, sleepwalkerTiles, same, gapTo, bossSize } from "../client/encounters/phosanis-nightmare/ids.js";
+import { formCycle, surgeLanes, sleepwalkerTiles, sleepwalkerRings, walkerTiles, totems, totemSize, same, gapTo, bossSize } from "../client/encounters/phosanis-nightmare/ids.js";
 
 const BOSS = "phosanis-nightmare";
 const specialClips = ["claws", "husks", "parasite", "curse", "spores", "leave"];
@@ -62,6 +62,11 @@ const specialsOf = (ticks, from, to) => {
     if (tick.clips.includes("surge")) seen.push("surge");
   }
   return seen;
+};
+// The totem a sleepwalker's tile is by: the nearest one's corner.
+const totemBy = ([x, y]) => {
+  const middle = ({ tile: [tx, ty] }) => [tx + (totemSize - 1) / 2, ty + (totemSize - 1) / 2];
+  return totems.reduce((best, totem) => (Math.hypot(x - middle(totem)[0], y - middle(totem)[1]) < Math.hypot(x - middle(best)[0], y - middle(best)[1]) ? totem : best)).corner;
 };
 const order = { 9416: ["parasite", "flowers", "surge"], 11153: ["surge", "husks", "spores"], 9418: ["parasite", "flowers", "curse"], 9417: ["spores", "husks", "curse"] };
 
@@ -121,6 +126,11 @@ for (const name of ["kill", "kill-other-forms"]) {
     const risen = ticks[form + 2].others.filter(([, clip]) => clip === "rise").map(([id]) => id);
     assert.equal(risen.length, n + 2, name);
     for (const id of risen) assert.ok(sleepwalkerTiles.some((tile) => same(tile, ticks[form + 2].npcs.find((npc) => npc.id === id).position)));
+    // Each by another totem, all on one ring; the first two across from each other (the Outside recordings).
+    const tiles = risen.map((id) => ticks[form + 2].npcs.find((npc) => npc.id === id).position);
+    assert.equal(new Set(tiles.map(totemBy)).size, tiles.length, name + " " + JSON.stringify(tiles));
+    assert.ok(sleepwalkerRings.some((ring) => tiles.every((tile) => ring.some((each) => same(each, tile)))), name + " " + JSON.stringify(tiles));
+    if (n === 0) assert.ok(same([tiles[0][0] + tiles[1][0], tiles[0][1] + tiles[1][1]], [64, 62]), name + " " + JSON.stringify(tiles));
     const hit = damageOf(ticks, "The Nightmare's blast").find((entry) => entry.tick > form);
     const absorbed = ticks.slice(form, hit.tick).flatMap((tick) => tick.others.filter(([, clip]) => clip === "absorb")).length;
     assert.equal(hit.baseDamage, 5 + Math.floor((144 * absorbed) / (n + 2)), name);
@@ -392,6 +402,21 @@ for (const name of ["kill", "kill-other-forms"]) {
   assert.ok(held.length > 5 && held.every((tick, n) => tick === sets[0] + 4 * (n + 1)), held.join());
   assert.deepEqual(clipTicks(ticks, "clawRunEnd"), []);
   assert.ok(ticks.slice(start).every((tick) => same(tick.boss, ticks[start].boss)));
+}
+
+{
+  // Where a blast's sleepwalkers rise, over every turn of the rings: never two by one totem; two across from each
+  // other (her centre, 3872, 9951, between them: local 32, 31), three of a ring, all four.
+  for (let n = 0; n < 8; n++) {
+    const rolls = [Math.floor(n / 4) / 2, (n % 4) / 4];
+    for (const count of [2, 3, 4]) {
+      let roll = 0;
+      const tiles = walkerTiles(count, () => rolls[roll++]);
+      assert.equal(tiles.length, count);
+      assert.equal(new Set(tiles.map(totemBy)).size, count, JSON.stringify(tiles));
+      if (count === 2) assert.deepEqual([tiles[0][0] + tiles[1][0], tiles[0][1] + tiles[1][1]], [64, 62]);
+    }
+  }
 }
 
 console.log("Phosani's Nightmare: its rules hold on its scenarios");
